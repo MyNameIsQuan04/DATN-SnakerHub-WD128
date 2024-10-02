@@ -1,5 +1,15 @@
-const layoutClient = () => {
-  return <div></div>;
+import { Outlet } from "react-router-dom";
+import Header from "../../header/header";
+import Footer from "../../footer/footer";
+
+const LayoutClient = () => {
+  return (
+    <div>
+      <Header />
+      <Outlet />
+      <Footer />
+    </div>
+  );
 };
 
-export default layoutClient;
+export default LayoutClient;
