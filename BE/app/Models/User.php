@@ -21,6 +21,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone_number',
+        'address',
+        'type',
+
     ];
 
     /**
@@ -42,4 +46,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function oders(){
+        return $this->hasMany(Order::class);
+    }
+    public function cart(){
+        return $this->hasMany(Cart::class);
+    }
+    public function comments(){
+        return $this->hasMany(Comment::class);
+    }
 }

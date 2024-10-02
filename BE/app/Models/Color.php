@@ -13,4 +13,7 @@ class Color extends Model
         'id',
         'name',
     ];
+    public function productVariants(){
+        return $this->hasMany(ProductVariant::class);
+    }
 }

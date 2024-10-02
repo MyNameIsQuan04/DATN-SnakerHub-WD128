@@ -15,4 +15,10 @@ class Cart_Item extends Model
         'id',
         'quality',
     ];
+    public function cart(){
+        return $this->belongsTo(Cart::class);
+    }
+    public function productVariant(){
+        return $this->belongsTo(ProductVariant::class);
+    }
 }

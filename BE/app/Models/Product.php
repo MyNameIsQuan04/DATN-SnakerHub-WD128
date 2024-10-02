@@ -16,4 +16,17 @@ class Product extends Model
         'description',
         'price',
     ];
+
+    public function category(){
+        return $this->belongsTo(Category::class);
+    }
+    public function productVariants(){
+        return $this->hasMany(ProductVariant::class);
+    }
+    public function comments(){
+        return $this->hasMany(Comment::class);
+    }
+    public function orderItems(){
+        return $this->hasMany(OrderItem::class);
+    }
 }
