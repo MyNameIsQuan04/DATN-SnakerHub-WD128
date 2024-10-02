@@ -1,5 +1,7 @@
-const layoutClient = () => {
+import React from "react";
+
+const LayoutClient = () => {
   return <div></div>;
 };
 
-export default layoutClient;
+export default LayoutClient;

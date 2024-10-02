@@ -1,7 +1,7 @@
 import React from "react";
 
-const layoutAdmin = () => {
+const LayoutAdmin = () => {
   return <div></div>;
 };
 
-export default layoutAdmin;
+export default LayoutAdmin;
