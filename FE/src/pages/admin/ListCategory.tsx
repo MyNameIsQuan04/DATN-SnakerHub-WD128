@@ -16,7 +16,7 @@ const ListCategory = () => {
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr>
-              <th className="py-2 px-4 border-b">#</th>
+              <th className="py-2 px-4 border-b">ID</th>
               <th className="py-2 px-4 border-b">Tên danh mục</th>
               <th className="py-2 px-4 border-b">Hành động</th>
             </tr>
