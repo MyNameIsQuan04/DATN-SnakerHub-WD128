@@ -14,6 +14,8 @@ import ListSize from "./pages/admin/ListSize";
 import AddProducts from "./pages/admin/AddProducts";
 import AddColor from "./pages/admin/AddColor";
 import AddSize from "./pages/admin/AddSize";
+import Cart from "./pages/client/cart";
+import Detail from "./pages/client/detail";
 
 function App() {
   return (

@@ -1,3 +1,6 @@
+import { VscAccount } from "react-icons/vsc";
+import { FiShoppingCart } from "react-icons/fi";
+
 const Header = () => {
   return (
     <div>
@@ -192,18 +195,20 @@ const Header = () => {
         </div>
         <div className="flex space-x-4 sm:space-x-6 items-center ml-[20px] mr-[50px]">
           <button className="w-[30px] h-auto">
-            <img
+            {/* <img
               src="./accest/account_circle.png"
               alt="Account"
               className="rounded-[5px] w-[30px] h-auto cursor-pointer"
-            />
+            /> */}
+            <VscAccount className="w-[30px] h-auto" />
           </button>
           <button className="w-[30px] h-auto">
-            <img
+            {/* <img
               src="./accest/Shopping cart.png"
               alt="Cart"
               className="rounded-[5px] w-[30px] h-auto cursor-pointer"
-            />
+            /> */}
+            <FiShoppingCart className="w-[30px] h-auto" />
           </button>
         </div>
       </header>

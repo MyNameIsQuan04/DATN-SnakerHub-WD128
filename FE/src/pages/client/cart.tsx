@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 
 const data: Record<string, Record<string, string[]>> = {
@@ -27,17 +28,20 @@ const Cart = () => {
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleProvinceChange = (e: any) => {
     setSelectedProvince(e.target.value);
     setSelectedCity(""); // Reset thành phố khi chọn tỉnh khác
     setSelectedWard(""); // Reset xã/phường khi chọn tỉnh khác
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCityChange = (e: any) => {
     setSelectedCity(e.target.value);
     setSelectedWard(""); // Reset xã/phường khi chọn thành phố khác
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleWardChange = (e: any) => {
     setSelectedWard(e.target.value);
   };
