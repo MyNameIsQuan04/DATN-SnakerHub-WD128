@@ -9,6 +9,11 @@ import ListProduct from "./pages/admin/ListProduct";
 import ListCategory from "./pages/admin/ListCategory";
 import AdminOrder from "./pages/admin/AdminOrder";
 import ListUser from "./pages/admin/ListUser";
+import ListColor from "./pages/admin/ListColor";
+import ListSize from "./pages/admin/ListSize";
+import AddProducts from "./pages/admin/AddProducts";
+import AddColor from "./pages/admin/AddColor";
+import AddSize from "./pages/admin/AddSize";
 
 function App() {
   return (
@@ -27,7 +32,12 @@ function App() {
         <Route path="/admin" element={<LayoutAdmin />}>
           <Route index element={<Dashboard />} />
           <Route path="/admin/product" element={<ListProduct />} />
+          <Route path="/admin/product-add" element={<AddProducts/>}/>
           <Route path="/admin/category" element={<ListCategory />} />
+          <Route path="/admin/color" element={<ListColor />}/>
+          <Route path="/admin/color-add" element={<AddColor/>}/>
+          <Route path="/admin/size" element={<ListSize />}/>
+          <Route path="/admin/size-add" element={<AddSize/>} />
           <Route path="/admin/order" element={<AdminOrder />} />
           <Route path="/admin/user" element={<ListUser />} />
           <Route path="" element />

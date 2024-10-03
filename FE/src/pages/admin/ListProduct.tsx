@@ -25,7 +25,7 @@ const ListProduct = () => {
       <table className="min-w-full bg-white border border-gray-200">
         <thead>
           <tr>
-            <th className="py-2 px-4 border-b text-left">#</th>
+            <th className="py-2 px-4 border-b text-left">ID</th>
             <th className="py-2 px-4 border-b text-left">Hình Ảnh</th>
             <th className="py-2 px-4 border-b text-left">Tên Sản Phẩm</th>
             <th className="py-2 px-4 border-b text-left">Giá</th>
@@ -34,7 +34,7 @@ const ListProduct = () => {
             <th className="py-2 px-4 border-b text-left">Màu Sắc</th>
             <th className="py-2 px-4 border-b text-left">Kích Cỡ</th>
             <th className="py-2 px-4 border-b text-left">Danh Mục</th>
-            <th className="py-2 px-4 border-b text-left">Hành Động</th>
+            <th className="py-2 px-4 border-b text-left">Quản lí</th>
           </tr>
         </thead>
         <tbody>
