@@ -224,7 +224,7 @@ const Cart = () => {
                 </select>
               </>
             )}
-            <div className="">ĐẶT HÀNG</div>
+            <button>ĐẶT HÀNG</button>
           </div>
         </div>
       </div>
