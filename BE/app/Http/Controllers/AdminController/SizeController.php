@@ -4,7 +4,7 @@ namespace App\Http\Controllers\AdminController;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\Models\Size;
 class SizeController extends Controller
 {
     /**
@@ -12,7 +12,8 @@ class SizeController extends Controller
      */
     public function index()
     {
-        //
+       $sizes = Size::all();
+       return view('admin.size.index',compact('sizes'));
     }
 
     /**
@@ -20,7 +21,7 @@ class SizeController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.size.create');
     }
 
     /**
@@ -28,7 +29,11 @@ class SizeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => ['required', 'string','max:255'],
+        ]);
+        Size::create($request->all());
+        return redirect()->route('admin.size.index')->with('success');
     }
 
     /**
@@ -44,7 +49,8 @@ class SizeController extends Controller
      */
     public function edit(string $id)
     {
-        //
+       $size = Size::finfOrFail($id); 
+       return view('admin.size.edit',compact('size'));
     }
 
     /**
@@ -52,7 +58,12 @@ class SizeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+       $request->validate([
+        'name' => ['required','string','max:255'],
+       ]);
+       $size = Size::findOrFail($id);
+       $size->update($request->all());
+       return redirect()->route('admin.size.index')->with('success');
     }
 
     /**
@@ -60,6 +71,8 @@ class SizeController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $size = Size::findOrFail($id);
+        $size->delete();
+        return redirect()->route('admin.size.index')->with('success');
     }
 }

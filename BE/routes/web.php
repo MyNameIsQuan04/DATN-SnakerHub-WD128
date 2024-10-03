@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\AdminController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,3 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::resource('admin/size',SizeController::class);
+Route::resource('admin/color', ColorController::class);
+Route::resource('admin/comment', CommentController::class);
+Route::resource('admin/category', UserController::class);
