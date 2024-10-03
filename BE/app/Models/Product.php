@@ -21,12 +21,12 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
     public function productVariants(){
-        return $this->hasMany(ProductVariant::class);
+        return $this->hasMany(Product_Variant::class);
     }
     public function comments(){
         return $this->hasMany(Comment::class);
     }
     public function orderItems(){
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(Order_Item::class);
     }
 }

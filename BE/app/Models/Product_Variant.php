@@ -30,9 +30,9 @@ class Product_Variant extends Model
         return $this->belongsTo(Color::class);
     }
     public function cartItems(){
-        return $this->hasMany(CartItem::class);
+        return $this->hasMany(Cart_Item::class);
     }
     public function orderItems(){
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(Order_Item::class);
     }
 }
