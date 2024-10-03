@@ -17,13 +17,13 @@ class ClearFakeDataSeeder extends Seeder
     public function run(): void
     {
         // Tắt ràng buộc khóa ngoại
-    \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-    \App\Models\Product_Variant::truncate();
-    \App\Models\Comment::truncate();
-    \App\Models\Size::truncate();
-    \App\Models\Color::truncate();
-    \App\Models\Product::truncate();
-         // Bật lại ràng buộc khóa ngoại
-    \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+    // \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+    // \App\Models\Product_Variant::truncate();
+    // \App\Models\Comment::truncate();
+    // \App\Models\Size::truncate();
+    // \App\Models\Color::truncate();
+    // \App\Models\Product::truncate();
+    //      // Bật lại ràng buộc khóa ngoại
+    // \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

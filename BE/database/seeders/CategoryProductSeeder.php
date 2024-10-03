@@ -2,15 +2,15 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Product;
-use App\Models\Category;
-use App\Models\Product_Variant;
 use App\Models\Size;
 use App\Models\Color;
-use App\Models\Comment; 
 use App\Models\User; 
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Comment; 
 use Faker\Factory as Faker;
+use App\Models\Product_Variant;
+use Illuminate\Database\Seeder;
 
 class CategoryProductSeeder extends Seeder
 {
@@ -21,7 +21,7 @@ class CategoryProductSeeder extends Seeder
         // Tạo dữ liệu cho sizes
         $sizes = ['36', '37', '38', '39', '40', '41', '42'];
         foreach ($sizes as $size) {
-            \DB::table('sizes')->insert([
+            Size::create([
                 'name' => $size,
             ]);
         }
@@ -29,14 +29,14 @@ class CategoryProductSeeder extends Seeder
         // Tạo dữ liệu cho colors
         $colors = ['Red', 'Blue', 'Green', 'Black', 'Yellow'];
         foreach ($colors as $color) {
-            \DB::table('colors')->insert([
+            Color::create([
                 'name' => $color,
             ]);
         }
 
         // Lấy lại dữ liệu size và color từ database
-        $sizeIds = \DB::table('sizes')->pluck('id');
-        $colorIds = \DB::table('colors')->pluck('id');
+        $sizeIds = Size::pluck('id');
+        $colorIds = Color::pluck('id');
 
         // Tạo 5 categories và mỗi category có 10 products
         for ($i = 0; $i < 5; $i++) {

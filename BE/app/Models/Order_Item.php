@@ -20,6 +20,6 @@ class Order_Item extends Model
         return $this->belongsTo(Order::class);
     }
     public function productVariant(){
-        return $this->belongsTo(ProductVariant::class);
+        return $this->belongsTo(Product_Variant::class);
     }
 }
