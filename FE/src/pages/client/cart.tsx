@@ -1,5 +1,15 @@
 import { useState } from "react";
 
+const data: Record<string, Record<string, string[]>> = {
+  "Hà Nội": {
+    "Quận Ba Đình": ["Phường Cống Vị", "Phường Liễu Giai"],
+    "Quận Hoàn Kiếm": ["Phường Chương Dương", "Phường Đồng Xuân"],
+  },
+  "Hồ Chí Minh": {
+    "Quận 1": ["Phường Bến Nghé", "Phường Bến Thành"],
+    "Quận 3": ["Phường Võ Thị Sáu", "Phường Phạm Ngũ Lão"],
+  },
+};
 const Cart = () => {
   const [quantity, setQuantity] = useState(1); // Khởi tạo số lượng sản phẩm
 
@@ -11,6 +21,25 @@ const Cart = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1); // Giảm số lượng nếu lớn hơn 1
     }
+  };
+
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedWard, setSelectedWard] = useState("");
+
+  const handleProvinceChange = (e: any) => {
+    setSelectedProvince(e.target.value);
+    setSelectedCity(""); // Reset thành phố khi chọn tỉnh khác
+    setSelectedWard(""); // Reset xã/phường khi chọn tỉnh khác
+  };
+
+  const handleCityChange = (e: any) => {
+    setSelectedCity(e.target.value);
+    setSelectedWard(""); // Reset xã/phường khi chọn thành phố khác
+  };
+
+  const handleWardChange = (e: any) => {
+    setSelectedWard(e.target.value);
   };
   return (
     <div className="mt-[400px] px-[150px]">
@@ -138,8 +167,65 @@ const Cart = () => {
             name=""
             id=""
             placeholder="Dia chi nhan hang"
-            className="h-[100px] pl-[20px] w-full border border-[#c9c9c9] mt-[20px]"
+            className="h-[100px] pl-[20px] pt-[20px] w-full border border-[#c9c9c9] mt-[20px]"
           ></textarea>
+          <div className="">
+            <label htmlFor="province">Tỉnh:</label>
+            <select
+              id="province"
+              value={selectedProvince}
+              onChange={handleProvinceChange}
+              className="border p-2 m-2"
+            >
+              <option value="">Chọn tỉnh</option>
+              {Object.keys(data).map((province) => (
+                <option key={province} value={province}>
+                  {province}
+                </option>
+              ))}
+            </select>
+
+            {/* Chọn thành phố/quận/huyện */}
+            {selectedProvince && (
+              <>
+                <label htmlFor="city">Thành phố/Quận:</label>
+                <select
+                  id="city"
+                  value={selectedCity}
+                  onChange={handleCityChange}
+                  className="border p-2 m-2"
+                >
+                  <option value="">Chọn thành phố/quận</option>
+                  {Object.keys(data[selectedProvince]).map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
+
+            {/* Chọn xã/phường */}
+            {selectedCity && (
+              <>
+                <label htmlFor="ward">Xã/Phường:</label>
+                <select
+                  id="ward"
+                  value={selectedWard}
+                  onChange={handleWardChange}
+                  className="border p-2 m-2"
+                >
+                  <option value="">Chọn xã/phường</option>
+                  {data[selectedProvince][selectedCity].map((ward: any) => (
+                    <option key={ward} value={ward}>
+                      {ward}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
+            <div className="">ĐẶT HÀNG</div>
+          </div>
         </div>
       </div>
     </div>
