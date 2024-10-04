@@ -1,6 +1,6 @@
 <div class="container">
     <h1>Comment</h1>
-    <a href="{{route('admin.comment.create')}}" class="btn btn-primary">Add comment</a>
+    <a href="{{route('comment.create')}}" class="btn btn-primary">Add comment</a>
     @if (session('success'))
     <div class="alert alert-success">{{session('success')}}</div>
     @endif
@@ -26,8 +26,8 @@
                 <td>{{ $comment->star }}</td>
                 <td>{{ $comment->created_at }}</td>
                 <td>
-                    <a href="{{route('admin.comment.edit', $comment->id)}}" class="btn btn-warning">Edit</a>
-                    <form action="{{route('admin.comment.destroy', $comment->id)}}" method="POST" onsubmit="return confirm('Are you sure you want to delete this colmment?')">
+                    <a href="{{route('comment.edit', $comment->id)}}" class="btn btn-warning">Edit</a>
+                    <form action="{{route('comment.destroy', $comment->id)}}" method="POST" onsubmit="return confirm('Are you sure you want to delete this colmment?')">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">Delete</button>

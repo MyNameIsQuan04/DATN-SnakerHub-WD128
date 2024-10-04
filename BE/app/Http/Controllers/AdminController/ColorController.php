@@ -70,9 +70,13 @@ class ColorController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Color $color)
     {
-        $color = Color::findOrFail($id);
+        $productVariants=$color->productVariants;
+        foreach($productVariants as $variant){
+            $variant->cartItems()->delete();
+            $variant->delete();
+        }
         $color->delete();
         return redirect()->route('admin.color.index')->with('success', 'Màu đã được xóa thành công');
     }

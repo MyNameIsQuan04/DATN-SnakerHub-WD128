@@ -69,10 +69,14 @@ class SizeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Size $size)
     {
-        $size = Size::findOrFail($id);
+       $productVariants=$size->productVariants;
+       foreach($productVariants as $variant){
+           $variant->cartItems()->delete();
+           $variant->delete();
+       }
         $size->delete();
-        return redirect()->route('admin.size.index')->with('success');
+        return redirect()->route('size.index')->with('success');
     }
 }

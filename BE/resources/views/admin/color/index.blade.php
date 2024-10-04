@@ -1,6 +1,6 @@
 <div class="container">
       <h1>Color</h1>
-      <a href="{{route('admin.color.create')}}" class="btn btn-primary">Add color</a>
+      <a href="{{route('color.create')}}" class="btn btn-primary">Add color</a>
       @if (session('success'))
       <div class="alert alert-success">{{session('success')}}</div>
       @endif
@@ -18,8 +18,8 @@
             <td>{{ $color->id }}</td>
             <td>{{ $color->name }}</td>
             <td>
-              <a href="{{route('admin.color.edit', $color->id)}}" class="btn btn-warning">Edit</a>
-              <form action="{{route('admin.color.destroy', $color->id)}}" method="POST" onsubmit="return confirm('Are you sure you want to delete this color?')">
+              <a href="{{route('color.edit', $color->id)}}" class="btn btn-warning">Edit</a>
+              <form action="{{route('color.destroy', $color->id)}}" method="POST" onsubmit="return confirm('Are you sure you want to delete this color?')">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn btn-danger">Delete</button>

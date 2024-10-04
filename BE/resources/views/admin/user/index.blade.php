@@ -1,6 +1,6 @@
 <div class="container">
     <h1>Users</h1>
-    <a href="{{route('admin.user.create')}}" class="btn btn-primary">Add User</a>
+    <a href="{{route('user.create')}}" class="btn btn-primary">Add User</a>
 
     @if (session('success'))
         <div class="alert alert-success">{{session('success')}}</div>
@@ -27,8 +27,8 @@
                     <td>{{ $user->phone_number }}</td>
                     <td>{{ $user->address }}</td>
                     <td>
-                        <a href="{{ route('admin.user.edit', $user->id)}}" class="btn btn-info">Edit</a>
-                        <form action="{{route('admin.user.destroy', $user->id)}}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?')">
+                        <a href="{{ route('user.edit', $user->id)}}" class="btn btn-info">Edit</a>
+                        <form action="{{route('user.destroy', $user->id)}}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">Delete</button>

@@ -1,6 +1,6 @@
 <div class="container">
     <h1>Add user</h1>
-    <form action="{{route('admin.user.store')}}" method="POST">
+    <form action="{{route('user.store')}}" method="POST">
         @csrf
         <div class="form-group">
             <label for="name">Name</label>
@@ -30,6 +30,6 @@
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Create user</button>
-        <a href="{{route('admin.user.index')}}" class="btn btn-secondary">Cancel</a>
+        <a href="{{route('user.index')}}" class="btn btn-secondary">Cancel</a>
         </form>
 </div>

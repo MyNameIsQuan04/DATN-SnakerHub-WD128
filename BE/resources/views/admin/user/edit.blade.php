@@ -1,6 +1,6 @@
 <div class="container">
     <h1>Edit user</h1>
-    <form action="{{route('admin.user.update',$user->id)}}" method="POST">
+    <form action="{{route('user.update',$user->id)}}" method="POST">
         @csrf
         @method('PUT')
         <div class="form-group">
@@ -31,6 +31,6 @@
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Update</button>
-        <a href="{{route('admin.user.index')}}" class="btn btn-secondary">Cancel</a>
+        <a href="{{route('user.index')}}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
