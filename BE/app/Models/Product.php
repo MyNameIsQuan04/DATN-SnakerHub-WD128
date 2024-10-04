@@ -28,7 +28,4 @@ class Product extends Model
     public function comments(){
         return $this->hasMany(Comment::class);
     }
-    public function orderItems(){
-        return $this->hasMany(Order_Item::class);
-    }
 }
