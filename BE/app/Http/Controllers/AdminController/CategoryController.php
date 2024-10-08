@@ -14,8 +14,9 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::orderByDesc('id')->get();
-        dd($categories);
-        return view('admin.category.index', compact('categories'));
+        // dd($categories);
+        // return view('admin.category.index', compact('categories'));
+        return response()->json($categories);
     }
 
     /**
@@ -40,7 +41,9 @@ class CategoryController extends Controller
             ]);
             $category->save();
 
-            return redirect()->route('categories.index')->with('success', 'Thêm thành công');
+            // return redirect()->route('categories.index')->with('success', 'Thêm thành công');
+            return response()->json($category);
+            
         } catch (\Throwable $th) {
             return back()->with('error', $th->getMessage());
         }
@@ -51,7 +54,9 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $cate = Category::where('id', $id)->first();
+
+        return response()->json($cate);
     }
 
     /**
@@ -59,7 +64,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        return view('admin.category.edit', compact('category'));
+        return response()->json($category);
     }
 
     /**
@@ -74,7 +79,9 @@ class CategoryController extends Controller
             $category->name  = $request['name-category'];
             $category->save();
 
-            return redirect()->route('categories.index')->with('success', 'Cập nhật thành công');
+            // return redirect()->route('categories.index')->with('success', 'Cập nhật thành công');
+            return response()->json($category);
+
         } catch (\Throwable $th) {
             return back()->with('error', $th->getMessage());
         }
@@ -97,6 +104,7 @@ class CategoryController extends Controller
 
         $category->delete();
         
-        return redirect()->route('categories.index')->with('success', 'Xóa thành công');
+        return response()->json($category);
+        // return redirect()->route('categories.index')->with('success', 'Xóa thành công');
     }
 }
