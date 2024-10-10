@@ -16,6 +16,7 @@ import AddColor from "./pages/admin/AddColor";
 import AddSize from "./pages/admin/AddSize";
 import Detail from "./pages/client/detail";
 import Cart from "./pages/client/cart";
+import AddCategory from "./pages/admin/AddCategory";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="/admin/product" element={<ListProduct />} />
           <Route path="/admin/product-add" element={<AddProducts />} />
           <Route path="/admin/category" element={<ListCategory />} />
+          <Route path="/admin/category-add" element={<AddCategory/>} />
           <Route path="/admin/color" element={<ListColor />} />
           <Route path="/admin/color-add" element={<AddColor />} />
           <Route path="/admin/size" element={<ListSize />} />

@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@hookform/resolvers": "^3.9.0",
+=======
+>>>>>>> 0422f623b4bbf82b118dc36f45f761fd9666845b
     "axios": "^1.7.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
