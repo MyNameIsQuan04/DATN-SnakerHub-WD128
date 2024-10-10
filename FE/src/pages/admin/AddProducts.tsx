@@ -54,7 +54,7 @@ const AddProducts = () => {
               id="description"
               name="description"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            //   rows="4"
+              //   rows="4"
               placeholder="Nhập mô tả sản phẩm"
             ></textarea>
           </div>
@@ -144,12 +144,12 @@ const AddProducts = () => {
             Thêm Sản Phẩm
           </button>
           <Link to="/admin/product">
-          <button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg ml-2"
-          >
-            Quay lại  
-          </button>
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg ml-2"
+            >
+              Quay lại
+            </button>
           </Link>
         </form>
       </div>
