@@ -23,16 +23,14 @@ const AddSize = () => {
 
   const onSubmit = async (data: ProductFormValues) => {
     try {
-      await axios.get(
-        "http://datn.test/DATN-SnakerHub-WD128/BE/sanctum/csrf-cookie",
-        {
-          withCredentials: true,
-        }
+      const csrfResponse = await axios.get(
+        "http://datn.test/DATN-SnakerHub-WD128/BE/sanctum/csrf-cookie"
       );
+      console.log("CSRF token nhận được:", csrfResponse);
 
       const response = await axios.post(
         "http://datn.test/DATN-SnakerHub-WD128/BE/public/admin/categories",
-        data, // Gửi data dưới dạng JSON
+        data,
         {
           headers: {
             "Content-Type": "application/json",
@@ -43,7 +41,19 @@ const AddSize = () => {
       console.log("Sản phẩm đã được thêm thành công:", response.data);
       reset();
     } catch (err) {
-      console.error("Lỗi khi thêm sản phẩm:", err);
+      if (axios.isAxiosError(err)) {
+        console.error(
+          "Lỗi khi thêm sản phẩm:",
+          err.response?.data || err.message
+        );
+        alert(
+          "Có lỗi xảy ra: " +
+            (err.response?.data.message || "Vui lòng thử lại!")
+        );
+      } else {
+        console.error("Lỗi không phải Axios:", err);
+        alert("Có lỗi không xác định xảy ra.");
+      }
     }
   };
 
