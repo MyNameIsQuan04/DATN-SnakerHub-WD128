@@ -13,6 +13,7 @@ Route::get('/csrf-token', function (Request $request) {
 
 Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 
+
 Route::get('/', function () {
     return view('welcome');
 });

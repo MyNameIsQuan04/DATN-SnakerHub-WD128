@@ -23,9 +23,7 @@ const AddSize = () => {
 
   const onSubmit = async (data: ProductFormValues) => {
     try {
-      const csrfResponse = await axios.get(
-        "http://datn.test/DATN-SnakerHub-WD128/BE/sanctum/csrf-cookie"
-      );
+      const csrfResponse = await axios.get("api/sanctum/csrf-cookie");
       console.log("CSRF token nhận được:", csrfResponse);
 
       const response = await axios.post(
