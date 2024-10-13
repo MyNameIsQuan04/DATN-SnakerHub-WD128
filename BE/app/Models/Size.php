@@ -12,7 +12,6 @@ class Size extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'id',
         'name',
     ];
     

@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController\OrderController;
 use App\Http\Controllers\AdminController\ProductController;
 use App\Http\Controllers\AdminController\CategoryController;
+use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
+Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 /*
 |--------------------------------------------------------------------------
 | Web Routes
