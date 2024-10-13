@@ -1,4 +1,5 @@
 import React from "react";
+import { IoMdSearch } from "react-icons/io";
 import { Link } from "react-router-dom";
 
 const ListProduct = () => {
@@ -13,12 +14,13 @@ const ListProduct = () => {
       </Link>
 
       {/* Search Input */}
-      <div className="mb-6">
+      <div className="mb-6 flex items-center gap-[10px] ">
         <input
           type="text"
           placeholder="Tìm kiếm sản phẩm..."
           className="border border-gray-300 rounded-lg py-2 px-4 w-full md:w-1/2 lg:w-1/3"
         />
+        <IoMdSearch className="w-[30px] h-auto ml-[-50px]" />
       </div>
 
       {/* Table */}
