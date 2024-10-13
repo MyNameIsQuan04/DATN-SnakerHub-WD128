@@ -1,47 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
+import { useDistricts, useProvinces, useWards } from "../../apis/locations.ts";
 
-const data: Record<string, Record<string, string[]>> = {
-  "Hà Nội": {
-    "Quận Ba Đình": ["Phường Cống Vị", "Phường Liễu Giai"],
-    "Quận Hoàn Kiếm": ["Phường Chương Dương", "Phường Đồng Xuân"],
-  },
-  "Hồ Chí Minh": {
-    "Quận 1": ["Phường Bến Nghé", "Phường Bến Thành"],
-    "Quận 3": ["Phường Võ Thị Sáu", "Phường Phạm Ngũ Lão"],
-  },
-};
 const Cart = () => {
-  const [quantity, setQuantity] = useState(1); // Khởi tạo số lượng sản phẩm
+  const [quantity, setQuantity] = useState(1);
 
   const handleIncrease = () => {
-    setQuantity(quantity + 1); // Tăng số lượng
+    setQuantity(quantity + 1);
   };
 
   const handleDecrease = () => {
     if (quantity > 1) {
-      setQuantity(quantity - 1); // Giảm số lượng nếu lớn hơn 1
+      setQuantity(quantity - 1);
     }
   };
 
+  const provinces = useProvinces();
   const [selectedProvince, setSelectedProvince] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleProvinceChange = (e: any) => {
     setSelectedProvince(e.target.value);
     setSelectedCity(""); // Reset thành phố khi chọn tỉnh khác
     setSelectedWard(""); // Reset xã/phường khi chọn tỉnh khác
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCityChange = (e: any) => {
     setSelectedCity(e.target.value);
     setSelectedWard(""); // Reset xã/phường khi chọn thành phố khác
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleWardChange = (e: any) => {
     setSelectedWard(e.target.value);
   };
@@ -173,62 +162,82 @@ const Cart = () => {
             placeholder="Dia chi nhan hang"
             className="h-[100px] pl-[20px] pt-[20px] w-full border border-[#c9c9c9] mt-[20px]"
           ></textarea>
-          <div className="">
-            <label htmlFor="province">Tỉnh:</label>
-            <select
-              id="province"
-              value={selectedProvince}
-              onChange={handleProvinceChange}
-              className="border p-2 m-2"
-            >
-              <option value="">Chọn tỉnh</option>
-              {Object.keys(data).map((province) => (
-                <option key={province} value={province}>
-                  {province}
-                </option>
-              ))}
-            </select>
-
-            {/* Chọn thành phố/quận/huyện */}
-            {selectedProvince && (
-              <>
-                <label htmlFor="city">Thành phố/Quận:</label>
+          <div className="mt-[20px]">
+            <div className="flex items-center justify-between">
+              <div>
+                <label htmlFor="province" className="font-semibold">
+                  Tỉnh/Thành phố:
+                </label>
                 <select
-                  id="city"
-                  value={selectedCity}
-                  onChange={handleCityChange}
-                  className="border p-2 m-2"
+                  id="province"
+                  value={selectedProvince}
+                  onChange={(e) => {
+                    setSelectedProvince(e.target.value);
+                    setSelectedDistrict("");
+                    setSelectedWard("");
+                  }}
+                  className="border h-[40px] ml-[5px]"
                 >
-                  <option value="">Chọn thành phố/quận</option>
-                  {Object.keys(data[selectedProvince]).map((city) => (
-                    <option key={city} value={city}>
-                      {city}
+                  <option value="">Chọn tỉnh/thành phố</option>
+                  {provinces.map((province) => (
+                    <option key={province.code} value={province.code}>
+                      {province.name}
                     </option>
                   ))}
                 </select>
-              </>
-            )}
 
-            {/* Chọn xã/phường */}
-            {selectedCity && (
-              <>
-                <label htmlFor="ward">Xã/Phường:</label>
-                <select
-                  id="ward"
-                  value={selectedWard}
-                  onChange={handleWardChange}
-                  className="border p-2 m-2"
-                >
-                  <option value="">Chọn xã/phường</option>
-                  {data[selectedProvince][selectedCity].map((ward: any) => (
-                    <option key={ward} value={ward}>
-                      {ward}
-                    </option>
-                  ))}
-                </select>
-              </>
-            )}
-            <button>ĐẶT HÀNG</button>
+                {selectedProvince && (
+                  <>
+                    <label
+                      htmlFor="district"
+                      className="ml-[10px] font-semibold"
+                    >
+                      Quận/Huyện:
+                    </label>
+                    <select
+                      id="district"
+                      value={selectedDistrict}
+                      onChange={(e) => {
+                        setSelectedDistrict(e.target.value);
+                        setSelectedWard("");
+                      }}
+                      className="border h-[40px] ml-[5px]"
+                    >
+                      <option value="">Chọn quận/huyện</option>
+                      {districts.map((district) => (
+                        <option key={district.code} value={district.code}>
+                          {district.name}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
+
+                {selectedDistrict && (
+                  <>
+                    <label htmlFor="ward" className="ml-[10px] font-semibold">
+                      Xã/Phường:
+                    </label>
+                    <select
+                      id="ward"
+                      value={selectedWard}
+                      onChange={(e) => setSelectedWard(e.target.value)}
+                      className="border h-[40px] ml-[5px]"
+                    >
+                      <option value="">Chọn xã/phường</option>
+                      {wards.map((ward) => (
+                        <option key={ward.code} value={ward.code}>
+                          {ward.name}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
+              </div>
+              <button className="bg-red-500 text-white h-[40px] w-[200px] float-right hover:bg-red-600">
+                ĐẶT HÀNG
+              </button>
+            </div>
           </div>
         </div>
       </div>

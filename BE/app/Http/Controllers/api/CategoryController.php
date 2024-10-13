@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\AdminController;
+namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class CategoryController extends Controller
 {
@@ -16,15 +16,8 @@ class CategoryController extends Controller
         $categories = Category::orderByDesc('id')->get();
         // dd($categories);
         // return view('admin.category.index', compact('categories'));
-        return response()->json($categories);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('admin.category.create');
+        // return response()->json($categories);
+        return $categories;
     }
 
     /**
@@ -36,14 +29,7 @@ class CategoryController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255|unique:categories,name'
             ]);
-            $category = new Category([
-                'name'  => $request['name']
-            ]);
-            $category->save();
-
-            return redirect()->route('categories.index')->with('success', 'Thêm thành công');
-            // return response()->json($category);
-            
+            return Category::create($request->all());
         } catch (\Throwable $th) {
             return back()->with('error', $th->getMessage());
         }
@@ -52,19 +38,9 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Category $category)
     {
-        $cate = Category::where('id', $id)->first();
-
-        return response()->json($cate);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Category $category)
-    {
-        return response()->json($category);
+        return $category;
     }
 
     /**
@@ -72,21 +48,21 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+        // return $category->update($request->all());
         try {
             $request->validate([
-                'name-category' => 'required|string|max:255'
+                'name' => 'required|string|max:255|unique:categories,name'
             ]);
-            $category->name  = $request['name-category'];
-            $category->save();
-
-            // return redirect()->route('categories.index')->with('success', 'Cập nhật thành công');
-            return response()->json($category);
-
+            $category->update($request->all());
+            return $category;
         } catch (\Throwable $th) {
             return back()->with('error', $th->getMessage());
         }
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(Category $category)
     {
         $category->load('products.productVariants.cartItems', 'products.comments');
@@ -103,8 +79,7 @@ class CategoryController extends Controller
         $category->products()->delete();
 
         $category->delete();
-        
-        return response()->json($category);
-        // return redirect()->route('categories.index')->with('success', 'Xóa thành công');
+
+        return $category;
     }
 }

@@ -2,22 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product_Variant extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'product_id',
         'color_id',
         'size_id',
-        'id',
         'price',
         'stock',
         'sku',
-        'thumbnail',
         'images',
     ];
     public function product(){

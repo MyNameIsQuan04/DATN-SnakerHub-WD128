@@ -1,6 +1,26 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const ListCategory = () => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await axios.get(
+          "http://datn.test/DATN-SnakerHub-WD128/BE/public/admin/categories"
+        ); // Thay URL của API của bạn vào đây
+        setCategories(response.data);
+        console.log(response.data); // In ra dữ liệu danh mục để kiểm tra
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchItems();
+  }, []);
+
   return (
     <div>
       <div className="container mx-auto p-4">
@@ -22,7 +42,32 @@ const ListCategory = () => {
             </tr>
           </thead>
           <tbody>
-            <td className="py-2 px-4"></td>
+            {categories.length > 0 ? (
+              categories.map((category: any, index: number) => (
+                <tr key={category.id}>
+                  <td className="py-2 px-4 border-b">{index + 1}</td>
+                  <td className="py-2 px-4 border-b">{category.name}</td>
+                  <td className="py-2 px-4 border-b">
+                    <Link
+                      to={`/admin/category-edit/${category.id}`}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      Sửa
+                    </Link>
+                    &nbsp;|&nbsp;
+                    <button className="text-red-600 hover:text-red-800">
+                      Xóa
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={3} className="py-2 px-4 text-center">
+                  Không có danh mục nào
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
