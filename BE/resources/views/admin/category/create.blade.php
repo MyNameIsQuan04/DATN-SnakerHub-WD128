@@ -10,7 +10,7 @@
     @csrf
     <div class="mb-3">
         <label for="name-category" class="form-label">Name</label>
-        <input type="text" class="form-control" name="name-category" id="name-category" aria-describedby="helpId"
+        <input type="text" class="form-control" name="name" id="name-category" aria-describedby="helpId"
             placeholder="Ten Category" />
     </div>
 

@@ -34,15 +34,15 @@ class CategoryController extends Controller
     {
         try {
             $request->validate([
-                'name-category' => 'required|string|max:255'
+                'name' => 'required|string|max:255|unique:categories,name'
             ]);
             $category = new Category([
-                'name'  => $request['name-category']
+                'name'  => $request['name']
             ]);
             $category->save();
 
-            // return redirect()->route('categories.index')->with('success', 'Thêm thành công');
-            return response()->json($category);
+            return redirect()->route('categories.index')->with('success', 'Thêm thành công');
+            // return response()->json($category);
             
         } catch (\Throwable $th) {
             return back()->with('error', $th->getMessage());

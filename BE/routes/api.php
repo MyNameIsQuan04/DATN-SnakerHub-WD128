@@ -25,7 +25,6 @@ $crud = [
     'categories' => CategoryController::class,
     'products' => ProductController::class,
     'orders' => OrderController::class,
-
 ];
 
 foreach ($crud as $key => $controller) {
