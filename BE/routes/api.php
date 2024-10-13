@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\api\CategoryController;
+use App\Http\Controllers\AdminController\OrderController;
+use App\Http\Controllers\api\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +20,14 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+$crud = [
+    'categories' => CategoryController::class,
+    'products' => ProductController::class,
+    'orders' => OrderController::class,
+
+];
+
+foreach ($crud as $key => $controller) {
+    Route::apiResource($key, $controller);
+}
