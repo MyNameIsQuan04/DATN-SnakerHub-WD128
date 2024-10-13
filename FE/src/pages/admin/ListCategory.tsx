@@ -1,6 +1,16 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const ListCategory = () => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const response = await axios.get("http://localhost:8000/api/categories");
+      console.log(response.data);
+    })();
+  }, []);
   return (
     <div>
       <div className="container mx-auto p-4">
