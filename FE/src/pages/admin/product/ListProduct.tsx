@@ -1,9 +1,8 @@
-import { useContext } from "react";
-
 import { Link } from "react-router-dom";
+import { ProductCT } from "../../../contexts/productContext";
+import { useContext } from "react";
 import { IoMdSearch } from "react-icons/io";
 import { Product } from "../../../interfaces/Product";
-import { ProductCT } from "../../../contexts/productContext";
 
 const ListProduct = () => {
   const { products } = useContext(ProductCT);

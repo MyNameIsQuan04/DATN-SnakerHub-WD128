@@ -41,15 +41,15 @@ Route::post('login', [AuthController::class, 'login']);
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'type:admin'])->group(function () {
-    Route::get('admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    // Route::get('admin/dashboard',[AdminController::class, 'index'])->name('admin.dashboard');
     Route::resource('admin/size', SizeController::class);
     Route::resource('admin/color', ColorController::class);
     Route::resource('admin/comment', CommentController::class);
     Route::resource('admin/user', UserController::class);
 
     $crud = [
-        'categories' => CategoryController::class,
-        'products' => ProductController::class,
+        // 'categories' => CategoryController::class,
+        // 'products' => ProductController::class,
         'orders' => OrderController::class,
 
     ];
