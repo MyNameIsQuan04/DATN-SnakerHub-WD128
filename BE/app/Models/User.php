@@ -48,8 +48,8 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function oders(){
-        return $this->hasMany(Order::class);
+    public function customers(){
+        return $this->hasMany(Customer::class);
     }
     public function cart(){
         return $this->hasMany(Cart::class);
