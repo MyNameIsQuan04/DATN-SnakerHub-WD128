@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
 
-            $table->foreignIdFor(model: User::class)->constrained();
+            $table->foreignIdFor(Customer::class)->constrained();
 
             $table->id();
             $table->integer('total_price');
