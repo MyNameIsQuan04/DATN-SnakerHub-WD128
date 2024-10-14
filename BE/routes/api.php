@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 $crud = [
     'categories' => CategoryController::class,
-    // 'products' => ProductController::class,
+    'products' => ProductController::class,
     'orders' => OrderController::class,
 ];
 
