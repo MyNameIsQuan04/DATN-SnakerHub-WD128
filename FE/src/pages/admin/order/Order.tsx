@@ -3,28 +3,50 @@ import React, { useEffect, useState } from "react";
 import { Order } from "../../../interfaces/Order";
 
 const AdminOrder = () => {
-  const [orders, setOrders] = useState<Order[]>([]); // Đổi tên state thành orders để rõ ràng hơn
+  const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await axios.get("http://localhost:8000/api/orders");
-        setOrders(data);
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      }
-    })();
+    fetchOrders();
   }, []);
+
+  // Hàm lấy dữ liệu đơn hàng từ API
+  const fetchOrders = async () => {
+    try {
+      const { data } = await axios.get("http://localhost:8000/api/orders");
+      setOrders(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
+  };
+
+  // Hàm cập nhật trạng thái đơn hàng
+  const handleUpdateStatus = async (orderId: number, newStatus: string) => {
+    // Cập nhật trạng thái ngay trên giao diện
+    const updatedOrders = orders.map((order) =>
+      order.id === orderId ? { ...order, status: newStatus } : order
+    );
+    setOrders(updatedOrders); // Cập nhật state ngay lập tức
+
+    try {
+      // Gửi yêu cầu cập nhật trạng thái đơn hàng đến API
+      const response = await axios.put(`http://localhost:8000/api/orders/${orderId}`, {
+        status: newStatus,
+      });
+
+      if (response.status === 200) {
+        console.log("Cập nhật trạng thái thành công");
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+    }
+  };
 
   return (
     <div className="container mx-auto p-4">
       {/* Header với phần tìm kiếm, đặt cố định */}
       <div className="sticky top-0 bg-white z-10 p-4">
-        {" "}
-        {/* Đặt phần này cố định */}
         <h1 className="text-2xl font-bold mb-4">Quản lý đơn hàng</h1>
-        {/* Search Input */}
         <div className="mb-4">
           <input
             type="text"
@@ -36,8 +58,6 @@ const AdminOrder = () => {
 
       {/* Table - Nội dung có thể cuộn */}
       <div className="overflow-y-auto" style={{ maxHeight: "500px" }}>
-        {" "}
-        {/* Đặt chiều cao tối đa và cho phép cuộn */}
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr>
@@ -69,7 +89,19 @@ const AdminOrder = () => {
                   ))}
                 </td>
                 <td className="py-2 px-4 border-b">{item.total_price} VND</td>
-                <td className="py-2 px-4 border-b">{item.status}</td>
+                <td className="py-2 px-4 border-b">
+                  {/* Dropdown chọn trạng thái đơn hàng */}
+                  <select
+                    value={item.status}
+                    onChange={(e) => handleUpdateStatus(item.id, e.target.value)}
+                    className="border border-gray-300 rounded px-2 py-1"
+                  >
+                    <option value="chờ xử lý">Chờ xử lý</option>
+                    <option value="đang giao hàng">Đang giao hàng</option>
+                    <option value="đã giao hàng">Đã giao hàng</option>
+                    <option value="đã hủy">Đã hủy</option>
+                  </select>
+                </td>
                 <td className="py-2 px-4 border-b">
                   <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300">
                     Xử lý
