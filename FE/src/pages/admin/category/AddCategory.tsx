@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 472d62847e120970495637adb9755c2fcd541538
 import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";

@@ -1,17 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/client/home";
 import LayoutClient from "./components/layout/layoutClient/layoutClient";
-<<<<<<< HEAD
 import Dashboard from "./pages/admin/dashboard";
 import NotFound from "./pages/NotFound";
 import LayoutAdmin from "./components/layout/layoutAdmin/layoutAdmin";
-=======
-
-import Dashboard from "./pages/admin/dashboard";
-import NotFound from "./pages/NotFound";
-import LayoutAdmin from "./components/layout/layoutAdmin/layoutAdmin";
-
->>>>>>> 472d62847e120970495637adb9755c2fcd541538
 import Detail from "./pages/client/detail";
 import Cart from "./pages/client/cart";
 import UpdateCategory from "./pages/admin/category/UpdateCategory";

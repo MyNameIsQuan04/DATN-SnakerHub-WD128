@@ -9,15 +9,11 @@ use App\Http\Controllers\ApiController\UserApiController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 use App\Http\Controllers\api\CategoryController;
-<<<<<<< HEAD
-use App\Http\Controllers\api\OrderController;
-use App\Http\Controllers\api\ProductController;
-=======
+
 
 use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\api\ProductController;
 
->>>>>>> 472d62847e120970495637adb9755c2fcd541538
 
 
 /*
