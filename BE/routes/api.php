@@ -5,9 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
-Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 use App\Http\Controllers\api\CategoryController;
-use App\Http\Controllers\AdminController\OrderController;
+use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\api\ProductController;
 
 
@@ -21,6 +20,7 @@ use App\Http\Controllers\api\ProductController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
