@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const ListColor = () => {
-  return <div>
+  return (
+    <div>
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-semibold mb-6">Quản lý màu sắc</h1>
         <Link
@@ -26,7 +27,8 @@ const ListColor = () => {
           </tbody>
         </table>
       </div>
-  </div>;
+    </div>
+  );
 };
 
 export default ListColor;

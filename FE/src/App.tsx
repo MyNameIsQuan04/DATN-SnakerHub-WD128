@@ -1,24 +1,21 @@
 import { Route, Routes } from "react-router-dom";
-import Home from "./pages/client/home";
 import LayoutClient from "./components/layout/layoutClient/layoutClient";
-import Dashboard from "./pages/admin/dashboard";
-import NotFound from "./pages/NotFound";
-import LayoutAdmin from "./components/layout/layoutAdmin/layoutAdmin";
-import Detail from "./pages/client/detail";
-import Cart from "./pages/client/cart";
-import UpdateCategory from "./pages/admin/category/UpdateCategory";
-import ListProduct from "./pages/admin/product/ListProduct";
-import AddProducts from "./pages/admin/product/AddProducts";
+import { BiHome } from "react-icons/bi";
 
+import CategoryContext from "./contexts/CategoryContext";
+import LayoutAdmin from "./components/layout/layoutAdmin/layoutAdmin";
+import Dashboard from "./pages/admin/dashboard";
+import ListProduct from "./pages/admin/product/ListProduct";
+import ListCategory from "./pages/admin/category/ListCategory";
+import AddCategory from "./pages/admin/category/AddCategory";
+import UpdateCategory from "./pages/admin/category/UpdateCategory";
 import ListColor from "./pages/admin/color/ListColor";
 import AddColor from "./pages/admin/color/AddColor";
 import ListSize from "./pages/admin/size/ListSize";
 import AdminOrder from "./pages/admin/order/Order";
 import ListUser from "./pages/admin/user/ListUser";
-import CategoryContext from "./contexts/CategoryContext";
-import AddCategory from "./pages/admin/category/AddCategory";
-import ListCategory from "./pages/admin/category/ListCategory";
-import ProductContext from "./contexts/ProductContext";
+import NotFound from "./pages/NotFound";
+import ProductContext from "./contexts/productContext";
 
 function App() {
   return (
@@ -26,9 +23,9 @@ function App() {
       <Routes>
         {/* Client */}
         <Route path="/" element={<LayoutClient />}>
-          <Route index element={<Home />} />
-          <Route path="detail" element={<Detail />} />
-          <Route path="cart" element={<Cart />} />
+          <Route index element={<BiHome />} />
+          <Route path="" element />
+          <Route path="" element />
           <Route path="" element />
           <Route path="" element />
           <Route path="" element />
@@ -46,7 +43,6 @@ function App() {
         >
           <Route index element={<Dashboard />} />
           <Route path="/admin/product" element={<ListProduct />} />
-          <Route path="/admin/product-add" element={<AddProducts />} />
           <Route path="/admin/category" element={<ListCategory />} />
           <Route path="/admin/category-add" element={<AddCategory />} />
           <Route path="/admin/category-edit/:id" element={<UpdateCategory />} />
