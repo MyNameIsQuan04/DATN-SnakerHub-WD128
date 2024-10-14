@@ -40,7 +40,9 @@ const ListProduct = () => {
           </tr>
         </thead>
         <tbody>
-          <td className="py-2 px-4"></td>
+          <tr>
+            <td className="py-2 px-4"></td>
+          </tr>
         </tbody>
       </table>
     </div>

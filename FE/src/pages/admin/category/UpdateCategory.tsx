@@ -1,9 +1,8 @@
-import axios from "axios";
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useParams } from "react-router-dom";
-import { formDataCategory } from "../../../interfaces/Category";
 import { CategoryCT } from "../../../contexts/CategoryContext";
+import { formDataCategory } from "../../../interfaces/Category";
 import { getCategoryById } from "../../../services/category";
 
 const UpdateCategory = () => {
@@ -30,7 +29,7 @@ const UpdateCategory = () => {
   return (
     <div>
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-semibold mb-6">Thêm danh mục</h1>
+        <h1 className="text-3xl font-semibold mb-6">Cập nhật danh mục</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Tên sản phẩm */}
           <div className="mb-4">
@@ -62,7 +61,7 @@ const UpdateCategory = () => {
             type="submit"
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
           >
-            Thêm danh mục
+            Cập nhật danh mục
           </button>
           <Link to="/admin/category">
             <button

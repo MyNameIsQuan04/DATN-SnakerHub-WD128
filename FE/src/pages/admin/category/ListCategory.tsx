@@ -28,10 +28,10 @@ const ListCategory = () => {
           </thead>
           <tbody>
             {categories.map((category: Category, index: number) => (
-              <tr>
-                <th className="py-2 px-4 border-b">{index + 1}</th>
-                <th className="py-2 px-4 border-b">{category.name}</th>
-                <th className="py-2 px-4 border-b flex justify-center gap-[10px]">
+              <tr key={category.id}>
+                <td className="py-2 px-4 border-b">{index + 1}</td>
+                <td className="py-2 px-4 border-b">{category.name}</td>
+                <td className="py-2 px-4 border-b flex justify-center gap-[10px]">
                   <Link to={`/admin/category-edit/${category.id}`}>
                     <button className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500">
                       Cập nhật
@@ -43,7 +43,7 @@ const ListCategory = () => {
                   >
                     Xóa
                   </button>
-                </th>
+                </td>
               </tr>
             ))}
           </tbody>
