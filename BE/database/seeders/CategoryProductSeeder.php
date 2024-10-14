@@ -50,6 +50,7 @@ class CategoryProductSeeder extends Seeder
                     'name' => $faker->word,
                     'description' => $faker->sentence,
                     'price' => $faker->numberBetween(500000, 800000),
+                    'thumbnail' => 'https://via.placeholder.com/150',
                 ]);
 
                 // Chọn ngẫu nhiên size và color cho mỗi sản phẩm
@@ -64,7 +65,6 @@ class CategoryProductSeeder extends Seeder
                     'price' => $faker->numberBetween(10000, 1000000),
                     'stock' => $faker->numberBetween(1, 100),
                     'sku' => 'SKU-' . strtoupper(uniqid()),
-                    'thumbnail' => 'https://via.placeholder.com/150',
                     'images' => json_encode([
                         'https://via.placeholder.com/150',
                         'https://via.placeholder.com/150'
