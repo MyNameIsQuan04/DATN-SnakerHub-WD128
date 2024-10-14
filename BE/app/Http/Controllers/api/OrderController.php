@@ -15,7 +15,7 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::all();
-        $orders->load('customer','orderItems');
+        $orders->load('customer','orderItems.productVariant.product');
         return $orders;
     }
 
@@ -31,7 +31,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('customer.user','orderItems');
+        $order->load('customer.user','orderItems.productVariant.product');
         return $order;
     }
 
@@ -48,7 +48,7 @@ class OrderController extends Controller
 
                 $order->update($request->all());
             });
-            $order->load('customer.user','orderItems');
+            $order->load('customer.user','orderItems.productVariant.product');
 
             // return $order;
             return response()->json([

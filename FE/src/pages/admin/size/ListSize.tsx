@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const ListSize = () => {
-  return <div>
+  return (
+    <div>
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-semibold mb-6">Quản lý kích cỡ</h1>
         <Link
@@ -26,7 +27,8 @@ const ListSize = () => {
           </tbody>
         </table>
       </div>
-  </div>;
+    </div>
+  );
 };
 
 export default ListSize;

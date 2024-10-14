@@ -2,12 +2,22 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApiController\SizeApiController;
+use App\Http\Controllers\ApiController\ColorApiController;
+use App\Http\Controllers\ApiController\UserApiController;
 
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 use App\Http\Controllers\api\CategoryController;
+<<<<<<< HEAD
 use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\api\ProductController;
+=======
+
+use App\Http\Controllers\api\OrderController;
+use App\Http\Controllers\api\ProductController;
+
+>>>>>>> 472d62847e120970495637adb9755c2fcd541538
 
 
 /*
@@ -25,6 +35,10 @@ Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::apiResource('sizes', SizeApiController::class);
+Route::apiResource('colors', ColorApiController::class);
+Route::apiResource('users', UserApiController::class);
 
 $crud = [
     'categories' => CategoryController::class,

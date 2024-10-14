@@ -30,9 +30,18 @@ const AdminOrder = () => {
 
     try {
       // Gửi yêu cầu cập nhật trạng thái đơn hàng đến API
+<<<<<<< HEAD
       const response = await axios.put(`http://localhost:8000/api/orders/${orderId}`, {
         status: newStatus,
       });
+=======
+      const response = await axios.put(
+        `http://localhost:8000/api/orders/${orderId}`,
+        {
+          status: newStatus,
+        }
+      );
+>>>>>>> 472d62847e120970495637adb9755c2fcd541538
 
       if (response.status === 200) {
         console.log("Cập nhật trạng thái thành công");
@@ -93,7 +102,13 @@ const AdminOrder = () => {
                   {/* Dropdown chọn trạng thái đơn hàng */}
                   <select
                     value={item.status}
+<<<<<<< HEAD
                     onChange={(e) => handleUpdateStatus(item.id, e.target.value)}
+=======
+                    onChange={(e) =>
+                      handleUpdateStatus(item.id, e.target.value)
+                    }
+>>>>>>> 472d62847e120970495637adb9755c2fcd541538
                     className="border border-gray-300 rounded px-2 py-1"
                   >
                     <option value="chờ xử lý">Chờ xử lý</option>
