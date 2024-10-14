@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { IoMdSearch } from "react-icons/io";
 import { Link } from "react-router-dom";
+import { CategoryCT } from "../../../contexts/CategoryContext";
 
 const ListProduct = () => {
+  const { categories } = useContext(CategoryCT);
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-semibold mb-6">Quản lý sản phẩm</h1>

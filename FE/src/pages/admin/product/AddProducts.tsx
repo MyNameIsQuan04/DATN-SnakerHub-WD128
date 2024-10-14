@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { CategoryCT } from "../../../contexts/CategoryContext";
+import { Category } from "../../../interfaces/Category";
 
 const AddProducts = () => {
   const { categories } = useContext(CategoryCT);
@@ -65,9 +66,11 @@ const AddProducts = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg"
               >
                 <option value="">Chọn danh mục</option>
-                <option value="electronics">Điện tử</option>
-                <option value="fashion">Thời trang</option>
-                <option value="home">Đồ gia dụng</option>
+                {categories.map((category: Category, index: number) => (
+                  <option key={index} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
             </div>
 
