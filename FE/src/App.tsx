@@ -9,7 +9,7 @@ import Cart from "./pages/client/cart";
 import UpdateCategory from "./pages/admin/category/UpdateCategory";
 import ListProduct from "./pages/admin/product/ListProduct";
 import AddProducts from "./pages/admin/product/AddProducts";
-import ListCategory from "./pages/admin/ListCategory";
+
 import ListColor from "./pages/admin/color/ListColor";
 import AddColor from "./pages/admin/color/AddColor";
 import ListSize from "./pages/admin/size/ListSize";
@@ -17,6 +17,7 @@ import AdminOrder from "./pages/admin/order/Order";
 import ListUser from "./pages/admin/user/ListUser";
 import CategoryContext from "./contexts/CategoryContext";
 import AddCategory from "./pages/admin/category/AddCategory";
+import ListCategory from "./pages/admin/category/ListCategory";
 
 function App() {
   return (
