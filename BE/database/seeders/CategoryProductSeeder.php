@@ -41,15 +41,16 @@ class CategoryProductSeeder extends Seeder
         // Tạo 5 categories và mỗi category có 10 products
         for ($i = 0; $i < 5; $i++) {
             $category = Category::create([
-                'name' => $faker->word,
+                'name' => $faker->unique()->word,
             ]);
 
             for ($j = 0; $j < 10; $j++) {
                 $product = Product::create([
                     'category_id' => $category->id,
-                    'name' => $faker->word,
+                    'name' => $faker->unique()->word,
                     'description' => $faker->sentence,
                     'price' => $faker->numberBetween(500000, 800000),
+                    'thumbnail' => 'https://via.placeholder.com/150',
                 ]);
 
                 // Chọn ngẫu nhiên size và color cho mỗi sản phẩm
@@ -64,7 +65,6 @@ class CategoryProductSeeder extends Seeder
                     'price' => $faker->numberBetween(10000, 1000000),
                     'stock' => $faker->numberBetween(1, 100),
                     'sku' => 'SKU-' . strtoupper(uniqid()),
-                    'thumbnail' => 'https://via.placeholder.com/150',
                     'images' => json_encode([
                         'https://via.placeholder.com/150',
                         'https://via.placeholder.com/150'

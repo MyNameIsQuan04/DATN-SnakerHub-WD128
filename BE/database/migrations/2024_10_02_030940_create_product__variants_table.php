@@ -20,12 +20,10 @@ return new class extends Migration
             $table->foreignIdFor(Size::class)->constrained();
             
             $table->id();
-            $table->integer('price');
+            $table->integer('price')->nullable();
             $table->integer('stock');
             $table->string('sku',50);
-            $table->string('thumbnail');
-            $table->json('images');
-
+            $table->json('images')->nullable();
             $table->timestamps();
         });
     }

@@ -13,10 +13,10 @@ class Product extends Model
 
     protected $fillable = [
         'category_id',
-        'id',
         'name',
         'description',
         'price',
+        'thumbnail',
     ];
 
     public function category(){
@@ -27,8 +27,5 @@ class Product extends Model
     }
     public function comments(){
         return $this->hasMany(Comment::class);
-    }
-    public function orderItems(){
-        return $this->hasMany(Order_Item::class);
     }
 }

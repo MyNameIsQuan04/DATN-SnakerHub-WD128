@@ -12,7 +12,6 @@ class Color extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'id',
         'name',
     ];
     public function productVariants(){

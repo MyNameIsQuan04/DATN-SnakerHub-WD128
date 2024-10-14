@@ -12,14 +12,13 @@ class Order extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'user_id',
-        'id',
+        'customer_id',
         'total_price',
         'status',
     ];
 
-    public function user(){
-        return $this->belongsTo(User::class);
+    public function customer(){
+        return $this->belongsTo(Customer::class);
     }
     public function orderItems(){
         return $this->hasMany(Order_Item::class);
