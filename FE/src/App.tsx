@@ -1,22 +1,22 @@
 import { Route, Routes } from "react-router-dom";
-import "./App.css";
 import Home from "./pages/client/home";
 import LayoutClient from "./components/layout/layoutClient/layoutClient";
 import Dashboard from "./pages/admin/dashboard";
 import NotFound from "./pages/NotFound";
 import LayoutAdmin from "./components/layout/layoutAdmin/layoutAdmin";
-import ListProduct from "./pages/admin/ListProduct";
-import ListCategory from "./pages/admin/ListCategory";
-import AdminOrder from "./pages/admin/AdminOrder";
-import ListUser from "./pages/admin/ListUser";
-import ListColor from "./pages/admin/ListColor";
-import ListSize from "./pages/admin/ListSize";
-import AddProducts from "./pages/admin/AddProducts";
-import AddColor from "./pages/admin/AddColor";
-import AddSize from "./pages/admin/AddSize";
-import Cart from "./pages/client/cart";
 import Detail from "./pages/client/detail";
-import AddCategory from "./pages/admin/AddCategory";
+import Cart from "./pages/client/cart";
+import UpdateCategory from "./pages/admin/category/UpdateCategory";
+import ListProduct from "./pages/admin/product/ListProduct";
+import AddProducts from "./pages/admin/product/AddProducts";
+import ListCategory from "./pages/admin/ListCategory";
+import ListColor from "./pages/admin/color/ListColor";
+import AddColor from "./pages/admin/color/AddColor";
+import ListSize from "./pages/admin/size/ListSize";
+import AdminOrder from "./pages/admin/order/Order";
+import ListUser from "./pages/admin/user/ListUser";
+import CategoryContext from "./contexts/CategoryContext";
+import AddCategory from "./pages/admin/category/AddCategory";
 
 function App() {
   return (
@@ -32,16 +32,24 @@ function App() {
           <Route path="" element />
         </Route>
         {/* Admin */}
-        <Route path="/admin" element={<LayoutAdmin />}>
+        <Route
+          path="/admin"
+          element={
+            <CategoryContext>
+              <LayoutAdmin />
+            </CategoryContext>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="/admin/product" element={<ListProduct />} />
           <Route path="/admin/product-add" element={<AddProducts />} />
           <Route path="/admin/category" element={<ListCategory />} />
-          <Route path="/admin/category-add" element={<AddCategory/>} />
+          <Route path="/admin/category-add" element={<AddCategory />} />
+          <Route path="/admin/category-edit/:id" element={<UpdateCategory />} />
           <Route path="/admin/color" element={<ListColor />} />
           <Route path="/admin/color-add" element={<AddColor />} />
           <Route path="/admin/size" element={<ListSize />} />
-          <Route path="/admin/size-add" element={<AddSize />} />
+          {/* <Route path="/admin/size-add" element={<AddSize />} /> */}
           <Route path="/admin/order" element={<AdminOrder />} />
           <Route path="/admin/user" element={<ListUser />} />
           <Route path="" element />

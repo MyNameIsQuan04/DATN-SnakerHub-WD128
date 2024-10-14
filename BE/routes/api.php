@@ -8,7 +8,7 @@ use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\AdminController\OrderController;
-use App\Http\Controllers\api\ProductController;
+// use App\Http\Controllers\api\ProductController;
 
 
 /*
@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 $crud = [
     'categories' => CategoryController::class,
-    'products' => ProductController::class,
+    // 'products' => ProductController::class,
     'orders' => OrderController::class,
 ];
 
