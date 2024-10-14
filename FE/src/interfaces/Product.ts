@@ -1,8 +1,10 @@
 export interface Product {
   id: number | string;
   name: string;
-  category_id: string;
+  category: string;
   thumbnail: any;
+  basePrice: number;
+  description: string;
   variants: ProductVariant[];
 }
 

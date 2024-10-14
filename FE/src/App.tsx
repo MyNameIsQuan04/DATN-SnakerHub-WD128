@@ -18,6 +18,7 @@ import ListUser from "./pages/admin/user/ListUser";
 import CategoryContext from "./contexts/CategoryContext";
 import AddCategory from "./pages/admin/category/AddCategory";
 import ListCategory from "./pages/admin/category/ListCategory";
+import ProductContext from "./contexts/ProductContext";
 
 function App() {
   return (
@@ -36,9 +37,11 @@ function App() {
         <Route
           path="/admin"
           element={
-            <CategoryContext>
-              <LayoutAdmin />
-            </CategoryContext>
+            <ProductContext>
+              <CategoryContext>
+                <LayoutAdmin />
+              </CategoryContext>
+            </ProductContext>
           }
         >
           <Route index element={<Dashboard />} />

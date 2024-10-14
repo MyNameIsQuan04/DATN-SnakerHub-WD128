@@ -1,10 +1,13 @@
 import React, { useContext } from "react";
 import { IoMdSearch } from "react-icons/io";
 import { Link } from "react-router-dom";
-import { CategoryCT } from "../../../contexts/CategoryContext";
+
+import { ProductCT } from "../../../contexts/ProductContext";
+import { Product } from "../../../interfaces/Product";
 
 const ListProduct = () => {
-  const { categories } = useContext(CategoryCT);
+  const { products } = useContext(ProductCT);
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-semibold mb-6">Quản lý sản phẩm</h1>
@@ -42,7 +45,26 @@ const ListProduct = () => {
           </tr>
         </thead>
         <tbody>
-          <td className="py-2 px-4"></td>
+          {products.map((product: Product, index: number) => (
+            <tr key={product.id}>
+              <th className="py-2 px-4 border-b text-left">{index + 1}</th>
+              <th className="py-2 px-4 border-b text-left">
+                <img src={product.thumbnail} alt="" />
+              </th>
+              <th className="py-2 px-4 border-b text-left">{product.name}</th>
+              <th className="py-2 px-4 border-b text-left">
+                {product.basePrice}
+              </th>
+              <th className="py-2 px-4 border-b text-left">
+                {product.description}
+              </th>
+              <th className="py-2 px-4 border-b text-left"></th>
+              <th className="py-2 px-4 border-b text-left">Màu Sắc</th>
+              <th className="py-2 px-4 border-b text-left">Kích Cỡ</th>
+              <th className="py-2 px-4 border-b text-left">Danh Mục</th>
+              <th className="py-2 px-4 border-b text-left">Quản lí</th>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
