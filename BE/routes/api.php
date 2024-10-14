@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApiController\SizeApiController;
+use App\Http\Controllers\ApiController\ColorApiController;
+use App\Http\Controllers\ApiController\UserApiController;
 
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
@@ -26,6 +29,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::apiResource('sizes', SizeApiController::class);
+Route::apiResource('colors', ColorApiController::class);
+Route::apiResource('users', UserApiController::class);
+
 $crud = [
     'categories' => CategoryController::class,
     'products' => ProductController::class,
@@ -35,3 +42,4 @@ $crud = [
 foreach ($crud as $key => $controller) {
     Route::apiResource($key, $controller);
 }
+
