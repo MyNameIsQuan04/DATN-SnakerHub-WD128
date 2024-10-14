@@ -6,21 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Order extends Model
+class Customer extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [
-        'customer_id',
-        'total_price',
-        'status',
+        'user_id',
+        'name',
+        'phone_number',
+        'address',
     ];
 
-    public function customer(){
-        return $this->belongsTo(Customer::class);
+    public function order(){
+        return $this->hasMany(Order::class);
     }
-    public function orderItems(){
-        return $this->hasMany(Order_Item::class);
+
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 }
