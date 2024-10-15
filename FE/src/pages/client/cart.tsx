@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useDistricts, useProvinces, useWards } from "../../apis/locations.ts";
 
@@ -19,9 +20,20 @@ const Cart = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
 
-  const districts = useDistricts(selectedProvince);
-  const wards = useWards(selectedDistrict);
+  const handleProvinceChange = (e: any) => {
+    setSelectedProvince(e.target.value);
+    setSelectedCity(""); // Reset thành phố khi chọn tỉnh khác
+    setSelectedWard(""); // Reset xã/phường khi chọn tỉnh khác
+  };
 
+  const handleCityChange = (e: any) => {
+    setSelectedCity(e.target.value);
+    setSelectedWard(""); // Reset xã/phường khi chọn thành phố khác
+  };
+
+  const handleWardChange = (e: any) => {
+    setSelectedWard(e.target.value);
+  };
   return (
     <div className="mt-[400px] px-[150px]">
       <div className="flex">
