@@ -5,12 +5,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController\SizeApiController;
 use App\Http\Controllers\ApiController\ColorApiController;
 use App\Http\Controllers\ApiController\UserApiController;
-
+use App\Http\Controllers\AuthController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 use App\Http\Controllers\api\CategoryController;
+
 use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\api\ProductController;
+
 
 
 /*
@@ -43,3 +45,10 @@ foreach ($crud as $key => $controller) {
     Route::apiResource($key, $controller);
 }
 
+Route::group(['prefix' => 'auth'], function () {
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::get('me', [AuthController::class, 'me'])->middleware('auth:api');
+});

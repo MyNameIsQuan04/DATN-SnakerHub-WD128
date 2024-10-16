@@ -7,11 +7,14 @@ use App\Http\Controllers\AdminController\SizeController;
 use App\Http\Controllers\AdminController\ColorController;
 use App\Http\Controllers\AdminController\CommentController;
 use App\Http\Controllers\AdminController\UserController;
+use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController\OrderController;
 use App\Http\Controllers\AdminController\ProductController;
 use App\Http\Controllers\AdminController\CategoryController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
+
+use App\Http\Controllers\Client\CartController;
 
 Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 
@@ -26,8 +29,14 @@ Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+
+
+Route::get('/', [ClientController::class, 'index']);
+Route::prefix('shop')->group(function () {
+    Route::get('/', [ClientController::class, 'index']);
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::delete('/cart-destroy/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
 });
 
 
@@ -47,8 +56,8 @@ Route::middleware(['auth','type:admin'])->group(function(){
     Route::resource('admin/comment', CommentController::class);
     Route::resource('admin/user', UserController::class);
     $crud = [
-        'categories' => CategoryController::class,
-        'products' => ProductController::class,
+        // 'categories' => CategoryController::class,
+        // 'products' => ProductController::class,
         'orders' => OrderController::class,
         
     ];
