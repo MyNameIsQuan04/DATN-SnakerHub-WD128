@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Models\Size;
 use App\Models\Color;
+use App\Models\Gallery;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -22,13 +23,10 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::orderByDesc('id')->get();
-        $products->load(['category', 'productVariants.size', 'productVariants.color']);
+        $products->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
         return $products;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreProductRequest $request)
     {
         try {
@@ -46,6 +44,13 @@ class ProductController extends Controller
 
             $product = Product::create($dataProduct);
 
+            foreach ($validatedData['galleries'] ?? [] as $image) {
+                $image_path = Storage::url($image->store('images', 'public'));
+                $product->galleries()->create([
+                    'image_path' => $image_path,
+                ]);
+            }
+
             foreach ($validatedData['variants'] as $variant) {
 
                 $dataVariant = [
@@ -56,18 +61,13 @@ class ProductController extends Controller
                     'sku' => $variant['sku'],
                 ];
 
-                $imagePaths = [];
-                if (isset($variant['images'])) {
-                    foreach ($variant['images'] as $image) {
-                        $path = $image->store('public/images');
-                        $imagePaths[] = Storage::url($path);
-                    }
-                    $dataVariant['images'] = json_encode($imagePaths);
+                if (isset($variant['image'])) {
+                    $dataVariant['image'] = Storage::url($variant['image']->store('images', 'public'));
                 }
+
                 $product->productVariants()->create($dataVariant);
-                // Product_Variant::create($dataVariant);
             }
-            $product->load('category', 'productVariants.size', 'productVariants.color');
+            $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
 
             $categories = Category::query()->pluck('name', 'id')->all();
             $sizes = Size::all()->pluck('name', 'id');
@@ -90,12 +90,9 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Product $product)
     {
-        $product->load(['category', 'productVariants.size', 'productVariants.color']);
+        $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
         return $product;
     }
 
@@ -116,14 +113,26 @@ class ProductController extends Controller
                 $thumbnailPath = $validatedData['thumbnail']->store('images', 'public');
                 $dataProduct['thumbnail'] = Storage::url($thumbnailPath);
             }
-
             $product->update($dataProduct);
+
+            foreach ($validatedData['galleries'] ?? [] as $gallery) {
+                if (isset($gallery['id'])) {
+                    $gallery = $product->galleries()->where('id', $gallery['id'])->first();
+                    $gallery->update([
+                        'image_path' => Storage::url($gallery['image']->store('images', 'public')),
+                    ]);
+                } else {
+                    $image_path = Storage::url($gallery['image']->store('images', 'public'));
+                    $product->galleries()->create([
+                        'image_path' => $image_path,
+                    ]);
+                }
+            }
 
             foreach ($validatedData['variants'] as $variant) {
                 if (isset($variant['id'])) {
                     $productVariant = $product->productVariants()->where('id', $variant['id'])->first();
                     if ($productVariant) {
-
                         $dataVariant = [
                             'color_id' => $variant['color_id'],
                             'size_id' => $variant['size_id'],
@@ -132,14 +141,8 @@ class ProductController extends Controller
                             'sku' => $variant['sku'],
                         ];
 
-
-                        $imagePaths = [];
-                        if (isset($variant['images'])&&($request->hasFile($variant['images']))) {
-                            foreach ($variant['images'] as $image) {
-                                $path = $image->store('public/images');
-                                $imagePaths[] = Storage::url($path);
-                            }
-                            $dataVariant['images'] = json_encode($imagePaths);
+                        if (isset($variant['image']) && ($request->hasFile($variant['image']))) {
+                            $dataVariant['image'] = Storage::url($variant['image']->store('images', 'public'));
                         }
 
                         $productVariant->update($dataVariant);
@@ -152,20 +155,16 @@ class ProductController extends Controller
                         'stock' => $variant['stock'],
                         'sku' => $variant['sku'],
                     ];
-
-                    $imagePaths = [];
-                    if (isset($variant['images'])&&($request->hasFile($variant['images']))) {
-                        foreach ($variant['images'] as $image) {
-                            $path = $image->store('public/images');
-                            $imagePaths[] = Storage::url($path);
-                        }
-                        $dataVariant['images'] = json_encode($imagePaths);
+    
+                    if (isset($variant['image'])) {
+                        $dataVariant['image'] = Storage::url($variant['image']->store('images', 'public'));
                     }
+    
                     $product->productVariants()->create($dataVariant);
                 }
             }
 
-            $product->load('category', 'productVariants.size', 'productVariants.color');
+            $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
             $categories = Category::query()->pluck('name', 'id')->all();
             $sizes = Size::all()->pluck('name', 'id');
             $colors = Color::all()->pluck('name', 'id');
@@ -195,12 +194,13 @@ class ProductController extends Controller
         try {
             DB::transaction(function () use ($product) {
 
-                $product->load('productVariants.cartItems', 'comments');
+                $product->load('productVariants.cartItems', 'comments', 'galleries');
 
                 foreach ($product->productVariants as $productVariant) {
                     $productVariant->cartItems()->delete();
                 }
-
+                $product->galleries()->delete();
+                
                 $product->productVariants()->delete();
 
                 $product->comments()->delete();

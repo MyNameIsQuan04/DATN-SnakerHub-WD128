@@ -2,18 +2,18 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ApiController\SizeApiController;
-use App\Http\Controllers\ApiController\ColorApiController;
-use App\Http\Controllers\ApiController\UserApiController;
-
-use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
-
-use App\Http\Controllers\api\CategoryController;
-
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\api\ProductController;
 
+use App\Http\Controllers\api\CategoryController;
 
+use App\Http\Controllers\ApiController\SizeApiController;
+
+use App\Http\Controllers\ApiController\UserApiController;
+use App\Http\Controllers\ApiController\ColorApiController;
+use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
+use App\Http\Controllers\apiMember\OrderController as ApiMemberOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +30,7 @@ Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::post('login', [AuthController::class,'login']);
 
 Route::apiResource('sizes', SizeApiController::class);
 Route::apiResource('colors', ColorApiController::class);
@@ -44,3 +45,5 @@ $crud = [
 foreach ($crud as $key => $controller) {
     Route::apiResource($key, $controller);
 }
+
+Route::apiResource('client/orders', ApiMemberOrderController::class);
