@@ -23,25 +23,37 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => $request->password,
             'phone_number' => $request->phone_number,
             'address' => $request->address,
-            'type' => 'user',  
+            'type' => 'admin',  
         ]);
-        return redirect()->route('login')->with('success', 'Đăng kí thành công');
+        return $user;
     }
     public function showLoginForm(){
         return view('auth.login');
     }
     public function login(Request $request){
-        $request->validate([
-            'email' =>'required|string|email|max:255',
-            'password' => 'required|string',
-        ]);
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
-            return redirect()->route('home');
+    //  $user=   $request->validate([
+    //         'email' =>'required|string|email|max:255',
+    //         'password' => 'required|string',
+    //     ]);
+    //     if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
+    //         return $user; 
+    //     }
+    //     return redirect()->back()->with('error', 'Invalid email or password');
+    $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            if ($user->type == 'admin') {
+                return $user;
+            } else {
+                return $user;
+            }
         }
-        return redirect()->back()->with('error', 'Invalid email or password');
+
+        return back();
     }
     public function logout(){
         Auth::logout();
