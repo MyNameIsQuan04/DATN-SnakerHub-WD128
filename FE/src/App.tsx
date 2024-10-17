@@ -1,16 +1,13 @@
 import { Route, Routes } from "react-router-dom";
 import LayoutClient from "./components/layout/layoutClient/layoutClient";
-
 import Dashboard from "./pages/admin/dashboard";
 import NotFound from "./pages/NotFound";
 import LayoutAdmin from "./components/layout/layoutAdmin/layoutAdmin";
-
 import Detail from "./pages/client/detail";
 import Cart from "./pages/client/cart";
 import UpdateCategory from "./pages/admin/category/UpdateCategory";
 import ListProduct from "./pages/admin/product/ListProduct";
 import AddProducts from "./pages/admin/product/AddProducts";
-
 import ListColor from "./pages/admin/color/ListColor";
 import AddColor from "./pages/admin/color/AddColor";
 import ListSize from "./pages/admin/size/ListSize";
@@ -20,14 +17,22 @@ import CategoryContext from "./contexts/CategoryContext";
 import AddCategory from "./pages/admin/category/AddCategory";
 import ListCategory from "./pages/admin/category/ListCategory";
 import Home from "./pages/client/home";
-import ProductContext from "./contexts/productContext";
+import ProductContext from "./contexts/ProductContext";
+import ColorContext from "./contexts/ColorContext";
+import SizeContext from "./contexts/SizeContext";
 
 function App() {
   return (
     <>
       <Routes>
-        {/* Client */}
-        <Route path="/" element={<LayoutClient />}>
+        <Route
+          path="/"
+          element={
+            <ProductContext>
+              <LayoutClient />
+            </ProductContext>
+          }
+        >
           <Route index element={<Home />} />
           <Route path="detail" element={<Detail />} />
           <Route path="cart" element={<Cart />} />
@@ -39,11 +44,15 @@ function App() {
         <Route
           path="/admin"
           element={
-            <ProductContext>
-              <CategoryContext>
-                <LayoutAdmin />
-              </CategoryContext>
-            </ProductContext>
+            <SizeContext>
+              <ColorContext>
+                <ProductContext>
+                  <CategoryContext>
+                    <LayoutAdmin />
+                  </CategoryContext>
+                </ProductContext>
+              </ColorContext>
+            </SizeContext>
           }
         >
           <Route index element={<Dashboard />} />

@@ -19,7 +19,6 @@ const ProductContext = ({ children }: Props) => {
     (async () => {
       const data = await getProducts();
       setProducts(data);
-      console.log(data);
     })();
   }, []);
 
@@ -42,9 +41,9 @@ const ProductContext = ({ children }: Props) => {
   const onAddProduct = async (data: FormProductData) => {
     try {
       const product = await addProduct(data);
-      alert("Thanh cong");
+
       setProducts([...products, product]);
-      router("/admin/products");
+      router("/admin/product");
     } catch (error) {
       console.log(error);
     }
@@ -61,7 +60,7 @@ const ProductContext = ({ children }: Props) => {
         pro.id == id ? product : pro
       );
       setProducts(newProductsAfterUpdate);
-      router("/admin/products");
+      router("/admin/product");
     } catch (error) {}
   };
   return (
