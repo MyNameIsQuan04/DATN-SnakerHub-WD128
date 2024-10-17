@@ -26,7 +26,7 @@ function App() {
         {/* Client */}
         <Route path="/" element={<LayoutClient />}>
           <Route index element={<Home />} />
-          <Route path="detail" element={<Detail />} />
+          <Route path="detail/:id" element={<Detail />} />
           <Route path="cart" element={<Cart />} />
           <Route path="" element />
           <Route path="" element />

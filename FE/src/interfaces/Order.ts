@@ -4,22 +4,17 @@ export interface Customer {
   name: string;
   phone_number: string;
   address: string;
-  // created_at: string;
-  // updated_at: string;
-  // deleted_at?: string | null;
   email?: string;
 }
 
 export interface Product {
+  product_variants: ProductVariant[];
   id: number;
   category_id: number;
   name: string;
   description: string;
   price: number;
   thumbnail: string;
-  // created_at: string;
-  // updated_at: string;
-  // deleted_at?: string | null;
 }
 
 export interface ProductVariant {
@@ -32,9 +27,6 @@ export interface ProductVariant {
   sku: string;
   images: string[];
   product: Product;
-  // created_at: string;
-  // updated_at: string;
-  // deleted_at?: string | null;
 }
 
 export interface OrderItem {
@@ -56,7 +48,4 @@ export interface Order {
   customer_id: number;
   customer: Customer;
   order_items: OrderItem[];
-  // created_at: string;
-  // updated_at: string;
-  // deleted_at?: string | null;
 }
