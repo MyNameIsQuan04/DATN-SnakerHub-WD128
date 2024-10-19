@@ -155,11 +155,12 @@ class ProductController extends Controller
                         'stock' => $variant['stock'],
                         'sku' => $variant['sku'],
                     ];
-    
+
                     if (isset($variant['image'])) {
-                        $dataVariant['image'] = Storage::url($variant['image']->store('images', 'public'));
+                        $variantPath = $variant['image']->store('images', 'public');
+                        $dataVariant['image'] = Storage::url($variantPath);
                     }
-    
+
                     $product->productVariants()->create($dataVariant);
                 }
             }
@@ -200,7 +201,7 @@ class ProductController extends Controller
                     $productVariant->cartItems()->delete();
                 }
                 $product->galleries()->delete();
-                
+
                 $product->productVariants()->delete();
 
                 $product->comments()->delete();

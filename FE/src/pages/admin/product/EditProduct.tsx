@@ -66,47 +66,36 @@ const EditProduct = () => {
   }, []);
 
   const onSubmit = (values: any) => {
-    const formData = new FormData();
-    formData.append("name", values.name);
-    formData.append("price", values.price.toString());
-    formData.append("category_id", values.category_id); // Chuyển thành chuỗi
-    formData.append("description", values.description);
+    const params = new URLSearchParams();
 
-    // Chỉ thêm ảnh nếu có chọn ảnh
-    if (values.thumbnail) {
-      formData.append("thumbnail", values.thumbnail);
-    }
+    params.append("name", values.name);
+    params.append("price", values.price.toString());
+    params.append("category_id", values.category_id); // Chuyển thành chuỗi
+    params.append("description", values.description);
 
     // Xử lý galleries
     values.galleries.forEach((image: File, index: number) => {
-      formData.append(`galleries[${index}]`, image);
+      params.append(`galleries[${index}]`, image.name); // Lưu tên ảnh hoặc xử lý khác nếu cần
     });
 
     // Xử lý variants
     values.variants.forEach((variant: any, index: number) => {
-      formData.append(`variants[${index}][price]`, variant.price.toString()); // Chuyển thành chuỗi
-      formData.append(
-        `variants[${index}][size_id]`,
-        variant.size_id.toString()
-      ); // Chuyển thành chuỗi
-      formData.append(
+      params.append(`variants[${index}][price]`, variant.price.toString());
+      params.append(`variants[${index}][size_id]`, variant.size_id.toString());
+      params.append(
         `variants[${index}][color_id]`,
         variant.color_id.toString()
-      ); // Chuyển thành chuỗi
-      formData.append(`variants[${index}][stock]`, variant.stock.toString()); // Chuyển thành chuỗi
-      formData.append(`variants[${index}][sku]`, variant.sku);
+      );
+      params.append(`variants[${index}][stock]`, variant.stock.toString());
+      params.append(`variants[${index}][sku]`, variant.sku);
 
-      // Chỉ thêm ảnh biến thể nếu có chọn ảnh
       if (variant.image) {
-        formData.append(`variants[${index}][image]`, variant.image);
+        params.append(`variants[${index}][image]`, variant.image.name);
       }
     });
 
-    formData.forEach((value, key) => {
-      console.log(`Key: ${key}, Value: ${value}, Type: ${typeof value}`);
-    });
-
-    onUpdateProduct(formData, id);
+    console.log(params);
+    onUpdateProduct(params, id);
   };
 
   return (

@@ -49,7 +49,7 @@ const ListProduct = () => {
   const toggleVariations = (productId: number) => {
     setExpandedProduct(expandedProduct === productId ? null : productId);
   };
-
+  console.log(products);
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-semibold mb-6">Quản lý sản phẩm</h1>
