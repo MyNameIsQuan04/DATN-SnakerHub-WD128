@@ -1,5 +1,5 @@
 import api from "../configs/axios";
-import { FormProductData } from "../interfaces/Product";
+import { Product } from "../interfaces/Product";
 
 export const getProducts = async () => {
   try {
@@ -19,7 +19,7 @@ export const getProductById = async (id: number | string) => {
   }
 };
 
-export const addProduct = async (product: FormProductData) => {
+export const addProduct = async (product: Product) => {
   try {
     const { data } = await api.post("products", product);
     return data;
@@ -28,15 +28,20 @@ export const addProduct = async (product: FormProductData) => {
   }
 };
 
-export const updateProduct = async (
-  product: FormProductData,
-  id: number | string
-) => {
+export const updateProduct = async (formData: any, id: number) => {
   try {
-    const { data } = await api.put(`products/${id}`, product);
+    const { data } = await api.put(`products/${id}`, formData, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
     return data;
   } catch (error) {
-    console.log(error);
+    console.log("Error updating product:", error);
+    console.log("FormData contents:");
+    formData.forEach((value: any, key: any) => {
+      console.log(`Key: ${key}, Value: ${value}, Type: ${typeof value}`);
+    });
   }
 };
 

@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { FormProductData, Product } from "../interfaces/Product";
+import { Product } from "../interfaces/Product";
 import { useNavigate } from "react-router-dom";
 import {
   addProduct,
@@ -38,22 +38,21 @@ const ProductContext = ({ children }: Props) => {
     }
   };
 
-  const onAddProduct = async (data: FormProductData) => {
+  const onAddProduct = async (data: Product) => {
     try {
       const product = await addProduct(data);
-
+      alert("Thanh cong");
       setProducts([...products, product]);
       router("/admin/product");
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const onUpdateProduct = async (
-    data: FormProductData,
-    id: number | string
-  ) => {
+  const onUpdateProduct = async (data: Product, id: number) => {
     try {
+      console.log(data, id);
       const product = await updateProduct(data, id);
       alert("Thanh cong");
       const newProductsAfterUpdate = products.map((pro) =>
@@ -61,7 +60,9 @@ const ProductContext = ({ children }: Props) => {
       );
       setProducts(newProductsAfterUpdate);
       router("/admin/product");
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div>

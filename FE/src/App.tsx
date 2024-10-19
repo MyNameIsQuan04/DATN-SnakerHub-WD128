@@ -20,6 +20,7 @@ import Home from "./pages/client/home";
 import ProductContext from "./contexts/ProductContext";
 import ColorContext from "./contexts/ColorContext";
 import SizeContext from "./contexts/SizeContext";
+import EditProduct from "./pages/admin/product/EditProduct";
 
 function App() {
   return (
@@ -44,22 +45,22 @@ function App() {
         <Route
           path="/admin"
           element={
-            <SizeContext>
-              <ColorContext>
-                <ProductContext>
+            <ProductContext>
+              <SizeContext>
+                <ColorContext>
                   <CategoryContext>
                     <LayoutAdmin />
                   </CategoryContext>
-                </ProductContext>
-              </ColorContext>
-            </SizeContext>
+                </ColorContext>
+              </SizeContext>
+            </ProductContext>
           }
         >
           <Route index element={<Dashboard />} />
           <Route path="/admin/product" element={<ListProduct />} />
           <Route path="/admin/product-add" element={<AddProducts />} />
+          <Route path="/admin/product-edit/:id" element={<EditProduct />} />
           <Route path="/admin/category" element={<ListCategory />} />
-
           <Route path="/admin/category-add" element={<AddCategory />} />
           <Route path="/admin/category-edit/:id" element={<UpdateCategory />} />
           <Route path="/admin/color" element={<ListColor />} />

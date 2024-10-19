@@ -65,10 +65,7 @@ class CategoryProductSeeder extends Seeder
                     'price' => $faker->numberBetween(10000, 1000000),
                     'stock' => $faker->numberBetween(1, 100),
                     'sku' => 'SKU-' . strtoupper(uniqid()),
-                    'images' => json_encode([
-                        'https://via.placeholder.com/150',
-                        'https://via.placeholder.com/150'
-                    ]),
+                    'image' =>'https://via.placeholder.com/150',
                 ]);
 
                 // Tạo comment cho mỗi sản phẩm

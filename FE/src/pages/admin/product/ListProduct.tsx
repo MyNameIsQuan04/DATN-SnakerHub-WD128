@@ -2,13 +2,50 @@ import { Link } from "react-router-dom";
 import { IoMdSearch } from "react-icons/io";
 import React, { useContext, useState } from "react";
 import { ProductCT } from "../../../contexts/ProductContext";
-import { Product } from "../../../interfaces/Product";
+import { Product, product_variants } from "../../../interfaces/Product";
 
 const ListProduct = () => {
   const [expandedProduct, setExpandedProduct] = useState<number | null>(null);
 
-  const { products } = useContext(ProductCT);
-
+  const { products, onRemoveProduct } = useContext(ProductCT);
+  // const products = [
+  //   {
+  //     id: 1,
+  //     name: "Sản phẩm A",
+  //     price: 100000,
+  //     category: {
+  //       id: 1,
+  //       name: "Danh mục 1",
+  //     },
+  //     description: "adwdadw",
+  //     gallery: [
+  //       {
+  //         id: 1,
+  //         image_path: "https://via.placeholder.com/150",
+  //       },
+  //       {
+  //         id: 2,
+  //         image_path: "https://via.placeholder.com/150",
+  //       },
+  //     ],
+  //     thumbnail: "https://via.placeholder.com/150",
+  //     product_variants: [
+  //       {
+  //         color: {
+  //           id: 1,
+  //           name: "Đỏ",
+  //         },
+  //         size: {
+  //           id: 1,
+  //           name: "L",
+  //         },
+  //         price: 120000,
+  //         stock: 10,
+  //         image: "https://via.placeholder.com/150",
+  //       },
+  //     ],
+  //   },
+  // ];
   const toggleVariations = (productId: number) => {
     setExpandedProduct(expandedProduct === productId ? null : productId);
   };
@@ -98,7 +135,7 @@ const ListProduct = () => {
                     Chỉnh sửa
                   </Link>
                   <button
-                    onClick={() => alert("Xóa sản phẩm")}
+                    onClick={() => onRemoveProduct(product.id)}
                     className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded ml-2"
                   >
                     Xóa
@@ -118,38 +155,57 @@ const ListProduct = () => {
                           <th className="py-2 px-3 text-left">Kích cỡ</th>
                           <th className="py-2 px-3 text-left">Giá</th>
                           <th className="py-2 px-3 text-left">Số lượng</th>
+                          <th className="py-2 px-3 text-left">SKU</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {product.product_variants.map((variation, vIndex) => (
-                          <tr key={vIndex}>
-                            Lỗi
-                            {/* <td className="py-1 px-3 border-b">
-                              {variation.images.map((image, imgIndex) => (
+                        {product.product_variants.map(
+                          (variant, vIndex: number) => (
+                            <tr key={vIndex}>
+                              <td className="py-1 px-3 border-b">
                                 <img
-                                  key={imgIndex}
-                                  src={image}
-                                  alt={`Biến thể ${variation.color} ${variation.size}`}
-                                  className="w-12 h-12 object-cover rounded m-1"
+                                  src={variant.image}
+                                  alt={`Biến thể ${variant.color.name} - ${variant.size.name}`}
+                                  className="w-12 h-12 object-cover rounded"
                                 />
-                              ))}
-                            </td> */}
-                            <td className="py-1 px-3 border-b">
-                              {variation.color.name}
-                            </td>
-                            <td className="py-1 px-3 border-b">
-                              {variation.size.name}
-                            </td>
-                            <td className="py-1 px-3 border-b">
-                              {variation.price.toLocaleString()} VND
-                            </td>
-                            <td className="py-1 px-3 border-b">
-                              {variation.stock}
-                            </td>
-                          </tr>
-                        ))}
+                              </td>
+                              <td className="py-1 px-3 border-b">
+                                {variant.color.name}
+                              </td>
+                              <td className="py-1 px-3 border-b">
+                                {variant.size.name}
+                              </td>
+                              <td className="py-1 px-3 border-b">
+                                {variant.price.toLocaleString()} VND
+                              </td>
+                              <td className="py-1 px-3 border-b">
+                                {variant.stock}
+                              </td>
+                              <td className="py-1 px-3 border-b">
+                                {variant.sku}
+                              </td>
+                            </tr>
+                          )
+                        )}
                       </tbody>
                     </table>
+
+                    {/* Hiển thị gallery */}
+                    {product.galleries && product.galleries.length > 0 && (
+                      <div className="mt-4">
+                        <h3 className="font-semibold mb-2">Thư viện ảnh:</h3>
+                        <div className="flex gap-2">
+                          {product.galleries.map((image) => (
+                            <img
+                              key={image.id}
+                              src={image.image_path}
+                              alt="Hình ảnh sản phẩm"
+                              className="w-24 h-24 object-cover rounded"
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </td>
                 </tr>
               )}
