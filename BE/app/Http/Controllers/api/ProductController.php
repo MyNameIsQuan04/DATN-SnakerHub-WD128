@@ -140,11 +140,9 @@ class ProductController extends Controller
                             'stock' => $variant['stock'],
                             'sku' => $variant['sku'],
                         ];
-
-                        if (isset($variant['image']) && ($request->hasFile($variant['image']))) {
+                        if (isset($variant['image'])) {
                             $dataVariant['image'] = Storage::url($variant['image']->store('images', 'public'));
                         }
-
                         $productVariant->update($dataVariant);
                     }
                 } else {
@@ -157,13 +155,13 @@ class ProductController extends Controller
                     ];
     
                     if (isset($variant['image'])) {
-                        $dataVariant['image'] = Storage::url($variant['image']->store('images', 'public'));
+                        $variantPath = $variant['image']->store('images', 'public');
+                        $dataVariant['image'] = Storage::url($variantPath);
                     }
     
                     $product->productVariants()->create($dataVariant);
                 }
             }
-
             $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
             $categories = Category::query()->pluck('name', 'id')->all();
             $sizes = Size::all()->pluck('name', 'id');
@@ -171,7 +169,7 @@ class ProductController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Sản phẩm và các biến thể đã được tạo thành công!',
+                'message' => 'cập nhật thành công!',
                 'product' => $product,
                 'categories' => $categories,
                 'sizes' => $sizes,
