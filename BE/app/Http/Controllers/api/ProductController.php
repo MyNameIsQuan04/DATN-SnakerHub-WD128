@@ -103,6 +103,8 @@ class ProductController extends Controller
     {
         try {
             $validatedData = $request->validated();
+
+            // Cập nhật thông tin sản phẩm
             $dataProduct = [
                 'category_id' => $validatedData['category_id'],
                 'name' => $validatedData['name'],
@@ -110,61 +112,61 @@ class ProductController extends Controller
                 'price' => $validatedData['price'],
             ];
             if (isset($validatedData['thumbnail'])) {
-                $thumbnailPath = $validatedData['thumbnail']->store('images', 'public');
+                $thumbnailPath = Storage::put('images', $validatedData['thumbnail']);
                 $dataProduct['thumbnail'] = Storage::url($thumbnailPath);
             }
             $product->update($dataProduct);
 
+            // Cập nhật hoặc thêm mới gallery
             foreach ($validatedData['galleries'] ?? [] as $gallery) {
                 if (isset($gallery['id'])) {
-                    $gallery = $product->galleries()->where('id', $gallery['id'])->first();
-                    $gallery->update([
-                        'image_path' => Storage::url($gallery['image']->store('images', 'public')),
-                    ]);
+                    $existingGallery = $product->galleries()->where('id', $gallery['id'])->first();
+                    if ($existingGallery) {
+                        $existingGallery->update([
+                            'image_path' => Storage::url(Storage::put('images', $gallery['image'])),
+                        ]);
+                    }
                 } else {
-                    $image_path = Storage::url($gallery['image']->store('images', 'public'));
+                    $image_path = Storage::url(Storage::put('images', $gallery['image']));
                     $product->galleries()->create([
                         'image_path' => $image_path,
                     ]);
                 }
             }
 
+            // Lưu lại danh sách biến thể ID để giữ lại những biến thể được cập nhật
+            $variantIds = [];
+
             foreach ($validatedData['variants'] as $variant) {
+                $dataVariant = [
+                    'color_id' => $variant['color_id'],
+                    'size_id' => $variant['size_id'],
+                    'price' => isset($variant['price']) ? $variant['price'] : $product->price,
+                    'stock' => $variant['stock'],
+                    'sku' => $variant['sku'],
+                ];
+                if (isset($variant['image'])) {
+                    $dataVariant['image'] = Storage::url(Storage::put('images', $variant['image']));
+                }
+
                 if (isset($variant['id'])) {
-                    $productVariant = $product->productVariants()->where('id', $variant['id'])->first();
-                    if ($productVariant) {
-                        $dataVariant = [
-                            'color_id' => $variant['color_id'],
-                            'size_id' => $variant['size_id'],
-                            'price' => isset($variant['price']) ? $variant['price'] : $product->price,
-                            'stock' => $variant['stock'],
-                            'sku' => $variant['sku'],
-                        ];
-
-                        if (isset($variant['image']) && ($request->hasFile($variant['image']))) {
-                            $dataVariant['image'] = Storage::url($variant['image']->store('images', 'public'));
-                        }
-
-                        $productVariant->update($dataVariant);
+                    // Cập nhật biến thể nếu có ID
+                    $existingVariant = $product->productVariants()->where('id', $variant['id'])->first();
+                    if ($existingVariant) {
+                        $existingVariant->update($dataVariant);
+                        $variantIds[] = $existingVariant->id; // Lưu ID biến thể đã cập nhật
                     }
                 } else {
-                    $dataVariant = [
-                        'color_id' => $variant['color_id'],
-                        'size_id' => $variant['size_id'],
-                        'price' => isset($variant['price']) ? $variant['price'] : $product->price,
-                        'stock' => $variant['stock'],
-                        'sku' => $variant['sku'],
-                    ];
-
-                    if (isset($variant['image'])) {
-                        $variantPath = $variant['image']->store('images', 'public');
-                        $dataVariant['image'] = Storage::url($variantPath);
-                    }
-
-                    $product->productVariants()->create($dataVariant);
+                    // Tạo mới biến thể nếu không có ID
+                    $newVariant = $product->productVariants()->create($dataVariant);
+                    $variantIds[] = $newVariant->id; // Lưu ID biến thể mới
                 }
             }
 
+            // Xóa các biến thể không có trong danh sách cập nhật
+            $product->productVariants()->whereNotIn('id', $variantIds)->delete();
+
+            // Load lại các thông tin liên quan để trả về JSON response
             $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
             $categories = Category::query()->pluck('name', 'id')->all();
             $sizes = Size::all()->pluck('name', 'id');
@@ -172,7 +174,7 @@ class ProductController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Sản phẩm và các biến thể đã được tạo thành công!',
+                'message' => 'Cập nhật thành công!',
                 'product' => $product,
                 'categories' => $categories,
                 'sizes' => $sizes,
@@ -186,6 +188,7 @@ class ProductController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * Remove the specified resource from storage.

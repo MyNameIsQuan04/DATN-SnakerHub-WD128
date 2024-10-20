@@ -32,16 +32,13 @@ export const updateProduct = async (formData: any, id: number) => {
   try {
     const { data } = await api.put(`products/${id}`, formData, {
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
       },
     });
     return data;
   } catch (error) {
     console.log("Error updating product:", error);
-    console.log("FormData contents:");
-    formData.forEach((value: any, key: any) => {
-      console.log(`Key: ${key}, Value: ${value}, Type: ${typeof value}`);
-    });
+    console.log("FormData contents:", formData);
   }
 };
 

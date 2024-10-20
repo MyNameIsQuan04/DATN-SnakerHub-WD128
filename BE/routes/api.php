@@ -25,13 +25,11 @@ use App\Http\Controllers\apiMember\OrderController as ApiMemberOrderController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
 Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::post('login', [AuthController::class, 'login']);
 
 Route::apiResource('sizes', SizeApiController::class);
 Route::apiResource('colors', ColorApiController::class);
@@ -48,3 +46,11 @@ foreach ($crud as $key => $controller) {
 }
 
 Route::apiResource('client/orders', ApiMemberOrderController::class);
+
+Route::group(['prefix' => 'auth'], function () {
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::get('me', [AuthController::class, 'me'])->middleware('auth:api');
+});

@@ -66,36 +66,23 @@ const EditProduct = () => {
   }, []);
 
   const onSubmit = (values: any) => {
-    const params = new URLSearchParams();
+    const payload = {
+      name: values.name,
+      price: values.price,
+      category_id: values.category_id,
+      description: values.description || "",
+      galleries: values.galleries.map((image: File) => image.name), // Giả sử bạn đã lưu URL hoặc base64
+      variants: values.variants.map((variant: any) => ({
+        price: variant.price,
+        size_id: variant.size_id,
+        color_id: variant.color_id,
+        stock: variant.stock,
+        sku: variant.sku,
+        image: variant.image ? variant.image.name : "default_image.png", // Lưu lại URL hoặc base64 nếu cần
+      })),
+    };
 
-    params.append("name", values.name);
-    params.append("price", values.price.toString());
-    params.append("category_id", values.category_id); // Chuyển thành chuỗi
-    params.append("description", values.description);
-
-    // Xử lý galleries
-    values.galleries.forEach((image: File, index: number) => {
-      params.append(`galleries[${index}]`, image.name); // Lưu tên ảnh hoặc xử lý khác nếu cần
-    });
-
-    // Xử lý variants
-    values.variants.forEach((variant: any, index: number) => {
-      params.append(`variants[${index}][price]`, variant.price.toString());
-      params.append(`variants[${index}][size_id]`, variant.size_id.toString());
-      params.append(
-        `variants[${index}][color_id]`,
-        variant.color_id.toString()
-      );
-      params.append(`variants[${index}][stock]`, variant.stock.toString());
-      params.append(`variants[${index}][sku]`, variant.sku);
-
-      if (variant.image) {
-        params.append(`variants[${index}][image]`, variant.image.name);
-      }
-    });
-
-    console.log(params);
-    onUpdateProduct(params, id);
+    onUpdateProduct(payload, id);
   };
 
   return (

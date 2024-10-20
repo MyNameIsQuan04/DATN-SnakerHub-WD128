@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Log; // Thêm dòng này để import Log
+
 class StoreProductRequest extends FormRequest
 {
     /**
@@ -13,11 +13,7 @@ class StoreProductRequest extends FormRequest
     {
         return true;
     }
-    protected function prepareForValidation()
-    {
-        // Ghi log toàn bộ dữ liệu request
-        Log::info($this->all());
-    }
+
     /**
      * Get the validation rules that apply to the request.
      *
