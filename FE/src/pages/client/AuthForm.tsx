@@ -28,12 +28,13 @@ const AuthForm = ({ isLogin }: Props) => {
         const res = await instance.post(`/auth/login`, data);
         contextLogin(res.data.accessToken, res.data.user);
         toast.success("Đăng nhập thành công!");
+        alert("Đăng nhập thành công");
         nav("/");
       } else {
         await instance.post(`/auth/register`, {
           name: data.name,
           email: data.email,
-          phone: data.phone,
+          phone_number: data.phone_number,
           address: data.address,
           password: data.password,
           // confirmPassword: data.confirmPassword,
@@ -97,11 +98,13 @@ const AuthForm = ({ isLogin }: Props) => {
             <input
               type="text"
               className="form-input mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              {...register("phone", { required: "Thông tin bắt buộc!!!" })}
+              {...register("phone_number", {
+                required: "Thông tin bắt buộc!!!",
+              })}
             />
-            {errors.phone && (
+            {errors.phone_number && (
               <span className="text-red-500 text-sm mt-1">
-                {errors.phone.message}
+                {errors.phone_number.message}
               </span>
             )}
           </div>

@@ -13,7 +13,7 @@ export const loginSchema = z.object({
 export const registerSchema = z.object({
   name: z.string().min(2, { message: "Tên phải có ít nhất 2 ký tự" }),
   email: z.string().email(),
-  phone: z
+  phone_number: z
     .string()
     .min(10, { message: "Số điện thoại phải có ít nhất 10 ký tự" }),
   address: z.string().min(5, { message: "Địa chỉ phải có ít nhất 5 ký tự" }),

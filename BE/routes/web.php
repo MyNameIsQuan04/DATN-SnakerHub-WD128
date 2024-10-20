@@ -36,7 +36,9 @@ Route::prefix('shop')->group(function () {
     Route::get('/', [ClientController::class, 'index']);
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart-destroy/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+    Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
 });
 
 
@@ -69,12 +71,3 @@ Route::middleware(['auth','type:admin'])->group(function(){
     
     });
 });
-
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

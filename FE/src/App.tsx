@@ -18,7 +18,6 @@ import CategoryContext from "./contexts/CategoryContext";
 import AddCategory from "./pages/admin/category/AddCategory";
 import ListCategory from "./pages/admin/category/ListCategory";
 import AuthForm from "./pages/client/AuthForm";
-import PrivateAdmin from "./pages/PrivateAdmin";
 
 function App() {
   return (
@@ -37,13 +36,9 @@ function App() {
         <Route
           path="/admin"
           element={
-            <PrivateAdmin
-              element={
-                <CategoryContext>
-                  <LayoutAdmin />
-                </CategoryContext>
-              }
-            />
+            <CategoryContext>
+              <LayoutAdmin />
+            </CategoryContext>
           }
         >
           <Route index element={<Dashboard />} />

@@ -14,8 +14,8 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.5",
-        "tymon/jwt-auth": "^2.1",
-        "yoeunes/toastr": "^2.3"
+        "php-flasher/flasher-toastr-laravel": "^1.15",
+        "tymon/jwt-auth": "^2.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

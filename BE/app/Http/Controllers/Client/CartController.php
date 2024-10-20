@@ -12,24 +12,32 @@ class CartController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
 {
     // Sử dụng LEFT JOIN để đảm bảo lấy được tất cả các sản phẩm, kể cả khi thiếu màu hoặc kích thước
     $cartItems = Cart_Item::leftJoin('product__variants', 'cart__items.product__variant_id', '=', 'product__variants.id')
         ->leftJoin('products', 'product__variants.product_id', '=', 'products.id')
-        ->leftJoin('colors', 'product__variants.color_id', '=', 'colors.id') // Kết nối với bảng colors
-        ->leftJoin('sizes', 'product__variants.size_id', '=', 'sizes.id') // Kết nối với bảng sizes
+        ->leftJoin('colors', 'product__variants.color_id', '=', 'colors.id')
+        ->leftJoin('sizes', 'product__variants.size_id', '=', 'sizes.id')
         ->select(
             'cart__items.id',
-            'products.name as product_name', // Tên sản phẩm
-            'colors.name as name_color', // Tên màu
-            'sizes.name as name_size', // Tên kích thước
-            'product__variants.price', // Giá biến thể
-            'cart__items.quality' // Số lượng trong giỏ hàng
+            'products.name as product_name',
+            'colors.name as name_color',
+            'sizes.name as name_size',
+            'product__variants.price',
+            'cart__items.quantity'
         )
         ->get();
 
-    // Truyền dữ liệu vào view
+    // Kiểm tra nếu yêu cầu là AJAX hoặc API thì trả về JSON
+    if ($request->wantsJson() || $request->is('api/*')) {
+        return response()->json([
+            'success' => true,
+            'data' => $cartItems,
+        ]);
+    }
+
+    // Truyền dữ liệu vào view cho giao diện người dùng
     return view('client.cart.index', compact('cartItems'));
 }
 
@@ -75,6 +83,11 @@ class CartController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $request->validate([
+            'id' => 'required|integer|exists:cart_items,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
         if ($request->id && $request->quantity) {
             $cart = session()->get('cart');
 
@@ -111,9 +124,42 @@ class CartController extends Controller
      {
          $total = 0;
          foreach ($cart as $item) {
-             $total += $item['price'] * $item['quantity'];
+             $total += $item['price'] * $item['quanlity'];
          }
  
          return $total;
      }
+
+// Phương thức để cập nhật số lượng sản phẩm trong giỏ hàng
+public function updateQuantity(Request $request)
+{
+    // Validate dữ liệu đầu vào
+    $validated = $request->validate([
+        'id' => 'required|exists:cart__items,id', // Kiểm tra ID sản phẩm có tồn tại trong giỏ hàng hay không
+        'quantity' => 'required|integer|min:1',  // Số lượng tối thiểu là 1
+    ]);
+
+    // Tìm sản phẩm trong bảng cart_items dựa theo ID
+    $cartItem = Cart_Item::find($validated['id']);
+
+    // Kiểm tra xem sản phẩm có tồn tại không
+    if ($cartItem) {
+        // Cập nhật số lượng của sản phẩm trong giỏ hàng
+        $cartItem->quantity = $validated['quantity'];
+        $cartItem->save(); // Lưu lại thay đổi vào cơ sở dữ liệu
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Số lượng sản phẩm đã được cập nhật thành công',
+            'new_total_price' => $cartItem->quanlity * $cartItem->price, // Tính lại tổng giá cho sản phẩm này
+        ]);
+    }
+
+    // Nếu không tìm thấy sản phẩm trong giỏ hàng
+    return response()->json([
+        'success' => false,
+        'message' => 'Không tìm thấy sản phẩm trong giỏ hàng',
+    ], 404);
+}
+
 }
