@@ -25,6 +25,7 @@ use App\Http\Controllers\apiMember\OrderController as ApiMemberOrderController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

@@ -1,6 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Order } from "../../../interfaces/Order";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AdminOrder = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -9,51 +11,46 @@ const AdminOrder = () => {
     fetchOrders();
   }, []);
 
-  // Hàm lấy dữ liệu đơn hàng từ API
   const fetchOrders = async () => {
     try {
       const { data } = await axios.get("http://localhost:8000/api/orders");
       setOrders(data);
-      console.log(data);
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
   };
 
-  // Hàm cập nhật trạng thái đơn hàng
   const handleUpdateStatus = async (orderId: number, newStatus: string) => {
     // Cập nhật trạng thái ngay trên giao diện
     const updatedOrders = orders.map((order) =>
       order.id === orderId ? { ...order, status: newStatus } : order
     );
-    setOrders(updatedOrders); // Cập nhật state ngay lập tức
+    setOrders(updatedOrders);
 
     try {
-      // Gửi yêu cầu cập nhật trạng thái đơn hàng đến API
-      const response = await axios.put(
+      const response = await axios.patch(
         `http://localhost:8000/api/orders/${orderId}`,
-        {
-          status: newStatus,
-        }
+        { status: newStatus }
       );
-
-      if (response.status === 200) {
-        console.log("Cập nhật trạng thái thành công");
+      if (response) {
+        toast.success("Cập nhật trạng thái thành công!");
       }
     } catch (error) {
       console.error("Error updating order status:", error);
+
+      setOrders(orders); // Quay về trạng thái trước đó
+      toast.success("Cập nhật trạng thái thất bại !");
     }
   };
 
   return (
     <div className="container mx-auto p-4">
-      {/* Header với phần tìm kiếm, đặt cố định */}
       <div className="sticky top-0 bg-white z-10 p-4">
         <h1 className="text-2xl font-bold mb-4">Quản lý đơn hàng</h1>
         <div className="mb-4">
           <input
             type="text"
-            placeholder="Search by Email...."
+            placeholder="Search ...."
             className="border border-gray-300 rounded-lg py-2 px-4 w-1/2 md:w-1/3 lg:w-1/4"
           />
         </div>
@@ -85,9 +82,27 @@ const AdminOrder = () => {
                 <td className="py-2 px-4 border-b">{item.customer.address}</td>
                 <td className="py-2 px-4 border-b">
                   {item.order_items.map((product) => (
-                    <div key={product.id}>
-                      Sản phẩm ID: {product.product__variant_id}, Số lượng:{" "}
-                      {product.quantity}, Giá: {product.price} VND
+                    <div key={product.id} className="mb-2">
+                      <div>
+                        <strong>Sản phẩm:</strong>{" "}
+                        {product.product_variant.product.name}
+                      </div>
+                      <div>
+                        <strong>Số lượng:</strong> {product.quantity}
+                      </div>
+                      <div>
+                        <strong>Giá:</strong> {product.price} VND
+                      </div>
+                      <div>
+                        <strong>SKU:</strong> {product.product_variant.sku}
+                      </div>
+                      <div>
+                        <img
+                          src={product.product_variant.images[0]}
+                          alt="Product image"
+                          className="w-16 h-16 object-cover"
+                        />
+                      </div>
                     </div>
                   ))}
                 </td>
@@ -102,11 +117,12 @@ const AdminOrder = () => {
                     className="border border-gray-300 rounded px-2 py-1"
                   >
                     <option value="chờ xử lý">Chờ xử lý</option>
-                    <option value="đang giao hàng">Đang giao hàng</option>
+                    <option value="đang vận chuyển">Đang vận chuyển</option>
                     <option value="đã giao hàng">Đã giao hàng</option>
                     <option value="đã hủy">Đã hủy</option>
                   </select>
                 </td>
+                <ToastContainer />
                 <td className="py-2 px-4 border-b">
                   <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300">
                     Xử lý
