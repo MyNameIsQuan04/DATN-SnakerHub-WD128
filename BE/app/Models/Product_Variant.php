@@ -20,9 +20,7 @@ class Product_Variant extends Model
         'sku',
         'images',
     ];
-    public function product(){
-        return $this->belongsTo(Product::class);
-    }
+    
     public function size(){
         return $this->belongsTo(Size::class);
     }
@@ -35,4 +33,9 @@ class Product_Variant extends Model
     public function orderItems(){
         return $this->hasMany(Order_Item::class);
     }
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+    
 }

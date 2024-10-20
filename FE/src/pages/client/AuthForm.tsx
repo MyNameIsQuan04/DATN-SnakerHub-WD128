@@ -25,18 +25,18 @@ const AuthForm = ({ isLogin }: Props) => {
   const onSubmit = async (data: IUser) => {
     try {
       if (isLogin) {
-        const res = await instance.post(`/login`, data);
+        const res = await instance.post(`/auth/login`, data);
         contextLogin(res.data.accessToken, res.data.user);
         toast.success("Đăng nhập thành công!");
         nav("/");
       } else {
-        await instance.post(`/register`, {
+        await instance.post(`/auth/register`, {
           name: data.name,
           email: data.email,
           phone: data.phone,
           address: data.address,
           password: data.password,
-          confirmPassword: data.confirmPassword,
+          // confirmPassword: data.confirmPassword,
         });
         toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
         nav("/login");
@@ -140,7 +140,7 @@ const AuthForm = ({ isLogin }: Props) => {
             </span>
           )}
         </div>
-
+        {/* 
         {!isLogin && (
           <div className="mb-4">
             <label htmlFor="confirmPassword" className="block text-gray-700">
@@ -160,7 +160,7 @@ const AuthForm = ({ isLogin }: Props) => {
             )}
           </div>
         )}
-
+*/}
         <div className="mb-4 flex items-center justify-between">
           <button
             type="submit"
