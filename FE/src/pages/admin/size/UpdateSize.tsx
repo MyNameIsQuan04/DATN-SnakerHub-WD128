@@ -1,18 +1,29 @@
 import axios from "axios";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Size } from "../../../interfaces/Size";
 import { SizeCT } from "../../../contexts/SizeContext";
 import api from "../../../configs/axios";
+import { getSizeById } from "../../../services/size";
 
-const AddSize = () => {
+const UpdateSize = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<Size>();
   const { onAddSize } = useContext(SizeCT);
+  const params = useParams();
+  useEffect(() => {
+    (async () => {
+      const category = await getSizeById(params?.id as number | string);
+      reset({
+        name: category.name,
+      });
+    })();
+  }, []);
   const onSubmit = async (data: Size) => {
     onAddSize(data);
   };
@@ -70,4 +81,4 @@ const AddSize = () => {
   );
 };
 
-export default AddSize;
+export default UpdateSize;

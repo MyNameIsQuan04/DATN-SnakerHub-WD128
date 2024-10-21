@@ -4,7 +4,6 @@ import Dashboard from "./pages/admin/dashboard";
 import NotFound from "./pages/NotFound";
 import LayoutAdmin from "./components/layout/layoutAdmin/layoutAdmin";
 import Detail from "./pages/client/detail";
-
 import UpdateCategory from "./pages/admin/category/UpdateCategory";
 import ListProduct from "./pages/admin/product/ListProduct";
 import AddProducts from "./pages/admin/product/AddProducts";
@@ -24,6 +23,9 @@ import EditProduct from "./pages/admin/product/EditProduct";
 import Checkout from "./pages/client/checkout";
 import Cart from "./pages/client/cart";
 import AuthForm from "./pages/client/AuthForm";
+import UpdateColor from "./pages/admin/color/UpdateColor";
+import AddSize from "./pages/admin/size/AddSize";
+import UpdateSize from "./pages/admin/size/UpdateSize";
 
 function App() {
   return (
@@ -72,9 +74,11 @@ function App() {
           <Route path="/admin/category-edit/:id" element={<UpdateCategory />} />
           <Route path="/admin/color" element={<ListColor />} />
           <Route path="/admin/color-add" element={<AddColor />} />
+          <Route path="/admin/color-edit/:id" element={<UpdateColor />} />
           <Route path="/admin/size" element={<ListSize />} />
-          {/* <Route path="/admin/size-add" element={<AddSize />} /> */}
-
+          <Route path="/admin/size-add" element={<AddSize />} />
+          <Route path="/admin/size-edit/:id" element={<UpdateSize />} />
+          <Route path="/admin/size-edit/:id" element={<UpdateColor />} />
           <Route path="/admin/order" element={<AdminOrder />} />
           <Route path="/admin/user" element={<ListUser />} />
           <Route path="" element />

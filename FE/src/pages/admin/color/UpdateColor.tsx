@@ -1,25 +1,34 @@
-import axios from "axios";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import { Size } from "../../../interfaces/Size";
-import { SizeCT } from "../../../contexts/SizeContext";
-import api from "../../../configs/axios";
+import { Link, useParams } from "react-router-dom";
+import { ColorCT } from "../../../contexts/ColorContext";
+import { Color } from "../../../interfaces/Color";
+import { getColorById } from "../../../services/color";
 
-const AddSize = () => {
+const UpdateColor = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm<Size>();
-  const { onAddSize } = useContext(SizeCT);
-  const onSubmit = async (data: Size) => {
-    onAddSize(data);
+  } = useForm<Color>();
+  const params = useParams();
+  useEffect(() => {
+    (async () => {
+      const category = await getColorById(params?.id as number | string);
+      reset({
+        name: category.name,
+      });
+    })();
+  }, []);
+  const { onUpdateColor } = useContext(ColorCT);
+  const onSubmit = async (data: Color) => {
+    onUpdateColor(data);
   };
   return (
     <div>
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-semibold mb-6">Thêm kích thước</h1>
+        <h1 className="text-3xl font-semibold mb-6">Thêm màu sắc</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Tên sản phẩm */}
           <div className="mb-4">
@@ -27,24 +36,16 @@ const AddSize = () => {
               className="block text-gray-700 font-bold mb-2"
               htmlFor="name"
             >
-              Tên kích thước
+              Tên kích cỡ
             </label>
             <input
+              {...register("name", {
+                required: "Không được để trống",
+              })}
               type="text"
               id="name"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              placeholder="Nhập tên sản phẩm"
-              {...register("name", {
-                required: "Vui lòng nhập kích thước",
-                pattern: {
-                  value: /^\d*$/,
-                  message: "Phải là số",
-                },
-                min: {
-                  value: 36,
-                  message: "Kích thước nhỏ nhất là 36",
-                },
-              })}
+              placeholder="Nhập tên danh mục"
             />
             {errors.name && (
               <div className="text-red-500">{errors.name.message}</div>
@@ -54,9 +55,9 @@ const AddSize = () => {
             type="submit"
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
           >
-            Thêm kích thước
+            Thêm màu sắc
           </button>
-          <Link to="/admin/size">
+          <Link to="/admin/color">
             <button
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg ml-2"
@@ -70,4 +71,4 @@ const AddSize = () => {
   );
 };
 
-export default AddSize;
+export default UpdateColor;
