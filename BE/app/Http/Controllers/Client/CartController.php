@@ -48,27 +48,35 @@ class CartController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $product = Product::find($request->id);
-        $cart = session()->get('cart', []);
+{
+    $request->validate([
+        'id' => 'required|integer|exists:products,id', // Kiểm tra xem sản phẩm có tồn tại không
+    ]);
 
-        // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
-        if (isset($cart[$product->id])) {
-            $cart[$product->id]['quantity']++;
-        } else {
-            // Thêm sản phẩm mới vào giỏ hàng
-            $cart[$product->id] = [
-                "name" => $product->name,
-                "quality" => 1,
-                "price" => $product->price,
-                "image" => $product->image,
-            ];
-        }
+    $product = Product::find($request->id);
+    $cart = session()->get('cart', []);
 
-        session()->put('cart', $cart);
-
-        return redirect()->back()->with('success', 'Sản phẩm đã được thêm vào giỏ hàng!');
+    // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
+    if (isset($cart[$product->id])) {
+        $cart[$product->id]['quantity']++;
+    } else {
+        // Thêm sản phẩm mới vào giỏ hàng
+        $cart[$product->id] = [
+            "name" => $product->name,
+            "quantity" => 1, // Đổi từ quality thành quantity
+            "price" => $product->price,
+            "image" => $product->image,
+        ];
     }
+
+    session()->put('cart', $cart);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Sản phẩm đã được thêm vào giỏ hàng!',
+        'cart' => $cart // Bạn có thể trả về giỏ hàng để kiểm tra nếu cần
+    ], 201); // Mã 201 để chỉ ra rằng một tài nguyên mới đã được tạo
+}   
 
     /**
      * Display the specified resource.
