@@ -35,7 +35,7 @@ export interface OrderItem {
   product__variant_id: number;
   quantity: number;
   price: number;
-  product_variant: ProductVariant; 
+  product_variant: ProductVariant;
   // created_at: string;
   // updated_at: string;
   // deleted_at?: string | null;

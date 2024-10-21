@@ -65,6 +65,8 @@ function App() {
           <Route path="/admin/category" element={<ListCategory />} />
           <Route path="/admin/category-add" element={<AddCategory />} />
           <Route path="/admin/category-edit/:id" element={<UpdateCategory />} />
+          <Route path="/admin/category-add" element={<AddCategory />} />
+          <Route path="/admin/category-edit/:id" element={<UpdateCategory />} />
           <Route path="/admin/color" element={<ListColor />} />
           <Route path="/admin/color-add" element={<AddColor />} />
           <Route path="/admin/size" element={<ListSize />} />

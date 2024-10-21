@@ -71,4 +71,3 @@ Route::middleware(['auth','type:admin'])->group(function(){
     
     });
 });
-
