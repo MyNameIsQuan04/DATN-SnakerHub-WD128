@@ -29,6 +29,22 @@ const Detail = () => {
     }
   }, [id]);
 
+  const addToCart = (product: Product) => {
+    let cart = localStorage.getItem("cart");
+    let cartItems = cart ? JSON.parse(cart) : [];
+
+    const existingItem = cartItems.find((item: any) => item.id === product.id);
+
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cartItems.push({ ...product, quantity: 1 });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+    alert("Sản phẩm đã được thêm vào giỏ hàng!");
+  };
+
   if (!product) {
     return <div>Loading...</div>;
   }
@@ -169,7 +185,10 @@ const Detail = () => {
               <button className="bg-red-500 text-white px-6 py-2 text-sm rounded-md shadow-md hover:bg-red-600 transition">
                 MUA NGAY
               </button>
-              <button className="border border-red-500 text-red-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-red-50 transition">
+              <button
+                onClick={() => addToCart(product)}
+                className="border border-red-500 text-red-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-red-50 transition"
+              >
                 THÊM VÀO GIỎ HÀNG
               </button>
             </div>
@@ -196,28 +215,23 @@ const Detail = () => {
               </div>
               <div className="flex flex-col items-center text-sm text-gray-600">
                 <MdOutlineLocalShipping className="w-[30px] h-auto" />
-                <p>Miễn phí vận chuyển toàn quốc
-                cho đơn hàng từ 150k</p>
+                <p>Miễn phí vận chuyển toàn quốc cho đơn hàng từ 150k</p>
               </div>
               <div className="flex flex-col items-center text-sm text-gray-600">
                 <TbTruckReturn className="w-[30px] h-auto" />
-                <p>Đổi trả dễ dàng
-                (trong vòng 7 ngày nếu lỗi nhà sản xuất)</p>
+                <p>Đổi trả dễ dàng (trong vòng 7 ngày nếu lỗi nhà sản xuất)</p>
               </div>
               <div className="flex flex-col items-center text-sm text-gray-600">
                 <FaPhoneVolume className="w-[30px] h-auto" />
-                <p>Hotline 1900.633.349
-                hỗ trợ từ 8h30-21h30</p>
+                <p>Hotline 1900.633.349 hỗ trợ từ 8h30-21h30</p>
               </div>
               <div className="flex flex-col items-center text-sm text-gray-600">
                 <AiOutlineBank className="w-[30px] h-auto" />
-                <p>Giao hàng tận nơi,
-                nhận hàng xong thanh toán</p>
+                <p>Giao hàng tận nơi, nhận hàng xong thanh toán</p>
               </div>
               <div className="flex flex-col items-center text-sm text-gray-600">
                 <GrAnnounce className="w-[30px] h-auto" />
-                <p>Ưu đãi tích điểm và
-                hưởng quyền lợi thành viên từ MWC</p>
+                <p>Ưu đãi tích điểm và hưởng quyền lợi thành viên từ MWC</p>
               </div>
             </div>
           </div>

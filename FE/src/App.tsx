@@ -4,7 +4,7 @@ import Dashboard from "./pages/admin/dashboard";
 import NotFound from "./pages/NotFound";
 import LayoutAdmin from "./components/layout/layoutAdmin/layoutAdmin";
 import Detail from "./pages/client/detail";
-import Cart from "./pages/client/cart";
+
 import UpdateCategory from "./pages/admin/category/UpdateCategory";
 import ListProduct from "./pages/admin/product/ListProduct";
 import AddProducts from "./pages/admin/product/AddProducts";
@@ -21,6 +21,8 @@ import ProductContext from "./contexts/ProductContext";
 import ColorContext from "./contexts/ColorContext";
 import SizeContext from "./contexts/SizeContext";
 import EditProduct from "./pages/admin/product/EditProduct";
+import Checkout from "./pages/client/checkout";
+import Cart from "./pages/client/cart";
 
 function App() {
   return (
@@ -36,8 +38,8 @@ function App() {
         >
           <Route index element={<Home />} />
           <Route path="detail/:id" element={<Detail />} />
+          <Route path="checkout" element={<Checkout />} />
           <Route path="cart" element={<Cart />} />
-          <Route path="" element />
           <Route path="" element />
           <Route path="" element />
         </Route>
