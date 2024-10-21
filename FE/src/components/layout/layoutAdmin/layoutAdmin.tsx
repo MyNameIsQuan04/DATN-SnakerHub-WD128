@@ -8,8 +8,7 @@ import {
 } from "react-icons/fa";
 import { IoColorPaletteOutline } from "react-icons/io5";
 import { CgSize } from "react-icons/cg";
-import { IoColorPaletteOutline } from "react-icons/io5";
-import { CgSize } from "react-icons/cg";
+
 import { Outlet, Link } from "react-router-dom";
 // import { useState } from "react";
 // import { useState } from "react";

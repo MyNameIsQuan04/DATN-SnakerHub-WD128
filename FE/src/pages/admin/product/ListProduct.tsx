@@ -123,7 +123,7 @@ const ListProduct = () => {
                 </td>
 
                 <td className="py-3 px-4 border-b text-left">
-                  {product.category.name}
+                  {product.category?.name}
                 </td>
 
                 {/* Nút quản lý */}

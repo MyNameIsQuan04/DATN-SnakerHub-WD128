@@ -26,7 +26,7 @@ const AuthForm = ({ isLogin }: Props) => {
     try {
       if (isLogin) {
         const res = await instance.post(`/auth/login`, data);
-        contextLogin(res.data.accessToken, res.data.user);
+        contextLogin(res.data.access_token, res.data.user);
         toast.success("Đăng nhập thành công!");
         alert("Đăng nhập thành công");
         nav("/");

@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const nav = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("access_token");
     if (token) {
       const user = JSON.parse(localStorage.getItem("user") || "null");
       setUser(user);
@@ -47,14 +47,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = (token: string, user: IUser) => {
-    localStorage.setItem("accessToken", token);
+    localStorage.setItem("access_token", token);
     localStorage.setItem("user", JSON.stringify(user));
     setUser(user);
     nav(user.type === "admin" ? "/admin" : "/");
   };
 
   const logout = () => {
-    localStorage.removeItem("accessToken");
+    localStorage.removeItem("access_token");
     localStorage.removeItem("user");
     setUser(null);
     nav("/login");

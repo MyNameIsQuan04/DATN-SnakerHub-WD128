@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Product } from "../../interfaces/Order";
+
 import { useParams } from "react-router-dom";
 import { MdOutlineLocalShipping } from "react-icons/md";
 import { FaPhoneVolume } from "react-icons/fa6";
 import { TbTruckReturn } from "react-icons/tb";
 import { GrAnnounce } from "react-icons/gr";
 import { AiOutlineBank } from "react-icons/ai";
+import { Product } from "../../interfaces/Product";
 
 const Detail = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const { id } = useParams<{ id: string }>();
-
+  const [selectedColor, setSelectedColor] = useState<number | null>(null);
+  const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const fetchProduct = async (productId: string) => {
     try {
       const response = await axios.get<Product>(
@@ -29,26 +31,58 @@ const Detail = () => {
     }
   }, [id]);
 
-  const addToCart = (product: Product) => {
-    let cart = localStorage.getItem("cart");
-    let cartItems = cart ? JSON.parse(cart) : [];
-
-    const existingItem = cartItems.find((item: any) => item.id === product.id);
-
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      cartItems.push({ ...product, quantity: 1 });
+  const addToCart = async (
+    product: Product,
+    selectedColor: number | null,
+    selectedSize: number | null
+  ) => {
+    if (!selectedColor || !selectedSize) {
+      alert("Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!");
+      return;
     }
 
-    localStorage.setItem("cart", JSON.stringify(cartItems));
-    alert("Sản phẩm đã được thêm vào giỏ hàng!");
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/shop/cart/store",
+        {
+          name: product.name,
+          id: product.id,
+          color_id: selectedColor,
+          size_id: selectedSize,
+          quantity: 1,
+        }
+      );
+
+      alert(response.data.success);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
   };
 
   if (!product) {
     return <div>Loading...</div>;
   }
+  const uniqueColors = Array.from(
+    new Map(
+      product.product_variants.map((variant) => [
+        variant.color.id,
+        variant.color,
+      ])
+    ).values()
+  );
 
+  const uniqueSizes = Array.from(
+    new Map(
+      product.product_variants.map((variant) => [variant.size.id, variant.size])
+    ).values()
+  );
+  const handleSelectColor = (colorId: number) => {
+    setSelectedColor(colorId);
+  };
+
+  const handleSelectSize = (sizeId: number) => {
+    setSelectedSize(sizeId);
+  };
   return (
     <div className="mt-[90px]">
       {/* Product details */}
@@ -118,15 +152,19 @@ const Detail = () => {
             <p className="text-sm mt-4 font-semibold">SALE THỂ THAO 149K</p>
 
             {/* Color Variants */}
+            {/* Color Variants */}
             <div className="flex mt-6 items-center">
-              <p className="text-sm font-semibold mr-8">KÍCH THƯỚC:</p>
+              <p className="text-sm font-semibold mr-8">MÀU SẮC:</p>
               <div className="flex gap-4">
-                {product.product_variants.map((variant) => (
+                {uniqueColors.map((color) => (
                   <p
-                    key={variant.id}
-                    className="cursor-pointer px-4 py-2 border border-gray-300 rounded-md hover:bg-red-500 hover:text-white"
+                    key={color.id}
+                    onClick={() => handleSelectColor(color.id)}
+                    className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md hover:bg-red-500 hover:text-white ${
+                      selectedColor === color.id ? "border-red-500" : ""
+                    }`}
                   >
-                    {variant.color.name}
+                    {color.name}
                   </p>
                 ))}
               </div>
@@ -136,12 +174,15 @@ const Detail = () => {
             <div className="flex mt-6 items-center">
               <p className="text-sm font-semibold mr-8">KÍCH THƯỚC:</p>
               <div className="flex gap-4">
-                {product.product_variants.map((variant) => (
+                {uniqueSizes.map((size) => (
                   <p
-                    key={variant.id}
-                    className="cursor-pointer px-4 py-2 border border-gray-300 rounded-md hover:bg-red-500 hover:text-white"
+                    key={size.id}
+                    onClick={() => handleSelectSize(size.id)}
+                    className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md hover:bg-red-500 hover:text-white ${
+                      selectedSize === size.id ? "border-red-500" : ""
+                    }`}
                   >
-                    {variant.size.name}
+                    {size.name}
                   </p>
                 ))}
               </div>
@@ -186,7 +227,7 @@ const Detail = () => {
                 MUA NGAY
               </button>
               <button
-                onClick={() => addToCart(product)}
+                onClick={() => addToCart(product, selectedColor, selectedSize)}
                 className="border border-red-500 text-red-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-red-50 transition"
               >
                 THÊM VÀO GIỎ HÀNG

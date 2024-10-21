@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Cart_Item;
@@ -14,60 +15,62 @@ class CartController extends Controller
      */
     public function index(Request $request)
     {
-        // Sử dụng LEFT JOIN để đảm bảo lấy được tất cả các sản phẩm, kể cả khi thiếu màu hoặc kích thước
-        $cartItems = Cart_Item::leftJoin('product__variants', 'cart__items.product__variant_id', '=', 'product__variants.id')
-            ->leftJoin('products', 'product__variants.product_id', '=', 'products.id')
-            ->leftJoin('colors', 'product__variants.color_id', '=', 'colors.id')
-            ->leftJoin('sizes', 'product__variants.size_id', '=', 'sizes.id')
-            ->select(
-                'cart__items.id',
-                'products.name as product_name',
-                'colors.name as name_color',
-                'sizes.name as name_size',
-                'product__variants.price',
-                'cart__items.quantity'
-            )
-            ->get();
-
-        // Kiểm tra nếu yêu cầu là AJAX hoặc API thì trả về JSON
-        if ($request->wantsJson() || $request->is('api/*')) {
-            return response()->json([
-                'success' => true,
-                'data' => $cartItems,
-            ]);
+        // Kiểm tra xem người dùng đã đăng nhập hay chưa
+        if (!auth()->check()) {
+            return response()->json(['message' => 'Unauthorized'], 401); // Trả về lỗi 401 nếu không có người dùng nào đang đăng nhập
         }
 
-        // Truyền dữ liệu vào view cho giao diện người dùng
-        return view('client.cart.index', compact('cartItems'));
+        // Lấy giỏ hàng của người dùng
+        $cart = Cart::where('user_id', auth()->user()->id)->first();
+
+        // Kiểm tra xem giỏ hàng có tồn tại hay không
+        if (!$cart) {
+            return response()->json(['message' => 'Cart not found'], 404); // Trả về lỗi 404 nếu không tìm thấy giỏ hàng
+        }
+
+        // Tải dữ liệu liên quan đến giỏ hàng
+        $cart->load('cartItems', 'cartItems.product_variant', 'cartItems.product_variant.color', 'cartItems.product_variant.size', 'cartItems.product_variant.product');
+
+        return $cart; // Trả về giỏ hàng
     }
 
 
-
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $product = Product::find($request->id);
-        $cart = session()->get('cart', []);
+        // Validate request
+        $request->validate([
+            'id' => 'required|integer|exists:products,id', // Kiểm tra sản phẩm có tồn tại không
+            'color_id' => 'required|integer|exists:colors,id', // Kiểm tra màu sắc có tồn tại không
+            'size_id' => 'required|integer|exists:sizes,id', // Kiểm tra kích thước có tồn tại không
+            'quantity' => 'required|integer|min:1', // Số lượng phải lớn hơn 0
+        ]);
 
-        // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
-        if (isset($cart[$product->id])) {
-            $cart[$product->id]['quantity']++;
-        } else {
-            // Thêm sản phẩm mới vào giỏ hàng
-            $cart[$product->id] = [
-                "name" => $product->name,
-                "quality" => 1,
-                "price" => $product->price,
-                "image" => $product->image,
-            ];
+        $userID = 4;
+        // Lấy giỏ hàng của user hiện tại
+        $cart = Cart::where('user_id', $userID)->first();
+        // Lấy sản phẩm theo id
+        $product = Product::find($request->id);
+
+        $variant_id = $product->productVariants()
+            ->where('size_id', $request['size_id'])
+            ->where('color_id', $request['color_id'])
+            ->pluck('id')
+            ->first();
+        if (!$variant_id) {
+            return response()->json(['error' => 'Sản phẩm không có biến thể tương ứng'], 404);
         }
 
-        session()->put('cart', $cart);
+        $cart_item = Cart_Item::create([
+            'cart_id' => $cart->id,
+            'product__variant_id' => $variant_id,
+            'quantity' => $request['quantity'],
+        ]);
 
-        return redirect()->back()->with('success', 'Sản phẩm đã được thêm vào giỏ hàng!');
+        $cart_item->load('product_variant.size', 'product_variant.color', 'product_variant.product');
+        return response()->json([
+            'message' => 'Thêm vào giỏ hàng thành công',
+            'cart_item' => $cart_item,
+        ], 201);
     }
 
     /**

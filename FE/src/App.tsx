@@ -23,6 +23,7 @@ import SizeContext from "./contexts/SizeContext";
 import EditProduct from "./pages/admin/product/EditProduct";
 import Checkout from "./pages/client/checkout";
 import Cart from "./pages/client/cart";
+import AuthForm from "./pages/client/AuthForm";
 
 function App() {
   return (
@@ -40,6 +41,8 @@ function App() {
           <Route path="detail/:id" element={<Detail />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="cart" element={<Cart />} />
+          <Route path="/login" element={<AuthForm isLogin />} />
+          <Route path="/register" element={<AuthForm />} />
           <Route path="" element />
           <Route path="" element />
         </Route>
