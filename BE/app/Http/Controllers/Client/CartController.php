@@ -162,4 +162,33 @@ public function updateQuantity(Request $request)
     ], 404);
 }
 
+public function showCartItem($id)
+{
+    $cartItem = Cart_Item::leftJoin('product__variants', 'cart__items.product__variant_id', '=', 'product__variants.id')
+        ->leftJoin('products', 'product__variants.product_id', '=', 'products.id')
+        ->leftJoin('colors', 'product__variants.color_id', '=', 'colors.id')
+        ->leftJoin('sizes', 'product__variants.size_id', '=', 'sizes.id')
+        ->select(
+            'cart__items.id',
+            'products.name as product_name',
+            'colors.name as name_color',
+            'sizes.name as name_size',
+            'product__variants.price',
+            'cart__items.quantity'
+        )
+        ->where('cart__items.id', $id)
+        ->first();
+
+    if ($cartItem) {
+        return response()->json([
+            'success' => true,
+            'data' => $cartItem
+        ]);
+    } else {
+        return response()->json([
+            'success' => false,
+            'message' => 'Sản phẩm không tồn tại trong giỏ hàng!'
+        ], 404);
+    }
+}
 }

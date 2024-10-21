@@ -55,6 +55,7 @@ Route::group(['prefix' => 'auth'], function () {
 
 Route::prefix('shop')->group(function () {
     Route::get('/cart', [CartController::class, 'index']); // Lấy danh sách sản phẩm trong giỏ hàng
+    Route::get('cart/{id}', [CartController::class, 'showCartItem']);//xem chi tiet san pham
     Route::post('/cart/store', [CartController::class, 'store']); // Thêm sản phẩm vào giỏ hàng
     Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity']); // Cập nhật số lượng sản phẩm
     Route::delete('/cart/{id}', [CartController::class, 'destroy']); // Xóa sản phẩm khỏi giỏ hàng
