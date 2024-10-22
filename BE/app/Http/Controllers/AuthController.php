@@ -6,10 +6,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
-
+use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     // Đăng ký người dùng mới
+    private $user;
+
+    public function __construct(User $user){
+        $this->user = $user;
+    }
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -78,4 +84,22 @@ class AuthController extends Controller
             'user' => auth()->user()->only(['id', 'name', 'email', 'address', 'phone_number']) 
         ]);
     }
+
+    //Lấy thông tin user
+    public function getUserInfo(Request $request)
+{
+    $token = $request->bearerToken();
+
+    // Check if the token is present
+    if (!$token) {
+        return response()->json(['error' => 'Token not provided'], 401);
+    }
+
+    try {
+        $user = JWTAuth::toUser($token);
+        return response()->json(['result' => $user]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Invalid token'], 401);
+    }
+}
 }

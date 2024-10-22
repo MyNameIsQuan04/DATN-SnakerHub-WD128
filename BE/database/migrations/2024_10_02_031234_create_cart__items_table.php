@@ -19,8 +19,8 @@ return new class extends Migration
             $table->foreignIdFor(Product_Variant::class)->constrained();
 
             $table->id();
-            $table->integer('quality');
-            
+            $table->integer('quantity');
+            // $table->unsignedBigInteger('user_id')->nullable(); // Hoặc không nullable nếu bạn muốn cột này bắt buộc
             $table->timestamps();
         });
     }
@@ -32,4 +32,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('cart__items');
     }
+    
 };
