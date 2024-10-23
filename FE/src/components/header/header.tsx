@@ -1,5 +1,6 @@
 import { VscAccount } from "react-icons/vsc";
 import { FiShoppingCart } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -208,7 +209,9 @@ const Header = () => {
               alt="Cart"
               className="rounded-[5px] w-[30px] h-auto cursor-pointer"
             /> */}
-            <FiShoppingCart className="w-[30px] h-auto" />
+            <Link to={"/cart"}>
+              <FiShoppingCart className="w-[30px] h-auto" />
+            </Link>
           </button>
         </div>
       </header>

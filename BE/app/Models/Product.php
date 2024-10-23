@@ -17,6 +17,7 @@ class Product extends Model
         'description',
         'price',
         'thumbnail',
+        'sales_count',
     ];
 
     public function category(){
@@ -27,5 +28,8 @@ class Product extends Model
     }
     public function comments(){
         return $this->hasMany(Comment::class);
+    }
+    public function galleries(){
+        return $this->hasMany(Gallery::class);
     }
 }

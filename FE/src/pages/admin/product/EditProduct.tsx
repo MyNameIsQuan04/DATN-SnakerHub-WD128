@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { CategoryCT } from "../../../contexts/CategoryContext";
 import { ColorCT } from "../../../contexts/ColorContext";
@@ -8,14 +8,16 @@ import { ProductCT } from "../../../contexts/ProductContext";
 import { Category } from "../../../interfaces/Category";
 import { Color } from "../../../interfaces/Color";
 import { Size } from "../../../interfaces/Size";
+import { getProductById } from "../../../services/product";
 
-const AddProducts = () => {
+const EditProduct = () => {
   const { categories } = useContext(CategoryCT);
   const { colors } = useContext(ColorCT);
   const { sizes } = useContext(SizeCT);
-  const { onAddProduct } = useContext(ProductCT);
+  const { onUpdateProduct } = useContext(ProductCT);
 
-  const initialValues = {
+  const { id } = useParams();
+  const [initialValues, setInitialValues] = useState({
     name: "",
     price: 0,
     category_id: 0,
@@ -32,45 +34,67 @@ const AddProducts = () => {
         image: null,
       },
     ],
-  };
+  });
+
+  useEffect(() => {
+    if (id) {
+      (async () => {
+        const product = await getProductById(id);
+        console.log(product);
+        if (product) {
+          setInitialValues({
+            name: product.name,
+            price: product.price,
+            category_id: product.category_id,
+            description: product.description,
+            thumbnail: product.thumbnail,
+            galleries: product.galleries || [],
+            variants: product.product_variants || [
+              {
+                price: 0,
+                size_id: "",
+                color_id: "",
+                stock: 0,
+                sku: "",
+                image: null,
+              },
+            ],
+          });
+        }
+      })();
+    }
+  }, []);
 
   const onSubmit = (values: any) => {
-    const formData = new FormData();
-    formData.append("name", values.name);
-    formData.append("price", values.price.toString());
-    formData.append("category_id", values.category_id);
-    formData.append("description", values.description);
+    const payload = {
+      name: values.name,
+      price: values.price,
+      category_id: values.category_id,
+      description: values.description || "",
+      galleries: values.galleries.map((image: File) => image.name), // Giả sử bạn đã lưu URL hoặc base64
+      variants: values.variants.map((variant: any) => ({
+        price: variant.price,
+        size_id: variant.size_id,
+        color_id: variant.color_id,
+        stock: variant.stock,
+        sku: variant.sku,
+        image: variant.image ? variant.image.name : "default_image.png", // Lưu lại URL hoặc base64 nếu cần
+      })),
+    };
 
-    if (values.thumbnail) {
-      formData.append("thumbnail", values.thumbnail);
-    }
-
-    values.galleries.forEach((image: File, index: number) => {
-      formData.append(`galleries[${index}]`, image);
-    });
-
-    values.variants.forEach((variant: any, index: number) => {
-      formData.append(`variants[${index}][price]`, variant.price.toString());
-      formData.append(`variants[${index}][size_id]`, variant.size_id);
-      formData.append(`variants[${index}][color_id]`, variant.color_id);
-      formData.append(`variants[${index}][stock]`, variant.stock.toString());
-      formData.append(`variants[${index}][sku]`, variant.sku);
-
-      if (variant.image) {
-        formData.append(`variants[${index}][image]`, variant.image);
-      }
-    });
-
-    console.log(values);
-    onAddProduct(formData);
+    onUpdateProduct(payload, id);
   };
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center overflow-auto">
       <div className="bg-white w-full max-w-4xl mx-auto p-8 rounded-lg shadow-lg relative overflow-y-auto max-h-screen">
-        <h1 className="text-3xl font-semibold mb-6">Thêm Sản Phẩm Mới</h1>
+        <h1 className="text-3xl font-semibold mb-6">Sửa Sản Phẩm</h1>
 
-        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+        <Formik
+          initialValues={initialValues}
+          enableReinitialize
+          onSubmit={onSubmit}
+        >
           {({ values, setFieldValue }) => (
             <Form className="p-4">
               <div className="mb-8">
@@ -307,7 +331,7 @@ const AddProducts = () => {
                   type="submit"
                   className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
                 >
-                  Thêm sản phẩm
+                  Cập nhật sản phẩm
                 </button>
                 <Link
                   to="/admin/product"
@@ -324,4 +348,4 @@ const AddProducts = () => {
   );
 };
 
-export default AddProducts;
+export default EditProduct;

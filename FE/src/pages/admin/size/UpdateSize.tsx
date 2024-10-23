@@ -2,35 +2,35 @@ import axios from "axios";
 import React, { useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useParams } from "react-router-dom";
-import { formDataCategory } from "../../../interfaces/Category";
-import { CategoryCT } from "../../../contexts/CategoryContext";
-import { getCategoryById } from "../../../services/category";
+import { Size } from "../../../interfaces/Size";
+import { SizeCT } from "../../../contexts/SizeContext";
+import api from "../../../configs/axios";
+import { getSizeById } from "../../../services/size";
 
-const UpdateCategory = () => {
+const UpdateSize = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
     reset,
-  } = useForm<formDataCategory>();
-
+    formState: { errors },
+  } = useForm<Size>();
+  const { onAddSize } = useContext(SizeCT);
   const params = useParams();
   useEffect(() => {
     (async () => {
-      const category = await getCategoryById(params?.id as number | string);
+      const category = await getSizeById(params?.id as number | string);
       reset({
         name: category.name,
       });
     })();
   }, []);
-  const { onUpdateCategory } = useContext(CategoryCT);
-  const onSubmit = (data: formDataCategory) => {
-    onUpdateCategory(data, params?.id as number | string);
+  const onSubmit = async (data: Size) => {
+    onAddSize(data);
   };
   return (
     <div>
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-semibold mb-6">Thêm danh mục</h1>
+        <h1 className="text-3xl font-semibold mb-6">Thêm kích thước</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Tên sản phẩm */}
           <div className="mb-4">
@@ -38,18 +38,22 @@ const UpdateCategory = () => {
               className="block text-gray-700 font-bold mb-2"
               htmlFor="name"
             >
-              Tên danh mục
+              Tên kích thước
             </label>
             <input
               type="text"
               id="name"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              placeholder="Nhập tên danh mục"
+              placeholder="Nhập tên sản phẩm"
               {...register("name", {
-                required: "Không được để trống",
-                minLength: {
-                  value: 3,
-                  message: "Tên danh mục phải lớn hơn 3 kí tự",
+                required: "Vui lòng nhập kích thước",
+                pattern: {
+                  value: /^\d*$/,
+                  message: "Phải là số",
+                },
+                min: {
+                  value: 36,
+                  message: "Kích thước nhỏ nhất là 36",
                 },
               })}
             />
@@ -57,14 +61,13 @@ const UpdateCategory = () => {
               <div className="text-red-500">{errors.name.message}</div>
             )}
           </div>
-
           <button
             type="submit"
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
           >
-            Thêm danh mục
+            Thêm kích thước
           </button>
-          <Link to="/admin/category">
+          <Link to="/admin/size">
             <button
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg ml-2"
@@ -78,4 +81,4 @@ const UpdateCategory = () => {
   );
 };
 
-export default UpdateCategory;
+export default UpdateSize;

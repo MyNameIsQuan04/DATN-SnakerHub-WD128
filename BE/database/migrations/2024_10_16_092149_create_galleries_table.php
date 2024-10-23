@@ -1,7 +1,6 @@
 <?php
 
-use App\Models\Cart;
-use App\Models\Product_Variant;
+use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,15 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cart__items', function (Blueprint $table) {
-
-            $table->foreignIdFor(Cart::class)->constrained();
-            $table->foreignIdFor(Product_Variant::class)->constrained();
-
+        Schema::create('galleries', function (Blueprint $table) {
+            $table->foreignIdFor(Product::class)->constrained();
             $table->id();
-            $table->integer('quantity');
-
+            $table->string('image_path');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cart__items');
+        Schema::dropIfExists('galleries');
     }
 };

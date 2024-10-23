@@ -26,33 +26,33 @@
         </thead>
         <tbody>
             @foreach ($cartItems as $cartItem)
-                <tr>
-                    <td>{{ $cartItem->id }}</td>
-                    <td>{{ $cartItem->product_name }}</td>
-                    <td>{{ $cartItem->name_color }}</td>
-                    <td>{{ $cartItem->name_size }}</td>
-                    <td>
-                        <!-- Nút giảm số lượng -->
-                        <button class="btn btn-secondary quantity-btn" data-id="{{ $cartItem->id }}"
-                            data-action="decrease">-</button>
+            <tr>
+                <td>{{ $cartItem->id }}</td>
+                <td>{{ $cartItem->product_name }}</td>
+                <td>{{ $cartItem->name_color }}</td>
+                <td>{{ $cartItem->name_size }}</td>
+                <td>
+                    <!-- Nút giảm số lượng -->
+                    <button class="btn btn-secondary quantity-btn" data-id="{{ $cartItem->id }}"
+                        data-action="decrease">-</button>
 
-                        <input type="number" class="quantity" id="quantity-{{ $cartItem->id }}"
-                            value="{{ $cartItem->quantity }}" disabled>
-                        <!-- Nút tăng số lượng -->
-                        <button class="btn btn-secondary quantity-btn" data-id="{{ $cartItem->id }}"
-                            data-action="increase">+</button>
-                    </td>
-                    <td id="price-{{ $cartItem->id }}" class="price" data-unit-price="{{ $cartItem->price }}">
-                        {{ number_format($cartItem->price * $cartItem->quantity) }} VNĐ
-                    </td>
-                    <td>
-                        <form action="{{ route('cart.destroy', $cartItem->id) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Xóa</button>
-                        </form>
-                    </td>
-                </tr>
+                    <input type="number" class="quantity" id="quantity-{{ $cartItem->id }}"
+                        value="{{ $cartItem->quantity }}" disabled>
+                    <!-- Nút tăng số lượng -->
+                    <button class="btn btn-secondary quantity-btn" data-id="{{ $cartItem->id }}"
+                        data-action="increase">+</button>
+                </td>
+                <td id="price-{{ $cartItem->id }}" class="price" data-unit-price="{{ $cartItem->price }}">
+                    {{ number_format($cartItem->price * $cartItem->quantity) }} VNĐ
+                </td>
+                <td>
+                    <form action="{{ route('cart.destroy', $cartItem->id) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Xóa</button>
+                    </form>
+                </td>
+            </tr>
             @endforeach
         </tbody>
     </table>

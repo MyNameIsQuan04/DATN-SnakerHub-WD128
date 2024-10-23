@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Models\Size;
 use App\Models\Color;
+use App\Models\Gallery;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -22,13 +23,10 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::orderByDesc('id')->get();
-        $products->load(['category', 'productVariants.size', 'productVariants.color']);
+        $products->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
         return $products;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreProductRequest $request)
     {
         try {
@@ -46,6 +44,13 @@ class ProductController extends Controller
 
             $product = Product::create($dataProduct);
 
+            foreach ($validatedData['galleries'] ?? [] as $image) {
+                $image_path = Storage::url($image->store('images', 'public'));
+                $product->galleries()->create([
+                    'image_path' => $image_path,
+                ]);
+            }
+
             foreach ($validatedData['variants'] as $variant) {
 
                 $dataVariant = [
@@ -56,18 +61,13 @@ class ProductController extends Controller
                     'sku' => $variant['sku'],
                 ];
 
-                $imagePaths = [];
-                if (isset($variant['images'])) {
-                    foreach ($variant['images'] as $image) {
-                        $path = $image->store('public/images');
-                        $imagePaths[] = Storage::url($path);
-                    }
-                    $dataVariant['images'] = json_encode($imagePaths);
+                if (isset($variant['image'])) {
+                    $dataVariant['image'] = Storage::url($variant['image']->store('images', 'public'));
                 }
+
                 $product->productVariants()->create($dataVariant);
-                // Product_Variant::create($dataVariant);
             }
-            $product->load('category', 'productVariants.size', 'productVariants.color');
+            $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
 
             $categories = Category::query()->pluck('name', 'id')->all();
             $sizes = Size::all()->pluck('name', 'id');
@@ -90,12 +90,9 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Product $product)
     {
-        $product->load(['category', 'productVariants.size', 'productVariants.color']);
+        $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
         return $product;
     }
 
@@ -106,6 +103,8 @@ class ProductController extends Controller
     {
         try {
             $validatedData = $request->validated();
+
+            // Cập nhật thông tin sản phẩm
             $dataProduct = [
                 'category_id' => $validatedData['category_id'],
                 'name' => $validatedData['name'],
@@ -113,66 +112,69 @@ class ProductController extends Controller
                 'price' => $validatedData['price'],
             ];
             if (isset($validatedData['thumbnail'])) {
-                $thumbnailPath = $validatedData['thumbnail']->store('images', 'public');
+                $thumbnailPath = Storage::put('images', $validatedData['thumbnail']);
                 $dataProduct['thumbnail'] = Storage::url($thumbnailPath);
             }
-
             $product->update($dataProduct);
 
-            foreach ($validatedData['variants'] as $variant) {
-                if (isset($variant['id'])) {
-                    $productVariant = $product->productVariants()->where('id', $variant['id'])->first();
-                    if ($productVariant) {
-
-                        $dataVariant = [
-                            'color_id' => $variant['color_id'],
-                            'size_id' => $variant['size_id'],
-                            'price' => isset($variant['price']) ? $variant['price'] : $product->price,
-                            'stock' => $variant['stock'],
-                            'sku' => $variant['sku'],
-                        ];
-
-
-                        $imagePaths = [];
-                        if (isset($variant['images'])&&($request->hasFile($variant['images']))) {
-                            foreach ($variant['images'] as $image) {
-                                $path = $image->store('public/images');
-                                $imagePaths[] = Storage::url($path);
-                            }
-                            $dataVariant['images'] = json_encode($imagePaths);
-                        }
-
-                        $productVariant->update($dataVariant);
+            // Cập nhật hoặc thêm mới gallery
+            foreach ($validatedData['galleries'] ?? [] as $gallery) {
+                if (isset($gallery['id'])) {
+                    $existingGallery = $product->galleries()->where('id', $gallery['id'])->first();
+                    if ($existingGallery) {
+                        $existingGallery->update([
+                            'image_path' => Storage::url(Storage::put('images', $gallery['image'])),
+                        ]);
                     }
                 } else {
-                    $dataVariant = [
-                        'color_id' => $variant['color_id'],
-                        'size_id' => $variant['size_id'],
-                        'price' => isset($variant['price']) ? $variant['price'] : $product->price,
-                        'stock' => $variant['stock'],
-                        'sku' => $variant['sku'],
-                    ];
-
-                    $imagePaths = [];
-                    if (isset($variant['images'])&&($request->hasFile($variant['images']))) {
-                        foreach ($variant['images'] as $image) {
-                            $path = $image->store('public/images');
-                            $imagePaths[] = Storage::url($path);
-                        }
-                        $dataVariant['images'] = json_encode($imagePaths);
-                    }
-                    $product->productVariants()->create($dataVariant);
+                    $image_path = Storage::url(Storage::put('images', $gallery['image']));
+                    $product->galleries()->create([
+                        'image_path' => $image_path,
+                    ]);
                 }
             }
 
-            $product->load('category', 'productVariants.size', 'productVariants.color');
+            // Lưu lại danh sách biến thể ID để giữ lại những biến thể được cập nhật
+            $variantIds = [];
+
+            foreach ($validatedData['variants'] as $variant) {
+                $dataVariant = [
+                    'color_id' => $variant['color_id'],
+                    'size_id' => $variant['size_id'],
+                    'price' => isset($variant['price']) ? $variant['price'] : $product->price,
+                    'stock' => $variant['stock'],
+                    'sku' => $variant['sku'],
+                ];
+                if (isset($variant['image'])) {
+                    $dataVariant['image'] = Storage::url(Storage::put('images', $variant['image']));
+                }
+
+                if (isset($variant['id'])) {
+                    // Cập nhật biến thể nếu có ID
+                    $existingVariant = $product->productVariants()->where('id', $variant['id'])->first();
+                    if ($existingVariant) {
+                        $existingVariant->update($dataVariant);
+                        $variantIds[] = $existingVariant->id; // Lưu ID biến thể đã cập nhật
+                    }
+                } else {
+                    // Tạo mới biến thể nếu không có ID
+                    $newVariant = $product->productVariants()->create($dataVariant);
+                    $variantIds[] = $newVariant->id; // Lưu ID biến thể mới
+                }
+            }
+
+            // Xóa các biến thể không có trong danh sách cập nhật
+            $product->productVariants()->whereNotIn('id', $variantIds)->delete();
+
+            // Load lại các thông tin liên quan để trả về JSON response
+            $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
             $categories = Category::query()->pluck('name', 'id')->all();
             $sizes = Size::all()->pluck('name', 'id');
             $colors = Color::all()->pluck('name', 'id');
 
             return response()->json([
                 'success' => true,
-                'message' => 'Sản phẩm và các biến thể đã được tạo thành công!',
+                'message' => 'Cập nhật thành công!',
                 'product' => $product,
                 'categories' => $categories,
                 'sizes' => $sizes,
@@ -187,6 +189,7 @@ class ProductController extends Controller
         }
     }
 
+
     /**
      * Remove the specified resource from storage.
      */
@@ -195,11 +198,12 @@ class ProductController extends Controller
         try {
             DB::transaction(function () use ($product) {
 
-                $product->load('productVariants.cartItems', 'comments');
+                $product->load('productVariants.cartItems', 'comments', 'galleries');
 
                 foreach ($product->productVariants as $productVariant) {
                     $productVariant->cartItems()->delete();
                 }
+                $product->galleries()->delete();
 
                 $product->productVariants()->delete();
 

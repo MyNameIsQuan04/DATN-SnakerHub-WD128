@@ -16,7 +16,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
-            'address' => 'required|string|max:255',     
+            'address' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
         ]);
 
@@ -28,8 +28,8 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'address' => $request->address,          
-            'phone_number' => $request->phone_number, 
+            'address' => $request->address,
+            'phone_number' => $request->phone_number,
         ]);
 
         $token = auth()->login($user);
@@ -75,7 +75,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()->only(['id', 'name', 'email', 'address', 'phone_number']) 
+            'user' => auth()->user()->only(['id', 'name', 'email', 'address', 'phone_number'])
         ]);
     }
 }
