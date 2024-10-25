@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
 import { useParams } from "react-router-dom";
 import { MdOutlineLocalShipping } from "react-icons/md";
 import { FaPhoneVolume } from "react-icons/fa6";
@@ -14,6 +13,13 @@ const Detail = () => {
   const { id } = useParams<{ id: string }>();
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const [availableSizes, setAvailableSizes] = useState<number[]>([]);
+  const [selectedVariantPrice, setSelectedVariantPrice] = useState<
+    number | null
+  >(null);
+  const token = localStorage.getItem("access_token");
+
+  // Hàm lấy thông tin sản phẩm
   const fetchProduct = async (productId: string) => {
     try {
       const response = await axios.get<Product>(
@@ -21,7 +27,7 @@ const Detail = () => {
       );
       setProduct(response.data);
     } catch (error) {
-      console.error("Error fetching product:", error);
+      console.error("Lỗi khi lấy thông tin sản phẩm:", error);
     }
   };
 
@@ -30,101 +36,134 @@ const Detail = () => {
       fetchProduct(id);
     }
   }, [id]);
+  console.log(product);
+  // Chọn màu sắc
+  const handleSelectColor = (colorId: number) => {
+    setSelectedColor(colorId);
+    filterSizesByColor(colorId); // Lọc kích thước cho màu đã chọn
+    setSelectedSize(null); // Đặt lại kích thước đã chọn
+    setSelectedVariantPrice(null); // Đặt lại giá đã chọn
+  };
 
+  // Chọn kích thước
+  const handleSelectSize = (sizeId: number) => {
+    setSelectedSize(sizeId);
+    if (selectedColor !== null && product) {
+      const selectedVariant = product.product_variants.find(
+        (variant) =>
+          variant.color.id === selectedColor && variant.size.id === sizeId
+      );
+
+      if (selectedVariant) {
+        setSelectedVariantPrice(selectedVariant.price);
+      }
+    }
+  };
+
+  // Lọc các kích thước có sẵn dựa trên màu sắc
+  const filterSizesByColor = (colorId: number) => {
+    if (product) {
+      const sizesForColor = product.product_variants
+        .filter((variant) => variant.color.id === colorId)
+        .map((variant) => variant.size.id);
+
+      setAvailableSizes(sizesForColor);
+    }
+  };
+
+  // Thêm vào giỏ hàng
   const addToCart = async (
     product: Product,
-    selectedColor: number | null,
-    selectedSize: number | null
+    selectedColor: any,
+    selectedSize: any
   ) => {
     if (!selectedColor || !selectedSize) {
       alert("Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!");
       return;
     }
 
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/api/shop/cart/store",
-        {
-          name: product.name,
-          id: product.id,
-          color_id: selectedColor,
-          size_id: selectedSize,
-          quantity: 1,
-        }
-      );
+    if (!product) return;
 
+    const selectedVariant = product.product_variants.find(
+      (variant) =>
+        variant.color.id === selectedColor && variant.size.id === selectedSize
+    );
+
+    if (!selectedVariant) {
+      alert(
+        "Không tìm thấy biến thể sản phẩm tương ứng. Vui lòng kiểm tra lại sản phẩm!"
+      );
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:8000/api/add", {
+        token: token,
+        name: product.name,
+        id: product.id,
+        color_id: selectedColor,
+        size_id: selectedSize,
+        quantity: 1,
+      });
+      if (!token) {
+        alert("Ban hay dang nhap de them gio hang");
+      }
+      console.log(response.data);
       alert(response.data.success);
     } catch (error) {
-      console.error("Error adding to cart:", error);
+      console.error("Lỗi khi thêm vào giỏ hàng:", error);
     }
   };
 
   if (!product) {
-    return <div>Loading...</div>;
+    return <div>Đang tải...</div>;
   }
-  const uniqueColors = Array.from(
-    new Map(
-      product.product_variants.map((variant) => [
-        variant.color.id,
-        variant.color,
-      ])
-    ).values()
+
+  const colors = Array.from(
+    new Set(product.product_variants.map((variant) => variant.color.id))
+  ).map(
+    (colorId) =>
+      product.product_variants.find((variant) => variant.color.id === colorId)
+        ?.color
   );
 
-  const uniqueSizes = Array.from(
-    new Map(
-      product.product_variants.map((variant) => [variant.size.id, variant.size])
-    ).values()
+  const sizes = Array.from(
+    new Set(product.product_variants.map((variant) => variant.size.id))
+  ).map(
+    (sizeId) =>
+      product.product_variants.find((variant) => variant.size.id === sizeId)
+        ?.size
   );
-  const handleSelectColor = (colorId: number) => {
-    setSelectedColor(colorId);
-  };
 
-  const handleSelectSize = (sizeId: number) => {
-    setSelectedSize(sizeId);
-  };
   return (
     <div className="mt-[90px]">
-      {/* Product details */}
+      {/* Thông tin sản phẩm */}
       <div className="container mx-auto mt-10">
         <div className="flex gap-5 px-5">
           <div className="w-1/2">
-            {/* Main Product Image */}
+            {/* Hình ảnh chính của sản phẩm */}
             <img
               src={product.thumbnail}
               alt={product.name}
               className="w-full rounded-md"
             />
 
-            {/* Thumbnail Images */}
+            {/* Hình ảnh thu nhỏ */}
             <div className="flex mt-2 space-x-2">
-              <img
-                src={product.thumbnail}
-                className="w-1/5 h-auto cursor-pointer rounded-md hover:opacity-80"
-                alt=""
-              />
-              <img
-                src={product.thumbnail}
-                className="w-1/5 h-auto cursor-pointer rounded-md hover:opacity-80"
-                alt=""
-              />
-              <img
-                src={product.thumbnail}
-                className="w-1/5 h-auto cursor-pointer rounded-md hover:opacity-80"
-                alt=""
-              />
-              <img
-                src={product.thumbnail}
-                className="w-1/5 h-auto cursor-pointer rounded-md hover:opacity-80"
-                alt=""
-              />
+              {[...Array(4)].map((_, index) => (
+                <img
+                  key={index}
+                  src={product.thumbnail}
+                  className="w-1/5 h-auto cursor-pointer rounded-md hover:opacity-80"
+                  alt=""
+                />
+              ))}
             </div>
           </div>
+
           <div className="w-1/2">
-            {/* Product Name */}
             <p className="text-3xl font-bold text-gray-800">{product.name}</p>
 
-            {/* Rating and Likes */}
             <div className="flex mt-4 items-center">
               <div className="flex text-yellow-400 text-lg mr-5">
                 <span>⭐</span> <span>⭐</span> <span>⭐</span> <span>⭐</span>
@@ -135,65 +174,68 @@ const Detail = () => {
               </div>
             </div>
 
-            {/* Price */}
             <div className="flex items-center gap-3 mt-4">
               <span className="line-through text-gray-400 text-xl">
                 230.000đ
               </span>
               <span className="text-red-600 text-3xl font-semibold">
-                {product.price.toLocaleString("vi-VN")} VND
+                {selectedVariantPrice
+                  ? selectedVariantPrice.toLocaleString("vi-VN")
+                  : product.price.toLocaleString("vi-VN")}{" "}
+                VND
               </span>
             </div>
 
-            {/* Flash Sale Label */}
             <div className="text-red-600 text-sm mt-2 font-semibold">
               FLASH SALE
             </div>
             <p className="text-sm mt-4 font-semibold">SALE THỂ THAO 149K</p>
 
-            {/* Color Variants */}
-            {/* Color Variants */}
             <div className="flex mt-6 items-center">
               <p className="text-sm font-semibold mr-8">MÀU SẮC:</p>
               <div className="flex gap-4">
-                {uniqueColors.map((color) => (
+                {colors.map((color) => (
                   <p
-                    key={color.id}
-                    onClick={() => handleSelectColor(color.id)}
+                    key={color?.id}
+                    onClick={() => handleSelectColor(color!.id)}
                     className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md hover:bg-red-500 hover:text-white ${
-                      selectedColor === color.id ? "border-red-500" : ""
+                      selectedColor === color!.id ? "border-red-500" : ""
                     }`}
                   >
-                    {color.name}
+                    {color?.name}
                   </p>
                 ))}
               </div>
             </div>
 
-            {/* Size Variants */}
+            {/* Màu sắc */}
             <div className="flex mt-6 items-center">
               <p className="text-sm font-semibold mr-8">KÍCH THƯỚC:</p>
               <div className="flex gap-4">
-                {uniqueSizes.map((size) => (
+                {sizes.map((size) => (
                   <p
-                    key={size.id}
-                    onClick={() => handleSelectSize(size.id)}
-                    className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md hover:bg-red-500 hover:text-white ${
-                      selectedSize === size.id ? "border-red-500" : ""
-                    }`}
+                    key={size?.id}
+                    onClick={() => {
+                      if (availableSizes.includes(size!.id)) {
+                        handleSelectSize(size!.id);
+                      }
+                    }}
+                    className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md ${
+                      availableSizes.includes(size!.id)
+                        ? "hover:bg-red-500 hover:text-white"
+                        : "bg-gray-200 cursor-not-allowed text-gray-500"
+                    } ${selectedSize === size!.id ? "border-red-500" : ""}`}
                   >
-                    {size.name}
+                    {size?.name}
                   </p>
                 ))}
               </div>
             </div>
 
-            {/* Size Guide Link */}
             <p className="text-sm mt-6 cursor-pointer text-blue-500 hover:underline">
               HƯỚNG DẪN TÌM SIZE
             </p>
 
-            {/* Showroom Search */}
             <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
               <div className="flex items-center justify-center">
                 <svg
@@ -215,13 +257,10 @@ const Detail = () => {
                     d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
                   />
                 </svg>
-                <span className="text-red-600 text-sm">
-                  TÌM SẢN PHẨM TẠI SHOWROOM
-                </span>
+                <span className="text-red-600 text-sm">TÌM TẠI CỬA HÀNG</span>
               </div>
             </div>
 
-            {/* Purchase Buttons */}
             <div className="flex gap-4 mt-5">
               <button className="bg-red-500 text-white px-6 py-2 text-sm rounded-md shadow-md hover:bg-red-600 transition">
                 MUA NGAY
@@ -234,46 +273,34 @@ const Detail = () => {
               </button>
             </div>
 
-            {/* Promotions */}
-            <div className="bg-gray-100 py-3 px-4 mt-4 text-sm font-semibold">
-              KHUYẾN MÃI
+            {/* Các dịch vụ liên quan */}
+            <div className="flex gap-4 items-center mt-3">
+              <MdOutlineLocalShipping className="w-5 h-5 text-gray-500" />
+              <p className="text-gray-500 text-sm">
+                Miễn phí vận chuyển cho đơn hàng trên 499K
+              </p>
             </div>
-            <div className="border border-gray-200 p-4 flex items-center">
-              <span className="bg-blue-500 text-white text-xs w-5 h-5 flex justify-center items-center rounded-full">
-                1
-              </span>
-              <span className="ml-3">THỂ THAO ĐỒNG GIÁ 149K</span>
-              <span className="text-blue-500 ml-3 cursor-pointer">
-                (click để xem chi tiết)
-              </span>
+            <div className="flex gap-4 items-center mt-3">
+              <FaPhoneVolume className="w-5 h-5 text-gray-500" />
+              <p className="text-gray-500 text-sm">
+                Đặt hàng gọi ngay 1800 6868
+              </p>
             </div>
-
-            {/* Warranty */}
-            <div className="grid grid-cols-3 mt-6 gap-4">
-              <div className="flex flex-col items-center text-sm text-gray-600">
-                <MdOutlineLocalShipping className="w-[30px] h-auto" />
-                <p>Bảo hành keo vĩnh viễn</p>
-              </div>
-              <div className="flex flex-col items-center text-sm text-gray-600">
-                <MdOutlineLocalShipping className="w-[30px] h-auto" />
-                <p>Miễn phí vận chuyển toàn quốc cho đơn hàng từ 150k</p>
-              </div>
-              <div className="flex flex-col items-center text-sm text-gray-600">
-                <TbTruckReturn className="w-[30px] h-auto" />
-                <p>Đổi trả dễ dàng (trong vòng 7 ngày nếu lỗi nhà sản xuất)</p>
-              </div>
-              <div className="flex flex-col items-center text-sm text-gray-600">
-                <FaPhoneVolume className="w-[30px] h-auto" />
-                <p>Hotline 1900.633.349 hỗ trợ từ 8h30-21h30</p>
-              </div>
-              <div className="flex flex-col items-center text-sm text-gray-600">
-                <AiOutlineBank className="w-[30px] h-auto" />
-                <p>Giao hàng tận nơi, nhận hàng xong thanh toán</p>
-              </div>
-              <div className="flex flex-col items-center text-sm text-gray-600">
-                <GrAnnounce className="w-[30px] h-auto" />
-                <p>Ưu đãi tích điểm và hưởng quyền lợi thành viên từ MWC</p>
-              </div>
+            <div className="flex gap-4 items-center mt-3">
+              <TbTruckReturn className="w-5 h-5 text-gray-500" />
+              <p className="text-gray-500 text-sm">Đổi trả trong 30 ngày</p>
+            </div>
+            <div className="flex gap-4 items-center mt-3">
+              <GrAnnounce className="w-5 h-5 text-gray-500" />
+              <p className="text-gray-500 text-sm">
+                Bảo hành 90 ngày với sản phẩm giày
+              </p>
+            </div>
+            <div className="flex gap-4 items-center mt-3">
+              <AiOutlineBank className="w-5 h-5 text-gray-500" />
+              <p className="text-gray-500 text-sm">
+                Thanh toán bằng thẻ tín dụng
+              </p>
             </div>
           </div>
         </div>

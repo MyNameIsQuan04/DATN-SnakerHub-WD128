@@ -53,9 +53,23 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::get('me', [AuthController::class, 'me'])->middleware('auth:api');
 });
-Route::prefix('shop')->group(function () {
-    Route::get('/cart', [CartController::class, 'index']); // Lấy danh sách sản phẩm trong giỏ hàng
-    Route::post('/cart/store', [CartController::class, 'store']); // Thêm sản phẩm vào giỏ hàng
-    Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity']); // Cập nhật số lượng sản phẩm
-    Route::delete('/cart/{id}', [CartController::class, 'destroy']); // Xóa sản phẩm khỏi giỏ hàng
+
+
+Route::group(['middleware' => ['auth:api']],  function () {
+    Route::get('/list', [CartController::class, 'index'])->name('cart.index');
+
+    // Thêm sản phẩm vào giỏ hàng
+    Route::post('/add', [CartController::class, 'store'])->name('cart.add');
+
+    // Cập nhật giỏ hàng (ví dụ: cập nhật số lượng sản phẩm)
+    Route::post('/update', [CartController::class, 'update'])->name('cart.update');
+
+    // Xóa một sản phẩm khỏi giỏ hàng
+    Route::delete('/destroy/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+
+    // Cập nhật số lượng sản phẩm trong giỏ hàng
+    Route::post('/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+
+    // Hiển thị chi tiết một sản phẩm trong giỏ hàng (tùy chọn)
+    Route::get('/item/{id}', [CartController::class, 'showCartItem'])->name('cart.showItem');
 });
