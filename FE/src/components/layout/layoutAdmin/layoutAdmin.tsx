@@ -10,8 +10,7 @@ import { IoColorPaletteOutline } from "react-icons/io5";
 import { CgSize } from "react-icons/cg";
 
 import { Outlet, Link } from "react-router-dom";
-// import { useState } from "react";
-// import { useState } from "react";
+
 
 const LayoutAdmin = () => {
   // const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -53,7 +52,7 @@ const LayoutAdmin = () => {
               <li>
                 <Link
                   className="flex items-center text-white hover:text-gray-300"
-                  to="/admin/users"
+                  to="/admin/user"
                 >
                   <FaUser className="mr-2" />
                   Người dùng
