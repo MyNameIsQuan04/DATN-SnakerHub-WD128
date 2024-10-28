@@ -27,7 +27,7 @@ class CartItemSeeder extends Seeder
                  Cart_Item::create([
                      'cart_id' => $cart->id,
                      'product__variant_id' => $productVariants[array_rand($productVariants)],
-                     'quality' => rand(1, 5), // Số lượng từ 1 đến 5
+                     'quantity' => rand(1, 5), // Số lượng từ 1 đến 5
                  ]);
              }
          }

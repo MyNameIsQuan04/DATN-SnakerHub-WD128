@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignIdFor(Product_Variant::class)->constrained();
 
             $table->id();
-            $table->integer('quality');
+            $table->integer('quantity');
             
             $table->timestamps();
         });

@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\AdminController;
 
 use App\Models\Size;
 use App\Models\Color;
-use App\Models\Gallery;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use App\Models\Product_Variant;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -17,14 +15,19 @@ use App\Http\Requests\UpdateProductRequest;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function create()
     {
-        $products = Product::orderByDesc('id')->get();
-        $products->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
-        return $products;
+        // Fetch necessary data for form (categories, sizes, colors)
+        $categories = Category::query()->pluck('name', 'id')->all();
+        $sizes = Size::all()->pluck('name', 'id');
+        $colors = Color::all()->pluck('name', 'id');
+
+        // Return view with product and related data
+        return view('admin.product.create', [
+            'categories' => $categories,
+            'sizes' => $sizes,
+            'colors' => $colors,
+        ]);
     }
 
     public function store(StoreProductRequest $request)
@@ -50,9 +53,7 @@ class ProductController extends Controller
                     'image_path' => $image_path,
                 ]);
             }
-
             foreach ($validatedData['variants'] as $variant) {
-
                 $dataVariant = [
                     'color_id' => $variant['color_id'],
                     'size_id' => $variant['size_id'],
@@ -90,15 +91,29 @@ class ProductController extends Controller
         }
     }
 
-    public function show(Product $product)
+
+
+
+    public function edit(Product $product)
     {
-        $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
-        return $product;
+        // Load relationships
+        $product->load('productVariants.size', 'productVariants.color', 'galleries');
+
+        // Fetch necessary data for form (categories, sizes, colors)
+        $categories = Category::query()->pluck('name', 'id')->all();
+        $sizes = Size::all()->pluck('name', 'id');
+        $colors = Color::all()->pluck('name', 'id');
+
+        // Return view with product and related data
+        return view('admin.product.edit', [
+            'product' => $product,
+            'categories' => $categories,
+            'sizes' => $sizes,
+            'colors' => $colors,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(UpdateProductRequest $request, Product $product)
     {
         try {
@@ -161,34 +176,6 @@ class ProductController extends Controller
                 'success' => false,
                 'message' => 'Có lỗi xảy ra: ' . $e->getMessage(),
             ], 500);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Product $product)
-    {
-        try {
-            DB::transaction(function () use ($product) {
-
-                $product->load('productVariants.cartItems', 'comments', 'galleries');
-
-                foreach ($product->productVariants as $productVariant) {
-                    $productVariant->cartItems()->delete();
-                }
-                $product->galleries()->delete();
-                
-                $product->productVariants()->delete();
-
-                $product->comments()->delete();
-
-                $product->delete();
-            });
-
-            return $product;
-        } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
         }
     }
 }

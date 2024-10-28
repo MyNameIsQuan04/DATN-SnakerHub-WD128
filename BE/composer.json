@@ -10,8 +10,8 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
-        "tymon/jwt-auth": "^2.1",
-        "yoeunes/toastr": "^2.3"
+        "php-flasher/flasher-toastr-laravel": "^1.15",
+        "tymon/jwt-auth": "^2.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

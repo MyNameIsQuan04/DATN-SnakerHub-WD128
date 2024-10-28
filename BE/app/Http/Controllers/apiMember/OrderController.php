@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Cart_Item;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
@@ -21,11 +22,10 @@ class OrderController extends Controller
     public function index()
     {
         $userId = Auth::id();
-        // $userId = 11;
         $orders = Order::whereHas('customer', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })->orderByDesc('id')->get();
-        $orders->load('orderItems', 'customer');
+        $orders->load('orderItems.productVariant.size','orderItems.productVariant.color', 'customer');
         return $orders;
     }
 
@@ -36,7 +36,6 @@ class OrderController extends Controller
     {
         try {
             $userId = Auth::id();
-            // $userId = 11;
             $validatedData = $request->validate([
                 'name' => 'required|string',
                 'phone' => 'required|string',
@@ -46,7 +45,7 @@ class OrderController extends Controller
                 'town' => 'required|string',
                 'total_price' => 'required|integer',
                 'items' => 'required|array',
-                'items.*.product_variant_id' => 'required|integer',
+                'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
                 'items.*.price' => 'required|integer',
                 'items.*.total' => 'required|integer',
@@ -69,7 +68,12 @@ class OrderController extends Controller
 
             $total = 0;
             foreach ($validatedData['items'] as $item) {
-                $productVariant = Product_Variant::find($item['product_variant_id']);
+                $productVariant = Product_Variant::find($item['product__variant_id']);
+                $product = Product::find($productVariant['id']);
+                $newSalesCount = $product['sales_count'] + $item['quantity'];
+                $product->update([
+                    'sales_count' => $newSalesCount
+                ]);
                 if ($productVariant['stock'] < $item['quantity']) {
                     DB::rollBack();
                     return response()->json([
@@ -80,7 +84,7 @@ class OrderController extends Controller
 
                 $dataItem = [
                     'order_id' => $order->id,
-                    'product__variant_id' => $item['product_variant_id'],
+                    'product__variant_id' => $item['product__variant_id'],
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                 ];
@@ -89,7 +93,7 @@ class OrderController extends Controller
                 if (isset($cart)) {
                     foreach ($cart->cartItems as $item) {
                         Cart_Item::where('cart_id', $cart->id)
-                            ->where('product_variant_id', $item['product_variant_id'])
+                            ->where('product__variant_id', $item['product__variant_id'])
                             ->forceDelete();
                     }
                 }
@@ -131,16 +135,44 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('orderItems', 'customer');
+        $order->load('orderItems.productVariant.size','orderItems.productVariant.color', 'customer');
         return $order;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Order $order)
     {
-        //
+        try {
+            $dataValidate = $request->validate([
+                'status' => 'required|in:đã hủy',
+            ]);
+            foreach ($order->orderItems as $orderItem) {
+                $productVariant = Product_Variant::find($orderItem['product__variant_id']);
+
+                $stock = $productVariant['stock'] + $orderItem['quantity'];
+                $productVariant->update([
+                    'stock' => $stock,
+                ]);
+
+                $product = Product::find($productVariant['id']);
+
+                $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
+                $product->update([
+                    'sales_count' => $newSalesCount
+                ]);
+            }
+            $order->update([
+                'total_price' => $dataValidate['status'],
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

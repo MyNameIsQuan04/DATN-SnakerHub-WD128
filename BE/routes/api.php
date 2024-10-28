@@ -14,6 +14,7 @@ use App\Http\Controllers\ApiController\UserApiController;
 use App\Http\Controllers\ApiController\ColorApiController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\apiMember\OrderController as ApiMemberOrderController;
+use App\Http\Controllers\Client\CartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,10 +48,30 @@ foreach ($crud as $key => $controller) {
 
 Route::apiResource('client/orders', ApiMemberOrderController::class);
 
-Route::group(['prefix' => 'auth'], function () {
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
-    Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::get('me', [AuthController::class, 'me'])->middleware('auth:api');
+// Route::group(['prefix' => 'auth'], function () {
+//     Route::post('register', [AuthController::class, 'register']);
+//     Route::post('login', [AuthController::class, 'login']);
+//     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
+//     Route::post('refresh', [AuthController::class, 'refresh']);
+//     Route::get('me', [AuthController::class, 'me'])->middleware('auth:api');
+// });
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+
+], function ($router) {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+    Route::get('/user-profile', [AuthController::class, 'userProfile']);
+    Route::post('/change-pass', [AuthController::class, 'changePassWord']);    
+});
+
+Route::prefix('shop')->group(function () {
+    Route::get('/cart', [CartController::class, 'index']); // Lấy danh sách sản phẩm trong giỏ hàng
+    Route::post('/cart/store', [CartController::class, 'store']); // Thêm sản phẩm vào giỏ hàng
+    Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity']); // Cập nhật số lượng sản phẩm
+    Route::delete('/cart/{id}', [CartController::class, 'destroy']); // Xóa sản phẩm khỏi giỏ hàng
 });

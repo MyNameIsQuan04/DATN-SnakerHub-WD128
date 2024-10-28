@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Cart_Item;
@@ -13,54 +14,53 @@ class CartController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-{
-    // Sử dụng LEFT JOIN để đảm bảo lấy được tất cả các sản phẩm, kể cả khi thiếu màu hoặc kích thước
-    $cartItems = Cart_Item::leftJoin('product__variants', 'cart__items.product__variant_id', '=', 'product__variants.id')
-        ->leftJoin('products', 'product__variants.product_id', '=', 'products.id')
-        ->leftJoin('colors', 'product__variants.color_id', '=', 'colors.id') // Kết nối với bảng colors
-        ->leftJoin('sizes', 'product__variants.size_id', '=', 'sizes.id') // Kết nối với bảng sizes
-        ->select(
-            'cart__items.id',
-            'products.name as product_name', // Tên sản phẩm
-            'colors.name as name_color', // Tên màu
-            'sizes.name as name_size', // Tên kích thước
-            'product__variants.price', // Giá biến thể
-            'cart__items.quality' // Số lượng trong giỏ hàng
-        )
-        ->get();
+    {
+        $cart = Cart::where('user_id', auth()->user()->id)->first();
+        $cart->load('cart_Items.product_variant', 'cart_Items.product_variant.color', 'cart_Items.product_variant.size', 'cart_Items.product_variant.product');
+        return $cart;
 
-    // Truyền dữ liệu vào view
-    return view('client.cart.index', compact('cartItems'));
-}
-
-    
-
-
+    }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $product = Product::find($request->id);
-        $cart = session()->get('cart', []);
+        // Validate request
+        $request->validate([
+            'id' => 'required|integer|exists:products,id', // Kiểm tra sản phẩm có tồn tại không
+            'color_id' => 'required|integer|exists:colors,id', // Kiểm tra màu sắc có tồn tại không
+            'size_id' => 'required|integer|exists:sizes,id', // Kiểm tra kích thước có tồn tại không
+            'quantity' => 'required|integer|min:1', // Số lượng phải lớn hơn 0
+        ]);
 
-        // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
-        if (isset($cart[$product->id])) {
-            $cart[$product->id]['quantity']++;
-        } else {
-            // Thêm sản phẩm mới vào giỏ hàng
-            $cart[$product->id] = [
-                "name" => $product->name,
-                "quality" => 1,
-                "price" => $product->price,
-                "image" => $product->image,
-            ];
+        $userID = auth()->user()->id;
+        // Lấy giỏ hàng của user hiện tại
+        $cart = Cart::where('user_id', $userID)->first();
+        // Lấy sản phẩm theo id
+        $product = Product::find($request->id);
+
+        $variant_id = $product->productVariants()
+            ->where('size_id', $request['size_id'])
+            ->where('color_id', $request['color_id'])
+            ->pluck('id')
+            ->first();
+        if (!$variant_id) {
+            return response()->json(['error' => 'Sản phẩm không có biến thể tương ứng'], 404);
         }
 
-        session()->put('cart', $cart);
+        $cart_item = Cart_Item::create([
+            'cart_id' => $cart->id,
+            'product__variant_id' => $variant_id,
+            'quantity' => $request['quantity'],
+        ]);
 
-        return redirect()->back()->with('success', 'Sản phẩm đã được thêm vào giỏ hàng!');
+        $cart_item->load('product_variant.size', 'product_variant.color', 'product_variant.product');
+        return response()->json([
+            'message' => 'Thêm vào giỏ hàng thành công',
+            'cart_item' => $cart_item,
+        ], 201);
     }
+
 
     /**
      * Display the specified resource.
@@ -91,29 +91,29 @@ class CartController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-{
-    // Tìm sản phẩm trong giỏ hàng dựa trên id
-    $cartItem = Cart_Item::find($id);
+    {
+        // Tìm sản phẩm trong giỏ hàng dựa trên id
+        $cartItem = Cart_Item::find($id);
 
-    if ($cartItem) {
-        // Xóa sản phẩm khỏi giỏ hàng
-        $cartItem->delete();
+        if ($cartItem) {
+            // Xóa sản phẩm khỏi giỏ hàng
+            $cartItem->delete();
 
-        return redirect()->back()->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng!');
+            return redirect()->back()->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng!');
+        }
+
+        return redirect()->back()->with('error', 'Sản phẩm không tồn tại trong giỏ hàng!');
     }
 
-    return redirect()->back()->with('error', 'Sản phẩm không tồn tại trong giỏ hàng!');
-}
 
+    // Tính tổng tiền giỏ hàng
+    private function calculateTotal($cart)
+    {
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
 
-     // Tính tổng tiền giỏ hàng
-     private function calculateTotal($cart)
-     {
-         $total = 0;
-         foreach ($cart as $item) {
-             $total += $item['price'] * $item['quantity'];
-         }
- 
-         return $total;
-     }
+        return $total;
+    }
 }

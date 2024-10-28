@@ -14,8 +14,8 @@ class Cart_Item extends Model // Đảm bảo tên class cũng đúng chuẩn
 
     protected $fillable = [
         'cart_id',
-        'product_variant_id',
-        'quality',
+        'product__variant_id',
+        'quantity',
     ];
 
     // Mối quan hệ với Cart
@@ -27,6 +27,6 @@ class Cart_Item extends Model // Đảm bảo tên class cũng đúng chuẩn
     // Mối quan hệ với ProductVariant
     public function product_variant() // Đặt tên theo số ít
     {
-        return $this->belongsTo(Product_Variant::class, 'product_variant_id');
+        return $this->belongsTo(Product_Variant::class, 'product__variant_id');
     }
 }

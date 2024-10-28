@@ -55,18 +55,19 @@ Route::middleware(['auth','type:admin'])->group(function(){
     Route::resource('admin/color', ColorController::class);
     Route::resource('admin/comment', CommentController::class);
     Route::resource('admin/user', UserController::class);
-    $crud = [
-        // 'categories' => CategoryController::class,
-        // 'products' => ProductController::class,
-        'orders' => OrderController::class,
-        
-    ];
     
-    Route::prefix('admin')->group(function () use ($crud) {
-        foreach ($crud as $key => $controller) {
-            Route::resource($key, $controller);
-        }
-    
-    });
 });
 
+$crud = [
+    // 'categories' => CategoryController::class,
+    'products' => ProductController::class,
+    // 'orders' => OrderController::class,
+    
+];
+
+Route::prefix('admin')->group(function () use ($crud) {
+    foreach ($crud as $key => $controller) {
+        Route::resource($key, $controller);
+    }
+
+});
