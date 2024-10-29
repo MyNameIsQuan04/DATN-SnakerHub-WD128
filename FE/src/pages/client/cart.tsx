@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { CartItem } from "../../interfaces/Cart";
-
 type Props = {};
 
 const Cart = (props: Props) => {

@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const handleUser = async (user: IUser) => {
     try {
-      const { data } = await instance.put(`/users/updateme/${user._id}`, user);
+      const { data } = await instance.put(`/users/updateme/${user.id}`, user);
       dispatch({ type: "UPDATE_USER", payload: data });
       alert(data.message);
       nav("/admin/users");
