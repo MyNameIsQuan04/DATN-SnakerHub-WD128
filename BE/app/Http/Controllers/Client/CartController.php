@@ -73,7 +73,6 @@ class CartController extends Controller
         }
 
         return response()->json([
-            'success' => true,
             'message' => 'Sản phẩm đã được thêm vào giỏ hàng!',
             'cart_item' => $cartItem
         ], 201);
