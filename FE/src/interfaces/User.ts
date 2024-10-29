@@ -9,5 +9,5 @@ export interface IUser {
   type?: "admin" | "user" | "guest";
   confirmPassword?: string;
   created_at : string,
-  isLocked?: boolean; // Thêm thuộc tính để quản lý trạng thái khóa
+  isLocked: boolean; // Thêm thuộc tính để quản lý trạng thái khóa
 }

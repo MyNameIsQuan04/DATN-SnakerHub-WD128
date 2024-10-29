@@ -58,7 +58,7 @@ const AdminOrder = () => {
       </div>
 
       {/* Table - Nội dung có thể cuộn */}
-      <div className="overflow-y-auto" style={{ maxHeight: "500px" }}>
+      <div className="overflow-y-auto" style={{ maxHeight: "560px" }}>
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr>
@@ -66,10 +66,10 @@ const AdminOrder = () => {
               <th className="py-2 px-4 border-b">Họ và tên</th>
               <th className="py-2 px-4 border-b">Số điện thoại</th>
               <th className="py-2 px-4 border-b">Địa chỉ</th>
+              <th className="py-2 px-4 border-b">Ngày tạo</th>
               <th className="py-2 px-4 border-b">Chi tiết sản phẩm</th>
               <th className="py-2 px-4 border-b">Tổng tiền</th>
               <th className="py-2 px-4 border-b">Trạng thái</th>
-              <th className="py-2 px-4 border-b">Hoạt động</th>
             </tr>
           </thead>
           <tbody>
@@ -81,6 +81,7 @@ const AdminOrder = () => {
                   {item.customer.phone_number}
                 </td>
                 <td className="py-2 px-4 border-b">{item.customer.address}</td>
+                <td className="py-2 px-4 border-b">{item.created_at || "N/A"}</td>
                 <td className="py-2 px-4 border-b">
                   {item.order_items.map((product) => (
                     <div key={product.id} className="mb-2">

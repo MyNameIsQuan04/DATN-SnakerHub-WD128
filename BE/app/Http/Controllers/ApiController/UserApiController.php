@@ -62,7 +62,7 @@ class UserApiController extends Controller
             'password' => 'sometimes|nullable|string|min:6',
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string',
-            'role' => 'sometimes|required|in:customer,admin',
+            'type' => 'sometimes|required|in:user,admin',
         ]);
 
         if ($request->has('password') && !empty($validatedData['password'])) {
