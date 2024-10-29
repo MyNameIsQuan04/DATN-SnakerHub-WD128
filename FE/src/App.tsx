@@ -27,6 +27,7 @@ import UpdateColor from "./pages/admin/color/UpdateColor";
 import AddSize from "./pages/admin/size/AddSize";
 import UpdateSize from "./pages/admin/size/UpdateSize";
 import OrderHistory from "./pages/client/orderHistory";
+import Products from "./pages/client/products";
 
 function App() {
   return (
@@ -35,15 +36,18 @@ function App() {
         <Route
           path="/"
           element={
-            <ProductContext>
-              <LayoutClient />
-            </ProductContext>
+            <CategoryContext>
+              <ProductContext>
+                <LayoutClient />
+              </ProductContext>
+            </CategoryContext>
           }
         >
           <Route index element={<Home />} />
           <Route path="detail/:id" element={<Detail />} />
-          <Route path="checkout" element={<Checkout />} />
-          <Route path="cart" element={<Cart />} />
+          <Route path="products" element={<Products />} />
+          <Route path="cart" element={<Checkout />} />
+          {/* <Route path="cart" element={<Cart />} /> */}
           <Route path="ordered" element={<OrderHistory />} />
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />
