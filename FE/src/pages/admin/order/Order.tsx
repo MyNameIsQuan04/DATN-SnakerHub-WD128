@@ -98,7 +98,7 @@ const AdminOrder = () => {
                       </div>
                       <div>
                         <img
-                          src={product.product_variant.images[0]}
+                          src={product.product_variant?.images?.[0] || ""}
                           alt="Product image"
                           className="w-16 h-16 object-cover"
                         />
@@ -117,8 +117,9 @@ const AdminOrder = () => {
                     className="border border-gray-300 rounded px-2 py-1"
                   >
                     <option value="chờ xử lý">Chờ xử lý</option>
+                    <option value="đã xác nhận">Đã xác nhận</option>
                     <option value="đang vận chuyển">Đang vận chuyển</option>
-                    <option value="đã giao hàng">Đã giao hàng</option>
+                    <option value="hoàn thành">Đã giao hàng</option>
                     <option value="đã hủy">Đã hủy</option>
                   </select>
                 </td>
