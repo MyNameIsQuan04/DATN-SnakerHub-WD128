@@ -6,85 +6,113 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Cart;
 use App\Models\Cart_Item;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CartController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $cart = Cart::where('user_id', auth()->user()->id)->first();
-        $cart->load('cart_Items.product_variant', 'cart_Items.product_variant.color', 'cart_Items.product_variant.size', 'cart_Items.product_variant.product');
-        return $cart;
 
+    public function index(Request $request)
+    {
+        $user = auth()->user();
+        // Lấy thông tin giỏ hàng của người dùng
+        $cart = Cart::where('user_id', $user->id)->first();
+
+        if (!$cart) {
+            return response()->json(['success' => false, 'message' => 'Giỏ hàng không tồn tại!'], 404);
+        }
+
+        $cart->load('cart_Items.product_variant', 'cart_Items.product_variant.color', 'cart_Items.product_variant.size', 'cart_Items.product_variant.product');
+
+        return response()->json(['success' => true, 'cart' => $cart]);
     }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        // Validate request
+        // $user = auth()->user(); // Lấy người dùng từ JWT token
+        // if (!$user) {
+        //     return response()->json(['success' => false, 'message' => 'Unauthorized, no user found'], 401);
+        // }
+        $user = JWTAuth::toUser($request->token);
         $request->validate([
-            'id' => 'required|integer|exists:products,id', // Kiểm tra sản phẩm có tồn tại không
-            'color_id' => 'required|integer|exists:colors,id', // Kiểm tra màu sắc có tồn tại không
-            'size_id' => 'required|integer|exists:sizes,id', // Kiểm tra kích thước có tồn tại không
-            'quantity' => 'required|integer|min:1', // Số lượng phải lớn hơn 0
+            'id' => 'required|integer|exists:products,id',
+            'color_id' => 'required|integer|exists:colors,id',
+            'size_id' => 'required|integer|exists:sizes,id',
         ]);
 
-        $userID = auth()->user()->id;
-        // Lấy giỏ hàng của user hiện tại
-        $cart = Cart::where('user_id', $userID)->first();
-        // Lấy sản phẩm theo id
-        $product = Product::find($request->id);
+        //Tạo hoặc Tìm Giỏ hàng : firstOrCreatePhương pháp này được sử dụng để tìm giỏ hàng hiện có cho người dùng hoặc tạo giỏ hàng mới nếu không tồn tại.
+        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
 
+        $product = Product::find($request->id);
         $variant_id = $product->productVariants()
             ->where('size_id', $request['size_id'])
             ->where('color_id', $request['color_id'])
             ->pluck('id')
             ->first();
-        if (!$variant_id) {
-            return response()->json(['error' => 'Sản phẩm không có biến thể tương ứng'], 404);
+        //Kiểm tra mục giỏ hàng hiện có : Thay vì kiểm tra phiên, nó sẽ kiểm tra cart_itemsbảng để tìm mục hiện có có cùng cart_id, product_variant_id, color_id, và size_id.
+        $cartItem = Cart_Item::where('cart_id', $cart->id)
+            ->where('product__variant_id', $variant_id)
+            ->first();
+        //Cập nhật hoặc Tạo mục giỏ hàng : Nếu mục tồn tại, nó sẽ tăng số lượng. Nếu không, nó sẽ tạo một Cart_Itembản ghi mới.
+        if ($cartItem) {
+            $cartItem->quantity++;
+            $cartItem->save();
+        } else {
+            // Create a new cart item
+            $cartItem = new Cart_Item();
+            $cartItem->cart_id = $cart->id;
+            $cartItem->product__variant_id = $variant_id;
+            $cartItem->quantity = 1; // Assuming you want to store the price // Store image if needed
+            $cartItem->save();
         }
 
-        $cart_item = Cart_Item::create([
-            'cart_id' => $cart->id,
-            'product__variant_id' => $variant_id,
-            'quantity' => $request['quantity'],
-        ]);
-
-        $cart_item->load('product_variant.size', 'product_variant.color', 'product_variant.product');
         return response()->json([
-            'message' => 'Thêm vào giỏ hàng thành công',
-            'cart_item' => $cart_item,
+            'success' => true,
+            'message' => 'Sản phẩm đã được thêm vào giỏ hàng!',
+            'cart_item' => $cartItem
         ], 201);
     }
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        if ($request->id && $request->quantity) {
-            $cart = session()->get('cart');
+        // Lấy thông tin người dùng từ token
+        $user = auth()->user();
 
-            if (isset($cart[$request->id])) {
-                $cart[$request->id]['quantity'] = $request->quantity;
-                session()->put('cart', $cart);
-            }
-
-            return redirect()->back()->with('success', 'Giỏ hàng đã được cập nhật!');
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
+
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        // Tìm sản phẩm trong giỏ hàng
+        $cartItem = Cart_Item::where('id', $id)->whereHas('cart', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->first();
+
+        if ($cartItem) {
+            // Cập nhật số lượng sản phẩm
+            $cartItem->quantity = $request->quantity;
+            $cartItem->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Số lượng sản phẩm đã được cập nhật!',
+                'cart_item' => $cartItem
+            ], 200);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại trong giỏ hàng!'], 404);
     }
 
     /**
@@ -92,28 +120,64 @@ class CartController extends Controller
      */
     public function destroy($id)
     {
-        // Tìm sản phẩm trong giỏ hàng dựa trên id
-        $cartItem = Cart_Item::find($id);
+        // Lấy thông tin người dùng từ token
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+
+        // Tìm sản phẩm trong giỏ hàng
+        $cartItem = Cart_Item::where('id', $id)->whereHas('cart', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->first();
 
         if ($cartItem) {
             // Xóa sản phẩm khỏi giỏ hàng
             $cartItem->delete();
 
-            return redirect()->back()->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng!');
+            return response()->json(['success' => true, 'message' => 'Sản phẩm đã được xóa khỏi giỏ hàng!'], 200);
         }
 
-        return redirect()->back()->with('error', 'Sản phẩm không tồn tại trong giỏ hàng!');
+        return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại trong giỏ hàng!'], 404);
     }
 
-
-    // Tính tổng tiền giỏ hàng
-    private function calculateTotal($cart)
+    /**
+     * Cập nhật số lượng sản phẩm trong giỏ hàng
+     */
+    public function updateQuantity(Request $request)
     {
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
+        // Lấy thông tin người dùng từ token
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
 
-        return $total;
+        // Validate dữ liệu đầu vào
+        $request->validate([
+            'id' => 'required|exists:cart_items,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        // Tìm sản phẩm trong bảng cart_items
+        $cartItem = Cart_Item::where('id', $request->id)->whereHas('cart', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->first();
+
+        if ($cartItem) {
+            // Cập nhật số lượng của sản phẩm
+            $cartItem->quantity = $request->quantity;
+            $cartItem->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Số lượng sản phẩm đã được cập nhật!',
+                'new_total_price' => $cartItem->quantity * $cartItem->price,
+                'cart_item' => $cartItem
+            ], 200);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Không tìm thấy sản phẩm trong giỏ hàng!'], 404);
     }
 }

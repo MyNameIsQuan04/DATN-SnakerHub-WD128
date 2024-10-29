@@ -1,6 +1,11 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { ColorCT } from "../../../contexts/ColorContext";
+import { Color } from "../../../interfaces/Color";
 
 const ListColor = () => {
+  const { colors, onRemoveColor } = useContext(ColorCT);
+  console.log(colors);
   return (
     <div>
       <div className="container mx-auto p-4">
@@ -22,7 +27,25 @@ const ListColor = () => {
             </tr>
           </thead>
           <tbody>
-            <td className="py-2 px-4"></td>
+            {colors.map((color: Color, index: number) => (
+              <tr>
+                <th className="py-2 px-4 border-b">{index + 1}</th>
+                <th className="py-2 px-4 border-b">{color.name}</th>
+                <th className="py-2 px-4 border-b flex justify-center gap-[10px]">
+                  <Link to={`/admin/color-edit/${color.id}`}>
+                    <button className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500">
+                      Cập nhật
+                    </button>
+                  </Link>
+                  <button
+                    className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
+                    onClick={() => onRemoveColor(color.id)}
+                  >
+                    Xóa
+                  </button>
+                </th>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

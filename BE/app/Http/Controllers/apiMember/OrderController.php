@@ -25,7 +25,7 @@ class OrderController extends Controller
         $orders = Order::whereHas('customer', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })->orderByDesc('id')->get();
-        $orders->load('orderItems.productVariant.size','orderItems.productVariant.color', 'customer');
+        $orders->load('orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
         return $orders;
     }
 
@@ -69,11 +69,6 @@ class OrderController extends Controller
             $total = 0;
             foreach ($validatedData['items'] as $item) {
                 $productVariant = Product_Variant::find($item['product__variant_id']);
-                $product = Product::find($productVariant['id']);
-                $newSalesCount = $product['sales_count'] + $item['quantity'];
-                $product->update([
-                    'sales_count' => $newSalesCount
-                ]);
                 if ($productVariant['stock'] < $item['quantity']) {
                     DB::rollBack();
                     return response()->json([
@@ -91,7 +86,7 @@ class OrderController extends Controller
 
                 $cart = Cart::where('user_id', $userId)->first();
                 if (isset($cart)) {
-                    foreach ($cart->cartItems as $item) {
+                    foreach ($cart->cart_Items as $item) {
                         Cart_Item::where('cart_id', $cart->id)
                             ->where('product__variant_id', $item['product__variant_id'])
                             ->forceDelete();
@@ -108,7 +103,6 @@ class OrderController extends Controller
                 }
 
                 $total += $item['total'];
-
             }
             $order->update([
                 'total_price' => $total,

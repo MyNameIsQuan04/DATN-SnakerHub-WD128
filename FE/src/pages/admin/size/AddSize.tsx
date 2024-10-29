@@ -1,18 +1,20 @@
 import axios from "axios";
-import React from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { Size } from "../../../interfaces/Size";
+import { SizeCT } from "../../../contexts/SizeContext";
+import api from "../../../configs/axios";
 
 const AddSize = () => {
-  const { register, handleSubmit } = useForm();
-
-  const onSubmit = async () => {
-    try {
-      const data = await axios.post("http://localhost:8000/api/categories");
-      alert("Thanh cong");
-    } catch (error) {
-      console.log(error);
-    }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Size>();
+  const { onAddSize } = useContext(SizeCT);
+  const onSubmit = async (data: Size) => {
+    onAddSize(data);
   };
   return (
     <div>
@@ -32,10 +34,22 @@ const AddSize = () => {
               id="name"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
               placeholder="Nhập tên sản phẩm"
-              {...register("name")}
+              {...register("name", {
+                required: "Vui lòng nhập kích thước",
+                pattern: {
+                  value: /^\d*$/,
+                  message: "Phải là số",
+                },
+                min: {
+                  value: 36,
+                  message: "Kích thước nhỏ nhất là 36",
+                },
+              })}
             />
+            {errors.name && (
+              <div className="text-red-500">{errors.name.message}</div>
+            )}
           </div>
-
           <button
             type="submit"
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"

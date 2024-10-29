@@ -29,7 +29,7 @@ class UpdateProductRequest extends FormRequest
             'name' => 'required|string|max:255|unique:products,name,' . $id,
             'description' => 'nullable|string',
             'price' => 'required|integer',
-            'thumbnail' => 'nullable|image',
+            'thumbnail' => 'nullable',
             'galleries' => 'nullable|array',
             'galleries.*.id' => 'nullable|integer',   //(input ẩn)khi cập nhật cần galleries.*.id để check cập nhập đúng sp và nếu id ko tồn tại mà có mảng sẽ thêm gallery mới 
             'galleries.*.image' => 'image',
@@ -44,6 +44,4 @@ class UpdateProductRequest extends FormRequest
             'variants.*.image' => 'nullable|image',
         ];
     }
-
-
 }
