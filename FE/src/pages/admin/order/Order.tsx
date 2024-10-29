@@ -1,8 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Order } from "../../../interfaces/Order";
+
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Order } from "../../../interfaces/Order";
 
 const AdminOrder = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -98,7 +99,7 @@ const AdminOrder = () => {
                       </div>
                       <div>
                         <img
-                          src={product.product_variant.images[0]}
+                          src={product.product_variant?.images?.[0] || ""}
                           alt="Product image"
                           className="w-16 h-16 object-cover"
                         />
@@ -117,17 +118,13 @@ const AdminOrder = () => {
                     className="border border-gray-300 rounded px-2 py-1"
                   >
                     <option value="chờ xử lý">Chờ xử lý</option>
+                    <option value="đã xác nhận">Đã xác nhận</option>
                     <option value="đang vận chuyển">Đang vận chuyển</option>
-                    <option value="đã giao hàng">Đã giao hàng</option>
+                    <option value="hoàn thành">Đã giao hàng</option>
                     <option value="đã hủy">Đã hủy</option>
                   </select>
                 </td>
                 <ToastContainer />
-                <td className="py-2 px-4 border-b">
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300">
-                    Xử lý
-                  </button>
-                </td>
               </tr>
             ))}
           </tbody>

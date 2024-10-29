@@ -1,27 +1,36 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
-type CartItem = {
-  id: string;
-  name: string;
-  thumbnail: string;
-  quanlity: number;
-  color: string;
-  size: string;
-  price: number;
-};
+import { CartItem } from "../../interfaces/Cart";
 
 type Props = {};
 
 const Cart = (props: Props) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const token = localStorage.getItem("access_token");
 
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/shop/cart");
-        setCartItems(response.data.data);
+        const response = await axios.get("http://localhost:8000/api/list", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("API Response:", response.data);
+
+        if (
+          response.data.success &&
+          response.data.cart &&
+          response.data.cart.cart__items
+        ) {
+          setCartItems(response.data.cart.cart__items);
+          console.log(response.data.cart.cart__items);
+        } else {
+          console.error("Không tìm thấy cart__items trong dữ liệu trả về.");
+          setCartItems([]);
+        }
         setLoading(false);
       } catch (error) {
         console.error("Lỗi khi tải giỏ hàng:", error);
@@ -30,11 +39,15 @@ const Cart = (props: Props) => {
     };
 
     fetchCartItems();
-  }, []);
+  }, [token]);
 
-  const handleRemoveItem = async (id: string) => {
+  const handleRemoveItem = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:8000/api/shop/cart/store/${id}`);
+      await axios.delete(`http://localhost:8000/api/destroy/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const updatedCart = cartItems.filter((item) => item.id !== id);
       setCartItems(updatedCart);
     } catch (error) {
@@ -46,33 +59,69 @@ const Cart = (props: Props) => {
     return <div>Đang tải giỏ hàng...</div>;
   }
 
-  if (cartItems.length === 0) {
-    return <div>Giỏ hàng trống</div>;
+  if (!Array.isArray(cartItems) || cartItems.length === 0) {
+    return <div className="mt-[300px] px-[100px]">Giỏ hàng trống.</div>;
   }
 
   return (
     <div className="container mx-auto mt-[300px] px-[100px]">
       <h1 className="text-2xl font-semibold mb-5">Giỏ Hàng Của Bạn</h1>
-      {cartItems.map((item) => (
-        <div key={item.id} className="flex justify-between items-center mb-5">
-          <div className="flex items-center">
-            <img src={item.thumbnail} alt={item.name} className="w-20 h-20" />
-            <div className="ml-4">
-              <p className="text-lg">{item.name}</p>
-              <p className="text-sm text-gray-600">Số lượng: {item.quanlity}</p>
-              <p className="text-sm text-gray-600">Màu: {item.color}</p>
-              <p className="text-sm text-gray-600">Kích thước: {item.size}</p>
-              <p className="text-sm text-red-600">{item.price} VND</p>
+      {cartItems.map((item) => {
+        const productVariant = item.product_variant;
+
+        // Kiểm tra xem productVariant có tồn tại không
+        if (!productVariant) {
+          return (
+            <div
+              key={item.id}
+              className="flex justify-between items-center mb-5"
+            >
+              <p className="text-red-600">Sản phẩm không còn nữa.</p>
+              <button
+                onClick={() => handleRemoveItem(item.id)}
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+              >
+                Xóa
+              </button>
             </div>
+          );
+        }
+
+        const product = productVariant.product;
+
+        return (
+          <div key={item.id} className="flex justify-between items-center mb-5">
+            <div className="flex items-center">
+              <img
+                src={product.thumbnail}
+                alt={product.name}
+                className="w-20 h-20 rounded-md"
+              />
+              <div className="ml-4">
+                <p className="text-lg">{product.name}</p>
+                <p className="text-sm text-gray-600">
+                  Số lượng: {item.quantity}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Màu: {productVariant.color.name}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Kích thước: {productVariant.size.name}
+                </p>
+                <p className="text-sm text-red-600">
+                  {productVariant.price.toLocaleString("vi-VN")} VND
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => handleRemoveItem(item.id)}
+              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+            >
+              Xóa
+            </button>
           </div>
-          <button
-            onClick={() => handleRemoveItem(item.id)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
-          >
-            Xóa
-          </button>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

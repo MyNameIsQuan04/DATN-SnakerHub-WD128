@@ -79,11 +79,12 @@ export interface Product {
 }
 
 export interface product_variants {
-  id?: number;
-  size: Size;
+  id: number;
+  product_id: number;
   color: Color;
+  size: Size;
+  sku: string;
   price: number;
   stock: number;
-  sku: string;
   image: string;
 }
