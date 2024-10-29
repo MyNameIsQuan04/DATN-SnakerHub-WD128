@@ -40,9 +40,9 @@ const Detail = () => {
   // Chọn màu sắc
   const handleSelectColor = (colorId: number) => {
     setSelectedColor(colorId);
-    filterSizesByColor(colorId); // Lọc kích thước cho màu đã chọn
-    setSelectedSize(null); // Đặt lại kích thước đã chọn
-    setSelectedVariantPrice(null); // Đặt lại giá đã chọn
+    filterSizesByColor(colorId);
+    setSelectedSize(null);
+    setSelectedVariantPrice(null);
   };
 
   // Chọn kích thước
@@ -167,6 +167,7 @@ const Detail = () => {
             <div className="flex mt-4 items-center">
               <div className="flex text-yellow-400 text-lg mr-5">
                 <span>⭐</span> <span>⭐</span> <span>⭐</span> <span>⭐</span>
+                <span>⭐</span>
               </div>
               <div className="flex gap-3 text-sm text-gray-500">
                 <span>1401 đánh giá</span>
@@ -197,7 +198,7 @@ const Detail = () => {
                 {colors.map((color) => (
                   <p
                     key={color?.id}
-                    onClick={() => handleSelectColor(color!.id)}
+                    onClick={() => handleSelectColor(color!.id as number)}
                     className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md hover:bg-red-500 hover:text-white ${
                       selectedColor === color!.id ? "border-red-500" : ""
                     }`}
@@ -274,33 +275,31 @@ const Detail = () => {
             </div>
 
             {/* Các dịch vụ liên quan */}
-            <div className="flex gap-4 items-center mt-3">
-              <MdOutlineLocalShipping className="w-5 h-5 text-gray-500" />
-              <p className="text-gray-500 text-sm">
-                Miễn phí vận chuyển cho đơn hàng trên 499K
-              </p>
-            </div>
-            <div className="flex gap-4 items-center mt-3">
-              <FaPhoneVolume className="w-5 h-5 text-gray-500" />
-              <p className="text-gray-500 text-sm">
-                Đặt hàng gọi ngay 1800 6868
-              </p>
-            </div>
-            <div className="flex gap-4 items-center mt-3">
-              <TbTruckReturn className="w-5 h-5 text-gray-500" />
-              <p className="text-gray-500 text-sm">Đổi trả trong 30 ngày</p>
-            </div>
-            <div className="flex gap-4 items-center mt-3">
-              <GrAnnounce className="w-5 h-5 text-gray-500" />
-              <p className="text-gray-500 text-sm">
-                Bảo hành 90 ngày với sản phẩm giày
-              </p>
-            </div>
-            <div className="flex gap-4 items-center mt-3">
-              <AiOutlineBank className="w-5 h-5 text-gray-500" />
-              <p className="text-gray-500 text-sm">
-                Thanh toán bằng thẻ tín dụng
-              </p>
+            <div className="grid grid-cols-3 mt-6 gap-4">
+              <div className="flex flex-col items-center text-sm text-gray-600">
+                <MdOutlineLocalShipping className="w-[30px] h-auto" />
+                <p>Bảo hành keo vĩnh viễn</p>
+              </div>
+              <div className="flex flex-col items-center text-sm text-gray-600">
+                <MdOutlineLocalShipping className="w-[30px] h-auto" />
+                <p>Miễn phí vận chuyển toàn quốc cho đơn hàng từ 150k</p>
+              </div>
+              <div className="flex flex-col items-center text-sm text-gray-600">
+                <TbTruckReturn className="w-[30px] h-auto" />
+                <p>Đổi trả dễ dàng (trong vòng 7 ngày nếu lỗi nhà sản xuất)</p>
+              </div>
+              <div className="flex flex-col items-center text-sm text-gray-600">
+                <FaPhoneVolume className="w-[30px] h-auto" />
+                <p>Hotline 1900.633.349 hỗ trợ từ 8h30-21h30</p>
+              </div>
+              <div className="flex flex-col items-center text-sm text-gray-600">
+                <AiOutlineBank className="w-[30px] h-auto" />
+                <p>Giao hàng tận nơi, nhận hàng xong thanh toán</p>
+              </div>
+              <div className="flex flex-col items-center text-sm text-gray-600">
+                <GrAnnounce className="w-[30px] h-auto" />
+                <p>Ưu đãi tích điểm và hưởng quyền lợi thành viên từ MWC</p>
+              </div>
             </div>
           </div>
         </div>

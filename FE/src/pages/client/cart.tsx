@@ -1,27 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
-type CartItem = {
-  id: number; // Chú ý: id là number chứ không phải string
-  quantity: number;
-  product_variant: {
-    product_id: number;
-    color: {
-      id: number;
-      name: string;
-    };
-    size: {
-      id: number;
-      name: string;
-    };
-    price: number;
-    product: {
-      id: number;
-      name: string;
-      thumbnail: string;
-    };
-  } | null; // Thêm null vào đây để phù hợp với kiểu dữ liệu
-};
+import { CartItem } from "../../interfaces/Cart";
 
 type Props = {};
 
@@ -81,7 +60,7 @@ const Cart = (props: Props) => {
   }
 
   if (!Array.isArray(cartItems) || cartItems.length === 0) {
-    return <div>Giỏ hàng trống.</div>;
+    return <div className="mt-[300px] px-[100px]">Giỏ hàng trống.</div>;
   }
 
   return (
