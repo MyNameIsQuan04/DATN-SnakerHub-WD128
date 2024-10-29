@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Models\Cart;
 use App\Models\Cart_Item;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
