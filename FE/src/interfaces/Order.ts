@@ -15,6 +15,7 @@ export interface OrderItem {
   product__variant_id: number;
   quantity: number;
   price: number;
+  created_at : string;
   product_variant: product_variants[];
 }
 
