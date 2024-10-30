@@ -3,6 +3,42 @@ import { Color } from "./Color";
 import { Gallery } from "./Gallery";
 import { Size } from "./Size";
 
+
+// Product Interface
+export interface Product {
+  id?: number;
+  category: Category;
+  category_id: number;
+  name: string;
+  description: string;
+  price: number;
+  thumbnail: string;
+  sales_count: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  galleries: Gallery[];
+  product_variants: product_variants[];
+}
+
+export interface product_variants {
+  id: number;
+  product_id: number;
+  color: Color;
+  size: Size;
+  color_id: number;
+  size_id: number;
+  sku: string;
+  price: number;
+  stock: number;
+  image: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  product: Product;
+}
+
+
 // export interface Product {
 //   id: number | string;
 //   name: string;
@@ -64,27 +100,3 @@ import { Size } from "./Size";
 // }
 
 // --------------------------------------------------------------------
-
-// Product Interface
-export interface Product {
-  id?: number;
-  category: Category;
-  name: string;
-  description: string;
-  price: number;
-  thumbnail: string;
-  sales_count: number;
-  galleries: Gallery[];
-  product_variants: product_variants[];
-}
-
-export interface product_variants {
-  id: number;
-  product_id: number;
-  color: Color;
-  size: Size;
-  sku: string;
-  price: number;
-  stock: number;
-  image: string;
-}
