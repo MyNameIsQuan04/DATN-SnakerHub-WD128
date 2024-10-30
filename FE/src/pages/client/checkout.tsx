@@ -3,6 +3,7 @@ import { useDistricts, useProvinces, useWards } from "../../apis/locations.ts";
 import axios from "axios";
 import { CartItem } from "../../interfaces/Cart.ts";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 const Checkout = () => {
   const [selectedProvince, setSelectedProvince] = useState("");
@@ -119,7 +120,7 @@ const Checkout = () => {
         }
       );
       if (response.data.success) {
-        alert("Đặt hàng thành công!");
+        toast.success("Đặt hàng thành công!");
       }
     } catch (error) {
       console.error("Lỗi khi đặt hàng:", error);

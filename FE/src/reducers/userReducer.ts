@@ -21,14 +21,14 @@ const userReducer = (state: State, action: Action) => {
       return {
         ...state,
         users: state.users.map((user) =>
-          user._id === action.payload._id ? action.payload : user
+          user.id === action.payload.id ? action.payload : user
         ),
       };
 
     case "REMOVE_USER":
       return {
         ...state,
-        users: state.users.filter((user) => user._id !== action.payload),
+        users: state.users.filter((user) => user.id !== action.payload),
       };
 
     default:
