@@ -63,10 +63,8 @@ class OrderController extends Controller
 
             $order = Order::create([
                 'customer_id' => $customer->id,
-                'total_price' => 0,
+                'total_price' => $validatedData['total_price'],
             ]);
-
-            $total = 0;
             foreach ($validatedData['items'] as $item) {
                 $productVariant = Product_Variant::find($item['product__variant_id']);
                 if ($productVariant['stock'] < $item['quantity']) {
@@ -102,13 +100,15 @@ class OrderController extends Controller
                     ]);
                 }
 
-                $total += $item['total'];
-            }
-            $order->update([
-                'total_price' => $total,
-            ]);
+                $product = Product::find($productVariant['product_id']);
 
-            $order->load('orderItems', 'customer');
+                $newSalesCount = $product['sales_count'] + $orderItem['quantity'];
+                $product->update([
+                    'sales_count' => $newSalesCount
+                ]);
+            }
+
+            $order->load('orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
 
             return response()->json([
                 'success' => true,
@@ -129,7 +129,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('orderItems.productVariant.size','orderItems.productVariant.color', 'customer');
+        $order->load('orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
         return $order;
     }
 
@@ -150,7 +150,7 @@ class OrderController extends Controller
                     'stock' => $stock,
                 ]);
 
-                $product = Product::find($productVariant['id']);
+                $product = Product::find($productVariant['product_id']);
 
                 $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
                 $product->update([
@@ -160,6 +160,9 @@ class OrderController extends Controller
             $order->update([
                 'total_price' => $dataValidate['status'],
             ]);
+
+            $order->load('orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+            return $order;
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
