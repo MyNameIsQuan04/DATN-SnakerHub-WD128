@@ -62,7 +62,7 @@ Route::group(['middleware' => ['auth:api']],  function () {
     Route::post('/add', [CartController::class, 'store'])->name('cart.add');
 
     // Cập nhật giỏ hàng (ví dụ: cập nhật số lượng sản phẩm)
-    Route::post('/update', [CartController::class, 'update'])->name('cart.update');
+    Route::put('/update/{id}', [CartController::class, 'update'])->name('cart.update');
 
     // Xóa một sản phẩm khỏi giỏ hàng
     Route::delete('/destroy/{id}', [CartController::class, 'destroy'])->name('cart.destroy');

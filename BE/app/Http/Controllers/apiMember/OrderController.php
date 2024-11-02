@@ -64,10 +64,10 @@ class OrderController extends Controller
 
             $order = Order::create([
                 'customer_id' => $customer->id,
-                'total_price' => 0,
+                'total_price' => $validatedData['total_price'],
             ]);
 
-            $total = 0;
+
             foreach ($validatedData['items'] as $item) {
                 $productVariant = Product_Variant::find($item['product__variant_id']);
                 if ($productVariant['stock'] < $item['quantity']) {
@@ -102,12 +102,8 @@ class OrderController extends Controller
                         'stock' => $stock,
                     ]);
                 }
-
-                $total += $item['total'];
             }
-            $order->update([
-                'total_price' => $total,
-            ]);
+
 
             $order->load('orderItems', 'customer');
 

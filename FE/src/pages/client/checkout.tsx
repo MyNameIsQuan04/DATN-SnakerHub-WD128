@@ -3,16 +3,21 @@ import { useDistricts, useProvinces, useWards } from "../../apis/locations.ts";
 import axios from "axios";
 import { CartItem } from "../../interfaces/Cart.ts";
 import { useForm } from "react-hook-form";
+import { useLocation } from "react-router-dom";
 
 const Checkout = () => {
+  const location = useLocation();
+  const selectedItems = location.state?.selectedItems || [];
+  const [checkoutItems, setCheckoutItems] = useState<CartItem[]>([]);
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
+  const [loading, setLoading] = useState<boolean>(true);
 
   const provinces = useProvinces();
   const districts = useDistricts(selectedProvince);
   const wards = useWards(selectedDistrict);
-
+  const token = localStorage.getItem("access_token");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const {
     register,
@@ -20,80 +25,45 @@ const Checkout = () => {
     setValue,
     formState: { errors },
   } = useForm();
-  const token = localStorage.getItem("access_token");
-  const handleIncrease = (index: number) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item, i) =>
-        i === index ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  };
 
-  const handleDecrease = (index: number) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item, i) =>
-        i === index && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
+  const fetchCheckoutItems = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/list", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log(response.data);
+
+      if (response.data.success && response.data.cart?.cart__items) {
+        const items = response.data.cart.cart__items.filter((item: CartItem) =>
+          selectedItems.includes(item.id)
+        );
+
+        console.log(items);
+
+        setCheckoutItems(items);
+        setCartItems(items);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Lỗi khi tải sản phẩm thanh toán:", error);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    const fetchCartItems = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/api/list", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        console.log("API Response:", response.data);
-
-        if (
-          response.data.success &&
-          response.data.cart &&
-          response.data.cart.cart__items
-        ) {
-          setCartItems(response.data.cart.cart__items);
-          console.log(response.data.cart.cart__items);
-        } else {
-          console.error("Không tìm thấy cart__items trong dữ liệu trả về.");
-          setCartItems([]);
-        }
-      } catch (error) {
-        console.error("Lỗi khi tải giỏ hàng:", error);
-      }
-    };
-
-    fetchCartItems();
-  }, [token]);
-
+    fetchCheckoutItems();
+  }, [selectedItems, token]);
   const totalPriceItem = (price: number, quantity: number) => price * quantity;
-  console.log(totalPriceItem);
-  const grandTotalPrice = cartItems.reduce(
+  const grandTotalPrice = checkoutItems.reduce(
     (total, item) => total + item.product_variant.price * item.quantity,
     0
   );
-  const handleRemoveItem = async (id: number) => {
-    const confirm = window.confirm(
-      "Bạn có muốn xóa sản phẩm này ra khỏi giỏ hàng không ?"
-    );
-    if (confirm) {
-      try {
-        await axios.delete(`http://localhost:8000/api/destroy/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const updatedCart = cartItems.filter((item) => item.id !== id);
-        setCartItems(updatedCart);
-      } catch (error) {
-        console.error("Lỗi khi xóa sản phẩm:", error);
-      }
-    }
-  };
+
   const onSubmit = async (data: any) => {
+    console.log(cartItems);
     const orderData = {
       ...data,
       province: selectedProvince,
@@ -126,6 +96,7 @@ const Checkout = () => {
       alert("Có lỗi xảy ra khi đặt hàng.");
     }
   };
+
   return (
     <div className="mt-[400px] px-[150px]">
       <div className="flex">
@@ -135,29 +106,25 @@ const Checkout = () => {
       </div>
 
       <div className="border border-[#f3f3f3] mt-[30px]">
-        <div className="flex *:text-[14px] *:text-center px-[10px] *:text-[#888888] my-[10px]">
+        <div className="flex text-[14px] text-center px-[10px] text-[#888888] my-[10px]">
           <p className="w-[550px]">SẢN PHẨM</p>
           <p className="w-[178px]">ĐƠN GIÁ</p>
           <p className="w-[177px]">SỐ LƯỢNG</p>
           <p className="w-[150px]">SỐ TIỀN</p>
-          <p className="w-[146px]">THAO TÁC</p>
         </div>
       </div>
-      <div className="border border-[#c9c9c9] px-[10px] mt-[20px] *:text-[14px] ">
-        {cartItems.map((item, index) => {
+      <div className="border border-[#c9c9c9] px-[10px] mt-[20px] text-[14px] ">
+        {checkoutItems.map((item, index) => {
           const productVariant = item.product_variant;
           const product = productVariant.product;
           return (
-            <div className="">
+            <div>
               <div className="flex my-[20px]">
                 <div className="w-[550px]">
-                  <div
-                    className="flex justify-center items-center gap-[30px]"
-                    key={product.id}
-                  >
+                  <div className="flex justify-center items-center gap-[30px]">
                     <img
                       src={product.thumbnail}
-                      alt=""
+                      alt={product.name}
                       className="w-[100px] h-[100px]"
                     />
                     <p className="text-ellipsis overflow-hidden whitespace-nowrap w-[170px]">
@@ -179,47 +146,13 @@ const Checkout = () => {
                 </div>
                 <div className="w-[177px]">
                   <div className="flex justify-center items-center h-[100px]">
-                    <div className="flex items-center justify-center mx-auto w-[114px] h-[32px]  border border-[#c9c9c9]">
-                      <button
-                        onClick={() => handleDecrease(index)}
-                        className="h-[32px] w-[32px] border-r "
-                      >
-                        -
-                      </button>
-                      <span className="mx-[21px] text-[16px]">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => handleIncrease(index)}
-                        className="h-[32px] w-[32px] border-l  "
-                      >
-                        +
-                      </button>
-                    </div>
+                    {item.quantity}
                   </div>
                 </div>
                 <div className="w-[150px] flex justify-center items-center">
                   <span className="text-red-500">
-                    {totalPriceItem(productVariant.price, item.quantity)} đ
+                    {productVariant.price * item.quantity} đ
                   </span>
-                </div>
-                <div className="w-[146px] flex justify-center items-center">
-                  {/* delete */}
-                  <svg
-                    onClick={() => handleRemoveItem(item.id)}
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    className="size-5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                    />
-                  </svg>
                 </div>
               </div>
               <hr className="mb-[10px]" />
@@ -227,7 +160,7 @@ const Checkout = () => {
           );
         })}
       </div>
-      <div className="mt-[20px] *:text-[14px]">
+      <div className="mt-[20px] text-[14px]">
         <hr />
         <div className="flex">
           <div className="w-1/2"></div>
@@ -260,45 +193,63 @@ const Checkout = () => {
           <div className="mt-[20px]">
             <input
               type="text"
-              {...register("name")}
-              placeholder="Ho ten"
+              {...register("name", { required: true })}
+              placeholder="Họ tên"
               className="w-[400px] h-[40px] border border-[#c9c9c9] pl-[20px]"
             />
+            {errors.name && (
+              <span className="text-red-500">Trường này là bắt buộc</span>
+            )}
             <input
               type="text"
-              {...register("phone")}
-              placeholder="SDT"
+              {...register("phone", { required: true })}
+              placeholder="Số điện thoại"
               className="w-[400px] h-[40px] border border-[#c9c9c9] pl-[20px] ml-[20px]"
             />
+            {errors.phone && (
+              <span className="text-red-500">Trường này là bắt buộc</span>
+            )}
           </div>
           <textarea
-            {...register("address")}
-            placeholder="Dia chi nhan hang"
+            {...register("address", { required: true })}
+            placeholder="Địa chỉ nhận hàng"
             className="h-[100px] pl-[20px] pt-[20px] w-full border border-[#c9c9c9] mt-[20px]"
           ></textarea>
-          <div>
+          {errors.address && (
+            <span className="text-red-500">Trường này là bắt buộc</span>
+          )}
+          {/* <div>
             <h3>Chọn phương thức thanh toán:</h3>
             <div className="flex flex-col gap-2">
               <label>
-                <input type="radio" name="paymentMethod" value="vnpay" />
+                <input
+                  type="radio"
+                  {...register("paymentMethod", { required: true })}
+                  value="vnpay"
+                />
                 Thanh toán VNPay
               </label>
-
-              <label>
-                <input type="radio" name="paymentMethod" value="momo" />
-                Thanh toán Momo
-              </label>
-
               <label>
                 <input
                   type="radio"
-                  name="paymentMethod"
-                  value="cash_on_delivery"
+                  {...register("paymentMethod", { required: true })}
+                  value="momo"
                 />
-                Thanh toán khi nhận hàng
+                Thanh toán Momo
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  {...register("paymentMethod", { required: true })}
+                  value="cash"
+                />
+                Thanh toán tiền mặt
               </label>
             </div>
-          </div>
+            {errors.paymentMethod && (
+              <span className="text-red-500">Trường này là bắt buộc</span>
+            )}
+          </div> */}
           <div className="mt-[20px]">
             <div className="flex items-center justify-between">
               <div>

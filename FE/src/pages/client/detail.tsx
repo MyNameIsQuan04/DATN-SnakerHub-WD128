@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { MdOutlineLocalShipping } from "react-icons/md";
@@ -7,6 +7,7 @@ import { TbTruckReturn } from "react-icons/tb";
 import { GrAnnounce } from "react-icons/gr";
 import { AiOutlineBank } from "react-icons/ai";
 import { Product } from "../../interfaces/Product";
+import { ProductCT } from "../../contexts/ProductContext";
 
 const Detail = () => {
   const [product, setProduct] = useState<Product | null>(null);
@@ -109,7 +110,7 @@ const Detail = () => {
         alert("Ban hay dang nhap de them gio hang");
       }
       console.log(response.data);
-      alert(response.data.success);
+      alert("Thanh cong");
     } catch (error) {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
     }
