@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { CartItem } from "../../interfaces/Cart";
+import { ToastContainer } from "react-toastify";
 type Props = {};
 
 const Cart = (props: Props) => {
@@ -118,6 +119,7 @@ const Cart = (props: Props) => {
             >
               Xóa
             </button>
+            <ToastContainer />
           </div>
         );
       })}

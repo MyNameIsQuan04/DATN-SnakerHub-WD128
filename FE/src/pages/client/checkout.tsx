@@ -3,7 +3,7 @@ import { useDistricts, useProvinces, useWards } from "../../apis/locations.ts";
 import axios from "axios";
 import { CartItem } from "../../interfaces/Cart.ts";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const Checkout = () => {
   const [selectedProvince, setSelectedProvince] = useState("");
@@ -376,6 +376,7 @@ const Checkout = () => {
               <button className="bg-red-500 text-white h-[40px] w-[200px] float-right hover:bg-red-600">
                 ĐẶT HÀNG
               </button>
+              <ToastContainer />
             </div>
           </div>
         </form>

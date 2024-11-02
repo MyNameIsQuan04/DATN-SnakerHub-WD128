@@ -66,8 +66,7 @@ const ListUser = () => {
           user.id === selectedUser.id ? { ...user, isLocked: true } : user
         )
       );
-      localStorage.removeItem("token");
-      sessionStorage.removeItem("token");
+      localStorage.removeItem("access_token");
       toast.success("Chặn người dùng thành công");
       closeModal();
     } catch (error) {

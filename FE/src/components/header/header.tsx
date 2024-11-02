@@ -6,13 +6,9 @@ import { FaUserGear } from "react-icons/fa6";
 const Header = () => {
   return (
     <div>
-      <header className="fixed top-0 left-0 right-0 z-50 mx-auto w-full h-auto bg-gray-300 p-4 px-[60px] flex items-center justify-between ">
+      <header className="fixed top-0 left-0 right-0 z-50 mx-auto w-full h-auto bg-gray-300 p-2 px-[30px] flex items-center justify-between">
         <div className="flex items-center space-x-4 md:space-x-8">
-          <img
-            src="/assets/Snaker.png"
-            alt="Logo"
-            className="rounded-full w-auto h-auto"
-          />
+          <img src="" alt="Logo" className="rounded-full w-auto h-auto" />
           <div className="hidden md:block ml-[50px]">
             <ul className="flex flex-wrap space-x-4 md:space-x-8 items-center">
               <li className="relative group">
