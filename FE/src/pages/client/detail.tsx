@@ -111,7 +111,7 @@ const Detail = () => {
         alert("Ban hay dang nhap de them gio hang");
       }
       console.log(response.data);
-      // alert(response.data.success);
+
       toast.success("Thêm sản thành công sản phẩm!");
     } catch (error) {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);

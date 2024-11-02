@@ -28,6 +28,8 @@ import AddSize from "./pages/admin/size/AddSize";
 import UpdateSize from "./pages/admin/size/UpdateSize";
 import OrderHistory from "./pages/client/orderHistory";
 import Products from "./pages/client/products";
+import CartContext from "./contexts/CartContext";
+import OrderContext from "./contexts/OrderContext";
 
 function App() {
   return (
@@ -36,18 +38,22 @@ function App() {
         <Route
           path="/"
           element={
-            <CategoryContext>
-              <ProductContext>
-                <LayoutClient />
-              </ProductContext>
-            </CategoryContext>
+            <OrderContext>
+              <CartContext>
+                <CategoryContext>
+                  <ProductContext>
+                    <LayoutClient />
+                  </ProductContext>
+                </CategoryContext>
+              </CartContext>
+            </OrderContext>
           }
         >
           <Route index element={<Home />} />
           <Route path="detail/:id" element={<Detail />} />
           <Route path="products" element={<Products />} />
-          <Route path="cart" element={<Checkout />} />
-          {/* <Route path="cart" element={<Cart />} /> */}
+          <Route path="checkout" element={<Checkout />} />
+          <Route path="cart" element={<Cart />} />
           <Route path="ordered" element={<OrderHistory />} />
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />

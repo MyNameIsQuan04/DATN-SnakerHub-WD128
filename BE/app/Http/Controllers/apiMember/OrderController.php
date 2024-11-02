@@ -65,6 +65,7 @@ class OrderController extends Controller
                 'customer_id' => $customer->id,
                 'total_price' => $validatedData['total_price'],
             ]);
+
             foreach ($validatedData['items'] as $item) {
                 $productVariant = Product_Variant::find($item['product__variant_id']);
                 if ($productVariant['stock'] < $item['quantity']) {
@@ -101,6 +102,7 @@ class OrderController extends Controller
                 }
 
                 $product = Product::find($productVariant['product_id']);
+
 
                 $newSalesCount = $product['sales_count'] + $orderItem['quantity'];
                 $product->update([
