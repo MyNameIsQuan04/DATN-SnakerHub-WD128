@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\api\CategoryController;
+use App\Http\Controllers\api\DashboardController;
 use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\api\ProductController;
 use App\Http\Controllers\ApiController\SizeApiController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\ApiController\ColorApiController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\apiMember\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\ProductController as ClientProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,7 +46,13 @@ foreach ($crud as $key => $controller) {
     Route::apiResource($key, $controller);
 }
 
+Route::get('dashboard/daily',[DashboardController::class, 'daily']);
+Route::get('dashboard/monthly',[DashboardController::class, 'monthly']);
+Route::get('dashboard',[DashboardController::class, 'index']);
+
 Route::apiResource('client/orders', ApiMemberOrderController::class);
+
+Route::apiResource('client/products', ClientProductController::class);
 
 Route::group(['prefix' => 'auth'], function () {
     Route::post('register', [AuthController::class, 'register']);

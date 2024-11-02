@@ -41,7 +41,7 @@ class UpdateProductRequest extends FormRequest
             'variants.*.price' => 'nullable|integer',
             'variants.*.stock' => 'required|integer|min:1',
             'variants.*.sku' => 'required|string|max:255',
-            'variants.*.image' => '',
+            'variants.*.image' => 'nullable|image',
         ];
     }
 }
