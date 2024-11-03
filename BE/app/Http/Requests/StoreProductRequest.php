@@ -30,6 +30,11 @@ class StoreProductRequest extends FormRequest
             'galleries' => 'nullable|array',
             'galleries.*' => 'image',
 
+            'color' => 'required|array',
+            'color.*' => 'required|integer',
+            'size' => 'required|array',
+            'size.*' => 'required|integer',
+
             'variants' => 'required|array',
             'variants.*.size_id' => 'required|exists:sizes,id',
             'variants.*.color_id' => 'required|exists:colors,id',

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Cart_Item;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
@@ -21,7 +22,6 @@ class OrderController extends Controller
     public function index()
     {
         $userId = Auth::id();
-        // $userId = 11;
         $orders = Order::whereHas('customer', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })->orderByDesc('id')->get();
@@ -36,7 +36,6 @@ class OrderController extends Controller
     {
         try {
             $userId = Auth::id();
-            // $userId = 11;
             $validatedData = $request->validate([
                 'name' => 'required|string',
                 'phone' => 'required|string',
@@ -64,10 +63,8 @@ class OrderController extends Controller
 
             $order = Order::create([
                 'customer_id' => $customer->id,
-                'total_price' => 0,
+                'total_price' => $validatedData['total_price'],
             ]);
-
-            $total = 0;
             foreach ($validatedData['items'] as $item) {
                 $productVariant = Product_Variant::find($item['product__variant_id']);
                 if ($productVariant['stock'] < $item['quantity']) {
@@ -103,13 +100,15 @@ class OrderController extends Controller
                     ]);
                 }
 
-                $total += $item['total'];
-            }
-            $order->update([
-                'total_price' => $total,
-            ]);
+                $product = Product::find($productVariant['product_id']);
 
-            $order->load('orderItems', 'customer');
+                $newSalesCount = $product['sales_count'] + $orderItem['quantity'];
+                $product->update([
+                    'sales_count' => $newSalesCount
+                ]);
+            }
+
+            $order->load('orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
 
             return response()->json([
                 'success' => true,
@@ -130,16 +129,47 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('orderItems', 'customer');
+        $order->load('orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
         return $order;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Order $order)
     {
-        //
+        try {
+            $dataValidate = $request->validate([
+                'status' => 'required|in:đã hủy',
+            ]);
+            foreach ($order->orderItems as $orderItem) {
+                $productVariant = Product_Variant::find($orderItem['product__variant_id']);
+
+                $stock = $productVariant['stock'] + $orderItem['quantity'];
+                $productVariant->update([
+                    'stock' => $stock,
+                ]);
+
+                $product = Product::find($productVariant['product_id']);
+
+                $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
+                $product->update([
+                    'sales_count' => $newSalesCount
+                ]);
+            }
+            $order->update([
+                'total_price' => $dataValidate['status'],
+            ]);
+
+            $order->load('orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+            return $order;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
