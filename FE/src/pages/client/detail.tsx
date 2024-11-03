@@ -137,7 +137,7 @@ const Detail = () => {
   );
 
   return (
-    <div className="mt-[90px]">
+    <div className="">
       {/* Thông tin sản phẩm */}
       <div className="container mx-auto mt-10">
         <div className="flex gap-5 px-5">

@@ -4,6 +4,7 @@ import { Product } from "../../interfaces/Product";
 import { Link } from "react-router-dom";
 import { CategoryCT } from "../../contexts/CategoryContext";
 import { Category } from "../../interfaces/Category";
+import SimpleSlider from "../../components/Slider";
 
 const Home = () => {
   const { products } = useContext(ProductCT);
@@ -12,8 +13,8 @@ const Home = () => {
   const favouriteProducts = products.slice(5, 10);
   return (
     <div className="">
-      <div className="">BANNER</div>
-      <div className="mt-[400px]">
+      <SimpleSlider />
+      <div className="mt-[50px]">
         <p className="text-[30px] text-center text-[#f2611c] px-[40px] font-semibold">
           DANH MỤC SẢN PHẨM
         </p>

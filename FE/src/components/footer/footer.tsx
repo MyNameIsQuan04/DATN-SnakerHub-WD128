@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <div className="mx-auto max-w-[1440px] bg-white">
+    <div className="mx-auto w-full bg-white">
       <hr className="border-t-2 border-gray-400 my-4" />
       <div className="flex flex-col md:flex-row justify-around mx-4">
         {/* class 1 : */}
@@ -79,214 +79,72 @@ const Footer = () => {
         </div>
       </div>
       {/* Phần 2 */}
-      <div className="mt-6">
-        <h1 className="text-center font-medium text-[20px]">
-          Hệ thống các cửa hàng{" "}
-        </h1>
-        <h2 className="text-center hover:text-gray-500 transition-colors duration-300">
-          Xem địa chỉ các cửa hàng{" "}
-        </h2>
-        <div className="flex flex-col md:flex-row justify-around mx-4 bg-gray-400 ">
-          {/* class 1 : */}
-          <div className=" w-full md:w-[410px] h-auto md:h-[200px] mb-4 md:mb-0">
-            <div className="p-4">
-              <h1 className="text-center text-white font-medium">
-                KHU VỰC TP.HCM
-              </h1>
-              <div className="mt-[20px]">
-                <div className="text-white flex gap-[5px] mt-[10px]">
-                  <img
-                    src="./accest/icon_map.png"
-                    alt=""
-                    className="w-[20px] h-auto"
-                  />
-                  <h3>414-416 Nguyễn Trãi, P.8, Q5.</h3>
-                  <a
-                    href="https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam/"
-                    className="text-red-600 hover:underline transition-colors duration-300 hover:text-gray-600"
-                  >
-                    TP. Hồ Chí Minh
-                  </a>
-                </div>
-                <div className="text-white flex gap-[5px] mt-[10px]">
-                  <img
-                    src="./accest/icon_map.png"
-                    alt=""
-                    className="w-[20px] h-auto"
-                  />
-                  <h3>414-416 Nguyễn Trãi, P.8, Q5.</h3>
-                  <a
-                    href="https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam/"
-                    className="text-red-600 hover:underline transition-colors duration-300 hover:text-gray-600"
-                  >
-                    TP. Hồ Chí Minh
-                  </a>
-                </div>
-                <div className="text-white flex gap-[5px] mt-[10px]">
-                  <img
-                    src="./accest/icon_map.png"
-                    alt=""
-                    className="w-[20px] h-auto"
-                  />
-                  <h3>414-416 Nguyễn Trãi, P.8, Q5.</h3>
-                  <a
-                    href="https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam/"
-                    className="text-red-600 hover:underline transition-colors duration-300 hover:text-gray-600"
-                  >
-                    TP. Hồ Chí Minh
-                  </a>
-                </div>
-                <div className="text-white flex gap-[5px] mt-[10px]">
-                  <img
-                    src="./accest/icon_map.png"
-                    alt=""
-                    className="w-[20px] h-auto"
-                  />
-                  <h3>414-416 Nguyễn Trãi, P.8, Q5.</h3>
-                  <a
-                    href="https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam/"
-                    className="text-red-600 hover:underline transition-colors duration-300 hover:text-gray-600"
-                  >
-                    TP. Hồ Chí Minh
-                  </a>
-                </div>
-              </div>
-            </div>
+      <footer className="bg-gray-800 text-white pt-10">
+        <div className="container  grid grid-cols-1 md:grid-cols-4 gap-8 mx-[50px]">
+          {/* Thông tin công ty */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Công ty</h3>
+            <p>SneakerHub Việt Nam</p>
+            <p>Địa chỉ: 123 Đường ABC, Hà Nội</p>
+            <p>SĐT: 0123 456 789</p>
+            <p>Email: support@sneakerhub.vn</p>
           </div>
-          {/* class 2  : */}
-          <div className=" w-full md:w-[410px] h-auto md:h-[200px] mb-4 md:mb-0">
-            <div className="p-4">
-              <h1 className="text-center text-white font-medium">
-                KHU VỰC MIỀN BẮC
-              </h1>
-              <div className="mt-[20px]">
-                <div className="text-white flex gap-[5px] mt-[10px]">
-                  <img
-                    src="./accest/icon_map.png"
-                    alt=""
-                    className="w-[20px] h-auto"
-                  />
-                  <h3>414-416 Nguyễn Trãi, P.8, Q5.</h3>
-                  <a
-                    href="https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam/"
-                    className="text-red-600 hover:underline transition-colors duration-300 hover:text-gray-600"
-                  >
-                    TP. Hồ Chí Minh
-                  </a>
-                </div>
-                <div className="text-white flex gap-[5px] mt-[10px]">
-                  <img
-                    src="./accest/icon_map.png"
-                    alt=""
-                    className="w-[20px] h-auto"
-                  />
-                  <h3>414-416 Nguyễn Trãi, P.8, Q5.</h3>
-                  <a
-                    href="https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam/"
-                    className="text-red-600 hover:underline transition-colors duration-300 hover:text-gray-600"
-                  >
-                    TP. Hồ Chí Minh
-                  </a>
-                </div>
-                <div className="text-white flex gap-[5px] mt-[10px]">
-                  <img
-                    src="./accest/icon_map.png"
-                    alt=""
-                    className="w-[20px] h-auto"
-                  />
-                  <h3>414-416 Nguyễn Trãi, P.8, Q5.</h3>
-                  <a
-                    href="https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam/"
-                    className="text-red-600 hover:underline transition-colors duration-300 hover:text-gray-600"
-                  >
-                    TP. Hồ Chí Minh
-                  </a>
-                </div>
-                <div className="text-white flex gap-[5px] mt-[10px]">
-                  <img
-                    src="./accest/icon_map.png"
-                    alt=""
-                    className="w-[20px] h-auto"
-                  />
-                  <h3>414-416 Nguyễn Trãi, P.8, Q5.</h3>
-                  <a
-                    href="https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam/"
-                    className="text-red-600 hover:underline transition-colors duration-300 hover:text-gray-600"
-                  >
-                    TP. Hồ Chí Minh
-                  </a>
-                </div>
-              </div>
-            </div>
+          {/* Liên kết hữu ích */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Liên kết</h3>
+            <ul>
+              <li>
+                <a href="#" className="hover:text-gray-400">
+                  Chính sách bảo mật
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-gray-400">
+                  Điều khoản dịch vụ
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-gray-400">
+                  Chính sách đổi trả
+                </a>
+              </li>
+            </ul>
           </div>
-          {/* class3 : */}
-          <div className=" w-full md:w-[410px] h-auto md:h-[200px] mb-4 md:mb-0">
-            <div className="p-4">
-              <h1 className="text-center text-white font-medium">
-                KHU VỰC MIỀN TRUNG
-              </h1>
-              <div className="mt-[20px]">
-                <div className="text-white flex gap-[5px] mt-[10px]">
-                  <img
-                    src="./accest/icon_map.png"
-                    alt=""
-                    className="w-[20px] h-auto"
-                  />
-                  <h3>414-416 Nguyễn Trãi, P.8, Q5.</h3>
-                  <a
-                    href="https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam/"
-                    className="text-red-600 hover:underline transition-colors duration-300 hover:text-gray-600"
-                  >
-                    TP. Hồ Chí Minh
-                  </a>
-                </div>
-                <div className="text-white flex gap-[5px] mt-[10px]">
-                  <img
-                    src="./accest/icon_map.png"
-                    alt=""
-                    className="w-[20px] h-auto"
-                  />
-                  <h3>414-416 Nguyễn Trãi, P.8, Q5.</h3>
-                  <a
-                    href="https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam/"
-                    className="text-red-600 hover:underline transition-colors duration-300 hover:text-gray-600"
-                  >
-                    TP. Hồ Chí Minh
-                  </a>
-                </div>
-                <div className="text-white flex gap-[5px] mt-[10px]">
-                  <img
-                    src="./accest/icon_map.png"
-                    alt=""
-                    className="w-[20px] h-auto"
-                  />
-                  <h3>414-416 Nguyễn Trãi, P.8, Q5.</h3>
-                  <a
-                    href="https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam/"
-                    className="text-red-600 hover:underline transition-colors duration-300 hover:text-gray-600"
-                  >
-                    TP. Hồ Chí Minh
-                  </a>
-                </div>
-                <div className="text-white flex gap-[5px] mt-[10px]">
-                  <img
-                    src="./accest/icon_map.png"
-                    alt=""
-                    className="w-[20px] h-auto"
-                  />
-                  <h3>414-416 Nguyễn Trãi, P.8, Q5.</h3>
-                  <a
-                    href="https://www.google.com/maps/place/Ho+Chi+Minh+City,+Vietnam/"
-                    className="text-red-600 hover:underline transition-colors duration-300 hover:text-gray-600"
-                  >
-                    TP. Hồ Chí Minh
-                  </a>
-                </div>
-              </div>
-            </div>
+          {/* Danh mục sản phẩm */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Danh mục sản phẩm</h3>
+            <ul>
+              <li>
+                <a href="#" className="hover:text-gray-400">
+                  Giày nam
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-gray-400">
+                  Giày nữ
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-gray-400">
+                  Giày thể thao
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="">
+            <h3 className="text-lg font-semibold mb-4">Chứng nhận</h3>
+
+            <img
+              src="https://myshoes.vn/image/catalog/logo/logo-bct.png"
+              alt=""
+              className="w-[200px]"
+            />
           </div>
         </div>
-      </div>
+        <div className="mt-[20px] text-center bg-gray-900 py-[8px]">
+          © Copyright 2024 By SneakerHub.vn. Powered by Haravan
+        </div>
+      </footer>
     </div>
   );
 };

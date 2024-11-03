@@ -30,6 +30,7 @@ import OrderHistory from "./pages/client/orderHistory";
 import Products from "./pages/client/products";
 import CartContext from "./contexts/CartContext";
 import OrderContext from "./contexts/OrderContext";
+import Contact from "./pages/client/contact";
 
 function App() {
   return (
@@ -54,7 +55,8 @@ function App() {
           <Route path="products" element={<Products />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="cart" element={<Cart />} />
-          <Route path="ordered" element={<OrderHistory />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="order-history" element={<OrderHistory />} />
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />
           <Route path="" element />

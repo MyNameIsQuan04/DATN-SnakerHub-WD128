@@ -152,11 +152,11 @@ const Cart = (props: Props) => {
   }
 
   if (!Array.isArray(cartItems) || cartItems.length === 0) {
-    return <div className="mt-[300px] px-[100px]">Giỏ hàng trống.</div>;
+    return <div className=" px-[100px]">Giỏ hàng trống.</div>;
   }
 
   return (
-    <div className="mt-[400px] px-[150px]">
+    <div className="mt-[30px] px-[150px]">
       <div className="flex">
         <p className="text-[14px]">TRANG CHU</p>
         <p className="text-[14px] px-[4px]"> | </p>
