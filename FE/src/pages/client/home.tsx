@@ -31,7 +31,9 @@ const Home = () => {
           <p className="text-[28px]  text-[#f2611c] px-[40px]">
             BỘ SƯU TẬP MỚI
           </p>
-          <p className="text-[18px]  text-black px-[40px]">Xem tất cả</p>
+          <Link to={"/products"}>
+            <p className="text-[18px]  text-black px-[40px]">Xem tất cả</p>
+          </Link>
         </div>
         <div className="grid grid-cols-5 px-[40px] gap-[10px] mt-[30px]">
           {bestSellers.map((product: Product) => (

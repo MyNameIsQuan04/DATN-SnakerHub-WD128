@@ -14,7 +14,7 @@ const Header = () => {
       <header className="flex items-center justify-between px-6 py-3 border-b border-gray-200">
         {/* Logo */}
         <div className="flex items-center w-[279px]">
-          <a href="#">
+          <a href="/">
             <img src="logo-nike.png" alt="SneakerHub Logo" className="h-8" />
           </a>
         </div>
@@ -23,9 +23,11 @@ const Header = () => {
           {/* Giày nam */}
           <ul>
             <li className="relative group">
-              <a href="#" className="hover:text-gray-900">
-                Giày nam
-              </a>
+              <Link to={"/products"}>
+                <a href="#" className="hover:text-gray-900">
+                  Giày nam
+                </a>
+              </Link>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
               <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
                 <li>
@@ -157,63 +159,21 @@ const Header = () => {
           {/* Sản phẩm mới */}
           <ul>
             <li className="relative group">
-              <a href="#" className="hover:text-gray-900">
-                Sản phẩm mới
-              </a>
+              <Link to={"/contact"}>
+                <a href="#" className="hover:text-gray-900">
+                  Liên hệ
+                </a>
+              </Link>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
-                <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                  >
-                    Áo mới
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                  >
-                    Giày mới
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                  >
-                    Giày đi bộ
-                  </a>
-                </li>
-              </ul>
             </li>
           </ul>
           {/* Sản phẩm bán chạy */}
           <ul>
             <li className="relative group">
               <a href="#" className="hover:text-gray-900">
-                Sản phẩm bán chạy
+                Về chúng tôi
               </a>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
-                <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                  >
-                    Giày bán chạy
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                  >
-                    Áo bán chạy
-                  </a>
-                </li>
-              </ul>
             </li>
           </ul>
         </nav>
