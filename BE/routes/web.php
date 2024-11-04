@@ -7,14 +7,11 @@ use App\Http\Controllers\AdminController\SizeController;
 use App\Http\Controllers\AdminController\ColorController;
 use App\Http\Controllers\AdminController\CommentController;
 use App\Http\Controllers\AdminController\UserController;
-use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController\OrderController;
 use App\Http\Controllers\AdminController\ProductController;
 use App\Http\Controllers\AdminController\CategoryController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
-
-use App\Http\Controllers\Client\CartController;
 
 Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 
@@ -29,27 +26,28 @@ Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 |
 */
 
-
-
-Route::get('/', [ClientController::class, 'index']);
-Route::prefix('shop')->group(function () {
-    Route::get('/', [ClientController::class, 'index']);
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-    Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart-destroy/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-    Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+Route::get('/', function () {
+    return view('welcome');
 });
 
 
+Route::group(['perfix'=>'user'], function(){
+    //dang ky
+    Route::get('register', [AuthController::class,'showRegisterForm'])->name('register');
+    Route::post('register', [AuthController::class,'register'])->name('registerSubmit');
+    //dang nhap
+    Route::get('login', [AuthController::class,'showLoginForm'])->name('login');
+    Route::post('login', [AuthController::class,'login']);
+    // quen mat khau
+    Route::get('forget-password', [AuthController::class, 'forgetPass'])->name('forgetPass');
+    Route::post('forget-password', [AuthController::class, 'postForgetPass']);
+    
+    Route::get('reset-password/{userId}', [AuthController::class, 'resetPassword'])->name('resetPassword');
+    Route::post('reset-password/{userId}', [AuthController::class, 'postResetPassword']);
+    //dang xuat
+    Route::get('logout', [AuthController::class,'logout'])->name('logout');
+});
 
-Route::get('register', [AuthController::class,'showRegisterForm'])->name('register');
-Route::post('register', [AuthController::class,'register'])->name('registerSubmit');
-
-Route::get('login', [AuthController::class,'showLoginForm'])->name('login');
-Route::post('login', [AuthController::class,'login']);
-
-Route::get('logout', [AuthController::class,'logout'])->name('logout');
 
 Route::middleware(['auth','type:admin'])->group(function(){
     // Route::get('admin/dashboard',[AdminController::class, 'index'])->name('admin.dashboard');
