@@ -7,6 +7,8 @@ import { TbTruckReturn } from "react-icons/tb";
 import { GrAnnounce } from "react-icons/gr";
 import { AiOutlineBank } from "react-icons/ai";
 import { Product } from "../../interfaces/Product";
+import { ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 const Detail = () => {
   const [product, setProduct] = useState<Product | null>(null);
@@ -109,7 +111,8 @@ const Detail = () => {
         alert("Ban hay dang nhap de them gio hang");
       }
       console.log(response.data);
-      alert(response.data.success);
+
+      toast.success("Thêm sản thành công sản phẩm!");
     } catch (error) {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
     }
@@ -136,7 +139,7 @@ const Detail = () => {
   );
 
   return (
-    <div className="mt-[90px]">
+    <div className="">
       {/* Thông tin sản phẩm */}
       <div className="container mx-auto mt-10">
         <div className="flex gap-5 px-5">
@@ -304,6 +307,7 @@ const Detail = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

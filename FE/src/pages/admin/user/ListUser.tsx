@@ -1,8 +1,8 @@
-import  { useEffect, useState, memo } from "react";
+import { useEffect, useState, memo } from "react";
 import axios from "axios";
 import { IUser } from "../../../interfaces/User";
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 const ListUser = () => {
   const [listUser, setListUser] = useState<IUser[]>([]);
@@ -37,11 +37,17 @@ const ListUser = () => {
     setSelectedUser(null);
   };
 
-  const handleUserUpdate = async (updatedData: Partial<IUser>, successMessage: string) => {
+  const handleUserUpdate = async (
+    updatedData: Partial<IUser>,
+    successMessage: string
+  ) => {
     if (!selectedUser) return;
     setIsLoading(true);
     try {
-      const response = await axios.patch(`http://localhost:8000/api/users/${selectedUser.id}`, updatedData);
+      const response = await axios.patch(
+        `http://localhost:8000/api/users/${selectedUser.id}`,
+        updatedData
+      );
       if (response.status === 200) {
         setListUser((prevUsers) =>
           prevUsers.map((user) =>
@@ -59,13 +65,18 @@ const ListUser = () => {
     }
   };
 
-  const upgradeToAdmin = () => handleUserUpdate({ type: "admin" }, "Cấp quyền Admin thành công!");
-  const blockUser = () => handleUserUpdate({ isLocked: true }, "Chặn người dùng thành công!");
-  const unBlockUser = () => handleUserUpdate({ isLocked: false }, "Mở chặn người dùng thành công!");
+  const upgradeToAdmin = () =>
+    handleUserUpdate({ type: "admin" }, "Cấp quyền Admin thành công!");
+  const blockUser = () =>
+    handleUserUpdate({ isLocked: true }, "Chặn người dùng thành công!");
+  const unBlockUser = () =>
+    handleUserUpdate({ isLocked: false }, "Mở chặn người dùng thành công!");
 
   return (
     <div className="container mx-auto p-6 bg-gray-100">
-      <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">Danh sách người dùng</h1>
+      <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
+        Danh sách người dùng
+      </h1>
       <div className="overflow-hidden rounded-lg shadow-lg">
         <table className="min-w-full divide-y divide-gray-200">
           <thead>
@@ -89,14 +100,20 @@ const ListUser = () => {
               {listUser.map((user, index) => (
                 <tr
                   key={user.id}
-                  className={`hover:bg-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer ${user.isLocked ? "opacity-50" : ""}`}
+                  className={`hover:bg-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer ${
+                    user.isLocked ? "opacity-50" : ""
+                  }`}
                 >
                   <td className="py-4 px-4 text-center">{index + 1}</td>
-                  <td className="py-4 px-4 text-blue-500 font-serif">{user.name}</td>
+                  <td className="py-4 px-4 text-blue-500 font-serif">
+                    {user.name}
+                  </td>
                   <td className="py-4 px-4 text-center">{user.phone_number}</td>
                   <td className="py-4 px-4 text-center">{user.email}</td>
                   <td className="py-4 px-4 text-center">{user.address}</td>
-                  <td className="py-4 px-4 font-medium text-red-500 text-center">{user.type}</td>
+                  <td className="py-4 px-4 font-medium text-red-500 text-center">
+                    {user.type}
+                  </td>
                   <td className="py-4 px-4 text-center">{user.created_at}</td>
                   <td className="py-4 px-4 text-center">
                     <button
@@ -118,7 +135,7 @@ const ListUser = () => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-80 relative">
             <h2 className="text-xl font-bold mb-4">Quản lý người dùng</h2>
-            <p className="mb-4">Người dùng:  {selectedUser.name}</p>
+            <p className="mb-4">Người dùng: {selectedUser.name}</p>
             <div className="space-y-2">
               {selectedUser.isLocked ? (
                 <button
