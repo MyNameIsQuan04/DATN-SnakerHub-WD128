@@ -1,11 +1,14 @@
 import React, { useContext } from "react";
 import { ProductCT } from "../../contexts/ProductContext";
 import { Product } from "../../interfaces/Product";
+import { CategoryCT } from "../../contexts/CategoryContext";
+import { Category } from "../../interfaces/Category";
 
 type Props = {};
 
 const Products = (props: Props) => {
   const { products } = useContext(ProductCT);
+  const { categories } = useContext(CategoryCT);
   return (
     <div>
       <div className="container mx-auto my-8 px-4 md:px-8">
@@ -37,22 +40,12 @@ const Products = (props: Props) => {
             <div className="mb-4">
               <h3 className="font-semibold text-gray-700 mb-2">Category</h3>
               <ul>
-                <li>
-                  <input type="checkbox" className="mr-2" />
-                  Hoodies
-                </li>
-                <li>
-                  <input type="checkbox" className="mr-2" />
-                  Jeans
-                </li>
-                <li>
-                  <input type="checkbox" className="mr-2" />
-                  Polos
-                </li>
-                <li>
-                  <input type="checkbox" className="mr-2" />
-                  Shirts
-                </li>
+                {categories.map((category: Category) => (
+                  <li>
+                    <input type="checkbox" className="mr-2" />
+                    {category.name}
+                  </li>
+                ))}
               </ul>
             </div>
           </aside>

@@ -18,6 +18,7 @@ export interface AuthContextType {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dispatch: React.Dispatch<any>;
   isAdmin: boolean;
+  isLoggedIn: any;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -36,6 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [state, dispatch] = useReducer(userReducer, { users: [] });
   const [user, setUser] = useState<IUser | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const nav = useNavigate();
 
   useEffect(() => {
@@ -57,7 +59,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("user");
     setUser(null);
-    nav("/login");
+    nav("/");
   };
 
   const handleUser = async (user: IUser) => {
@@ -70,7 +72,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log(error);
     }
   };
-
+  useEffect(() => {
+    // Giả sử có hàm kiểm tra đăng nhập từ localStorage hoặc API
+    const storedUser = JSON.parse(localStorage.getItem("user") as string);
+    if (storedUser) {
+      setUser(storedUser);
+      setIsLoggedIn(true);
+    }
+  }, []);
   return (
     <AuthContext.Provider
       value={{
@@ -79,6 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         logout,
         handleUser,
         dispatch,
+        isLoggedIn,
         isAdmin: user?.type === "admin",
       }}
     >

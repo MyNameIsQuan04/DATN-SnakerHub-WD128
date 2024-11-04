@@ -101,11 +101,11 @@ const Checkout = () => {
   };
 
   return (
-    <div className="mt-[400px] px-[150px]">
+    <div className="mt-[30px] px-[150px]">
       <div className="flex">
         <p className="text-[14px]">TRANG CHU</p>
         <p className="text-[14px] px-[4px]"> | </p>
-        <p className="text-[14px]">GIO HANG</p>
+        <p className="text-[14px]">THANH TOAN</p>
       </div>
 
       <div className="border border-[#f3f3f3] mt-[30px]">

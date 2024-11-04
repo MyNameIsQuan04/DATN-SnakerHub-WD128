@@ -1,175 +1,291 @@
-import { FiShoppingCart } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import { BiSearch } from "react-icons/bi";
-import { FaUserGear } from "react-icons/fa6";
+import { useAuth } from "../../contexts/AuthContext";
+import { useState } from "react";
 
 const Header = () => {
+  const { user, isLoggedIn, logout } = useAuth();
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  const toggleDropdown = () => {
+    setDropdownVisible(!dropdownVisible);
+  };
   return (
     <div>
-      <header className="fixed top-0 left-0 right-0 z-50 mx-auto w-full h-auto bg-gray-300 p-2 px-[30px] flex items-center justify-between">
-        <div className="flex items-center space-x-4 md:space-x-8">
-          <img src="" alt="Logo" className="rounded-full w-auto h-auto" />
-          <div className="hidden md:block ml-[50px]">
-            <ul className="flex flex-wrap space-x-4 md:space-x-8 items-center">
-              <li className="relative group">
-                <a
-                  href="#"
-                  className="text-black font-bold hover:text-gray-600 cursor-pointer border-b-2 border-transparent group-hover:border-black transition-all duration-300"
-                >
-                  GIÀY NAM
-                </a>
-                <ul className="absolute hidden group-hover:flex flex-col bg-gray-400 text-black mt-2 p-2 rounded-md w-[150px] md:w-[200px]">
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 font-medium hover:bg-gray-500"
-                    >
-                      Our Team
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 font-medium hover:bg-gray-500"
-                    >
-                      Our History
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 font-medium hover:bg-gray-500"
-                    >
-                      Mission &amp; Vision
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li className="relative group">
-                <a
-                  href="#"
-                  className="text-black font-bold hover:text-gray-600 cursor-pointer border-b-2 border-transparent group-hover:border-black transition-all duration-300"
-                >
-                  GIÀY NỮ
-                </a>
-                <ul className="absolute hidden group-hover:flex flex-col bg-gray-400 text-black mt-2 p-2 rounded-md w-[150px] md:w-[200px]">
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 font-medium hover:bg-gray-500"
-                    >
-                      Web Development
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 font-medium hover:bg-gray-500"
-                    >
-                      App Development
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 font-medium hover:bg-gray-500"
-                    >
-                      Digital Marketing
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li className="relative group">
-                <a
-                  href="#"
-                  className="text-black font-bold hover:text-gray-600 cursor-pointer border-b-2 border-transparent group-hover:border-black transition-all duration-300"
-                >
-                  GIÀY CẶP
-                </a>
-                <ul className="absolute hidden group-hover:flex flex-col bg-gray-400 text-black mt-2 p-2 rounded-md w-[150px] md:w-[200px]">
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 font-medium hover:bg-gray-500"
-                    >
-                      Web Development
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 font-medium hover:bg-gray-500"
-                    >
-                      App Development
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 font-medium hover:bg-gray-500"
-                    >
-                      Digital Marketing
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li className="relative group">
-                <a
-                  href="#"
-                  className="text-black font-bold hover:text-gray-600 cursor-pointer border-b-2 border-transparent group-hover:border-black transition-all duration-300"
-                >
-                  BALO-TÚI
-                </a>
-              </li>
-              <li className="relative group">
-                <a
-                  href="#"
-                  className="text-black font-bold hover:text-gray-600 cursor-pointer border-b-2 border-transparent group-hover:border-black transition-all duration-300"
-                >
-                  SẢN PHẨM BÁN CHẠY
-                </a>
-              </li>
-              <li className="relative group">
-                <a
-                  href="#"
-                  className="text-black font-bold hover:text-gray-600 cursor-pointer border-b-2 border-transparent group-hover:border-black transition-all duration-300"
-                >
-                  PHỤ KIỆN
-                </a>
-              </li>
-            </ul>
-          </div>
+      <header className="flex items-center justify-between px-6 py-3 border-b border-gray-200">
+        {/* Logo */}
+        <div className="flex items-center w-[279px]">
+          <a href="/">
+            <img src="logo-nike.png" alt="SneakerHub Logo" className="h-8" />
+          </a>
         </div>
+
+        <nav className="flex justify-center space-x-6 text-base font-medium text-gray-800">
+          {/* Giày nam */}
+          <ul>
+            <li className="relative group">
+              <Link to={"/products"}>
+                <a href="#" className="hover:text-gray-900">
+                  Giày nam
+                </a>
+              </Link>
+              <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
+              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
+                <li>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Giày chạy
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Giày bóng rổ
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Giày đi bộ
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          {/* Giày nữ */}
+          <ul>
+            <li className="relative group">
+              <a href="#" className="hover:text-gray-900">
+                Giày nữ
+              </a>
+              <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
+              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
+                <li>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Giày thể thao
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Giày cao gót
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Giày bệt
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          {/* Phụ kiện */}
+          <ul>
+            <li className="relative group">
+              <a href="#" className="hover:text-gray-900">
+                Phụ kiện
+              </a>
+              <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
+              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
+                <li>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Túi xách
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Tất
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Mũ
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          {/* Khuyến mãi */}
+
+          <ul>
+            <li className="relative group">
+              <a href="#" className="hover:text-gray-900">
+                Khuyến mãi
+              </a>
+              <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
+              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
+                <li>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Giảm giá 50%
+                  </a>
+                </li>
+
+                <li>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Giày đi bộ
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          {/* Sản phẩm mới */}
+          <ul>
+            <li className="relative group">
+              <Link to={"/contact"}>
+                <a href="#" className="hover:text-gray-900">
+                  Liên hệ
+                </a>
+              </Link>
+              <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
+            </li>
+          </ul>
+          {/* Sản phẩm bán chạy */}
+          <ul>
+            <li className="relative group">
+              <a href="#" className="hover:text-gray-900">
+                Về chúng tôi
+              </a>
+              <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
+            </li>
+          </ul>
+        </nav>
+
+        {/* Search and Icons Section (Right) */}
         <div className="flex items-center space-x-4">
-          <div className="relative w-[150px] sm:w-[200px] md:w-[300px]">
-            <input
-              placeholder="Search..."
-              className="block w-full text-sm h-[50px] px-4 text-slate-900 bg-white rounded-[8px] border border-slate-200 appearance-none focus:border-transparent focus:outline focus:outline-2 focus:outline-primary focus:ring-0 hover:border-brand-500-secondary peer invalid:border-error-500 invalid:focus:border-error-500 overflow-ellipsis overflow-hidden text-nowrap pr-[48px]"
-              id="floating_outlined"
-              type="text"
-            />
-            <label
-              className="peer-placeholder-shown:-z-10 peer-focus:z-10 absolute text-[14px] leading-[150%] text-primary peer-focus:text-primary peer-invalid:text-error-500 focus:invalid:text-error-500 duration-300 transform -translate-y-[1.2rem] scale-75 top-2 z-10 origin-[0] bg-white data-[disabled]:bg-gray-50-background- px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-[1.2rem] rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
-              htmlFor="floating_outlined"
+          {/* Search Bar */}
+          <div className="flex items-center border rounded-full px-3 py-1 w-[200px]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              className="size-6  "
             >
-              Search...
-            </label>
-            <div className="absolute top-3 right-3">
-              <BiSearch className="text-slate-300 w-[24px] h-auto" />{" "}
-              {/* Sử dụng BiSearch */}
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+              />
+            </svg>
+
+            <input
+              type="text"
+              placeholder="Tìm kiếm"
+              className="w-full px-3 py-1 text-gray-700 focus:outline-none "
+            />
+          </div>
+
+          <div className="flex gap-[15px] text-gray-700 ">
+            <Link to={"/cart"}>
+              {/* Giỏ hàng */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                className="size-6 hover:text-gray-900"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+                />
+              </svg>
+            </Link>
+
+            {/* Tài khoản */}
+            <div className="relative">
+              {isLoggedIn ? (
+                <div
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={toggleDropdown}
+                >
+                  <span className="font-semibold">{user.name}</span>
+
+                  {/* Dropdown menu */}
+                  {dropdownVisible && (
+                    <nav className="absolute right-0 mt-[200px] w-48 bg-white rounded-md z-10 shadow-lg">
+                      <ul className="py-2">
+                        <li>
+                          <Link
+                            to="/order-history"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Lịch sử đơn hàng
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            to="/change-password"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Đổi mật khẩu
+                          </Link>
+                        </li>
+                        <li>
+                          <button
+                            onClick={logout}
+                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Đăng xuất
+                          </button>
+                        </li>
+                      </ul>
+                    </nav>
+                  )}
+                </div>
+              ) : (
+                <Link to="/login">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="size-6 hover:text-gray-900"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                    />
+                  </svg>
+                </Link>
+              )}
             </div>
           </div>
         </div>
-        <div className="flex space-x-4 sm:space-x-6 items-center ml-[20px] mr-[50px]">
-          <Link to={"/login"}>
-            <FaUserGear className="w-[30px] h-auto" />
-          </Link>
-          <Link to={"/cart"}>
-            <FiShoppingCart className="w-[30px] h-auto" />
-          </Link>
-        </div>
       </header>
-      ;
     </div>
   );
 };
