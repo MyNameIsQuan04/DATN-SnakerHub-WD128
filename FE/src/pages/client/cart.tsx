@@ -3,6 +3,8 @@ import axios from "axios";
 import { CartItem } from "../../interfaces/Cart";
 import { useNavigate } from "react-router-dom";
 import api from "../../configs/axios";
+import { toast } from "react-toastify";
+import { Toaster } from "react-hot-toast";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -30,6 +32,7 @@ const Cart = () => {
       );
     } catch (error) {
       console.error("Lỗi khi cập nhật số lượng sản phẩm:", error);
+      toast.error("Cập nhật số lượng thất bại");
     }
   };
 
@@ -101,8 +104,10 @@ const Cart = () => {
           },
         });
         setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+        toast.success("Xóa sản phẩm thành công");
       } catch (error) {
         console.error("Lỗi khi xóa sản phẩm:", error);
+        toast.error("Xóa sản phẩm thất bại");
       }
     }
   };
@@ -139,8 +144,9 @@ const Cart = () => {
   const handleCheckout = () => {
     if (selectedItems.length > 0) {
       navigate("/checkout", { state: { selectedItems } });
+      toast.success("Đã chuyển đến trang thanh toán");
     } else {
-      alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
+      toast.error("Vui lòng chọn ít nhất một sản phẩm để thanh toán");
     }
   };
 
@@ -149,7 +155,7 @@ const Cart = () => {
   }
 
   if (!Array.isArray(cartItems) || cartItems.length === 0) {
-    return <div className=" px-[100px]">Giỏ hàng trống.</div>;
+    return <div className=" px-[100px] text-center">Giỏ hàng trống.</div>;
   }
 
   return (
@@ -250,9 +256,15 @@ const Cart = () => {
           );
         })}
       </div>
-      <button onClick={handleCheckout} className="btn">
-        Thanh toán
-      </button>
+      <div className="mt-8 px-36">
+        <button
+          onClick={handleCheckout}
+          className="btn bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Thanh toán
+        </button>
+      </div>
+      <Toaster position="top-right" />
     </div>
   );
 };
