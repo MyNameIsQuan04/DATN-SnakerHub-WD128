@@ -4,9 +4,10 @@ import axios from "axios";
 import { CartItem } from "../../interfaces/Cart.ts";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Checkout = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
   const [checkoutItems, setCheckoutItems] = useState<CartItem[]>([]);
@@ -91,6 +92,7 @@ const Checkout = () => {
       );
       if (response.data.success) {
         toast.success("Đặt hàng thành công!");
+        navigate("/thankyou");
       }
     } catch (error) {
       console.error("Lỗi khi đặt hàng:", error);

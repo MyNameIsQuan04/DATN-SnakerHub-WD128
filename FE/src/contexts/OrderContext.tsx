@@ -1,9 +1,7 @@
 import React, { createContext, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { CartItem } from "../interfaces/Cart";
-import { useDistricts, useProvinces, useWards } from "../apis/locations";
 import api from "../configs/axios";
-import { Order } from "../interfaces/Order";
 
 type Props = {
   children: React.ReactNode;

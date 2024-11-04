@@ -30,6 +30,7 @@ import OrderHistory from "./pages/client/orderHistory";
 import Products from "./pages/client/products";
 import CartContext from "./contexts/CartContext";
 import OrderContext from "./contexts/OrderContext";
+import ThankYou from "./pages/client/Thankyou";
 
 function App() {
   return (
@@ -50,13 +51,14 @@ function App() {
           }
         >
           <Route index element={<Home />} />
-          <Route path="detail/:id" element={<Detail />} />
-          <Route path="products" element={<Products />} />
-          <Route path="checkout" element={<Checkout />} />
-          <Route path="cart" element={<Cart />} />
-          <Route path="ordered" element={<OrderHistory />} />
+          <Route path="/detail/:id" element={<Detail />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/ordered" element={<OrderHistory />} />
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />
+          <Route path="/thankyou" element={<ThankYou />} />
           <Route path="" element />
           <Route path="" element />
         </Route>
@@ -75,7 +77,7 @@ function App() {
             </ProductContext>
           }
         >
-          <Route index element={<Dashboard />} />
+          <Route path="/admin" index element={<Dashboard />} />
           <Route path="/admin/product" element={<ListProduct />} />
           <Route path="/admin/product-add" element={<AddProducts />} />
           <Route path="/admin/product-edit/:id" element={<EditProduct />} />
