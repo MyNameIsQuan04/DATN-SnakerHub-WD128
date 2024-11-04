@@ -64,7 +64,7 @@ const OrderHistory = () => {
   }, [token]);
 
   return (
-    <div className="mt-[400px] px-[150px]">
+    <div className="mt-[50px] px-[150px]">
       <h1>Lịch sử đơn hàng</h1>
       {orders.map((order) => (
         <div key={order.id} className="border p-3 my-3">

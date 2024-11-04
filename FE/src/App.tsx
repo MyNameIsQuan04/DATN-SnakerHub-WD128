@@ -59,6 +59,7 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/order-history" element={<OrderHistory />} />
+
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />
           <Route path="/thankyou" element={<ThankYou />} />

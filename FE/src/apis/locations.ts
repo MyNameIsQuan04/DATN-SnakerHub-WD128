@@ -36,7 +36,7 @@ export const useProvinces = () => {
   return provinces;
 };
 
-export const useDistricts = (selectedProvince: string) => {
+export const useDistricts = (selectedProvince: number | undefined) => {
   const [districts, setDistricts] = useState<District[]>([]);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export const useDistricts = (selectedProvince: string) => {
   return districts;
 };
 
-export const useWards = (selectedDistrict: string) => {
+export const useWards = (selectedDistrict: number | undefined) => {
   const [wards, setWards] = useState<Ward[]>([]);
 
   useEffect(() => {
