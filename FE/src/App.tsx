@@ -32,6 +32,7 @@ import CartContext from "./contexts/CartContext";
 import OrderContext from "./contexts/OrderContext";
 import ThankYou from "./pages/client/Thankyou";
 import Contact from "./pages/client/contact";
+import Test from "./pages/client/test";
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/order-history" element={<OrderHistory />} />
+          <Route path="/test" element={<Test />} />
 
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />
