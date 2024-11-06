@@ -15,7 +15,6 @@ export interface AuthContextType {
   login: (token: string, user: IUser) => void;
   logout: () => void;
   handleUser: (data: IUser) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dispatch: React.Dispatch<any>;
   isAdmin: boolean;
   isLoggedIn: any;
@@ -34,7 +33,6 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [state, dispatch] = useReducer(userReducer, { users: [] });
   const [user, setUser] = useState<IUser | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -59,7 +57,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("user");
     setUser(null);
-    nav("/");
+    nav("/login");
     // window.location.reload();
   };
 
