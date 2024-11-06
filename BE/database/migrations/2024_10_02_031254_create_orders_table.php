@@ -19,7 +19,7 @@ return new class extends Migration
 
             $table->id();
             $table->integer('total_price');
-            $table->enum('status', ['chờ xử lý', 'đã xác nhận', 'đang vận chuyển', 'hoàn thành', 'đã hủy'])->default('chờ xử lý');
+            $table->enum('status', ['Chờ xử lý', 'Đã xác nhận', 'Đang vận chuyển', 'Đã giao', 'Đã trả', 'Hoàn thành', 'Đã hủy'])->default('Chờ xử lý');
 
             $table->timestamps();
         });
