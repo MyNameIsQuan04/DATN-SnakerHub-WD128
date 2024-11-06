@@ -26,13 +26,18 @@ import AuthForm from "./pages/client/AuthForm";
 import UpdateColor from "./pages/admin/color/UpdateColor";
 import AddSize from "./pages/admin/size/AddSize";
 import UpdateSize from "./pages/admin/size/UpdateSize";
-import OrderHistory from "./pages/client/orderHistory";
 import Products from "./pages/client/products";
 import CartContext from "./contexts/CartContext";
 import OrderContext from "./contexts/OrderContext";
 import ThankYou from "./pages/client/Thankyou";
 import Contact from "./pages/client/contact";
 import PrivateAdmin from "./pages/PrivateAdmin";
+import UserProfile from "./pages/client/User/UserProfile";
+import UserInfor from "./pages/client/User/UserInfor";
+import UserAddress from "./pages/client/User/UserAddress";
+import UserChangepass from "./pages/client/User/UserChangepass";
+import UserOrderhistory from "./pages/client/User/UserOrderhistory";
+import UserAnnouncement from "./pages/client/User/UserAnnouncement";
 
 function App() {
   return (
@@ -59,12 +64,16 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/order-history" element={<OrderHistory />} />
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />
           <Route path="/thankyou" element={<ThankYou />} />
-          <Route path="" element />
-          <Route path="" element />
+          <Route path="/profile" element={<UserProfile />}>
+            <Route path="/profile/userinfo" element={<UserInfor />} />
+            <Route path="/profile/address" element={<UserAddress/>} />
+            <Route path="/profile/change-password" element={<UserChangepass/>} />
+            <Route path="/profile/order-history" element={<UserOrderhistory/>}/>
+            <Route path="/profile/announcement" element={<UserAnnouncement/>} />
+          </Route>
         </Route>
         {/* Admin */}
         <Route

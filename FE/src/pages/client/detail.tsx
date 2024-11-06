@@ -76,8 +76,8 @@ const Detail = () => {
   // Thêm vào giỏ hàng
   const addToCart = async (
     product: Product,
-    selectedColor: any,
-    selectedSize: any
+    selectedColor: unknown,
+    selectedSize: unknown
   ) => {
     if (!selectedColor || !selectedSize) {
       alert("Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!");

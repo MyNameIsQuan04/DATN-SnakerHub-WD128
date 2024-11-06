@@ -11,7 +11,7 @@ const Header = () => {
   };
   return (
     <div>
-      <header className="flex items-center justify-between px-6 py-3 border-b border-gray-200">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white flex items-center justify-between px-6 py-3 border-b border-gray-200 mb-0">
         {/* Logo */}
         <div className="flex items-center w-[279px]">
           <a href="/">
@@ -29,7 +29,7 @@ const Header = () => {
                 </a>
               </Link>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
+              <ul className="absolute left-0 hidden mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
                 <li>
                   <a
                     href="#"
@@ -64,7 +64,7 @@ const Header = () => {
                 Giày nữ
               </a>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
+              <ul className="absolute left-0 hidden mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
                 <li>
                   <a
                     href="#"
@@ -99,7 +99,7 @@ const Header = () => {
                 Phụ kiện
               </a>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
+              <ul className="absolute left-0 hidden mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
                 <li>
                   <a
                     href="#"
@@ -128,14 +128,13 @@ const Header = () => {
             </li>
           </ul>
           {/* Khuyến mãi */}
-
           <ul>
             <li className="relative group">
               <a href="#" className="hover:text-gray-900">
                 Khuyến mãi
               </a>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
+              <ul className="absolute left-0 hidden mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
                 <li>
                   <a
                     href="#"
@@ -144,7 +143,6 @@ const Header = () => {
                     Giảm giá 50%
                   </a>
                 </li>
-
                 <li>
                   <a
                     href="#"
@@ -230,7 +228,7 @@ const Header = () => {
                   className="flex items-center gap-2 cursor-pointer"
                   onClick={toggleDropdown}
                 >
-                  <span className="font-semibold">{user.name}</span>
+                  <span className="font-semibold">{user?.name}</span>
 
                   {/* Dropdown menu */}
                   {dropdownVisible && (
@@ -238,18 +236,10 @@ const Header = () => {
                       <ul className="py-2">
                         <li>
                           <Link
-                            to="/order-history"
+                            to="/profile/userinfo"
                             className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                           >
-                            Lịch sử đơn hàng
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="/change-password"
-                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                          >
-                            Đổi mật khẩu
+                            Hồ sơ của tôi
                           </Link>
                         </li>
                         <li>
