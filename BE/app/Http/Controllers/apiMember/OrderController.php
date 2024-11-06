@@ -164,7 +164,7 @@ class OrderController extends Controller
                 ]);
                 $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
                 return $order;
-            } else if ($order['status'] === 'Đã giao') {
+            } else if ($order['status'] === 'Đã giao hàng') {
                 $dataValidate = $request->validate([
                     'status' => 'required|in:Trả hàng,Hoàn thành',
                 ]);

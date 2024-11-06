@@ -39,14 +39,14 @@ class OrderController extends Controller
         try {
             DB::transaction(function () use ($request, $order) {
                 $request->validate([
-                    'status' => 'required|in:Chờ xử lý,Đã xác nhận,Đang vận chuyển,Đã giao,Hoàn thành',
+                    'status' => 'required|in:Chờ xử lý,Đã xác nhận,Đang vận chuyển,Đã giao hàng,Hoàn thành',
                 ]);
 
                 $statusOrder = [
                     'Chờ xử lý' => ['Đã xác nhận'],
                     'Đã xác nhận' => ['Đang vận chuyển'],
-                    'Đang vận chuyển' => ['Đã giao'],
-                    'Đã giao' => ['Hoàn thành'],
+                    'Đang vận chuyển' => ['Đã giao hàng'],
+                    'Đã giao hàng' => ['Hoàn thành'],
                     'Hoàn thành' => []
                 ];
 
