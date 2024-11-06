@@ -160,7 +160,7 @@ class OrderController extends Controller
                 ]);
             }
             $order->update([
-                'total_price' => $dataValidate['status'],
+                'status' => $dataValidate['status'],
             ]);
 
             $order->load('orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
