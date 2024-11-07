@@ -48,6 +48,12 @@ Route::post('register', [AuthController::class, 'register'])->name('registerSubm
 
 Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('login', [AuthController::class, 'login']);
+// quen mat khau
+Route::get('forget-password', [AuthController::class, 'forgetPass'])->name('forgetPass');
+Route::post('forget-password', [AuthController::class, 'postForgetPass']);
+
+Route::get('reset-password/{userId}', [AuthController::class, 'resetPassword'])->name('resetPassword');
+Route::post('reset-password/{userId}', [AuthController::class, 'postResetPassword']);
 
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
