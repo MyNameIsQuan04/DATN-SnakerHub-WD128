@@ -38,15 +38,15 @@ class AuthController extends Controller
         Cart::create([
             'user_id' => $user->id,
         ]);
-               
+
         $token = auth()->login($user);
 
         return $this->respondWithToken($token);
     }
     public function showLoginForm()
-{
-    return view('auth.login'); 
-}
+    {
+        return view('auth.login');
+    }
 
     // Đăng nhập người dùng
     public function login(Request $request)
@@ -86,64 +86,65 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()->only(['id', 'name', 'email', 'address', 'phone_number','type'])
+            'user' => auth()->user()->only(['id', 'name', 'email', 'address', 'phone_number', 'type'])
         ]);
     }
 
     public function forgetPass()
-{
-    return view('auth.forgetPass');
-}
-
-public function postForgetPass(Request $request)
-{
-    $request->validate([
-        'email' => 'required|exists:users,email',
-    ], [
-        'email.exists' => 'Email không tồn tại trên hệ thống',
-        'email.required' => 'Vui lòng nhập email hợp lệ',
-    ]);
-
-    $user = User::where('email', $request->email)->first();
-
-    if ($user) {
-        // Gửi email với liên kết đặt lại mật khẩu
-        Mail::send('auth.check_email_forget', compact('user'), function($email) use ($user) {
-            $email->to($user->email, $user->name);
-            $email->subject('Quên mật khẩu');
-        });
+    {
+        return view('auth.forgetPass');
     }
 
-    return redirect()->back()->with('yes', 'Vui lòng kiểm tra email để thực hiện thay đổi');
-}
-    
-public function resetPassword($userId)
-{
-    $user = User::find($userId);
+    public function postForgetPass(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|exists:users,email',
+        ], [
+            'email.exists' => 'Email không tồn tại trên hệ thống',
+            'email.required' => 'Vui lòng nhập email hợp lệ',
+        ]);
 
-    if (!$user) {
-        return redirect()->route('login')->withErrors(['error' => 'Người dùng không tồn tại']);
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) {
+            // Gửi email với liên kết đặt lại mật khẩu
+            Mail::send('auth.check_email_forget', compact('user'), function ($email) use ($user) {
+                $email->to($user->email, $user->name);
+                $email->subject('Quên mật khẩu');
+            });
+            return response()->json(['message' => 'Vui lòng kiểm tra email để thực hiện thay đổi'], 200);
+        }
+
+        return response()->json(['error' => 'Email không tồn tại'], 404);
     }
 
-    return view('auth.reset_password', compact('user'));
-}
+    public function resetPassword($userId)
+    {
+        $user = User::find($userId);
 
-public function postResetPassword(Request $request, $userId)
-{
-    $request->validate([
-        'password' => 'required|string|min:8|confirmed',
-    ]);
+        if (!$user) {
+            return redirect()->route('login')->withErrors(['error' => 'Người dùng không tồn tại']);
+        }
 
-    $user = User::find($userId);
-
-    if (!$user) {
-        return redirect()->route('login')->withErrors(['error' => 'Người dùng không tồn tại']);
+        return view('auth.reset_password', compact('user'));
     }
 
-    // Cập nhật mật khẩu mới
-    $user->password = Hash::make($request->password);
-    $user->save();
+    public function postResetPassword(Request $request, $userId)
+    {
+        $request->validate([
+            'password' => 'required|string|min:8|confirmed',
+        ]);
 
-    return redirect()->route('login')->with('success', 'Mật khẩu đã được đặt lại thành công');
-}
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json(['error' => 'Người dùng không tồn tại'], 404);
+        }
+
+        // Cập nhật mật khẩu mới
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return response()->json(['message' => 'Mật khẩu đã được đặt lại thành công'], 200);
+    }
 }

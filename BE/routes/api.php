@@ -46,9 +46,9 @@ foreach ($crud as $key => $controller) {
     Route::apiResource($key, $controller);
 }
 
-Route::get('dashboard/daily',[DashboardController::class, 'daily']);
-Route::get('dashboard/monthly',[DashboardController::class, 'monthly']);
-Route::get('dashboard',[DashboardController::class, 'index']);
+Route::get('dashboard/daily', [DashboardController::class, 'daily']);
+Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
+Route::get('dashboard', [DashboardController::class, 'index']);
 
 Route::apiResource('client/orders', ApiMemberOrderController::class);
 
@@ -60,8 +60,12 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::get('me', [AuthController::class, 'me'])->middleware('auth:api');
-});
+    // Route để gửi yêu cầu quên mật khẩu (gửi email)
 
+});
+Route::post('forget-password', [AuthController::class, 'postForgetPass']);
+// Route để đặt lại mật khẩu
+Route::post('reset-password/{userId}', [AuthController::class, 'postResetPassword']);
 
 Route::group(['middleware' => ['auth:api']],  function () {
     Route::get('/list', [CartController::class, 'index'])->name('cart.index');

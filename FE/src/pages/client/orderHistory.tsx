@@ -27,7 +27,7 @@ const OrderHistory: React.FC = () => {
   }, [token]);
 
   const getFilteredOrders = (status: string) => {
-    if (status === "tất cả") {
+    if (status === "Tất cả") {
       return orders;
     }
     return orders.filter((order) => order.status === status);
@@ -39,7 +39,7 @@ const OrderHistory: React.FC = () => {
       try {
         await axios.patch(
           `http://localhost:8000/api/client/orders/${idOrder}`,
-          { status: "đã hủy" },
+          { status: "Đã hủy" },
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -49,7 +49,7 @@ const OrderHistory: React.FC = () => {
 
         setOrders((prevOrders) =>
           prevOrders.map((order) =>
-            order.id === idOrder ? { ...order, status: "đã hủy" } : order
+            order.id === idOrder ? { ...order, status: "Đã hủy" } : order
           )
         );
       } catch (error) {
