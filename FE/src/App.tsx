@@ -34,6 +34,8 @@ import ThankYou from "./pages/client/Thankyou";
 import Contact from "./pages/client/contact";
 import PrivateAdmin from "./pages/PrivateAdmin";
 import ForgotPassword from "./pages/client/forgot-password";
+import Mail from "./pages/client/mail";
+import ResetPassword from "./pages/client/reset-password";
 
 function App() {
   return (
@@ -63,7 +65,9 @@ function App() {
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />
           <Route path="/thankyou" element={<ThankYou />} />
-          <Route path="/forgot-password/:id" element={<ForgotPassword />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="mail" element={<Mail />} />
           <Route path="" element />
           <Route path="" element />
         </Route>

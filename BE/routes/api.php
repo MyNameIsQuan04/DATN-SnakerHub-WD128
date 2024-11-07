@@ -65,7 +65,7 @@ Route::group(['prefix' => 'auth'], function () {
 });
 Route::post('forget-password', [AuthController::class, 'postForgetPass']);
 // Route để đặt lại mật khẩu
-Route::post('reset-password/{userId}', [AuthController::class, 'postResetPassword']);
+Route::post('reset-password/', [AuthController::class, 'postResetPassword']);
 
 Route::group(['middleware' => ['auth:api']],  function () {
     Route::get('/list', [CartController::class, 'index'])->name('cart.index');
