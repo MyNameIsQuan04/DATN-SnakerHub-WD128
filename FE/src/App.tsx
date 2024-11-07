@@ -32,6 +32,7 @@ import CartContext from "./contexts/CartContext";
 import OrderContext from "./contexts/OrderContext";
 import ThankYou from "./pages/client/Thankyou";
 import Contact from "./pages/client/contact";
+import PrivateAdmin from "./pages/PrivateAdmin";
 
 function App() {
   return (
@@ -72,7 +73,7 @@ function App() {
               <SizeContext>
                 <ColorContext>
                   <CategoryContext>
-                    <LayoutAdmin />
+                    <PrivateAdmin element={<LayoutAdmin />} />
                   </CategoryContext>
                 </ColorContext>
               </SizeContext>

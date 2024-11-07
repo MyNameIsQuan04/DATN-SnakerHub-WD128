@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -41,6 +43,10 @@ class AuthController extends Controller
 
         return $this->respondWithToken($token);
     }
+    public function showLoginForm()
+{
+    return view('auth.login'); 
+}
 
     // Đăng nhập người dùng
     public function login(Request $request)
@@ -80,7 +86,64 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()->only(['id', 'name', 'email', 'address', 'phone_number'])
+            'user' => auth()->user()->only(['id', 'name', 'email', 'address', 'phone_number','type'])
         ]);
     }
+
+    public function forgetPass()
+{
+    return view('auth.forgetPass');
+}
+
+public function postForgetPass(Request $request)
+{
+    $request->validate([
+        'email' => 'required|exists:users,email',
+    ], [
+        'email.exists' => 'Email không tồn tại trên hệ thống',
+        'email.required' => 'Vui lòng nhập email hợp lệ',
+    ]);
+
+    $user = User::where('email', $request->email)->first();
+
+    if ($user) {
+        // Gửi email với liên kết đặt lại mật khẩu
+        Mail::send('auth.check_email_forget', compact('user'), function($email) use ($user) {
+            $email->to($user->email, $user->name);
+            $email->subject('Quên mật khẩu');
+        });
+    }
+
+    return redirect()->back()->with('yes', 'Vui lòng kiểm tra email để thực hiện thay đổi');
+}
+    
+public function resetPassword($userId)
+{
+    $user = User::find($userId);
+
+    if (!$user) {
+        return redirect()->route('login')->withErrors(['error' => 'Người dùng không tồn tại']);
+    }
+
+    return view('auth.reset_password', compact('user'));
+}
+
+public function postResetPassword(Request $request, $userId)
+{
+    $request->validate([
+        'password' => 'required|string|min:8|confirmed',
+    ]);
+
+    $user = User::find($userId);
+
+    if (!$user) {
+        return redirect()->route('login')->withErrors(['error' => 'Người dùng không tồn tại']);
+    }
+
+    // Cập nhật mật khẩu mới
+    $user->password = Hash::make($request->password);
+    $user->save();
+
+    return redirect()->route('login')->with('success', 'Mật khẩu đã được đặt lại thành công');
+}
 }

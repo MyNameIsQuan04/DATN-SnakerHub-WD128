@@ -18,6 +18,7 @@ export const registerSchema = z.object({
     .min(10, { message: "Số điện thoại phải có ít nhất 10 ký tự" }),
   address: z.string().min(5, { message: "Địa chỉ phải có ít nhất 5 ký tự" }),
   password: z.string().min(6).max(255),
+  // role: z.string(),
   // confirmPassword: z.string().min(6).max(255),
 });
 // .refine((data) => data.password === data.confirmPassword, {
