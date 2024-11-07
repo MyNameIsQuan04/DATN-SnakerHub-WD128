@@ -24,9 +24,7 @@ class OrderController extends Controller
      */
     public function store(Request $request) {}
 
-    /**
-     * Display the specified resource.
-     */
+    
     public function show(Order $order)
     {
         $order->load('customer.user', 'orderItems.productVariant.product');
@@ -41,14 +39,15 @@ class OrderController extends Controller
         try {
             DB::transaction(function () use ($request, $order) {
                 $request->validate([
-                    'status' => 'required|in:chờ xử lý,đã xác nhận,đang vận chuyển,hoàn thành',
+                    'status' => 'required|in:Chờ xử lý,Đã xác nhận,Đang vận chuyển,Đã giao hàng,Hoàn thành',
                 ]);
 
                 $statusOrder = [
-                    'chờ xử lý' => ['đã xác nhận'],
-                    'đã xác nhận' => ['đang vận chuyển'],
-                    'đang vận chuyển' => ['hoàn thành'],
-                    'hoàn thành' => []
+                    'Chờ xử lý' => ['Đã xác nhận'],
+                    'Đã xác nhận' => ['Đang vận chuyển'],
+                    'Đang vận chuyển' => ['Đã giao hàng'],
+                    'Đã giao hàng' => ['Hoàn thành'],
+                    'Hoàn thành' => []
                 ];
 
                 $currentStatus = $order->status;
@@ -73,14 +72,5 @@ class OrderController extends Controller
                 'message' => 'Có lỗi xảy ra: ' . $e->getMessage(),
             ], 500);
         }
-    }
-
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

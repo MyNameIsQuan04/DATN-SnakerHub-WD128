@@ -25,7 +25,7 @@ class OrderController extends Controller
         $orders = Order::whereHas('customer', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })->orderByDesc('id')->get();
-        $orders->load('orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+        $orders->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
         return $orders;
     }
 
@@ -109,8 +109,7 @@ class OrderController extends Controller
                     'sales_count' => $newSalesCount
                 ]);
             }
-
-            $order->load('orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+            $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
 
             return response()->json([
                 'success' => true,
@@ -131,7 +130,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+        $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
         return $order;
     }
 
@@ -141,30 +140,60 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         try {
-            $dataValidate = $request->validate([
-                'status' => 'required|in:đã hủy',
-            ]);
-            foreach ($order->orderItems as $orderItem) {
-                $productVariant = Product_Variant::find($orderItem['product__variant_id']);
-
-                $stock = $productVariant['stock'] + $orderItem['quantity'];
-                $productVariant->update([
-                    'stock' => $stock,
+            if ($order['status'] === 'Chờ xử lý') {
+                $dataValidate = $request->validate([
+                    'status' => 'required|in:Đã hủy',
                 ]);
+                foreach ($order->orderItems as $orderItem) {
+                    $productVariant = Product_Variant::find($orderItem['product__variant_id']);
 
-                $product = Product::find($productVariant['product_id']);
+                    $stock = $productVariant['stock'] + $orderItem['quantity'];
+                    $productVariant->update([
+                        'stock' => $stock,
+                    ]);
 
-                $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
-                $product->update([
-                    'sales_count' => $newSalesCount
+                    $product = Product::find($productVariant['product_id']);
+
+                    $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
+                    $product->update([
+                        'sales_count' => $newSalesCount
+                    ]);
+                }
+                $order->update([
+                    'status' => $dataValidate['status'],
                 ]);
+                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                return $order;
+            } else if ($order['status'] === 'Đã giao hàng') {
+                $dataValidate = $request->validate([
+                    'status' => 'required|in:Trả hàng,Hoàn thành',
+                ]);
+                foreach ($order->orderItems as $orderItem) {
+                    $productVariant = Product_Variant::find($orderItem['product__variant_id']);
+
+                    $stock = $productVariant['stock'] + $orderItem['quantity'];
+                    $productVariant->update([
+                        'stock' => $stock,
+                    ]);
+
+                    $product = Product::find($productVariant['product_id']);
+
+                    $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
+                    $product->update([
+                        'sales_count' => $newSalesCount
+                    ]);
+                }
+                $order->update([
+                    'status' => $dataValidate['status'],
+                ]);
+                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                return $order;
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra: không thể thay đổi',
+                ], 404);
             }
-            $order->update([
-                'total_price' => $dataValidate['status'],
-            ]);
-
-            $order->load('orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
-            return $order;
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -172,13 +201,5 @@ class OrderController extends Controller
                 'message' => 'Có lỗi xảy ra: ' . $e->getMessage(),
             ], 500);
         }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }
