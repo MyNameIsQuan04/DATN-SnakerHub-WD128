@@ -4,11 +4,13 @@ import { MdOutlineManageAccounts } from "react-icons/md";
 import { CiViewList } from "react-icons/ci";
 import { MdOutlineAnnouncement } from "react-icons/md";
 import { BiCustomize } from "react-icons/bi";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const UserProfile = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const [activeDropdownItem, setActiveDropdownItem] = useState<string | null>(null);
+  const { user } = useAuth();
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
@@ -35,8 +37,9 @@ const UserProfile = () => {
             alt="User Profile Picture"
           />
           <div>
-            <span className="text-xl font-bold text-gray-800">hulongnguyen774</span>
-            <a href="#" className="text-sm text-primary hover:underline block mt-2">
+            <span className="text-xl font-bold text-gray-500 underline">Hi, </span>
+            <span className="text-xl font-bold text-blue-500 font-serif">{user?.name}</span>
+            <a href="/profile/userinfo" className="text-sm text-primary underline block mt-2">
               Sửa Hồ Sơ
             </a>
           </div>
@@ -48,6 +51,7 @@ const UserProfile = () => {
           </div>
 
           {/* Hồ Sơ button */}
+          <Link to="/profile/userinfo">
           <button
             onClick={() => { toggleProfileDropdown(); handleButtonClick("profile"); }}
             className={`block w-full text-left py-2 px-4 rounded-xl font-semibold cursor-pointer transition-all duration-300 transform hover:bg-orange-100 hover:text-orange-500 ${activeButton === "profile" ? "bg-orange-500 text-white" : "bg-gray-100"}`}
@@ -55,6 +59,8 @@ const UserProfile = () => {
             <MdOutlineManageAccounts className="inline-block mr-3" />
             Hồ Sơ
           </button>
+          </Link>
+          
 
           {/* Dropdown menu */}
           {isProfileDropdownOpen && (
