@@ -1,7 +1,11 @@
 <?php
+
+namespace App\Http\Controllers\Client;
+
+use Carbon\Carbon;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
+use App\Http\Controllers\Controller;
 
 class VoucherController extends Controller
 {

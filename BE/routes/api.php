@@ -3,18 +3,18 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\api\CategoryController;
-use App\Http\Controllers\api\DashboardController;
 use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\api\ProductController;
+use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\api\CategoryController;
+use App\Http\Controllers\api\DashboardController;
+use App\Http\Controllers\Client\VoucherController;
 use App\Http\Controllers\ApiController\SizeApiController;
 use App\Http\Controllers\ApiController\UserApiController;
 use App\Http\Controllers\ApiController\ColorApiController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
-use App\Http\Controllers\apiMember\OrderController as ApiMemberOrderController;
-use App\Http\Controllers\Client\CartController;
-use App\Http\Controllers\Client\VoucherController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
+use App\Http\Controllers\apiMember\OrderController as ApiMemberOrderController;
 
 /*
 |--------------------------------------------------------------------------
