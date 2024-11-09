@@ -62,7 +62,7 @@ const UserOrderHistory = () => {
       <div className="max-w-7xl mx-auto p-6 bg-white shadow-xl rounded-xl">
         {/* Tabs trạng thái */}
         <div className="flex justify-center gap-0 mb-8">
-          {["all", "chờ xử lý", "đã xác nhận", "đang vận chuyển", "hoàn thành", "đã hủy"].map(status => (
+          {["all", "Chờ xử lý", "Đã xác nhận", "Đang vận chuyển","Đã giao hàng", "Hoàn thành", "Đã hủy"].map(status => (
             <button
               key={status}
               onClick={() => setSelectedStatus(status)}
@@ -106,7 +106,7 @@ const UserOrderHistory = () => {
                     </span>
                   </p>
                   {/* Conditional Cancel Button */}
-                  {["chờ xử lý", "đã xác nhận"].includes(order.status) && (
+                  {["Chờ xử lý", "Đã xác nhận"].includes(order.status) && (
                     <button
                       onClick={() => cancelOrder(order.id)}
                       className="ml-4 px-6 py-2 text-lg font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-300"

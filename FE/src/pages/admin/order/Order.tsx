@@ -44,10 +44,11 @@ const AdminOrder = () => {
 
   const getStatusOptions = (currentStatus: string) => {
     const statusFlow = [
-      "chờ xử lý",
-      "đã xác nhận",
-      "đang vận chuyển",
-      "hoàn thành",
+      "Chờ xử lý",
+      "Đã xác nhận",
+      "Đang vận chuyển",
+      "Đã giao hàng",
+      "Hoàn thành",
       "đã hủy",
     ];
 
