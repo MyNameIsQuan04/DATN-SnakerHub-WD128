@@ -8,6 +8,6 @@ export interface IUser {
   avatar?: string;
   type?: "admin" | "user" | "guest";
   confirmPassword?: string;
-  created_at : string,
+  created_at: string;
   isLocked: boolean; // Thêm thuộc tính để quản lý trạng thái khóa
 }

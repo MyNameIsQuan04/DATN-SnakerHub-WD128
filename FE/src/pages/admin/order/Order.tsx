@@ -37,18 +37,19 @@ const AdminOrder = () => {
       }
     } catch (error) {
       console.error("Error updating order status:", error);
-      setOrders(orders); 
+      setOrders(orders);
       toast.error("Cập nhật trạng thái thất bại !");
     }
   };
 
   const getStatusOptions = (currentStatus: string) => {
     const statusFlow = [
-      "chờ xử lý",
-      "đã xác nhận",
-      "đang vận chuyển",
-      "hoàn thành",
-      "đã hủy",
+      "Chờ xử lý",
+      "Đã xác nhận",
+      "Đang vận chuyển",
+      "Đã giao hàng",
+      "Hoàn thành",
+      "Đã hủy",
     ];
 
     const currentIndex = statusFlow.indexOf(currentStatus);
@@ -75,7 +76,9 @@ const AdminOrder = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="sticky top-0 bg-white shadow-lg z-10 p-4">
-        <h1 className="text-3xl font-bold mb-4 text-gray-800">Quản lý đơn hàng</h1>
+        <h1 className="text-3xl font-bold mb-4 text-gray-800">
+          Quản lý đơn hàng
+        </h1>
         <div className="mb-4">
           <input
             type="text"
@@ -90,8 +93,21 @@ const AdminOrder = () => {
         <table className="min-w-full bg-white border border-gray-200 shadow-md">
           <thead className="bg-gray-300 sticky top-0">
             <tr className="text-center">
-              {["STT", "Họ và tên", "Số điện thoại", "Địa chỉ", "Ngày tạo", "Tổng tiền", "Đơn hàng", "Trạng thái", "Tùy chỉnh"].map((heading) => (
-                <th key={heading} className="py-2 px-3 border border-gray-300 font-semibold text-gray-600">
+              {[
+                "STT",
+                "Họ và tên",
+                "Số điện thoại",
+                "Địa chỉ",
+                "Ngày tạo",
+                "Tổng tiền",
+                "Đơn hàng",
+                "Trạng thái",
+                "Tùy chỉnh",
+              ].map((heading) => (
+                <th
+                  key={heading}
+                  className="py-2 px-3 border border-gray-300 font-semibold text-gray-600"
+                >
                   {heading}
                 </th>
               ))}
@@ -105,9 +121,15 @@ const AdminOrder = () => {
                   <td className="py-3 px-4 border-b text-center text-blue-500 font-serif">
                     {item.customer.name}
                   </td>
-                  <td className="py-3 px-4 border-b text-center">{item.customer.phone_number}</td>
-                  <td className="py-3 px-4 border-b text-center">{item.customer.address}</td>
-                  <td className="py-3 px-4 border-b text-center">{item.created_at}</td>
+                  <td className="py-3 px-4 border-b text-center">
+                    {item.customer.phone_number}
+                  </td>
+                  <td className="py-3 px-4 border-b text-center">
+                    {item.customer.address}
+                  </td>
+                  <td className="py-3 px-4 border-b text-center">
+                    {item.created_at}
+                  </td>
                   <td className="py-3 px-4 border-b text-center text-red-500 font-bold">
                     {item.total_price.toLocaleString()} VNĐ
                   </td>
@@ -125,7 +147,9 @@ const AdminOrder = () => {
                   <td className="py-3 px-4 border-b text-center">
                     <select
                       value={item.status}
-                      onChange={(e) => handleUpdateStatus(item.id, e.target.value)}
+                      onChange={(e) =>
+                        handleUpdateStatus(item.id, e.target.value)
+                      }
                       className="border border-gray-300 rounded px-2 py-1 transition duration-300 focus:ring-2 focus:ring-yellow-500"
                     >
                       {getStatusOptions(item.status).map((option) => (
@@ -133,7 +157,11 @@ const AdminOrder = () => {
                           key={option.value}
                           value={option.value}
                           disabled={option.disabled}
-                          className={option.disabled ? "text-gray-400 cursor-not-allowed" : ""}
+                          className={
+                            option.disabled
+                              ? "text-gray-400 cursor-not-allowed"
+                              : ""
+                          }
                           onClick={() => handleOptionClick(option.disabled)}
                         >
                           {option.value}
@@ -150,7 +178,10 @@ const AdminOrder = () => {
                       <h2 className="mb-2 font-medium">Chi tiết đơn hàng:</h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {item.order_items.map((product) => (
-                          <div key={product.id} className="flex items-center border p-4 rounded-lg shadow-md bg-white transition-transform transform hover:scale-105">
+                          <div
+                            key={product.id}
+                            className="flex items-center border p-4 rounded-lg shadow-md bg-white transition-transform transform hover:scale-105"
+                          >
                             <img
                               src={product.product_variant?.image || ""}
                               alt="Product"
@@ -158,16 +189,23 @@ const AdminOrder = () => {
                             />
                             <div className="flex-grow">
                               <div className="font-semibold text-lg">
-                                <strong>Sản phẩm:</strong> {product.product_variant?.product?.name || "N/A"}
+                                <strong>Sản phẩm:</strong>{" "}
+                                {product.product_variant?.product?.name ||
+                                  "N/A"}
                               </div>
                               <div className="text-gray-700">
                                 <strong>Số lượng:</strong> {product.quantity}
                               </div>
                               <div className="text-gray-700">
-                                <strong>Giá:</strong> <span className="text-red-500 font-medium">{product.price.toLocaleString()}</span> VNĐ
+                                <strong>Giá:</strong>{" "}
+                                <span className="text-red-500 font-medium">
+                                  {product.price.toLocaleString()}
+                                </span>{" "}
+                                VNĐ
                               </div>
                               <div className="text-gray-700">
-                                <strong>Mã sản phẩm:</strong> {product.product_variant?.sku || "N/A"}
+                                <strong>Mã sản phẩm:</strong>{" "}
+                                {product.product_variant?.sku || "N/A"}
                               </div>
                             </div>
                           </div>

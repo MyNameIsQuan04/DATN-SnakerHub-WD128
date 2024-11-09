@@ -3,6 +3,7 @@ import { ProductCT } from "../../contexts/ProductContext";
 import { Product } from "../../interfaces/Product";
 import { CategoryCT } from "../../contexts/CategoryContext";
 import { Category } from "../../interfaces/Category";
+import { Link } from "react-router-dom";
 
 type Props = {};
 
@@ -55,22 +56,24 @@ const Products = (props: Props) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Product Card */}
               {products.map((product: Product) => (
-                <div className="bg-white shadow-md rounded-lg p-4">
-                  <img
-                    src="https://via.placeholder.com/150"
-                    alt="Gray Colorblock Hoodie"
-                    className="w-full h-40 object-cover mb-4 rounded-md"
-                  />
-                  <h3 className="text-gray-700 font-semibold">
-                    {product.name}
-                  </h3>
-                  <p className="text-gray-500 text-sm">
-                    {product.category.name}
-                  </p>
-                  <p className="text-blue-600 font-semibold mt-2">
-                    {product.price} đ
-                  </p>
-                </div>
+                <Link to={`/detail/${product.id}`}>
+                  <div className="bg-white shadow-md rounded-lg p-4">
+                    <img
+                      src="https://via.placeholder.com/150"
+                      alt="Gray Colorblock Hoodie"
+                      className="w-full h-40 object-cover mb-4 rounded-md"
+                    />
+                    <h3 className="text-gray-700 font-semibold">
+                      {product.name}
+                    </h3>
+                    <p className="text-gray-500 text-sm">
+                      {product.category.name}
+                    </p>
+                    <p className="text-blue-600 font-semibold mt-2">
+                      {product.price} đ
+                    </p>
+                  </div>
+                </Link>
               ))}
 
               <div className="bg-white shadow-md rounded-lg p-4">
