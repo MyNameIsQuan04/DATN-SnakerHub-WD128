@@ -13,6 +13,7 @@ use App\Http\Controllers\ApiController\ColorApiController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\apiMember\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\VoucherController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 
 /*
@@ -108,4 +109,9 @@ Route::middleware('auth:api')->group(function() {
 
     // Cập nhật thông tin của chính người dùng đã đăng nhập
     Route::put('/profile', [UserApiController::class, 'updateProfile']);
+});
+Route::middleware(['auth:api', 'admin'])->group(function () {
+    Route::post('/admin/voucher', [VoucherController::class, 'store'])->name('voucher.store');
+    Route::put('/admin/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
+    Route::delete('/admin/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
 });
