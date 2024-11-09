@@ -111,6 +111,7 @@ Route::middleware('auth:api')->group(function() {
     Route::put('/profile', [UserApiController::class, 'updateProfile']);
 });
 Route::middleware(['auth:api', 'admin'])->group(function () {
+    Route::get('/admin/vouchers', [VoucherController::class, 'index'])->name('voucher.index');
     Route::post('/admin/voucher', [VoucherController::class, 'store'])->name('voucher.store');
     Route::put('/admin/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
     Route::delete('/admin/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
