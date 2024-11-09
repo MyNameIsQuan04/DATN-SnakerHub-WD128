@@ -11,14 +11,23 @@ const Checkout = () => {
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
   const [checkoutItems, setCheckoutItems] = useState<CartItem[]>([]);
-  const [selectedProvince, setSelectedProvince] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [selectedWard, setSelectedWard] = useState("");
+  const [selectedProvince, setSelectedProvince] = useState<{
+    code: number;
+    name: string;
+  } | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<{
+    code: number;
+    name: string;
+  } | null>(null);
+  const [selectedWard, setSelectedWard] = useState<{
+    code: number;
+    name: string;
+  } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   const provinces = useProvinces();
-  const districts = useDistricts(selectedProvince);
-  const wards = useWards(selectedDistrict);
+  const districts = useDistricts(selectedProvince?.code);
+  const wards = useWards(selectedDistrict?.code);
   const token = localStorage.getItem("access_token");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const {
@@ -68,9 +77,9 @@ const Checkout = () => {
     console.log(cartItems);
     const orderData = {
       ...data,
-      province: selectedProvince,
-      district: selectedDistrict,
-      town: selectedWard,
+      province: selectedProvince?.name,
+      district: selectedDistrict?.name,
+      town: selectedWard?.name,
       items: cartItems.map((item) => ({
         product__variant_id: item.product_variant.id,
         quantity: item.quantity,
@@ -261,11 +270,12 @@ const Checkout = () => {
                 </label>
                 <select
                   id="province"
-                  value={selectedProvince}
+                  value={selectedProvince?.code || ""}
                   onChange={(e) => {
-                    setSelectedProvince(e.target.value);
-                    setSelectedDistrict("");
-                    setSelectedWard("");
+                    const province = provinces.find(
+                      (p) => p.code === Number(e.target.value)
+                    );
+                    if (province) setSelectedProvince(province);
                   }}
                   className="border h-[40px] ml-[5px]"
                 >
@@ -287,10 +297,12 @@ const Checkout = () => {
                     </label>
                     <select
                       id="district"
-                      value={selectedDistrict}
+                      value={selectedDistrict?.code || ""}
                       onChange={(e) => {
-                        setSelectedDistrict(e.target.value);
-                        setSelectedWard("");
+                        const district = districts.find(
+                          (d) => d.code === Number(e.target.value)
+                        );
+                        if (district) setSelectedDistrict(district);
                       }}
                       className="border h-[40px] ml-[5px]"
                     >
@@ -311,8 +323,13 @@ const Checkout = () => {
                     </label>
                     <select
                       id="ward"
-                      value={selectedWard}
-                      onChange={(e) => setSelectedWard(e.target.value)}
+                      value={selectedWard?.code || ""}
+                      onChange={(e) => {
+                        const ward = wards.find(
+                          (w) => w.code === Number(e.target.value)
+                        );
+                        if (ward) setSelectedWard(ward);
+                      }}
                       className="border h-[40px] ml-[5px]"
                     >
                       <option value="">Chọn xã/phường</option>
