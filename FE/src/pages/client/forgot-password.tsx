@@ -3,12 +3,12 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-type Props = {};
 
-const ForgotPassword = (props: Props) => {
+const ForgotPassword = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: unknown) => {
     try {
       await axios.post("http://localhost:8000/api/forget-password", data);
       alert("Thanh cong");
