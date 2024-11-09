@@ -110,7 +110,7 @@ const Checkout = () => {
   };
 
   return (
-    <div className="mt-[30px] px-[150px]">
+    <div className="mt-[100px] px-[150px]">
       <div className="flex">
         <p className="text-[14px]">TRANG CHU</p>
         <p className="text-[14px] px-[4px]"> | </p>

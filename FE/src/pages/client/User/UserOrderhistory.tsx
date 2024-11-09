@@ -58,24 +58,25 @@ const UserOrderHistory = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="max-w-7xl mx-auto p-6 bg-white shadow-xl rounded-xl">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto p-6 bg-white rounded-xl">
         {/* Tabs trạng thái */}
-        <div className="flex justify-center gap-0 mb-8">
-          {["all", "Chờ xử lý", "Đã xác nhận", "Đang vận chuyển","Đã giao hàng", "Hoàn thành", "Đã hủy"].map(status => (
-            <button
-              key={status}
-              onClick={() => setSelectedStatus(status)}
-              className={`px-6 py-2 text-lg font-semibold transition-all duration-300 ${
-                selectedStatus === status
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-800 hover:bg-blue-500 hover:text-white"
-              } border border-gray-300 rounded-none`}
-            >
-              {status === "all" ? "Tất cả" : status}
-            </button>
-          ))}
-        </div>
+        <div className="flex justify-center gap-4 mb-8">
+  {["all", "Chờ xử lý", "Đã xác nhận", "Đang vận chuyển", "Đã giao hàng", "Hoàn thành", "Đã hủy"].map(status => (
+    <button
+      key={status}
+      onClick={() => setSelectedStatus(status)}
+      className={`px-6 py-3 text-lg font-semibold transition-all duration-300 transform rounded-[20px] border-2 ${
+        selectedStatus === status
+          ? "bg-orange-500 text-white border-orange-500 scale-105"
+          : "bg-white text-gray-800 border-gray-300 hover:bg-orange-400 hover:text-white"
+      }`}
+    >
+      {status === "all" ? "Tất cả" : status}
+    </button>
+  ))}
+</div>
+
 
         {/* Hiển thị loading spinner khi đang fetch */}
         {loading && (

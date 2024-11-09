@@ -141,7 +141,7 @@ const Detail = () => {
   return (
     <div className="">
       {/* Thông tin sản phẩm */}
-      <div className="container mx-auto mt-10">
+      <div className="container mx-auto mt-[100px]">
         <div className="flex gap-5 px-5">
           <div className="w-1/2">
             {/* Hình ảnh chính của sản phẩm */}
@@ -307,7 +307,7 @@ const Detail = () => {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      <ToastContainer className="mt-[100px]" />
     </div>
   );
 };
