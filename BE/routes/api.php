@@ -59,10 +59,8 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
     Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::get('me', [AuthController::class, 'me'])->middleware('auth:api');
-    // Route để gửi yêu cầu quên mật khẩu (gửi email)
-
 });
+// Route để gửi yêu cầu quên mật khẩu (gửi email)
 Route::post('forget-password', [AuthController::class, 'postForgetPass']);
 // Route để đặt lại mật khẩu
 Route::post('reset-password/', [AuthController::class, 'postResetPassword']);
@@ -84,4 +82,30 @@ Route::group(['middleware' => ['auth:api']],  function () {
 
     // Hiển thị chi tiết một sản phẩm trong giỏ hàng (tùy chọn)
     Route::get('/item/{id}', [CartController::class, 'showCartItem'])->name('cart.showItem');
+
+    Route::post('/validate-voucher', [CartController::class, 'validateVoucher']);
+    Route::post('/apply-voucher', [CartController::class, 'applyVoucher']);
+});
+
+Route::middleware('auth:api')->group(function() {
+    // Hiển thị danh sách người dùng (Admin chỉ có thể truy cập)
+    Route::get('/users', [UserApiController::class, 'index'])->middleware('type:admin');
+
+    // Hiển thị thông tin người dùng (cho cả Admin và User)
+    Route::get('/users/{id}', [UserApiController::class, 'show'])->middleware('type:admin,user');
+
+    // Cập nhật thông tin người dùng (cho cả Admin và User)
+    Route::put('/users/{id}', [UserApiController::class, 'update'])->middleware('type:admin,user');
+
+    // Xóa người dùng (Admin)
+    Route::delete('/users/{id}', [UserApiController::class, 'destroy'])->middleware('type:admin');
+
+    // Khóa tài khoản người dùng (Admin)
+    Route::post('/users/{id}/lock', [UserApiController::class, 'lockAccount'])->middleware('type:admin');
+
+    // Mở khóa tài khoản người dùng (Admin)
+    Route::post('/users/{id}/unlock', [UserApiController::class, 'unlockAccount'])->middleware('type:admin');
+
+    // Cập nhật thông tin của chính người dùng đã đăng nhập
+    Route::put('/profile', [UserApiController::class, 'updateProfile']);
 });

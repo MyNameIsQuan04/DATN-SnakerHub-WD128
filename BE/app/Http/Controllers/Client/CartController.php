@@ -7,6 +7,7 @@ use App\Models\Cart;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Cart_Item;
+use App\Models\Voucher;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -177,5 +178,51 @@ class CartController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'Không tìm thấy sản phẩm trong giỏ hàng!'], 404);
+    }
+
+    //  Phương thức Kiểm Tra Mã Giảm Giá
+    public function validateVoucher(Request $request)
+    {
+        $voucherCode = $request->input('code');
+        $voucher = Voucher::where('code', $voucherCode)->first();
+
+        if (!$voucher) {
+            return response()->json(['message' => 'Mã giảm giá không tồn tại'], 404);
+        }
+
+        if (!$voucher->isValid()) {
+            return response()->json(['message' => 'Mã giảm giá đã hết hạn hoặc đã được sử dụng hết'], 400);
+        }
+
+        return response()->json([
+            'message' => 'Mã giảm giá hợp lệ',
+            'discount' => $voucher->discount,
+            'type' => $voucher->type,
+        ]);
+    }
+    //  Phương thức áp Dụng Mã Giảm Giá
+    public function applyVoucher(Request $request)
+    {
+        $voucherCode = $request->input('code');
+        $total = $request->input('total'); // Tổng tiền giỏ hàng do FE gửi lên
+
+        $voucher = Voucher::where('code', $voucherCode)->first();
+        if (!$voucher || !$voucher->isValid()) {
+            return response()->json(['message' => 'Mã giảm giá không hợp lệ'], 400);
+        }
+
+        // Tính toán mức giảm giá
+        $discount = $voucher->type == 'percent' 
+            ? ($total * $voucher->discount) / 100 
+            : $voucher->discount;
+
+        // Giảm số lần sử dụng còn lại nếu có giới hạn
+        $voucher->decrement('usage_limit');
+
+        return response()->json([
+            'message' => 'Áp dụng mã giảm giá thành công',
+            'discount' => $discount,
+            'total_after_discount' => $total - $discount,
+        ]);
     }
 }

@@ -1,20 +1,21 @@
 <?php
-
 namespace App\Http\Controllers\ApiController;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 
-
-
 class UserApiController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource (for admin).
      */
     public function index()
     {
+        if (auth()->user()->type !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $users = User::all();
         return response()->json($users);
     }
@@ -30,7 +31,10 @@ class UserApiController extends Controller
             'password' => 'required|string|min:6',
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string',
-            'role' => 'required|in:customer,admin',
+            'type' => 'required|in:customer,admin',
+            'gender' => 'nullable|in:male,female,other',
+            'birthday' => 'nullable|date',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $validatedData['password'] = bcrypt($validatedData['password']);
@@ -41,12 +45,23 @@ class UserApiController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified resource (for both admin and user).
      */
     public function show(string $id)
     {
         $user = User::findOrFail($id);
-        return response()->json($user);
+
+        // Admin có thể xem bất kỳ thông tin người dùng nào
+        if (auth()->user()->type === 'admin') {
+            return response()->json($user);
+        }
+
+        // User chỉ có thể xem thông tin của chính mình
+        if (auth()->user()->id === $user->id) {
+            return response()->json($user);
+        }
+
+        return response()->json(['message' => 'Unauthorized'], 403);
     }
 
     /**
@@ -63,6 +78,9 @@ class UserApiController extends Controller
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'type' => 'sometimes|required|in:user,admin',
+            'gender' => 'nullable|in:male,female,other',
+            'birthday' => 'nullable|date',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($request->has('password') && !empty($validatedData['password'])) {
@@ -85,5 +103,78 @@ class UserApiController extends Controller
         $user->delete();
 
         return response()->json(['message' => 'User deleted successfully']);
+    }
+
+    /**
+     * Lock user account (for admin).
+     */
+    public function lockAccount($id)
+    {
+        if (auth()->user()->type !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $user = User::findOrFail($id);
+
+        if ($user->is_locked) {
+            return response()->json(['message' => 'User account is already locked'], 400);
+        }
+
+        $user->is_locked = true;
+        $user->save();
+
+        return response()->json(['message' => 'User account has been locked successfully']);
+    }
+
+    /**
+     * Unlock user account (for admin).
+     */
+    public function unlockAccount($id)
+    {
+        if (auth()->user()->type !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $user = User::findOrFail($id);
+
+        if (!$user->is_locked) {
+            return response()->json(['message' => 'User account is already unlocked'], 400);
+        }
+
+        $user->is_locked = false;
+        $user->save();
+
+        return response()->json(['message' => 'User account has been unlocked successfully']);
+    }
+
+    /**
+     * Update profile for the authenticated user.
+     */
+    public function updateProfile(Request $request)
+    {
+        // Lấy thông tin người dùng hiện tại
+        $user = auth()->user();
+
+        // Xác thực các trường cần thiết
+        $validatedData = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
+            'phone_number' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
+            'gender' => 'nullable|in:male,female,other',
+            'birthday' => 'nullable|date',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        // Nếu có thay đổi mật khẩu, mã hóa lại mật khẩu
+        if ($request->has('password')) {
+            $validatedData['password'] = bcrypt($request->password);
+        }
+
+        // Cập nhật thông tin người dùng
+        $user->update($validatedData);
+
+        // Trả về thông tin người dùng đã cập nhật
+        return response()->json($user);
     }
 }
