@@ -29,7 +29,7 @@ const SimpleSlider = () => {
         </div>
         <div>
           <img
-            src="https://i.pinimg.com/originals/b8/44/70/b8447051e9b7bc61f8ea02c538b8a39e.jpg" 
+            src="https://i.pinimg.com/474x/ad/fd/09/adfd0919c7041f9415884283accb66f7.jpg" 
             alt="Slide 2"
             className="w-full h-[600px] object-cover"
           />
