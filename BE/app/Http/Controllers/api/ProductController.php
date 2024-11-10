@@ -35,6 +35,7 @@ class ProductController extends Controller
                 'category_id' => $validatedData['category_id'],
                 'name' => $validatedData['name'],
                 'description' => $validatedData['description'],
+                'short_description' => $validatedData['short_description'],
                 'price' => $validatedData['price'],
             ];
             if (isset($validatedData['thumbnail'])) {
@@ -109,6 +110,7 @@ class ProductController extends Controller
                 'category_id' => $validatedData['category_id'],
                 'name' => $validatedData['name'],
                 'description' => $validatedData['description'],
+                'short_description' => $validatedData['short_description'],
                 'price' => $validatedData['price'],
             ];
             if (isset($validatedData['thumbnail'])) {

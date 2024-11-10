@@ -28,6 +28,7 @@ class UpdateProductRequest extends FormRequest
             'category_id' => 'required|integer',
             'name' => 'required|string|max:255|unique:products,name,' . $id,
             'description' => 'nullable|string',
+            'short_description' => 'nullable|string',
             'price' => 'required|integer',
             'thumbnail' => 'nullable',
             'galleries' => 'nullable|array',

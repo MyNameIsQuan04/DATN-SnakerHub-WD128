@@ -50,7 +50,10 @@ class AuthController extends Controller
     {
         return view('auth.login');
     }
-
+    public function showRegisterForm()
+    {
+        return view('auth.register');
+    }
     // Đăng nhập người dùng
     public function login(Request $request)
     {
