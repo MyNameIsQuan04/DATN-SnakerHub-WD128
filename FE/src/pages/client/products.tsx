@@ -61,20 +61,33 @@ const Products = (props: Props) => {
               {/* Product Card */}
               {filteredProducts.map((product: Product) => (
                 <Link to={`/detail/${product.id}`} key={product.id}>
-                  <div className="bg-white shadow-md rounded-lg p-4">
-                    <img
-                      src="https://via.placeholder.com/150"
-                      alt="Gray Colorblock Hoodie"
-                      className="w-full h-40 object-cover mb-4 rounded-md"
-                    />
-                    <h3 className="text-gray-700 font-semibold">
-                      {product.name}
-                    </h3>
-                    <p className="text-gray-500 text-sm">
-                      {product.category.name}
-                    </p>
-                    <p className="text-blue-600 font-semibold mt-2">
-                      {product.price} đ
+                  <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
+                    <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1">
+                      HOT
+                    </div>
+                    <div className="h-[245px] w-full overflow-hidden">
+                      <img
+                        src={product.thumbnail}
+                        alt={product.name}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                    <div className="w-full px-2 mx-auto mt-3">
+                      <div className="text-[19px] font-bold uppercase transition duration-300 hover:text-[#f2611c]">
+                        {product.name}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between px-2">
+                      <p className="text-[17px] uppercase pt-[5px] text-gray-400">
+                        {product.category.name}
+                      </p>
+                      <div className="flex text-yellow-400 text-sm">
+                        <span>⭐</span> <span>⭐</span> <span>⭐</span>{" "}
+                        <span>⭐</span> <span>⭐</span>
+                      </div>
+                    </div>
+                    <p className="text-[17px] px-2 font-bold py-[5px]">
+                      {product.price.toLocaleString("vi-VN")} đ
                     </p>
                   </div>
                 </Link>

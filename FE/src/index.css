@@ -3,4 +3,10 @@
 @tailwind utilities;
 
 
-
+.custom-slider .slick-slide {
+    padding: 0 5px; /* Khoảng cách 5px mỗi bên cho từng slide trong custom slider */
+  }
+  
+  .custom-slider .slick-list {
+    margin: 0 -5px; /* Loại bỏ khoảng cách thừa ở hai bên slider */
+  }

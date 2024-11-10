@@ -141,7 +141,7 @@ const Home = () => {
         <div className="flex justify-center gap-[60px] mt-[30px]">
           {categories.map((category: Category) => (
             <div className="bg-slate-200 w-[100px] h-[50px] flex justify-center items-center shadow-lg rounded-lg hover:bg-[#f2611c] transition duration-300">
-              <span className="text-[20px] hover:text-[22px] flex items-center text-black hover:text-white">
+              <span className="text-[20px] uppercase hover:text-[22px] flex items-center text-black hover:text-white">
                 {category.name}
               </span>
             </div>
@@ -169,7 +169,7 @@ const Home = () => {
             <Link to={`detail/${product.id}`} key={product.id}>
               <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
                 <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 ">
-                  Giảm giá
+                  HOT
                 </div>
                 <div className="h-[245px] w-full overflow-hidden">
                   <img
@@ -280,13 +280,13 @@ const Home = () => {
           </p>
         </div>
         <div className="px-[40px]">
-          <Slider {...settings} className="">
+          <Slider {...settings} className="custom-slider">
             {favouriteProducts.map((product: Product) => (
-              <div key={product.id} className="p-2">
+              <div key={product.id} className="">
                 <Link to={`detail/${product.id}`}>
                   <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
                     <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1">
-                      Giảm giá
+                      HOT
                     </div>
                     <div className="h-[245px] w-full overflow-hidden">
                       <img
@@ -319,10 +319,56 @@ const Home = () => {
           </Slider>
         </div>
         <div className="my-[50px] flex justify-between items-center">
-          <p className="text-[28px]  text-[#f2611c] px-[40px]">
-            SẢN PHẨM CỦA CHÚNG TÔI
-          </p>
+          <div className="relative flex flex-col justify-center pl-[40px]">
+            {/* Dòng chữ NEWS làm background */}
+            <p className="absolute text-[120px] text-[#d9d9d9] opacity-30 -z-10">
+              DISCOUNT
+            </p>
+            {/* Dòng chữ chính */}
+            <p className="text-[28px] font-bold text-[#f2611c]">
+              - SẢN PHẨM GIẢM GIÁ
+            </p>
+          </div>
           <p className="text-[18px]  text-black px-[40px]">Xem tất cả</p>
+        </div>
+        <div className="px-[40px]">
+          <Slider {...settings} className="custom-slider">
+            {favouriteProducts.map((product: Product) => (
+              <div key={product.id} className="gap-[10px]">
+                <Link to={`detail/${product.id}`}>
+                  <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
+                    <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1">
+                      HOT
+                    </div>
+                    <div className="h-[245px] w-full overflow-hidden">
+                      <img
+                        src={product.thumbnail}
+                        alt={product.name}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                    <div className="w-full px-2 mx-auto mt-3">
+                      <div className="text-[19px] font-bold uppercase transition duration-300 hover:text-[#f2611c]">
+                        {product.name}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between px-2">
+                      <p className="text-[17px] uppercase pt-[5px] text-gray-400">
+                        {product.category.name}
+                      </p>
+                      <div className="flex text-yellow-400 text-sm">
+                        <span>⭐</span> <span>⭐</span> <span>⭐</span>{" "}
+                        <span>⭐</span> <span>⭐</span>
+                      </div>
+                    </div>
+                    <p className="text-[17px] px-2 font-bold py-[5px]">
+                      {product.price.toLocaleString("vi-VN")} đ
+                    </p>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </Slider>
         </div>
       </div>
     </div>

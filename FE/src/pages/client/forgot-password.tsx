@@ -11,7 +11,7 @@ const ForgotPassword = (props: Props) => {
   const onSubmit = async (data: any) => {
     try {
       await axios.post("http://localhost:8000/api/forget-password", data);
-      alert("Thanh cong");
+      alert("Vui lòng kiểm tra mail của bạn");
     } catch (error) {
       console.log(error);
     }
