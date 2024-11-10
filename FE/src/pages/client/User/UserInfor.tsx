@@ -15,7 +15,7 @@ const UserInfor = () => {
     created_at: "",
     isLocked: false,
   });
-
+  const [avatarFile, setAvatarFile] = useState<File | null>(null); // Quản lý file ảnh avatar
   const token = localStorage.getItem("access_token");
 
   useEffect(() => {
@@ -40,6 +40,12 @@ const UserInfor = () => {
 
     if (name === "avatar" && files && files.length > 0) {
       const file = files[0];
+      if (file.size > 1048576) {
+        // Kiểm tra dung lượng file, tối đa 1MB
+        alert("Dung lượng file tối đa là 1MB.");
+        return;
+      }
+      setAvatarFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfile((prevProfile) => ({
@@ -60,20 +66,39 @@ const UserInfor = () => {
     e.preventDefault();
     console.log(profile); // Log dữ liệu để kiểm tra
     if (token) {
+      const formData = new FormData();
+      
+      // Thêm các thuộc tính vào FormData nếu chúng tồn tại
+      formData.append("id", profile.id || "");
+      formData.append("name", profile.name || "");
+      formData.append("email", profile.email || "");
+      formData.append("phone_number", profile.phone_number || "");
+      formData.append("gender", profile.gender || "other");
+      formData.append("birthday", profile.birthday || "");
+      formData.append("address", profile.address || "");
+      if (avatarFile) {
+        formData.append("avatar", avatarFile);
+      }
+  
       axios
-        .put("http://localhost:8000/api/profile", profile, {
-          headers: { Authorization: `Bearer ${token}` },
+        .put("http://localhost:8000/api/profile", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         })
         .then(() => {
           alert("Thông tin đã được cập nhật thành công!");
         })
         .catch((error) => {
           console.error("Error updating profile:", error);
+          alert("Có lỗi xảy ra khi cập nhật hồ sơ.");
         });
     } else {
       alert("Vui lòng đăng nhập để cập nhật thông tin.");
     }
   };
+  
 
   return (
     <div className="bg-white p-6 max-w-7xl mx-auto">
@@ -88,10 +113,7 @@ const UserInfor = () => {
           {/* Left side: Name, Email, Phone Number, Gender */}
           <div className="space-y-6">
             <div className="flex flex-col">
-              <label
-                className="text-lg font-semibold text-gray-700 mb-2"
-                htmlFor="name"
-              >
+              <label className="text-lg font-semibold text-gray-700 mb-2" htmlFor="name">
                 Tên người dùng
               </label>
               <input
@@ -106,10 +128,7 @@ const UserInfor = () => {
             </div>
 
             <div className="flex flex-col">
-              <label
-                className="text-lg font-semibold text-gray-700 mb-2"
-                htmlFor="email"
-              >
+              <label className="text-lg font-semibold text-gray-700 mb-2" htmlFor="email">
                 Email
               </label>
               <input
@@ -126,10 +145,7 @@ const UserInfor = () => {
             {/* Phone Number and Birthday inline */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="flex flex-col">
-                <label
-                  className="text-lg font-semibold text-gray-700 mb-2"
-                  htmlFor="phone_number"
-                >
+                <label className="text-lg font-semibold text-gray-700 mb-2" htmlFor="phone_number">
                   Số điện thoại
                 </label>
                 <input
@@ -157,17 +173,12 @@ const UserInfor = () => {
               </div>
             </div>
 
-            {/* Gender (Moved below Phone Number) */}
+            {/* Gender */}
             <div className="flex flex-col">
-              <label className="text-lg font-semibold text-gray-700 mb-2">
-                Giới tính
-              </label>
+              <label className="text-lg font-semibold text-gray-700 mb-2">Giới tính</label>
               <div className="flex items-center gap-6">
                 {["male", "female", "other"].map((gender) => (
-                  <label
-                    key={gender}
-                    className="flex items-center text-gray-700"
-                  >
+                  <label key={gender} className="flex items-center text-gray-700">
                     <input
                       type="radio"
                       name="gender"
@@ -177,11 +188,7 @@ const UserInfor = () => {
                       className="form-radio text-blue-500 focus:ring-2 focus:ring-blue-500 transition duration-200"
                     />
                     <span className="ml-2 text-base font-medium">
-                      {gender === "male"
-                        ? "Nam"
-                        : gender === "female"
-                        ? "Nữ"
-                        : "Khác"}
+                      {gender === "male" ? "Nam" : gender === "female" ? "Nữ" : "Khác"}
                     </span>
                   </label>
                 ))}
@@ -209,17 +216,11 @@ const UserInfor = () => {
                 accept="image/jpeg, image/png"
                 className="block w-full text-dark cursor-pointer rounded-md py-3 px-6 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
               />
-              <p className="text-sm text-gray-500 mt-2">
-                Dung lượng file tối đa 1 MB
-              </p>
-              {/* <p className="text-sm text-gray-500">Định dạng: .JPEG, .PNG</p> */}
+              <p className="text-sm text-gray-500 mt-2">Dung lượng file tối đa 1 MB</p>
             </div>
 
             <div className="flex flex-col">
-              <label
-                className="text-lg font-semibold text-gray-700 mb-2"
-                htmlFor="address"
-              >
+              <label className="text-lg font-semibold text-gray-700 mb-2" htmlFor="address">
                 Địa chỉ
               </label>
               <input

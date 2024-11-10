@@ -43,6 +43,13 @@ class UserApiController extends Controller
 
         return response()->json($user, 201);
     }
+    public function profile(Request $request)
+    {
+        // Lấy thông tin người dùng từ token
+        $user = $request->user();
+
+        return response()->json($user);
+    }
 
     /**
      * Display the specified resource (for both admin and user).
