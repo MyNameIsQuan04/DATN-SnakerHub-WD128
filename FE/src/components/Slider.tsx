@@ -8,7 +8,6 @@ import "slick-carousel/slick/slick-theme.css";
 const SimpleSlider = () => {
   // Cấu hình cho slider
   const settings = {
-    dots: true, // Hiển thị các dấu chấm điều hướng
     infinite: true, // Vòng lặp vô tận
     speed: 500, // Tốc độ chuyển slide
     slidesToShow: 1, // Số slide hiển thị cùng lúc

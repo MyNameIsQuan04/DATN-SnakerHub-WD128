@@ -165,7 +165,9 @@ const Detail = () => {
           </div>
 
           <div className="w-1/2">
-            <p className="text-3xl font-bold text-gray-800">{product.name}</p>
+            <p className="text-3xl font-bold uppercase text-gray-800">
+              {product.name}
+            </p>
 
             <div className="flex mt-4 items-center">
               <div className="flex text-yellow-400 text-lg mr-5">
