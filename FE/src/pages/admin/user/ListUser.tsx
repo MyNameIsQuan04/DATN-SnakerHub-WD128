@@ -13,7 +13,11 @@ const ListUser = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/users`);
+        const response = await axios.get(`http://localhost:8000/api/users`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        });
         setListUser(response.data);
       } catch (error) {
         console.error("Lỗi khi lấy thông tin người dùng:", error);

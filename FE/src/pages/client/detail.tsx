@@ -9,6 +9,8 @@ import { AiOutlineBank } from "react-icons/ai";
 import { Product } from "../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
+import { IoCartOutline } from "react-icons/io5";
+import { GrNext } from "react-icons/gr";
 
 const Detail = () => {
   const [product, setProduct] = useState<Product | null>(null);
@@ -76,8 +78,8 @@ const Detail = () => {
   // Thêm vào giỏ hàng
   const addToCart = async (
     product: Product,
-    selectedColor: any,
-    selectedSize: any
+    selectedColor: unknown,
+    selectedSize: unknown
   ) => {
     if (!selectedColor || !selectedSize) {
       alert("Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!");
@@ -141,7 +143,17 @@ const Detail = () => {
   return (
     <div className="">
       {/* Thông tin sản phẩm */}
-      <div className="container mx-auto mt-10">
+      <div className="container mx-auto mt-[80px] px-16">
+        <div className="flex items-center space-x-2 mb-4">
+          <a
+            href="/"
+            className="text-xl font-medium text-gray-800 hover:text-blue-400 hover:underline"
+          >
+            Home
+          </a>
+          <GrNext className="text-xl text-gray-600" />
+        </div>
+
         <div className="flex gap-5 px-5">
           <div className="w-1/2">
             {/* Hình ảnh chính của sản phẩm */}
@@ -202,8 +214,8 @@ const Detail = () => {
                   <p
                     key={color?.id}
                     onClick={() => handleSelectColor(color!.id as number)}
-                    className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md hover:bg-red-500 hover:text-white ${
-                      selectedColor === color!.id ? "border-red-500" : ""
+                    className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md hover:bg-orange-500 hover:text-white ${
+                      selectedColor === color!.id ? "border-orange-500" : ""
                     }`}
                   >
                     {color?.name}
@@ -226,9 +238,9 @@ const Detail = () => {
                     }}
                     className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md ${
                       availableSizes.includes(size!.id)
-                        ? "hover:bg-red-500 hover:text-white"
+                        ? "hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out"
                         : "bg-gray-200 cursor-not-allowed text-gray-500"
-                    } ${selectedSize === size!.id ? "border-red-500" : ""}`}
+                    } ${selectedSize === size!.id ? "border-orange-500" : ""}`}
                   >
                     {size?.name}
                   </p>
@@ -266,17 +278,24 @@ const Detail = () => {
             </div>
 
             <div className="flex gap-4 mt-5">
-              <button className="bg-red-500 text-white px-6 py-2 text-sm rounded-md shadow-md hover:bg-red-600 transition">
-                MUA NGAY
+              <button
+                type="button"
+                className="bg-gray-100 text-center w-48 h-14 rounded-2xl relative text-red-500 text-lg font-semibold border-4 border-white group flex items-center justify-center"
+              >
+                <div className="bg-orange-400 rounded-xl h-12 w-1/4 grid place-items-center absolute left-0 top-0 group-hover:w-full z-10 transition-all duration-500 ease-in-out">
+                  <IoCartOutline className="text-white text-xl" />
+                </div>
+                <p className="translate-x-4 group-hover:translate-x-0 transition-all duration-500 ease-in-out">
+                  Mua ngay
+                </p>
               </button>
               <button
                 onClick={() => addToCart(product, selectedColor, selectedSize)}
-                className="border border-red-500 text-red-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-red-50 transition"
+                className="border border-orange-500 text-orange-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out transform"
               >
                 THÊM VÀO GIỎ HÀNG
               </button>
             </div>
-
             {/* Các dịch vụ liên quan */}
             <div className="grid grid-cols-3 mt-6 gap-4">
               <div className="flex flex-col items-center text-sm text-gray-600">
@@ -303,11 +322,23 @@ const Detail = () => {
                 <GrAnnounce className="w-[30px] h-auto" />
                 <p>Ưu đãi tích điểm và hưởng quyền lợi thành viên từ MWC</p>
               </div>
+              {/* Thêm phần mô tả sản phẩm */}
+              <div className="mt-8 border-t-4 border-gray-300 pt-4">
+                <p className="text-lg font-semibold text-gray-800">
+                  MÔ TẢ SẢN PHẨM
+                </p>
+                <div className="mt-4">
+                  <ul className="list-disc pl-5 text-sm text-gray-600">
+                    <li>{product.description}</li>
+                    {/* Nếu mô tả sản phẩm có nhiều mục, có thể thêm thêm dấu chấm đầu dòng cho các mục khác */}
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <ToastContainer />
+      <ToastContainer className="mt-[60px]" />
     </div>
   );
 };

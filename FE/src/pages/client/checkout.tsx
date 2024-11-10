@@ -161,7 +161,7 @@ const Checkout = () => {
   };
 
   return (
-    <div className="mt-[30px] px-[150px]">
+    <div className="mt-[100px] px-[150px]">
       <div className="flex">
         <p className="text-[14px]">Trang chủ</p>
         <p className="text-[14px] px-[4px]"> | </p>

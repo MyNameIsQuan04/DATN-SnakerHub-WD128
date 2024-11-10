@@ -21,6 +21,12 @@ return new class extends Migration
             $table->rememberToken();
             $table->string('address');
             $table->enum('type', ['admin', 'user'])->default('user');
+            
+            // Thêm các trường mới
+            $table->enum('gender', ['male', 'female', 'other'])->nullable();
+            $table->date('birthday')->nullable();
+            $table->string('avatar')->nullable(); // Có thể lưu URL ảnh hoặc đường dẫn trong hệ thống
+            
             $table->timestamps();
         });
     }
