@@ -13,10 +13,10 @@ class VoucherSeeder extends Seeder
     public function run(): void
     {
         Voucher::create([
-            'code' => 'DISCOUNT10',
+            'codeDiscount' => 'DISCOUNT10',
             'discount' => 10,
             'type' => 'percent',
-            'expiry_date' => now()->addDays(30),
+            'expiration_date' => now()->addDays(30),
             'usage_limit' => 100,
         ]);
     }

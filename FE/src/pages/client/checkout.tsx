@@ -24,7 +24,6 @@ const Checkout = () => {
     name: string;
   } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
   const provinces = useProvinces();
   const districts = useDistricts(selectedProvince?.code);
   const wards = useWards(selectedDistrict?.code);
@@ -67,6 +66,56 @@ const Checkout = () => {
   useEffect(() => {
     fetchCheckoutItems();
   }, [selectedItems, token]);
+
+  // Mã giảm giá
+  const [totalAfterDiscount, setTotalAfterDiscount] = useState<number>(0);
+  const [codeDiscount, setCodeDiscount] = useState<string>("");
+  const [discount, setDiscount] = useState<number>(0);
+
+  const handleApplyVoucher = async () => {
+    if (!codeDiscount) {
+      toast.error("Vui lòng nhập mã giảm giá!");
+      return;
+    }
+    const total = checkoutItems.reduce(
+      (sum, item) => sum + item.product_variant.price * item.quantity,
+      0
+    );
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/apply-voucher",
+        { codeDiscount, total },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Kiểm tra nội dung phản hồi từ backend
+      console.log("Phản hồi từ server:", response.data);
+
+      if (response.data.discount) {
+        setDiscount(response.data.discount);
+        toast.success(
+          `Áp dụng mã giảm giá ${codeDiscount} thành công! Giảm ${response.data.discount}đ`
+        );
+        setTotalAfterDiscount(response.data.total_after_discount);
+      } else {
+        setDiscount(0);
+        console.error("Lỗi mã giảm giá:", response.data.errors);
+        toast.error(
+          `Mã giảm giá ${codeDiscount} không hợp lệ hoặc đã hết hạn!`
+        );
+      }
+    } catch (error) {
+      console.error("Lỗi khi áp dụng mã giảm giá:", error);
+      toast.error("Không thể áp dụng mã giảm giá!");
+    }
+  };
+
+  // Hết
+
   const totalPriceItem = (price: number, quantity: number) => price * quantity;
   const grandTotalPrice = checkoutItems.reduce(
     (total, item) => total + item.product_variant.price * item.quantity,
@@ -74,7 +123,7 @@ const Checkout = () => {
   );
 
   const onSubmit = async (data: any) => {
-    console.log(cartItems);
+    // console.log(cartItems);
     const orderData = {
       ...data,
       province: selectedProvince?.name,
@@ -86,7 +135,9 @@ const Checkout = () => {
         price: item.product_variant.price,
         total: totalPriceItem(item.product_variant.price, item.quantity),
       })),
-      total_price: grandTotalPrice,
+      total_price: totalAfterDiscount,
+      codeDiscount,
+      discount,
     };
 
     try {
@@ -112,9 +163,9 @@ const Checkout = () => {
   return (
     <div className="mt-[30px] px-[150px]">
       <div className="flex">
-        <p className="text-[14px]">TRANG CHU</p>
+        <p className="text-[14px]">Trang chủ</p>
         <p className="text-[14px] px-[4px]"> | </p>
-        <p className="text-[14px]">THANH TOAN</p>
+        <p className="text-[14px]">Thanh Toán</p>
       </div>
 
       <div className="border border-[#f3f3f3] mt-[30px]">
@@ -126,7 +177,7 @@ const Checkout = () => {
         </div>
       </div>
       <div className="border border-[#c9c9c9] px-[10px] mt-[20px] text-[14px] ">
-        {checkoutItems.map((item, index) => {
+        {checkoutItems.map((item) => {
           const productVariant = item.product_variant;
           const product = productVariant.product;
           return (
@@ -182,21 +233,19 @@ const Checkout = () => {
               <span>{grandTotalPrice} đ</span>
             </div>
             <div className="flex justify-between mt-[5px]">
-              <span>Giảm giá sản phẩm</span>
-              <span>000 đ</span>
-            </div>
-            <div className="flex justify-between mt-[5px]">
-              <span>Giảm giá coupon</span>
-              <span>000 đ</span>
-            </div>
-            <div className="flex justify-between mt-[5px]">
               <span>Phí vận chuyển</span>
               <span>000 đ</span>
+            </div>
+            <div className="flex justify-between mt-[5px]">
+              <span>Mã giảm giá giảm</span>
+              <span>{discount}đ</span>
             </div>
             <hr />
             <div className="flex justify-between mt-[10px]">
               <span>TỔNG</span>
-              <span className="text-red-500">{grandTotalPrice} đ</span>
+              <span className="text-red-500">
+                {totalAfterDiscount || grandTotalPrice} đ
+              </span>
             </div>
           </div>
         </div>
@@ -221,47 +270,15 @@ const Checkout = () => {
             {errors.phone && (
               <span className="text-red-500">Trường này là bắt buộc</span>
             )}
-          </div>
-          <textarea
-            {...register("address", { required: true })}
-            placeholder="Địa chỉ nhận hàng"
-            className="h-[100px] pl-[20px] pt-[20px] w-full border border-[#c9c9c9] mt-[20px]"
-          ></textarea>
-          {errors.address && (
-            <span className="text-red-500">Trường này là bắt buộc</span>
-          )}
-          {/* <div>
-            <h3>Chọn phương thức thanh toán:</h3>
-            <div className="flex flex-col gap-2">
-              <label>
-                <input
-                  type="radio"
-                  {...register("paymentMethod", { required: true })}
-                  value="vnpay"
-                />
-                Thanh toán VNPay
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  {...register("paymentMethod", { required: true })}
-                  value="momo"
-                />
-                Thanh toán Momo
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  {...register("paymentMethod", { required: true })}
-                  value="cash"
-                />
-                Thanh toán tiền mặt
-              </label>
-            </div>
-            {errors.paymentMethod && (
+            <textarea
+              {...register("address", { required: true })}
+              placeholder="Địa chỉ nhận hàng"
+              className="h-[100px] pl-[20px] pt-[20px] w-full border border-[#c9c9c9] mt-[20px]"
+            ></textarea>
+            {errors.address && (
               <span className="text-red-500">Trường này là bắt buộc</span>
             )}
-          </div> */}
+          </div>
           <div className="mt-[20px]">
             <div className="flex items-center justify-between">
               <div>
@@ -342,15 +359,40 @@ const Checkout = () => {
                   </>
                 )}
               </div>
-
+              {/* Phần áp mã giảm giá */}
+              <div className="mt-[20px]">
+                <h3 className="font-semibold">Sử dụng mã giảm giá:</h3>
+                <div className="flex gap-2 mt-2">
+                  <input
+                    type="text"
+                    value={codeDiscount}
+                    onChange={(e) => setCodeDiscount(e.target.value)}
+                    placeholder="Nhập mã giảm giá"
+                    className="border h-[40px] w-[300px] pl-[10px]"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyVoucher}
+                    className="bg-blue-500 text-white h-[40px] w-[150px] hover:bg-blue-600"
+                  >
+                    Áp dụng
+                  </button>
+                </div>
+              </div>
+              {discount > 0 && (
+                <p className="text-green-500 mt-2">
+                  Mã giảm giá đã áp dụng: {discount}đ
+                </p>
+              )}
+              {/* Phần áp mã giảm giá kết thúc*/}
               <button className="bg-red-500 text-white h-[40px] w-[200px] float-right hover:bg-red-600">
                 ĐẶT HÀNG
               </button>
-              <ToastContainer />
             </div>
           </div>
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 };
