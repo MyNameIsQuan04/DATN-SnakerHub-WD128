@@ -43,12 +43,12 @@ class OrderController extends Controller
                 'province' => 'required|string',
                 'district' => 'required|string',
                 'town' => 'required|string',
-                'total_price' => 'required|integer',
+                'total_price' => 'required|numeric',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
-                'items.*.price' => 'required|integer',
-                'items.*.total' => 'required|integer',
+                'items.*.price' => 'required|numeric',
+                'items.*.total' => 'required|numeric',
             ]);
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];

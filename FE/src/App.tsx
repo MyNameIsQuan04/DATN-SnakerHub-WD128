@@ -36,6 +36,9 @@ import PrivateAdmin from "./pages/PrivateAdmin";
 import ForgotPassword from "./pages/client/forgot-password";
 import Mail from "./pages/client/mail";
 import ResetPassword from "./pages/client/reset-password";
+import AddVoucher from "./pages/admin/Voucher/AddVoucher";
+import EditVoucher from "./pages/admin/Voucher/EditVoucher";
+import ListVoucher from "./pages/admin/Voucher/ListVoucher";
 
 function App() {
   return (
@@ -67,7 +70,7 @@ function App() {
           <Route path="/thankyou" element={<ThankYou />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="mail" element={<Mail />} />
+          <Route path="/mail" element={<Mail />} />
           <Route path="" element />
           <Route path="" element />
         </Route>
@@ -104,6 +107,9 @@ function App() {
           <Route path="/admin/size-edit/:id" element={<UpdateColor />} />
           <Route path="/admin/order" element={<AdminOrder />} />
           <Route path="/admin/user" element={<ListUser />} />
+          <Route path="/admin/vouchers" element={<ListVoucher />} />
+          <Route path="/admin/voucher-add" element={<AddVoucher />} />
+          <Route path="/admin/voucher-edit/:id" element={<EditVoucher />} />
           <Route path="" element />
         </Route>
         <Route path="*" element={<NotFound />} />

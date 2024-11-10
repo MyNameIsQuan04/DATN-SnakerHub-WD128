@@ -84,8 +84,8 @@ Route::group(['middleware' => ['auth:api']],  function () {
     // Hiển thị chi tiết một sản phẩm trong giỏ hàng (tùy chọn)
     Route::get('/item/{id}', [CartController::class, 'showCartItem'])->name('cart.showItem');
 
-    Route::post('/validate-voucher', [CartController::class, 'validateVoucher']);
-    Route::post('/apply-voucher', [CartController::class, 'applyVoucher']);
+    Route::post('/validate-voucher', [OrderController::class, 'validateVoucher']);
+    Route::post('/apply-voucher', [OrderController::class, 'applyVoucher']);
 });
 
 Route::middleware('auth:api')->group(function() {
@@ -110,9 +110,7 @@ Route::middleware('auth:api')->group(function() {
     // Cập nhật thông tin của chính người dùng đã đăng nhập
     Route::put('/profile', [UserApiController::class, 'updateProfile']);
 });
-Route::middleware(['auth:api', 'admin'])->group(function () {
-    Route::get('/admin/vouchers', [VoucherController::class, 'index'])->name('voucher.index');
-    Route::post('/admin/voucher', [VoucherController::class, 'store'])->name('voucher.store');
-    Route::put('/admin/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
-    Route::delete('/admin/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
-});
+    Route::get('/vouchers', [VoucherController::class, 'index'])->name('voucher.index');
+    Route::post('/voucher', [VoucherController::class, 'store'])->name('voucher.store');
+    Route::put('/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
+    Route::delete('/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');

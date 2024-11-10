@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderStatusUpdatedMail;
+use App\Models\Voucher;
 use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
@@ -80,4 +81,60 @@ class OrderController extends Controller
             ], 500);
         }
     }
+    
+       //  Phương thức Kiểm Tra Mã Giảm Giá
+       public function validateVoucher(Request $request)
+       {
+           $voucherCode = $request->input('codeDiscount');
+           $voucher = Voucher::where('codeDiscount', $voucherCode)->first();
+   
+           if (!$voucher) {
+               return response()->json(['message' => 'Mã giảm giá không tồn tại'], 404);
+           }
+   
+           if (!$voucher->isValid()) {
+               return response()->json(['message' => 'Mã giảm giá đã hết hạn hoặc đã được sử dụng hết'], 400);
+           }
+   
+           return response()->json([
+               'message' => 'Mã giảm giá hợp lệ',
+               'discount' => $voucher->discount,
+               'type' => $voucher->type,
+           ]);
+       }
+       //  Phương thức áp Dụng Mã Giảm Giá
+       public function applyVoucher(Request $request)
+       {
+           $voucherCode = $request->input('codeDiscount');
+           $total = $request->input('total'); // Tổng tiền giỏ hàng do FE gửi lên
+       
+           // Kiểm tra tổng tiền hợp lệ
+           if (!is_numeric($total) || $total <= 0) {
+               return response()->json(['message' => 'Tổng tiền không hợp lệ'], 400);
+           }
+       
+           $voucher = Voucher::where('codeDiscount', $voucherCode)->first();
+           if (!$voucher || !$voucher->isValid()) {
+               return response()->json(['message' => 'Mã giảm giá không hợp lệ'], 400);
+           }
+       
+           // Tính toán mức giảm giá
+           $discount = $voucher->type == 'percent' 
+               ? ($total * $voucher->discount) / 100 
+               : $voucher->discount;
+       
+           // Đảm bảo rằng nếu discount lớn hơn total, thì total_after_discount sẽ là 0
+           $total_after_discount = max($total - $discount, 0);
+       
+           // Giảm số lần sử dụng còn lại nếu có giới hạn
+           if ($voucher->usage_limit !== null) {
+               $voucher->decrement('usage_limit');
+           }
+       
+           return response()->json([
+               'message' => 'Áp dụng mã giảm giá thành công',
+               'discount' => min($discount, $total), // Giảm giá tối đa chỉ bằng tổng tiền
+               'total_after_discount' => $total_after_discount,
+           ]);
+       }
 }

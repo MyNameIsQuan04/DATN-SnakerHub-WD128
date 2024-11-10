@@ -10,7 +10,7 @@ import { IoColorPaletteOutline } from "react-icons/io5";
 import { CgSize } from "react-icons/cg";
 
 import { Outlet, Link } from "react-router-dom";
-
+import { RiDiscountPercentFill } from "react-icons/ri";
 
 const LayoutAdmin = () => {
   // const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -92,6 +92,15 @@ const LayoutAdmin = () => {
                 >
                   <CgSize className="mr-2" />
                   Danh mục kích cỡ
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="flex items-center text-white hover:text-gray-300"
+                  to="/admin/vouchers"
+                >
+                  <RiDiscountPercentFill className="mr-2" />
+                  Vouchers
                 </Link>
               </li>
               <li>
