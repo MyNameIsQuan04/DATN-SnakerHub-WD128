@@ -20,6 +20,7 @@ const AddProducts = () => {
     price: 0,
     category_id: 0,
     description: "",
+    short_description: "",
     thumbnail: null,
     galleries: [],
     variants: [
@@ -40,6 +41,7 @@ const AddProducts = () => {
     formData.append("price", values.price.toString());
     formData.append("category_id", values.category_id);
     formData.append("description", values.description);
+    formData.append("short_description", values.short_description);
 
     if (values.thumbnail) {
       formData.append("thumbnail", values.thumbnail);
@@ -133,7 +135,17 @@ const AddProducts = () => {
                     placeholder="Nhập mô tả sản phẩm"
                   />
                 </div>
-
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-bold mb-2">
+                    Mô tả sản phẩm ngắn
+                  </label>
+                  <Field
+                    as="textarea"
+                    name="short_description"
+                    className="w-full px-3 py-2 border rounded-lg"
+                    placeholder="Nhập mô tả sản phẩm"
+                  />
+                </div>
                 {/* Ảnh sản phẩm */}
                 <div className="mb-4">
                   <label className="block text-gray-700 font-bold mb-2">

@@ -228,15 +228,39 @@ const Checkout = () => {
         <div className="flex">
           <div className="w-1/2"></div>
           <div className="w-1/2">
-            <div className="flex justify-between mt-[5px]">
+            <div className="flex justify-between my-[10px]">
               <span>Tổng tiền hàng</span>
               <span>{grandTotalPrice} đ</span>
             </div>
+
             <div className="flex justify-between mt-[5px]">
               <span>Phí vận chuyển</span>
               <span>000 đ</span>
             </div>
-            <div className="flex justify-between mt-[5px]">
+            <div className="my-[10px]">
+              <div className="flex justify-between gap-2">
+                <input
+                  type="text"
+                  value={codeDiscount}
+                  onChange={(e) => setCodeDiscount(e.target.value)}
+                  placeholder="Nhập mã giảm giá"
+                  className="border h-[40px] w-[300px] pl-[10px]"
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyVoucher}
+                  className="bg-blue-500 text-white h-[40px] w-[150px] hover:bg-blue-600"
+                >
+                  Áp dụng
+                </button>
+              </div>
+            </div>
+            {discount > 0 && (
+              <p className="text-green-500 mt-2">
+                Mã giảm giá đã áp dụng: {discount}đ
+              </p>
+            )}
+            <div className="flex justify-between my-[10px]">
               <span>Mã giảm giá giảm</span>
               <span>{discount}đ</span>
             </div>
@@ -359,32 +383,7 @@ const Checkout = () => {
                   </>
                 )}
               </div>
-              {/* Phần áp mã giảm giá */}
-              <div className="mt-[20px]">
-                <h3 className="font-semibold">Sử dụng mã giảm giá:</h3>
-                <div className="flex gap-2 mt-2">
-                  <input
-                    type="text"
-                    value={codeDiscount}
-                    onChange={(e) => setCodeDiscount(e.target.value)}
-                    placeholder="Nhập mã giảm giá"
-                    className="border h-[40px] w-[300px] pl-[10px]"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleApplyVoucher}
-                    className="bg-blue-500 text-white h-[40px] w-[150px] hover:bg-blue-600"
-                  >
-                    Áp dụng
-                  </button>
-                </div>
-              </div>
-              {discount > 0 && (
-                <p className="text-green-500 mt-2">
-                  Mã giảm giá đã áp dụng: {discount}đ
-                </p>
-              )}
-              {/* Phần áp mã giảm giá kết thúc*/}
+
               <button className="bg-red-500 text-white h-[40px] w-[200px] float-right hover:bg-red-600">
                 ĐẶT HÀNG
               </button>

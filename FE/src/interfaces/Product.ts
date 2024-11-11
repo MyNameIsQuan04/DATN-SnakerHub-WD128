@@ -3,7 +3,6 @@ import { Color } from "./Color";
 import { Gallery } from "./Gallery";
 import { Size } from "./Size";
 
-
 // Product Interface
 export interface Product {
   id?: number;
@@ -12,6 +11,7 @@ export interface Product {
   name: string;
   description: string;
   price: number;
+  short_description: string;
   thumbnail: string;
   sales_count: number;
   created_at: string;
@@ -37,7 +37,6 @@ export interface product_variants {
   deleted_at: string | null;
   product: Product;
 }
-
 
 // export interface Product {
 //   id: number | string;

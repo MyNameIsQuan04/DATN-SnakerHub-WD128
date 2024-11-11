@@ -22,6 +22,7 @@ const EditProduct = () => {
     price: 0,
     category_id: 0,
     description: "",
+    short_description: "",
     thumbnail: null,
     galleries: [],
     variants: [
@@ -47,6 +48,7 @@ const EditProduct = () => {
             price: product.price,
             category_id: product.category_id,
             description: product.description,
+            short_description: product.short_description,
             thumbnail: product.thumbnail,
             galleries: product.galleries || [],
             variants: product.product_variants || [
@@ -71,6 +73,7 @@ const EditProduct = () => {
       price: values.price,
       category_id: values.category_id,
       description: values.description || "",
+      short_description: values.description || "",
       galleries: values.galleries.map((image: File) => image.name), // Giả sử bạn đã lưu URL hoặc base64
       variants: values.variants.map((variant: any) => ({
         price: variant.price,
@@ -157,7 +160,17 @@ const EditProduct = () => {
                     placeholder="Nhập mô tả sản phẩm"
                   />
                 </div>
-
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-bold mb-2">
+                    Mô tả sản phẩm dài
+                  </label>
+                  <Field
+                    as="textarea"
+                    name="short_description"
+                    className="w-full px-3 py-2 border rounded-lg"
+                    placeholder="Nhập mô tả sản phẩm"
+                  />
+                </div>
                 {/* Ảnh sản phẩm */}
                 <div className="mb-4">
                   <label className="block text-gray-700 font-bold mb-2">

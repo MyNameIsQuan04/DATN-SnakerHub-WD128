@@ -20,7 +20,11 @@ const Detail = () => {
     number | null
   >(null);
   const token = localStorage.getItem("access_token");
+  const [activeTab, setActiveTab] = useState(0); // 0 là tab đầu tiên
 
+  const handleTabClick = (index: number) => {
+    setActiveTab(index);
+  };
   // Hàm lấy thông tin sản phẩm
   const fetchProduct = async (productId: string) => {
     try {
@@ -79,6 +83,9 @@ const Detail = () => {
     selectedColor: any,
     selectedSize: any
   ) => {
+    if (!token) {
+      toast.error("Hãy đăng nhập để sử dụng chức năng!");
+    }
     if (!selectedColor || !selectedSize) {
       alert("Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!");
       return;
@@ -107,9 +114,7 @@ const Detail = () => {
         size_id: selectedSize,
         quantity: 1,
       });
-      if (!token) {
-        alert("Ban hay dang nhap de them gio hang");
-      }
+
       console.log(response.data);
 
       toast.success("Thêm sản thành công sản phẩm!");
@@ -195,7 +200,9 @@ const Detail = () => {
             <div className="text-red-600 text-sm mt-2 font-semibold">
               FLASH SALE
             </div>
-            <p className="text-sm mt-4 font-semibold">SALE THỂ THAO 149K</p>
+            <p className="text-sm mt-4 font-semibold">
+              {product.short_description}
+            </p>
 
             <div className="flex mt-6 items-center">
               <p className="text-sm font-semibold mr-8">MÀU SẮC:</p>
@@ -307,6 +314,69 @@ const Detail = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      <div className="w-full mx-auto  mt-10 border-t-2 border-gray-400">
+        {/* Tab Buttons */}
+        <div className="flex border-b bg-gray-200 border-gray-200  py-[10px] px-[30px] gap-[20px]">
+          <button
+            onClick={() => handleTabClick(0)}
+            className={` px-4 py-2 font-semibold rounded-md focus:outline-none ${
+              activeTab === 0 ? "bg-white" : "text-gray-600"
+            }`}
+          >
+            Chi tiết sản phẩm
+          </button>
+          <button
+            onClick={() => handleTabClick(1)}
+            className={` px-4 py-2 font-semibold rounded-md focus:outline-none ${
+              activeTab === 1 ? "bg-white" : "text-gray-600"
+            }`}
+          >
+            Bình luận
+          </button>
+        </div>
+        <hr className="border-t-2 border-gray-400" />
+        <div className="px-[30px] py-[10px]">
+          {activeTab === 0 && (
+            <div className="">
+              <div className="flex gap-[5px]">
+                <p className="text-[15px] font-bold">Tên sản phẩm:</p>
+                <p className="text-[15px]">{product.name}</p>
+              </div>
+              <div className="flex gap-[10px]">
+                <p className="text-[15px] font-bold">Màu sắc:</p>
+                {sizes.map((size) => (
+                  <p
+                    className="text-[15px]"
+                    key={size?.id}
+                    onClick={() => {
+                      if (availableSizes.includes(size!.id)) {
+                        handleSelectSize(size!.id);
+                      }
+                    }}
+                  >
+                    {size?.name}
+                  </p>
+                ))}
+                <p className="text-[15px] font-bold">Kích thước: </p>
+                {colors.map((color) => (
+                  <p
+                    className="text-[15px]"
+                    key={color?.id}
+                    onClick={() => handleSelectColor(color!.id as number)}
+                  >
+                    {color?.name}
+                  </p>
+                ))}
+              </div>
+              <div className="flex gap-[10px] items-center">
+                <p className="text-[15px] font-bold">Mô tả: </p>
+                <p className="text-[15px]">{product.description}</p>
+              </div>
+            </div>
+          )}
+          {activeTab === 1 && <div>Nội dung của Tab 2</div>}
         </div>
       </div>
       <ToastContainer />
