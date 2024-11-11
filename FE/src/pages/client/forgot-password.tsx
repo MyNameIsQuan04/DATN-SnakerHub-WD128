@@ -9,13 +9,17 @@ interface ForgotPasswordFormData {
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors } } = useForm<ForgotPasswordFormData>(); 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ForgotPasswordFormData>();
 
   const onSubmit: SubmitHandler<ForgotPasswordFormData> = async (data) => {
     try {
       await axios.post("http://localhost:8000/api/forget-password", data);
-      alert("Thanh cong");
-      navigate("/login");
+
+      alert("Vui lòng kiểm tra mail của bạn");
     } catch (error) {
       console.log(error);
     }
@@ -36,14 +40,20 @@ const ForgotPassword = () => {
 
             <form className="mt-4" onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-3">
-                <label className="mb-2 block text-xs font-semibold">Email</label>
+                <label className="mb-2 block text-xs font-semibold">
+                  Email
+                </label>
                 <input
                   type="email"
                   placeholder="Enter your email"
                   className="block w-full rounded-md border border-gray-300 focus:border-purple-700 focus:outline-none focus:ring-1 focus:ring-purple-700 py-1 px-1.5 text-gray-500"
                   {...register("email", { required: "Email is required" })}
                 />
-                {errors.email && <p className="text-red-500 text-xs mt-2">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="text-red-500 text-xs mt-2">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
 
               <div className="mb-3">
@@ -58,7 +68,10 @@ const ForgotPassword = () => {
 
             {/* Link to Login Page */}
             <div className="text-center">
-              <a href="/login" className="text-xs font-semibold text-purple-700">
+              <a
+                href="/login"
+                className="text-xs font-semibold text-purple-700"
+              >
                 Back to Login
               </a>
             </div>
