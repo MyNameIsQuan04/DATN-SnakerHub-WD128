@@ -16,6 +16,14 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
+    private function generateOrderCode()
+    {
+        $prefix = 'ORD';
+        $timestamp = time();
+        $randomString = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 5));
+
+        return $prefix . $timestamp . $randomString;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -61,9 +69,12 @@ class OrderController extends Controller
             ];
             $customer = Customer::create($dataCustomer);
 
+            $orderCode = $this->generateOrderCode();
+
             $order = Order::create([
                 'customer_id' => $customer->id,
                 'total_price' => $validatedData['total_price'],
+                'order_code' => $orderCode,
             ]);
 
             foreach ($validatedData['items'] as $item) {
