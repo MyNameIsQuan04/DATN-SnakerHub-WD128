@@ -78,6 +78,7 @@ const ListProduct = () => {
             <th className="py-3 px-4 border-b text-left">Hình Ảnh</th>
             <th className="py-3 px-4 border-b text-left">Tên Sản Phẩm</th>
             <th className="py-3 px-4 border-b text-left">Mô Tả</th>
+            <th className="py-3 px-4 border-b text-left">Mô Tả Đầy đủ</th>
             <th className="py-3 px-4 border-b text-left">Giá</th>
             <th className="py-3 px-4 border-b text-left">Biến Thể</th>
             <th className="py-3 px-4 border-b text-left">Danh Mục</th>
@@ -99,6 +100,9 @@ const ListProduct = () => {
                 <td className="py-3 px-4 border-b text-left">{product.name}</td>
                 <td className="py-3 px-4 border-b text-left">
                   {product.description}
+                </td>
+                <td className="py-3 px-4 border-b text-left">
+                  {product.short_description}
                 </td>
 
                 {/* Hiển thị giá sản phẩm hoặc thông báo phụ thuộc biến thể */}

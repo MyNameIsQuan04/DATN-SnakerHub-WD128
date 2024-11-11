@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Order } from "../../../interfaces/Order";
 import axios from "axios";
 
-
 const formatCurrency = (amount: number) => {
   if (amount === undefined || amount === null) {
     return "0"; // Trả về giá trị mặc định nếu amount không hợp lệ
@@ -48,27 +47,28 @@ const UserOrderHistory = () => {
       : orders.filter((order) => order.status === selectedStatus);
 
   // Hàm hủy đơn hàng
-  const cancelOrder = async (orderId: number) => {
-    try {
-      await axios.put(
-        `http://localhost:8000/api/client/orders/${orderId}/cancel`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      // Cập nhật lại danh sách đơn hàng sau khi hủy
-      setOrders(
-        orders.map((order) =>
-          order.id === orderId ? { ...order, status: "đã hủy" } : order
-        )
-      );
-      alert("Đơn hàng đã được hủy.");
-    } catch (error) {
-      console.error("Lỗi khi hủy đơn hàng:", error);
-      alert("Không thể hủy đơn hàng.");
+  const handleCancelOrder = async (idOrder: number) => {
+    const confirm = window.confirm("Bạn có muốn hủy đơn hàng này không");
+    if (confirm) {
+      try {
+        await axios.patch(
+          `http://localhost:8000/api/client/orders/${idOrder}`,
+          { status: "Đã hủy" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order.id === idOrder ? { ...order, status: "Đã hủy" } : order
+          )
+        );
+      } catch (error) {
+        console.error("Lỗi khi hủy đơn hàng:", error);
+      }
     }
   };
 
@@ -100,7 +100,6 @@ const UserOrderHistory = () => {
           ))}
         </div>
 
-        
         {loading && (
           <div className="text-center text-xl text-blue-500">
             <span className="spinner-border animate-spin"></span> Đang tải đơn
@@ -153,7 +152,7 @@ const UserOrderHistory = () => {
                   {/* Conditional Cancel Button */}
                   {["Chờ xử lý", "Đã xác nhận"].includes(order.status) && (
                     <button
-                      onClick={() => cancelOrder(order.id)}
+                      onClick={() => handleCancelOrder(order.id)}
                       className="ml-4 px-6 py-2 text-lg font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-300"
                     >
                       Hủy đơn hàng
@@ -213,7 +212,8 @@ const UserOrderHistory = () => {
                       Màu sắc: {item.product_variant?.color.name || "Không có"}
                     </p>
                     <p className="text-lg text-gray-700">
-                      Kích thước: {item.product_variant?.size.name || "Không có"}
+                      Kích thước:{" "}
+                      {item.product_variant?.size.name || "Không có"}
                     </p>
                   </div>
                 </div>

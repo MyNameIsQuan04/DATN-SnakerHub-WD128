@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Cart_Item;
 use App\Models\Product;
+use App\Models\Voucher;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
@@ -51,12 +52,11 @@ class OrderController extends Controller
                 'province' => 'required|string',
                 'district' => 'required|string',
                 'town' => 'required|string',
-                'total_price' => 'required|numeric',
+                'total_price' => 'required|integer',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
-                'items.*.price' => 'required|numeric',
-                'items.*.total' => 'required|numeric',
+                'items.*.price' => 'required|integer',
             ]);
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
@@ -111,7 +111,6 @@ class OrderController extends Controller
                         'stock' => $stock,
                     ]);
                 }
-
                 $product = Product::find($productVariant['product_id']);
 
 

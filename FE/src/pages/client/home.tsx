@@ -140,10 +140,12 @@ const Home = () => {
         </p>
         <div className="flex justify-center gap-[30px] mt-[30px]">
           {categories.map((category: Category) => (
-            <div className="bg-slate-200 w-[100px] h-[50px] flex justify-center items-center shadow-lg rounded-lg hover:bg-[#f2611c] transition duration-300">
-              <span className="text-[20px] uppercase hover:text-[22px] flex items-center text-black hover:text-white">
-                {category.name}
-              </span>
+            <div className="w-36 bg-transparent items-center justify-center flex border-2 border-orange-500 shadow-lg hover:bg-orange-500 text-orange-500 hover:text-white duration-300 cursor-pointer active:scale-[0.98]">
+              <button className="px-5 py-2">
+                <a className="" href="">
+                  {category.name}
+                </a>
+              </button>
             </div>
           ))}
         </div>

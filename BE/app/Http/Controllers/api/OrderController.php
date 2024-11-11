@@ -106,10 +106,10 @@ class OrderController extends Controller
        public function applyVoucher(Request $request)
        {
            $voucherCode = $request->input('codeDiscount');
-           $total = $request->input('total'); // Tổng tiền giỏ hàng do FE gửi lên
+           $total_price = $request->input('total_price'); // Tổng tiền giỏ hàng do FE gửi lên
        
            // Kiểm tra tổng tiền hợp lệ
-           if (!is_numeric($total) || $total <= 0) {
+           if (!is_int($total_price) || $total_price <= 0) {
                return response()->json(['message' => 'Tổng tiền không hợp lệ'], 400);
            }
        
@@ -120,21 +120,23 @@ class OrderController extends Controller
        
            // Tính toán mức giảm giá
            $discount = $voucher->type == 'percent' 
-               ? ($total * $voucher->discount) / 100 
+               ? ($total_price * $voucher->discount) / 100 
                : $voucher->discount;
        
            // Đảm bảo rằng nếu discount lớn hơn total, thì total_after_discount sẽ là 0
-           $total_after_discount = max($total - $discount, 0);
+        //    $total_after_discount = max($total_price - $discount, 0);
        
            // Giảm số lần sử dụng còn lại nếu có giới hạn
            if ($voucher->usage_limit !== null) {
                $voucher->decrement('usage_limit');
            }
+
+           $total_price = $total_price - $discount;
        
            return response()->json([
                'message' => 'Áp dụng mã giảm giá thành công',
-               'discount' => min($discount, $total), // Giảm giá tối đa chỉ bằng tổng tiền
-               'total_after_discount' => $total_after_discount,
+               'discount' => min($discount, $total_price), // Giảm giá tối đa chỉ bằng tổng tiền
+               'total_price' => $total_price,
            ]);
        }
 }
