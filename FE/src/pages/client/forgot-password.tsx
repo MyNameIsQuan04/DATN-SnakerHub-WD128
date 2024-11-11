@@ -1,14 +1,11 @@
 import axios from "axios";
-import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 
 interface ForgotPasswordFormData {
   email: string;
 }
 
 const ForgotPassword = () => {
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
