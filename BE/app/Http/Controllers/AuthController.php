@@ -82,7 +82,19 @@ class AuthController extends Controller
     // Trả về thông tin của user hiện tại
     public function me()
     {
-        return response()->json(auth()->user());
+        // Lấy user_id từ auth (nếu bạn sử dụng JWT, token sẽ chứa user_id)
+        $userId = auth()->id();
+    
+        // Truy vấn thông tin người dùng dựa trên user_id
+        $user = User::find($userId);
+    
+        if ($user) {
+            // Trả về thông tin người dùng dưới dạng JSON
+            return response()->json($user);
+        } else {
+            // Trường hợp không tìm thấy người dùng
+            return response()->json(['message' => 'User not found'], 404);
+        }
     }
 
     // Phương thức trả về token kèm các thông tin
