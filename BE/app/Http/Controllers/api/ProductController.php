@@ -123,13 +123,13 @@ class ProductController extends Controller
             foreach ($validatedData['galleries'] ?? [] as $gallery) {
                 if (isset($gallery['id'])) {
                     $existingGallery = $product->galleries()->where('id', $gallery['id'])->first();
-                    if ($existingGallery && isset($gallery['image'])) {
+                    if ($existingGallery) {
                         $imagePath = $gallery['image']->store('images', 'public');
                         $existingGallery->update([
                             'image_path' => Storage::url($imagePath),
                         ]);
                     }
-                } elseif (isset($gallery['image'])) {
+                } else {
                     $imagePath = $gallery['image']->store('images', 'public');
                     $product->galleries()->create([
                         'image_path' => Storage::url($imagePath),

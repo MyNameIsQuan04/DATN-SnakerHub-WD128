@@ -24,7 +24,12 @@ const EditProduct = () => {
     description: "",
     short_description: "",
     thumbnail: null,
-    galleries: [],
+    galleries: [
+      {
+        id: "",
+        image: null,
+      },
+    ],
     variants: [
       {
         price: 0,
@@ -50,7 +55,12 @@ const EditProduct = () => {
             description: product.description,
             short_description: product.short_description,
             thumbnail: product.thumbnail,
-            galleries: product.galleries || [],
+            galleries: product.galleries || [
+              {
+                id: "",
+                image: null,
+              },
+            ],
             variants: product.product_variants || [
               {
                 price: 0,
@@ -93,8 +103,9 @@ const EditProduct = () => {
       formData.append("thumbnail", values.thumbnail);
     }
 
-    values.galleries.forEach((image: File, index: number) => {
-      formData.append(`gallery[${index}]`, image);
+    values.galleries.forEach((gallery: any, index: number) => {
+      formData.append(`galleries[${index}][image]`, gallery.image);
+      formData.append(`galleries[${index}][id]`, gallery.id);
     });
 
     values.variants.forEach((variant: any, index: number) => {
@@ -211,22 +222,37 @@ const EditProduct = () => {
                 </div>
 
                 {/* Thư viện ảnh sản phẩm */}
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Thư viện ảnh sản phẩm
-                  </label>
-                  <input
-                    type="file"
-                    className="w-full px-3 py-2 border rounded-lg"
-                    multiple
-                    onChange={(e) =>
-                      setFieldValue(
-                        "galleries",
-                        Array.from(e.target.files || [])
-                      )
-                    }
-                  />
-                </div>
+                {values.galleries.map((gallery, index) => (
+                  <div className="mb-4" key={index}>
+                    <label className="block text-gray-700 font-bold mb-2">
+                      Thư viện ảnh sản phẩm
+                    </label>
+
+                    {/* Kiểm tra nếu gallery.image có URL và hiển thị ảnh */}
+                    {gallery.image && (
+                      <div className="mb-2" key={gallery.id}>
+                        <img
+                          src={gallery.image} // Sử dụng URL ảnh từ DB
+                          alt={`Gallery Image ${index}`}
+                          className="w-32 h-32 object-cover rounded-lg"
+                        />
+                      </div>
+                    )}
+
+                    {/* Input để chọn ảnh mới */}
+                    <input
+                      type="file"
+                      className="w-full px-3 py-2 border rounded-lg"
+                      onChange={(e) => {
+                        // Chỉ lấy một file duy nhất thay vì mảng file
+                        const file = e.target.files ? e.target.files[0] : null;
+                        if (file) {
+                          setFieldValue(`galleries[${index}].image`, file); // Cập nhật file duy nhất
+                        }
+                      }}
+                    />
+                  </div>
+                ))}
               </div>
 
               {/* Biến thể sản phẩm */}
