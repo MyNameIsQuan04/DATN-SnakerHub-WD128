@@ -24,7 +24,12 @@ const EditProduct = () => {
     description: "",
     short_description: "",
     thumbnail: null,
-    galleries: [],
+    galleries: [
+      {
+        id: "",
+        image: null,
+      },
+    ],
     variants: [
       {
         price: 0,
@@ -50,7 +55,12 @@ const EditProduct = () => {
             description: product.description,
             short_description: product.short_description,
             thumbnail: product.thumbnail,
-            galleries: product.galleries || [],
+            galleries: product.galleries || [
+              {
+                id: "",
+                image: null,
+              },
+            ],
             variants: product.product_variants || [
               {
                 price: 0,
@@ -66,33 +76,58 @@ const EditProduct = () => {
       })();
     }
   }, []);
+  const checkFormData = (formData: FormData) => {
+    for (let pair of formData.entries()) {
+      const key = pair[0];
+      const value = pair[1];
 
+      if (value instanceof File) {
+        console.log(
+          `${key}: ${value.name}, ${value.size} bytes, ${value.type}`
+        );
+      } else {
+        console.log(`${key}: ${value}`);
+      }
+    }
+  };
   const onSubmit = (values: any) => {
-    const payload = {
-      name: values.name,
-      price: values.price,
-      category_id: values.category_id,
-      description: values.description || "",
-      short_description: values.description || "",
-      thumbnail: values.thumbnail,
-      galleries: values.galleries.map((image: File) => image.name), // Giả sử bạn đã lưu URL hoặc base64
-      variants: values.variants.map((variant: any) => ({
-        price: variant.price,
-        size_id: variant.size_id,
-        color_id: variant.color_id,
-        stock: variant.stock,
-        sku: variant.sku,
-        image: variant.image ? variant.image.name : "default_image.png", // Lưu lại URL hoặc base64 nếu cần
-      })),
-    };
-    console.log(payload);
-    onUpdateProduct(payload, id);
+    const formData = new FormData();
+
+    formData.append("name", values.name);
+    formData.append("price", values.price.toString());
+    formData.append("category_id", values.category_id);
+    formData.append("description", values.description);
+    formData.append("short_description", values.short_description);
+
+    if (values.thumbnail) {
+      formData.append("thumbnail", values.thumbnail);
+    }
+
+    values.galleries.forEach((gallery: any, index: number) => {
+      formData.append(`galleries[${index}][image]`, gallery.image);
+      formData.append(`galleries[${index}][id]`, gallery.id);
+    });
+
+    values.variants.forEach((variant: any, index: number) => {
+      formData.append(`variants[${index}][price]`, variant.price.toString());
+      formData.append(`variants[${index}][size_id]`, variant.size_id);
+      formData.append(`variants[${index}][color_id]`, variant.color_id);
+      formData.append(`variants[${index}][stock]`, variant.stock.toString());
+      formData.append(`variants[${index}][sku]`, variant.sku);
+
+      // Kiểm tra nếu có ảnh variant và thêm vào FormData
+
+      formData.append(`variants[${index}][image]`, variant.image);
+    });
+    checkFormData(formData);
+    // Gửi dữ liệu lên server
+    onUpdateProduct(formData, id);
   };
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center overflow-auto">
       <div className="bg-white w-full max-w-4xl mx-auto p-8 rounded-lg shadow-lg relative overflow-y-auto max-h-screen">
-        <h1 className="text-3xl font-semibold mb-6">Sửa Sản Phẩm</h1>
+        <h1 className="text-3xl font-semibold mb-6"> Sản Phẩm Mới</h1>
 
         <Formik
           initialValues={initialValues}
@@ -163,7 +198,7 @@ const EditProduct = () => {
                 </div>
                 <div className="mb-4">
                   <label className="block text-gray-700 font-bold mb-2">
-                    Mô tả sản phẩm dài
+                    Mô tả sản phẩm ngắn
                   </label>
                   <Field
                     as="textarea"
@@ -187,22 +222,37 @@ const EditProduct = () => {
                 </div>
 
                 {/* Thư viện ảnh sản phẩm */}
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Thư viện ảnh sản phẩm
-                  </label>
-                  <input
-                    type="file"
-                    className="w-full px-3 py-2 border rounded-lg"
-                    multiple
-                    onChange={(e) =>
-                      setFieldValue(
-                        "galleries",
-                        Array.from(e.target.files || [])
-                      )
-                    }
-                  />
-                </div>
+                {values.galleries.map((gallery, index) => (
+                  <div className="mb-4" key={index}>
+                    <label className="block text-gray-700 font-bold mb-2">
+                      Thư viện ảnh sản phẩm
+                    </label>
+
+                    {/* Kiểm tra nếu gallery.image có URL và hiển thị ảnh */}
+                    {gallery.image && (
+                      <div className="mb-2" key={gallery.id}>
+                        <img
+                          src={gallery.image} // Sử dụng URL ảnh từ DB
+                          alt={`Gallery Image ${index}`}
+                          className="w-32 h-32 object-cover rounded-lg"
+                        />
+                      </div>
+                    )}
+
+                    {/* Input để chọn ảnh mới */}
+                    <input
+                      type="file"
+                      className="w-full px-3 py-2 border rounded-lg"
+                      onChange={(e) => {
+                        // Chỉ lấy một file duy nhất thay vì mảng file
+                        const file = e.target.files ? e.target.files[0] : null;
+                        if (file) {
+                          setFieldValue(`galleries[${index}].image`, file); // Cập nhật file duy nhất
+                        }
+                      }}
+                    />
+                  </div>
+                ))}
               </div>
 
               {/* Biến thể sản phẩm */}
@@ -345,7 +395,7 @@ const EditProduct = () => {
                   type="submit"
                   className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
                 >
-                  Cập nhật sản phẩm
+                  Thêm sản phẩm
                 </button>
                 <Link
                   to="/admin/product"

@@ -52,15 +52,14 @@ const ProductContext = ({ children }: Props) => {
 
   const onUpdateProduct = async (data: Product, id: number) => {
     try {
-      console.log(data, id);
+      console.log("o ham update", data);
       const product = await updateProduct(data, id);
-      alert("Thanh cong");
       const newProductsAfterUpdate = products.map((pro) =>
         pro.id == id ? product : pro
       );
       setProducts(newProductsAfterUpdate);
       router("/admin/product");
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       console.log(error);
     }
