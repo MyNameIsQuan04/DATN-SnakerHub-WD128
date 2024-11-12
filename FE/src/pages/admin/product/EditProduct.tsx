@@ -66,32 +66,57 @@ const EditProduct = () => {
       })();
     }
   }, []);
+  const checkFormData = (formData: FormData) => {
+    for (let pair of formData.entries()) {
+      const key = pair[0];
+      const value = pair[1];
 
+      if (value instanceof File) {
+        console.log(
+          `${key}: ${value.name}, ${value.size} bytes, ${value.type}`
+        );
+      } else {
+        console.log(`${key}: ${value}`);
+      }
+    }
+  };
   const onSubmit = (values: any) => {
-    const payload = {
-      name: values.name,
-      price: values.price,
-      category_id: values.category_id,
-      description: values.description || "",
-      short_description: values.description || "",
-      galleries: values.galleries.map((image: File) => image.name), // Giả sử bạn đã lưu URL hoặc base64
-      variants: values.variants.map((variant: any) => ({
-        price: variant.price,
-        size_id: variant.size_id,
-        color_id: variant.color_id,
-        stock: variant.stock,
-        sku: variant.sku,
-        image: variant.image ? variant.image.name : "default_image.png", // Lưu lại URL hoặc base64 nếu cần
-      })),
-    };
+    const formData = new FormData();
 
-    onUpdateProduct(payload, id);
+    formData.append("name", values.name);
+    formData.append("price", values.price.toString());
+    formData.append("category_id", values.category_id);
+    formData.append("description", values.description);
+    formData.append("short_description", values.short_description);
+
+    if (values.thumbnail) {
+      formData.append("thumbnail", values.thumbnail);
+    }
+
+    values.galleries.forEach((image: File, index: number) => {
+      formData.append(`gallery[${index}]`, image);
+    });
+
+    values.variants.forEach((variant: any, index: number) => {
+      formData.append(`variants[${index}][price]`, variant.price.toString());
+      formData.append(`variants[${index}][size_id]`, variant.size_id);
+      formData.append(`variants[${index}][color_id]`, variant.color_id);
+      formData.append(`variants[${index}][stock]`, variant.stock.toString());
+      formData.append(`variants[${index}][sku]`, variant.sku);
+
+      // Kiểm tra nếu có ảnh variant và thêm vào FormData
+
+      formData.append(`variants[${index}][image]`, variant.image);
+    });
+    checkFormData(formData);
+    // Gửi dữ liệu lên server
+    onUpdateProduct(formData, id);
   };
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center overflow-auto">
       <div className="bg-white w-full max-w-4xl mx-auto p-8 rounded-lg shadow-lg relative overflow-y-auto max-h-screen">
-        <h1 className="text-3xl font-semibold mb-6">Sửa Sản Phẩm</h1>
+        <h1 className="text-3xl font-semibold mb-6"> Sản Phẩm Mới</h1>
 
         <Formik
           initialValues={initialValues}
@@ -162,7 +187,7 @@ const EditProduct = () => {
                 </div>
                 <div className="mb-4">
                   <label className="block text-gray-700 font-bold mb-2">
-                    Mô tả sản phẩm dài
+                    Mô tả sản phẩm ngắn
                   </label>
                   <Field
                     as="textarea"
@@ -344,7 +369,7 @@ const EditProduct = () => {
                   type="submit"
                   className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
                 >
-                  Cập nhật sản phẩm
+                  Thêm sản phẩm
                 </button>
                 <Link
                   to="/admin/product"
