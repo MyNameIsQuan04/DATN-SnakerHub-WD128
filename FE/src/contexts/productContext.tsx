@@ -44,7 +44,7 @@ const ProductContext = ({ children }: Props) => {
       alert("Thanh cong");
       setProducts([...products, product]);
       router("/admin/product");
-      // window.location.reload();
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }

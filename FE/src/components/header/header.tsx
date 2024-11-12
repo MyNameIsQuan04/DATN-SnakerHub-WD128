@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState } from "react";
+import { IoLogOutOutline } from "react-icons/io5";
 
 const Header = () => {
   const { user, isLoggedIn, logout } = useAuth();
@@ -9,16 +10,20 @@ const Header = () => {
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
   };
+
   return (
     <div>
-      <header className="flex items-center justify-between px-6 py-3 border-b border-gray-200">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white flex items-center justify-between px-14 py-3 border-b border-gray-200 mb-0">
         {/* Logo */}
         <div className="flex items-center w-[279px]">
           <a href="/">
-            <img src="logo-nike.png" alt="SneakerHub Logo" className="h-8" />
+            <img
+              src="https://tse2.mm.bing.net/th?id=OIP.EU9eW6G8cb7vKHpH7bb2aAHaEK&pid=Api&P=0&h=220"
+              alt="SneakerHub Logo"
+              className="h-8"
+            />
           </a>
         </div>
-
         <nav className="flex justify-center space-x-6 text-base font-medium text-gray-800">
           {/* Giày nam */}
           <ul>
@@ -29,7 +34,7 @@ const Header = () => {
                 </a>
               </Link>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
+              <ul className="absolute left-0 hidden mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
                 <li>
                   <a
                     href="#"
@@ -64,7 +69,7 @@ const Header = () => {
                 Giày nữ
               </a>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
+              <ul className="absolute left-0 hidden mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
                 <li>
                   <a
                     href="#"
@@ -99,7 +104,7 @@ const Header = () => {
                 Phụ kiện
               </a>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
+              <ul className="absolute left-0 hidden mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
                 <li>
                   <a
                     href="#"
@@ -128,14 +133,13 @@ const Header = () => {
             </li>
           </ul>
           {/* Khuyến mãi */}
-
           <ul>
             <li className="relative group">
               <a href="#" className="hover:text-gray-900">
                 Khuyến mãi
               </a>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              <ul className="absolute left-0 hidden  mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
+              <ul className="absolute left-0 hidden mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
                 <li>
                   <a
                     href="#"
@@ -144,7 +148,6 @@ const Header = () => {
                     Giảm giá 50%
                   </a>
                 </li>
-
                 <li>
                   <a
                     href="#"
@@ -254,34 +257,37 @@ const Header = () => {
                   className="flex items-center gap-2 cursor-pointer"
                   onClick={toggleDropdown}
                 >
-                  <span className="font-semibold">{user.name}</span>
+                  <span className="font-semibold">{user?.name}</span>
 
                   {/* Dropdown menu */}
                   {dropdownVisible && (
-                    <nav className="absolute right-0 mt-[200px] w-48 bg-white rounded-md z-10 shadow-lg">
+                    <nav className="absolute right-0 mt-[200px] w-48 bg-white rounded-md z-10 shadow-lg transition-transform transform-gpu duration-200 ease-in-out origin-top-right scale-95 hover:scale-100">
                       <ul className="py-2">
                         <li>
                           <Link
-                            to="/order-history"
-                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                            to="/profile/userinfo"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors duration-150 ease-in-out hover:text-black hover:scale-105"
                           >
-                            Lịch sử đơn hàng
+                            Hồ sơ của tôi
                           </Link>
                         </li>
-                        <li>
-                          <Link
-                            to="/change-password"
-                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                          >
-                            Đổi mật khẩu
-                          </Link>
-                        </li>
+                        {user?.type === "admin" && (
+                          <li>
+                            <Link
+                              to="/admin"
+                              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors duration-150 ease-in-out hover:text-black hover:scale-105"
+                            >
+                              Admin Dashboard
+                            </Link>
+                          </li>
+                        )}
                         <li>
                           <button
                             onClick={logout}
-                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                            className="w-full flex items-center text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-red-600 transition duration-150 ease-in-out transform hover:scale-105"
                           >
-                            Đăng xuất
+                            <p className="mr-2">Đăng xuất</p>
+                            <IoLogOutOutline className="text-lg" />
                           </button>
                         </li>
                       </ul>

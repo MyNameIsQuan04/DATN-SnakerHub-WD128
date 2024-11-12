@@ -22,6 +22,9 @@ class UserSeeder extends Seeder
                 'phone_number' => $faker->phoneNumber,
                 'address' => $faker->address,
                 'type'=>$faker->randomElement(['user','admin']),
+                // 'gender'=>$faker->gender,
+                // 'birthday'=>$faker->birthday,
+                // 'avatar'=>$faker->avatar
             ]);
         }
     }

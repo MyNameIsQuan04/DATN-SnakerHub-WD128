@@ -77,14 +77,14 @@ const Checkout = () => {
       toast.error("Vui lòng nhập mã giảm giá!");
       return;
     }
-    const total = checkoutItems.reduce(
+    const total_price = checkoutItems.reduce(
       (sum, item) => sum + item.product_variant.price * item.quantity,
       0
     );
     try {
       const response = await axios.post(
         "http://localhost:8000/api/apply-voucher",
-        { codeDiscount, total },
+        { codeDiscount, total_price },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -121,7 +121,7 @@ const Checkout = () => {
     (total, item) => total + item.product_variant.price * item.quantity,
     0
   );
-
+  // const totalAfterDiscount = (grandTotalPrice * discount) / 100;
   const onSubmit = async (data: any) => {
     // console.log(cartItems);
     const orderData = {
@@ -135,7 +135,7 @@ const Checkout = () => {
         price: item.product_variant.price,
         total: totalPriceItem(item.product_variant.price, item.quantity),
       })),
-      total_price: totalAfterDiscount,
+      total_price: grandTotalPrice - discount,
       codeDiscount,
       discount,
     };
@@ -161,7 +161,7 @@ const Checkout = () => {
   };
 
   return (
-    <div className="mt-[30px] px-[150px]">
+    <div className="mt-[100px] px-[150px]">
       <div className="flex">
         <p className="text-[14px]">Trang chủ</p>
         <p className="text-[14px] px-[4px]"> | </p>
@@ -268,7 +268,7 @@ const Checkout = () => {
             <div className="flex justify-between mt-[10px]">
               <span>TỔNG</span>
               <span className="text-red-500">
-                {totalAfterDiscount || grandTotalPrice} đ
+                {grandTotalPrice - discount} đ
               </span>
             </div>
           </div>

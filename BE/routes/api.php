@@ -107,8 +107,11 @@ Route::middleware('auth:api')->group(function() {
     // Mở khóa tài khoản người dùng (Admin)
     Route::post('/users/{id}/unlock', [UserApiController::class, 'unlockAccount'])->middleware('type:admin');
 
+    // Hiển thị thông tin của chính người dùng đã đăng nhập
+    Route::get('/profile', [UserApiController::class, 'profile']);
+
     // Cập nhật thông tin của chính người dùng đã đăng nhập
-    Route::put('/profile', [UserApiController::class, 'updateProfile']);
+    // Route::put('/users/{id}', [UserApiController::class, 'updateProfile']);
 });
     Route::get('/vouchers', [VoucherController::class, 'index'])->name('voucher.index');
     Route::post('/voucher', [VoucherController::class, 'store'])->name('voucher.store');
