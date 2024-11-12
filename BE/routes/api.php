@@ -111,7 +111,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/profile', [UserApiController::class, 'profile']);
 
     // Cập nhật thông tin của chính người dùng đã đăng nhập
-    Route::put('/profile', [UserApiController::class, 'updateProfile']);
+    // Route::put('/users/{id}', [UserApiController::class, 'updateProfile']);
 });
     Route::get('/vouchers', [VoucherController::class, 'index'])->name('voucher.index');
     Route::post('/voucher', [VoucherController::class, 'store'])->name('voucher.store');

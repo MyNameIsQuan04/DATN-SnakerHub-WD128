@@ -11,6 +11,7 @@ export interface Product {
   category_id: number;
   name: string;
   description: string;
+  short_description : string
   price: number;
   thumbnail: string;
   sales_count: number;
