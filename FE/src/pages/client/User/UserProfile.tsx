@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { MdOutlineManageAccounts } from "react-icons/md";
 import { CiViewList } from "react-icons/ci";
@@ -14,18 +14,25 @@ const UserProfile = () => {
   );
   const { user } = useAuth();
 
+  useEffect(() => {
+    if (user) {
+      console.log('User data updated:', user);
+      // window.location.reload()
+    }
+  }, [user]);
+
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
 
   const handleButtonClick = (buttonName: string) => {
     setActiveButton(buttonName);
-    setActiveDropdownItem(null); // Reset dropdown item selection
+    setActiveDropdownItem(null); 
   };
 
   const handleDropdownItemClick = (itemName: string) => {
     setActiveDropdownItem(itemName);
-    setActiveButton(null); // Reset main button selection when a dropdown item is clicked
+    setActiveButton(null); 
   };
 
   return (
