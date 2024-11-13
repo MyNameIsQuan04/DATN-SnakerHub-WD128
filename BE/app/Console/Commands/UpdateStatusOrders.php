@@ -26,7 +26,7 @@ class UpdateStatusOrders extends Command
         foreach ($orders as $order) {
             $order->status = 'Hoàn thành';
             $order->save();
-            $this->info("Đơn hàng ID {$order->id} đã được cập nhật thành 'Hoàn thành'");
+            $this->info("Đơn hàng ID {$order->order_code} đã được cập nhật thành 'Hoàn thành'");
         }
 
         $this->info("Đã cập nhật trạng thái các đơn hàng 'Đã giao hàng' thành 'Hoàn thành' sau 24 giờ.");

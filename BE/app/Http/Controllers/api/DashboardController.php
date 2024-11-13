@@ -18,10 +18,11 @@ class DashboardController extends Controller
 
         $countOrderDone = Order::where('status', 'hoàn thành')->count();
 
-        $countOrderDestroy = Order::where('status', 'đã hủy')->count();
-        
-        $list5Pro = Product::orderByDesc('sales_count')->get();
+        $countOrderDestroy1 = Order::where('status', 'đã hủy')->where('note', 'Giao hàng không đúng yêu cầu')->count();
+        $countOrderDestroy2 = Order::where('status', 'đã hủy')->where('note', 'Sản phẩm có lỗi từ nhà cung cấp')->count();
+        $countOrderDestroy3 = Order::where('status', 'đã hủy')->where('note', 'Lý do khác')->count();
 
+        $list5Pro = Product::orderByDesc('sales_count')->get();
 
         $startDate = Carbon::now()->subDays(7)->startOfDay();
 
@@ -40,9 +41,10 @@ class DashboardController extends Controller
             'countCustomer' => $countCustomer,
             'countOrder' => $countOrder,
             'countOrderDone' => $countOrderDone,
-            'countOrderDestroy' => $countOrderDestroy,
+            'countOrderDestroy1' => $countOrderDestroy1,
+            'countOrderDestroy2' => $countOrderDestroy2,
+            'countOrderDestroy3' => $countOrderDestroy3,
             'list5Pro' => $list5Pro,
-
             'dailyRevenue' => $dailyRevenue,
             'totalRevenue' => $totalRevenue,
             'startDate' => $startDate,
