@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ProductCT } from "../../contexts/ProductContext";
+import { ProductCT } from "../../contexts/productContext";
 import { Product } from "../../interfaces/Product";
 import { Link } from "react-router-dom";
 import { CategoryCT } from "../../contexts/CategoryContext";

@@ -15,7 +15,22 @@ const UserOrderHistory = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const token = localStorage.getItem("access_token");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedReason, setSelectedReason] = useState("");
 
+  const openModalComplanit = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false); // Đóng modal
+    setSelectedReason("");
+  };
+
+  const handleSelectReason = (event: any) => {
+    setSelectedReason(event.target.value);
+    console.log(selectedReason);
+  };
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
@@ -71,12 +86,53 @@ const UserOrderHistory = () => {
       }
     }
   };
+  const handleFinishOrder = async (idOrder: number) => {
+    try {
+      await axios.patch(
+        `http://localhost:8000/api/client/orders/${idOrder}`,
+        { status: "Hoàn thành" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.id === idOrder ? { ...order, status: "Hoàn thành" } : order
+        )
+      );
+    } catch (error) {
+      console.error("Lỗi khi hoàn thành đơn hàng đơn hàng:", error);
+    }
+  };
+  const handleComplaintOrder = async (idOrder: number) => {
+    try {
+      await axios.patch(
+        `http://localhost:8000/api/client/orders/${idOrder}`,
+        { status: "Trả hàng", note: selectedReason },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.id === idOrder ? { ...order, status: "Hoàn thành" } : order
+        )
+      );
+    } catch (error) {
+      console.error("Lỗi khi gửi khiếu nại đơn hàng đơn hàng:", error);
+    }
+  };
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto p-6 bg-white rounded-xl">
         {/* Tabs trạng thái */}
-        <div className="flex justify-center gap-4 mb-8">
+        <div className="flex justify-center gap-[5px] mb-8">
           {[
             "all",
             "Chờ xử lý",
@@ -85,6 +141,7 @@ const UserOrderHistory = () => {
             "Đã giao hàng",
             "Hoàn thành",
             "Đã hủy",
+            "Trả hàng",
           ].map((status) => (
             <button
               key={status}
@@ -158,6 +215,60 @@ const UserOrderHistory = () => {
                       Hủy đơn hàng
                     </button>
                   )}
+                  {order.status === "Đã giao hàng" && (
+                    <div className="">
+                      <button
+                        onClick={() => handleFinishOrder(order.id)}
+                        className="ml-4 px-6 py-2 text-lg font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-300"
+                      >
+                        Hoàn thành
+                      </button>
+                      <button
+                        onClick={openModalComplanit}
+                        className="ml-4 px-6 py-2 text-lg font-semibold border border-red-500 text-red-500 rounded-lg transition-all duration-300"
+                      >
+                        Khiếu nại
+                      </button>
+                      {isModalOpen && (
+                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                            <h2 className="text-xl font-semibold mb-4">
+                              Chọn lý do khiếu nại
+                            </h2>
+                            <select
+                              value={selectedReason}
+                              onChange={handleSelectReason}
+                              className="w-full px-4 py-2 border rounded-lg mb-4"
+                            >
+                              <option value="">Chọn lý do</option>
+                              <option value="Giao hàng không đúng yêu cầu">
+                                Giao hàng không đúng yêu cầu
+                              </option>
+                              <option value="Sản phẩm có lỗi từ nhà cung cấp">
+                                Sản phẩm có lỗi từ nhà cung cấp
+                              </option>
+                              <option value="Lý do khác">Lý do khác</option>
+                            </select>
+
+                            <div className="flex justify-end">
+                              <button
+                                onClick={handleCloseModal}
+                                className="px-4 py-2 text-red-500 border border-red-500 rounded-lg mr-2"
+                              >
+                                Đóng
+                              </button>
+                              <button
+                                onClick={() => handleComplaintOrder(order.id)}
+                                className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                              >
+                                Gửi khiếu nại
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -193,13 +304,19 @@ const UserOrderHistory = () => {
                     className="w-24 h-24 object-cover rounded-lg shadow-md"
                   />
                   <div className="flex flex-col">
+                    <div className="flex gap-[5px] items-center">
+                      <p className="text-lg text-gray-700">Tên sản phẩm:</p>
+                      <p className="text-lg text-gray-700 uppercase font-bold">
+                        {item.product_variant?.product.name || "Không có"}
+                      </p>
+                    </div>
                     <p className="text-lg text-gray-700">
                       Số lượng: {item.quantity}
                     </p>
                     <p className="text-lg text-gray-700">
-                      Giá:{" "}
+                      Giá đơn hàng:{" "}
                       <span className="font-bold text-gray-900">
-                        {formatCurrency(item.price)} đ
+                        {formatCurrency(order.total_price)} đ
                       </span>
                     </p>
                     <p className="text-lg text-gray-700">
