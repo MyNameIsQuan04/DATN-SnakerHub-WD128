@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState } from "react";
 import { IoLogOutOutline } from "react-icons/io5";
+import { toast, ToastContainer } from "react-toastify";
 
 const Header = () => {
   const { user, isLoggedIn, logout } = useAuth();
@@ -16,166 +17,167 @@ const Header = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white flex items-center justify-between px-14 py-3 border-b border-gray-200 mb-0">
         {/* Logo */}
         <div className="flex items-center w-[279px]">
-          <a href="/">
+          <Link to="/">
             <img
               src="https://tse2.mm.bing.net/th?id=OIP.EU9eW6G8cb7vKHpH7bb2aAHaEK&pid=Api&P=0&h=220"
               alt="SneakerHub Logo"
               className="h-8"
             />
-          </a>
+          </Link>
         </div>
         <nav className="flex justify-center space-x-6 text-base font-medium text-gray-800">
           {/* Giày nam */}
           <ul>
             <li className="relative group">
-              <Link to={"/products"}>
-                <a href="#" className="hover:text-gray-900">
-                  Giày nam
-                </a>
+              <Link to="/products" className="hover:text-gray-900">
+                Giày nam
               </Link>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
               <ul className="absolute left-0 hidden mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="#"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
                     Giày chạy
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="#"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
                     Giày bóng rổ
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="#"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
                     Giày đi bộ
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </li>
           </ul>
+
           {/* Giày nữ */}
           <ul>
             <li className="relative group">
-              <a href="#" className="hover:text-gray-900">
+              <Link to="#" className="hover:text-gray-900">
                 Giày nữ
-              </a>
+              </Link>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
               <ul className="absolute left-0 hidden mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="#"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
                     Giày thể thao
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="#"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
                     Giày cao gót
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="#"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
                     Giày bệt
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </li>
           </ul>
+
           {/* Phụ kiện */}
           <ul>
             <li className="relative group">
-              <a href="#" className="hover:text-gray-900">
+              <Link to="#" className="hover:text-gray-900">
                 Phụ kiện
-              </a>
+              </Link>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
               <ul className="absolute left-0 hidden mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="#"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
                     Túi xách
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="#"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
                     Tất
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="#"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
                     Mũ
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </li>
           </ul>
+
           {/* Khuyến mãi */}
           <ul>
             <li className="relative group">
-              <a href="#" className="hover:text-gray-900">
+              <Link to="#" className="hover:text-gray-900">
                 Khuyến mãi
-              </a>
+              </Link>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
               <ul className="absolute left-0 hidden mt-1 w-40 bg-white shadow-lg opacity-0 group-hover:block transition-opacity duration-300 group-hover:opacity-100 z-10">
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="#"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
                     Giảm giá 50%
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="#"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
                     Giày đi bộ
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </li>
           </ul>
+
           {/* Sản phẩm mới */}
           <ul>
             <li className="relative group">
-              <Link to={"/contact"}>
-                <a href="#" className="hover:text-gray-900">
-                  Liên hệ
-                </a>
+              <Link to="/contact" className="hover:text-gray-900">
+                Liên hệ
               </Link>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
             </li>
           </ul>
+
           {/* Sản phẩm bán chạy */}
           <ul>
             <li className="relative group">
-              <a href="#" className="hover:text-gray-900">
+              <Link to="#" className="hover:text-gray-900">
                 Về chúng tôi
-              </a>
+              </Link>
               <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
             </li>
           </ul>
@@ -189,13 +191,13 @@ const Header = () => {
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              stroke-width="1.5"
+              strokeWidth="1.5"
               stroke="currentColor"
-              className="size-6  "
+              className="size-6"
             >
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
               />
             </svg>
@@ -215,13 +217,13 @@ const Header = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
-                  className="size-6 "
+                  className="size-6"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
                   />
                 </svg>
@@ -229,7 +231,7 @@ const Header = () => {
             ) : (
               <button
                 onClick={() =>
-                  alert("Bạn cần đăng nhập để sử dụng chức năng giỏ hàng.")
+                  toast.info("Bạn cần đăng nhập để sử dụng chức năng giỏ hàng!")
                 }
               >
                 {/* Giỏ hàng (khóa khi chưa đăng nhập) */}
@@ -237,13 +239,13 @@ const Header = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
-                  className="size-6 "
+                  className="size-6"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
                   />
                 </svg>
@@ -277,7 +279,7 @@ const Header = () => {
                               to="/admin"
                               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors duration-150 ease-in-out hover:text-black hover:scale-105"
                             >
-                              Admin Dashboard
+                              Trang quản trị
                             </Link>
                           </li>
                         )}
@@ -316,6 +318,7 @@ const Header = () => {
           </div>
         </div>
       </header>
+      <ToastContainer />
     </div>
   );
 };

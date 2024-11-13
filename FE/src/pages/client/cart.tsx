@@ -94,7 +94,7 @@ const Cart = () => {
   const totalPriceItem = (price: number, quantity: number) => price * quantity;
 
   const handleRemoveItem = async (id: number) => {
-    const confirm = window.confirm("Xoa ?");
+    const confirm = window.confirm("Xóa sản phẩm ?");
 
     if (confirm) {
       try {
@@ -133,7 +133,6 @@ const Cart = () => {
         }
         setLoading(false);
       } catch (error) {
-        console.error("Lỗi khi tải giỏ hàng:", error);
         setLoading(false);
       }
     };
@@ -155,24 +154,26 @@ const Cart = () => {
   }
 
   if (!Array.isArray(cartItems) || cartItems.length === 0) {
-    return <div className=" px-[100px] text-center mt-[100px]">Giỏ hàng trống.</div>;
+    return (
+      <div className=" px-[100px] text-center mt-[100px]">Giỏ hàng trống.</div>
+    );
   }
 
   return (
     <div className="mt-[100px] px-[150px]">
       <div className="flex">
-        <p className="text-[14px]">TRANG CHU</p>
+        <p className="text-[14px]">Trang chủ</p>
         <p className="text-[14px] px-[4px]"> | </p>
-        <p className="text-[14px]">GIO HANG</p>
+        <p className="text-[14px]">Giỏ hàng</p>
       </div>
 
       <div className="border border-[#f3f3f3] mt-[30px]">
         <div className="flex *:text-[14px] *:text-center px-[10px] *:text-[#888888] my-[10px]">
-          <p className="w-[550px]">SẢN PHẨM</p>
-          <p className="w-[178px]">ĐƠN GIÁ</p>
-          <p className="w-[177px]">SỐ LƯỢNG</p>
-          <p className="w-[150px]">SỐ TIỀN</p>
-          <p className="w-[146px]">THAO TÁC</p>
+          <p className="w-[550px]">Sản phẩm</p>
+          <p className="w-[178px]">Đơn giá</p>
+          <p className="w-[177px]">Số lượng</p>
+          <p className="w-[150px]">Số tiền</p>
+          <p className="w-[146px]">Thao tác</p>
         </div>
       </div>
       <div className="border border-[#c9c9c9] px-[10px] mt-[20px] *:text-[14px] ">
@@ -199,7 +200,7 @@ const Cart = () => {
                       {product.name}
                     </p>
                     <p className="text-[#0000008A]">
-                      Màu {productVariant.color.name}, Kích cỡ:{" "}
+                      Màu sắc {productVariant.color.name}, Kích cỡ:{" "}
                       {productVariant.size.name}
                     </p>
                   </div>

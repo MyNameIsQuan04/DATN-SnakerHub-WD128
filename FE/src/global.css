@@ -1,0 +1,9 @@
+/* global.css */
+body {
+  font-family: "Arial", sans-serif;
+}
+
+.Toastify__toast-container {
+  top: 80px; /* Điều chỉnh khoảng cách từ trên, tùy vào độ cao của header */
+  z-index: 9999; /* Đảm bảo Toast hiển thị trên các thành phần khác */
+}

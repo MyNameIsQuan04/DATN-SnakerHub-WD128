@@ -36,7 +36,6 @@ import ForgotPassword from "./pages/client/forgot-password";
 import Mail from "./pages/client/mail";
 import ResetPassword from "./pages/client/reset-password";
 import AddVoucher from "./pages/admin/Voucher/AddVoucher";
-import EditVoucher from "./pages/admin/Voucher/EditVoucher";
 import ListVoucher from "./pages/admin/Voucher/ListVoucher";
 import UserProfile from "./pages/client/User/UserProfile";
 import UserInfor from "./pages/client/User/UserInfor";
@@ -129,8 +128,6 @@ function App() {
           <Route path="/admin/user" element={<ListUser />} />
           <Route path="/admin/vouchers" element={<ListVoucher />} />
           <Route path="/admin/voucher-add" element={<AddVoucher />} />
-          <Route path="/admin/voucher-edit/:id" element={<EditVoucher />} />
-          <Route path="" element />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

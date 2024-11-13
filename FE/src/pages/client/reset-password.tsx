@@ -2,19 +2,24 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 interface ResetPasswordForm {
   password: string;
   confirmPassword: string;
 }
+
 const ResetPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [token, setToken] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State quản lý ẩn/hiện mật khẩu
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State quản lý ẩn/hiện mật khẩu xác nhận
   const location = useLocation();
-  const navigate = useNavigate(); // Thay vì useHistory
+  const navigate = useNavigate();
   const { register, handleSubmit } = useForm<ResetPasswordForm>();
+
   useEffect(() => {
     // Lấy token và email từ URL
     const params = new URLSearchParams(location.search);
@@ -23,6 +28,10 @@ const ResetPasswordPage = () => {
 
     if (!tokenFromUrl || !emailFromUrl) {
       setErrorMessage("Liên kết đặt lại mật khẩu không hợp lệ.");
+      toast.error("Liên kết đặt lại mật khẩu không hợp lệ.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
 
@@ -33,86 +42,112 @@ const ResetPasswordPage = () => {
   const handleResetPassword = async (data: ResetPasswordForm) => {
     if (data.password !== data.confirmPassword) {
       setErrorMessage("Mật khẩu xác nhận không khớp");
+      toast.error("Mật khẩu xác nhận không khớp", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/reset-password",
-        {
-          token,
-          email,
-          password: data.password,
-          password_confirmation: data.confirmPassword,
-        }
-      );
+      await axios.post("http://localhost:8000/api/reset-password", {
+        token,
+        email,
+        password: data.password,
+        password_confirmation: data.confirmPassword,
+      });
 
-      alert("Mật khẩu đã được thay đổi thành công");
-      navigate("/login"); // Điều hướng về trang đăng nhập
+      toast.success("Mật khẩu đã được thay đổi thành công!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      setTimeout(() => navigate("/login"), 1500);
     } catch (error: any) {
-      setErrorMessage(
+      const message =
         error.response?.data?.error ||
-          "Đặt lại mật khẩu không thành công. Vui lòng thử lại."
-      );
+        "Đặt lại mật khẩu không thành công. Vui lòng thử lại.";
+      setErrorMessage(message);
+      toast.error(message, {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
   return (
-    <div>
-      <section className="bg-gray-50 dark:bg-gray-900">
-        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-          <div className="w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8">
-            <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Thay đổi mật khẩu
-            </h2>
-            <form
-              className="mt-4 space-y-4 lg:mt-5 md:space-y-5"
-              action="#"
-              onSubmit={handleSubmit(handleResetPassword)}
-            >
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Mật khẩu mới
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  placeholder="••••••••"
-                  {...register("password")}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="confirm-password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Nhập lại mật khẩu
-                </label>
-                <input
-                  type="confirm-password"
-                  id="confirm-password"
-                  placeholder="••••••••"
-                  {...register("confirmPassword")}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required
-                />
-              </div>
+    <div className="flex min-h-screen items-center justify-center bg-gray-100">
+      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          Thay đổi mật khẩu
+        </h2>
 
+        {errorMessage && (
+          <p className="mb-4 text-red-500 text-center">{errorMessage}</p>
+        )}
+
+        <form
+          onSubmit={handleSubmit(handleResetPassword)}
+          className="space-y-6"
+        >
+          {/* Mật khẩu mới */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              Mật khẩu mới
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"} // Điều chỉnh type theo trạng thái
+                placeholder="Nhập mật khẩu mới"
+                {...register("password")}
+                className="w-full mt-2 p-3 border rounded-md focus:border-blue-600 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+                required
+              />
               <button
-                type="submit"
-                className="w-full text-white bg-blue-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                type="button"
+                className="absolute top-1/2 right-3 transform -translate-y-1/2"
+                onClick={() => setShowPassword(!showPassword)} // Thay đổi trạng thái showPassword
               >
-                Reset passwod
+                {showPassword ? "Ẩn" : "Hiện"} {/* Thay đổi icon hoặc text */}
               </button>
-            </form>
+            </div>
           </div>
-        </div>
-      </section>
+
+          {/* Nhập lại mật khẩu */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              Nhập lại mật khẩu
+            </label>
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"} // Điều chỉnh type theo trạng thái
+                placeholder="Xác nhận mật khẩu"
+                {...register("confirmPassword")}
+                className="w-full mt-2 p-3 border rounded-md focus:border-blue-600 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+                required
+              />
+              <button
+                type="button"
+                className="absolute top-1/2 right-3 transform -translate-y-1/2"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)} // Thay đổi trạng thái showConfirmPassword
+              >
+                {showConfirmPassword ? "Ẩn" : "Hiện"}{" "}
+                {/* Thay đổi icon hoặc text */}
+              </button>
+            </div>
+          </div>
+
+          {/* Nút đặt lại mật khẩu */}
+          <button
+            type="submit"
+            className="w-full bg-black hover:bg-gray-700 text-white font-medium py-3 rounded-md transition duration-300"
+          >
+            Đặt lại mật khẩu
+          </button>
+        </form>
+      </div>
+
+      {/* React Toastify */}
+      <ToastContainer />
     </div>
   );
 };
