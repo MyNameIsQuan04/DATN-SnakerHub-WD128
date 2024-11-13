@@ -21,7 +21,7 @@ class OrderController extends Controller
     {
         $prefix = 'ORD';
         $timestamp = time();
-        $randomString = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 5));
+        $randomString = strtoupper(substr(md5(uniqid(mt_rand(), true)), 1, 5));
 
         return $prefix . $timestamp . $randomString;
     }
