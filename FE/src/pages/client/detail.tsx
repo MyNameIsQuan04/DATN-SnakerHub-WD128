@@ -44,7 +44,7 @@ const Detail = () => {
       fetchProduct(id);
     }
   }, [id]);
-  console.log(product);
+
   // Chọn màu sắc
   const handleSelectColor = (colorId: number) => {
     setSelectedColor(colorId);
@@ -146,7 +146,7 @@ const Detail = () => {
   );
 
   return (
-    <div className="">
+    <div className="mt-[80px]">
       {/* Thông tin sản phẩm */}
       <div className="container mx-auto mt-[20px] px-16">
         <div className="flex items-center space-x-2 mb-4">
@@ -332,27 +332,26 @@ const Detail = () => {
                 <p>Ưu đãi tích điểm và hưởng quyền lợi thành viên từ MWC</p>
               </div>
               {/* Thêm phần mô tả sản phẩm */}
-              <div className="mt-8 border-t-4 border-gray-300 pt-4">
+              {/* <div className="mt-8 border-t-4 border-gray-300 pt-4">
                 <p className="text-lg font-semibold text-gray-800">
                   MÔ TẢ SẢN PHẨM
                 </p>
                 <div className="mt-4">
                   <ul className="list-disc pl-5 text-sm text-gray-600">
                     <li>{product.description}</li>
-                    {/* Nếu mô tả sản phẩm có nhiều mục, có thể thêm thêm dấu chấm đầu dòng cho các mục khác */}
                   </ul>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
       </div>
-      <div className="w-full mx-auto  mt-10 border-t-2 border-gray-400">
+      <div className="max-w-[1400px] mx-auto mt-10 border-t-2 border-gray-400">
         {/* Tab Buttons */}
-        <div className="flex border-b bg-gray-200 border-gray-200  py-[10px] px-[30px] gap-[20px]">
+        <div className="flex border-b bg-gray-200 border-gray-200 py-[10px] px-[80px] gap-[20px]">
           <button
             onClick={() => handleTabClick(0)}
-            className={` px-4 py-2 font-semibold rounded-md focus:outline-none ${
+            className={`px-4 py-2 font-semibold rounded-md focus:outline-none ${
               activeTab === 0 ? "bg-white" : "text-gray-600"
             }`}
           >
@@ -360,7 +359,7 @@ const Detail = () => {
           </button>
           <button
             onClick={() => handleTabClick(1)}
-            className={` px-4 py-2 font-semibold rounded-md focus:outline-none ${
+            className={`px-4 py-2 font-semibold rounded-md focus:outline-none ${
               activeTab === 1 ? "bg-white" : "text-gray-600"
             }`}
           >
@@ -368,7 +367,8 @@ const Detail = () => {
           </button>
         </div>
         <hr className="border-t-2 border-gray-400" />
-        <div className="px-[30px] py-[10px]">
+
+        <div className="px-[80px] py-[10px]">
           {activeTab === 0 && (
             <div className="">
               <div className="flex gap-[5px]">
@@ -410,7 +410,7 @@ const Detail = () => {
           {activeTab === 1 && <div>Nội dung của Tab 2</div>}
         </div>
       </div>
-      <ToastContainer />
+      <ToastContainer className="mt-[80px]" />
     </div>
   );
 };

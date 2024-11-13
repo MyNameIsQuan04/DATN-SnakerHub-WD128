@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers\ApiController;
-
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -90,7 +90,9 @@ class UserApiController extends Controller
             'birthday' => 'nullable|date',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-
+        if (isset($request['avatar'])) {
+            $validatedData['avatar'] = Storage::url($request['avatar']->store('avatars', 'public'));
+        }
         if ($request->has('password') && !empty($validatedData['password'])) {
             $validatedData['password'] = bcrypt($validatedData['password']);
         } else {

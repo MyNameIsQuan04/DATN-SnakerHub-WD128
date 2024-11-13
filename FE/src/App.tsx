@@ -54,13 +54,11 @@ function App() {
           path="/"
           element={
             <OrderContext>
-              <CartContext>
-                <CategoryContext>
-                  <ProductContext>
-                    <LayoutClient />
-                  </ProductContext>
-                </CategoryContext>
-              </CartContext>
+              <CategoryContext>
+                <ProductContext>
+                  <LayoutClient />
+                </ProductContext>
+              </CategoryContext>
             </OrderContext>
           }
         >
