@@ -30,6 +30,7 @@ const UserOrderHistory = () => {
           }
         );
         setOrders(response.data);
+        localStorage.setItem('orders', JSON.stringify(response.data)); // Lưu vào localStorage
       } catch (error) {
         setError("Lỗi khi tải trạng thái đơn hàng.");
         console.error(error);
@@ -40,13 +41,6 @@ const UserOrderHistory = () => {
     fetchOrders();
   }, [token]);
 
-  // Lọc đơn hàng theo trạng thái đã chọn
-  const filteredOrders =
-    selectedStatus === "all"
-      ? orders
-      : orders.filter((order) => order.status === selectedStatus);
-
-  // Hàm hủy đơn hàng
   const handleCancelOrder = async (idOrder: number) => {
     const confirm = window.confirm("Bạn có muốn hủy đơn hàng này không");
     if (confirm) {
@@ -61,16 +55,23 @@ const UserOrderHistory = () => {
           }
         );
 
-        setOrders((prevOrders) =>
-          prevOrders.map((order) =>
-            order.id === idOrder ? { ...order, status: "Đã hủy" } : order
-          )
+        const updatedOrders = orders.map((order) =>
+          order.id === idOrder ? { ...order, status: "Đã hủy" } : order
         );
+        setOrders(updatedOrders);
+        localStorage.setItem("orders", JSON.stringify(updatedOrders)); // Cập nhật localStorage
+        localStorage.setItem("lastUpdate", `Đơn hàng ID ${idOrder} đã hủy`); // Thông báo cập nhật
       } catch (error) {
         console.error("Lỗi khi hủy đơn hàng:", error);
       }
     }
   };
+
+  const filteredOrders =
+    selectedStatus === "all"
+      ? orders
+      : orders.filter((order) => order.status === selectedStatus);
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -102,8 +103,17 @@ const UserOrderHistory = () => {
 
         {loading && (
           <div className="text-center text-xl text-blue-500">
-            <span className="spinner-border animate-spin"></span> Đang tải đơn
-            hàng...
+            <button
+              type="button"
+              className="inline-flex items-center gap-3 rounded-lg bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 px-8 py-4 text-base font-semibold text-white shadow-xl transition-transform duration-300 ease-in-out hover:scale-105 hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 focus:outline-none focus:ring-4 focus:ring-orange-300 focus:ring-opacity-50 disabled:opacity-70"
+              disabled={loading}
+            >
+              <div
+                className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-white border-r-transparent"
+                role="status"
+              />
+              <span>Loading...</span>
+            </button>
           </div>
         )}
 
