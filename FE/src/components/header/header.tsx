@@ -13,7 +13,7 @@ const Header = () => {
 
   return (
     <div>
-      <header className="flex items-center justify-between px-6 py-3 border-b border-gray-200">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white flex items-center justify-between px-14 py-3 border-b border-gray-200 mb-0">
         {/* Logo */}
         <div className="flex items-center w-[279px]">
           <a href="/">
@@ -24,7 +24,6 @@ const Header = () => {
             />
           </a>
         </div>
-
         <nav className="flex justify-center space-x-6 text-base font-medium text-gray-800">
           {/* Giày nam */}
           <ul>
