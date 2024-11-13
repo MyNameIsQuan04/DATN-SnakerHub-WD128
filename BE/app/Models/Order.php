@@ -18,10 +18,12 @@ class Order extends Model
         'order_code'
     ];
 
-    public function customer(){
+    public function customer()
+    {
         return $this->belongsTo(Customer::class);
     }
-    public function orderItems(){
+    public function orderItems()
+    {
         return $this->hasMany(Order_Item::class);
     }
 }

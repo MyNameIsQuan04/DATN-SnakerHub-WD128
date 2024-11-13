@@ -12,7 +12,9 @@ const Cart = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const token = localStorage.getItem("access_token");
-
+  if (!token) {
+    alert("Bạn cần đăng nhập để sử dụng chức năng");
+  }
   const handleSelectItem = (id: number) => {
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]

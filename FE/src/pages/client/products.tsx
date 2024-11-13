@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { ProductCT } from "../../contexts/ProductContext";
+import { ProductCT } from "../../contexts/productContext";
 import { Product } from "../../interfaces/Product";
 import { CategoryCT } from "../../contexts/CategoryContext";
 import { Category } from "../../interfaces/Category";

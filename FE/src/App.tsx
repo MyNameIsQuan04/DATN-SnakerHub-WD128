@@ -16,7 +16,7 @@ import CategoryContext from "./contexts/CategoryContext";
 import AddCategory from "./pages/admin/category/AddCategory";
 import ListCategory from "./pages/admin/category/ListCategory";
 import Home from "./pages/client/home";
-import ProductContext from "./contexts/ProductContext";
+import ProductContext from "./contexts/productContext";
 import ColorContext from "./contexts/ColorContext";
 import SizeContext from "./contexts/SizeContext";
 import EditProduct from "./pages/admin/product/EditProduct";
@@ -43,6 +43,7 @@ import UserAddress from "./pages/client/User/UserAddress";
 import UserChangepass from "./pages/client/User/UserChangepass";
 import UserOrderhistory from "./pages/client/User/UserOrderhistory";
 import UserAnnouncement from "./pages/client/User/UserAnnouncement";
+import Payment from "./pages/client/payment";
 
 function App() {
   return (
@@ -52,13 +53,11 @@ function App() {
           path="/"
           element={
             <OrderContext>
-              <CartContext>
-                <CategoryContext>
-                  <ProductContext>
-                    <LayoutClient />
-                  </ProductContext>
-                </CategoryContext>
-              </CartContext>
+              <CategoryContext>
+                <ProductContext>
+                  <LayoutClient />
+                </ProductContext>
+              </CategoryContext>
             </OrderContext>
           }
         >
@@ -70,6 +69,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />
+          <Route path="/payment" element={<Payment />} />
           <Route path="/thankyou" element={<ThankYou />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
