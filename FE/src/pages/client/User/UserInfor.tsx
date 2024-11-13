@@ -37,7 +37,7 @@ const UserInfor = () => {
         })
         .catch((error) => {
           console.error("Lỗi lấy dữ liệu hồ sơ:", error);
-          toast.success("Không thể lấy thông tin hồ sơ, vui lòng thử lại sau.");
+          toast.error("Không thể lấy thông tin hồ sơ, vui lòng thử lại sau.");
           setLoading(false); // Tắt loading khi có lỗi
         });
     }
@@ -109,7 +109,7 @@ const UserInfor = () => {
         }
       } catch (error) {
         console.error("Lỗi cập nhật hồ sơ:", error);
-        toast.success("Có lỗi xảy ra khi cập nhật hồ sơ.");
+        toast.error("Có lỗi xảy ra khi cập nhật hồ sơ.");
       } finally {
         setLoading(false); // Tắt loading sau khi hoàn thành
       }

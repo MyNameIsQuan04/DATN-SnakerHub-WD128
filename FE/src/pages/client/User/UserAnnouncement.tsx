@@ -7,6 +7,7 @@ const UserAnnouncement = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("access_token");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigate = useNavigate();
 
   useEffect(() => {
