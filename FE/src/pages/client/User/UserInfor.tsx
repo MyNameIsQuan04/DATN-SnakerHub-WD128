@@ -22,24 +22,24 @@ const UserInfor = () => {
   });
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loading, setLoading] = useState(false); // Thêm trạng thái loading
+  const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("access_token");
 
   useEffect(() => {
     if (user && token) {
-      setLoading(true); // Bật loading khi bắt đầu tải dữ liệu
+      setLoading(true);
       axios
         .get(`http://localhost:8000/api/users/${user.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
           setProfile(response.data);
-          setLoading(false); // Tắt loading khi nhận được dữ liệu
+          setLoading(false);
         })
         .catch((error) => {
           console.error("Lỗi lấy dữ liệu hồ sơ:", error);
           toast.error("Không thể lấy thông tin hồ sơ, vui lòng thử lại sau.");
-          setLoading(false); // Tắt loading khi có lỗi
+          setLoading(false);
         });
     }
   }, [user, token]);
@@ -51,7 +51,7 @@ const UserInfor = () => {
     if (name === "avatar" && files && files.length > 0) {
       const file = files[0];
       if (file.size > 1048576) {
-        toast.success("Dung lượng file tối đa là 1MB.");
+        toast.error("Dung lượng file tối đa là 1MB.");
         return;
       }
       setAvatarFile(file);
@@ -75,7 +75,7 @@ const UserInfor = () => {
     e.preventDefault();
 
     if (token && user) {
-      setLoading(true); // Bật loading khi bắt đầu cập nhật dữ liệu
+      setLoading(true);
       const formData = new FormData();
       formData.append("name", profile.name || "");
       formData.append("email", profile.email || "");
@@ -85,7 +85,7 @@ const UserInfor = () => {
       formData.append("address", profile.address || "");
 
       if (avatarFile) {
-        formData.append("avatar", avatarFile);
+        formData.append("avatar", avatarFile || "");
       }
 
       try {
@@ -96,6 +96,7 @@ const UserInfor = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
             },
           }
         );
@@ -112,10 +113,10 @@ const UserInfor = () => {
         console.error("Lỗi cập nhật hồ sơ:", error);
         toast.error("Có lỗi xảy ra khi cập nhật hồ sơ.");
       } finally {
-        setLoading(false); // Tắt loading sau khi hoàn thành
+        setLoading(false);
       }
     } else {
-      toast.success("Vui lòng đăng nhập để cập nhật thông tin.");
+      toast.error("Vui lòng đăng nhập để cập nhật thông tin.");
     }
   };
 
