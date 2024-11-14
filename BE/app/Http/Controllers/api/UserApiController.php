@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\ApiController;
+namespace App\Http\Controllers\api;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -88,7 +88,7 @@ class UserApiController extends Controller
             'type' => 'sometimes|required|in:user,admin',
             'gender' => 'nullable|in:male,female,other',
             'birthday' => 'nullable|date',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'avatar' => 'nullable|image',
             'islocked' => 'sometimes|boolean'
         ]);
         if (isset($request['avatar'])) {
@@ -98,12 +98,6 @@ class UserApiController extends Controller
             $validatedData['password'] = bcrypt($validatedData['password']);
         } else {
             unset($validatedData['password']);
-        }
-
-      
-        if ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $validatedData['avatar'] = $avatarPath;
         }
 
         $user->update($validatedData);
