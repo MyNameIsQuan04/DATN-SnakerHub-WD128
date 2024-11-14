@@ -15,6 +15,7 @@ use App\Http\Controllers\ApiController\ColorApiController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\apiMember\OrderController as ApiMemberOrderController;
+use App\Http\Controllers\api\SlideController;
 
 /*
 |--------------------------------------------------------------------------
@@ -96,7 +97,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/users/{id}', [UserApiController::class, 'show'])->middleware('type:admin,user');
 
     // Cập nhật thông tin người dùng (cho cả Admin và User)
-    Route::put('/users/{id}', [UserApiController::class, 'update'])->middleware('type:admin,user');
+    Route::post('/users/{id}', [UserApiController::class, 'update'])->middleware('type:admin,user');
 
     // Xóa người dùng (Admin)
     Route::delete('/users/{id}', [UserApiController::class, 'destroy'])->middleware('type:admin');
@@ -108,7 +109,7 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/users/{id}/unlock', [UserApiController::class, 'unlockAccount'])->middleware('type:admin');
 
     // Hiển thị thông tin của chính người dùng đã đăng nhập
-    Route::get('/profile', [UserApiController::class, 'profile']);
+    // Route::get('/profile', [UserApiController::class, 'profile']);
 
     // Cập nhật thông tin của chính người dùng đã đăng nhập
     // Route::put('/users/{id}', [UserApiController::class, 'updateProfile']);
@@ -117,3 +118,15 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/voucher', [VoucherController::class, 'store'])->name('voucher.store');
     Route::put('/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
     Route::delete('/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
+    //lọc sản phẩm
+    Route::get('/products/filter', [ClientProductController::class, 'filterProducts']);
+
+    Route::prefix('slides')->group(function () {
+        Route::get('/', [SlideController::class, 'index']);  // Lấy danh sách slide
+        Route::get('{id}', [SlideController::class, 'show']);  // Lấy thông tin slide cụ thể
+        Route::post('/', [SlideController::class, 'store']);  // Tạo mới slide
+        Route::put('{id}', [SlideController::class, 'update']);  // Cập nhật slide
+        Route::delete('{id}', [SlideController::class, 'destroy']);  // Xóa slide
+    });
+
+    Route::get('/search', [ClientProductController::class, 'search']);

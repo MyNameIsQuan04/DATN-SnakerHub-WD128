@@ -91,9 +91,6 @@ class ProductController extends Controller
         }
     }
 
-
-
-
     public function edit(Product $product)
     {
         // Load relationships
@@ -112,7 +109,6 @@ class ProductController extends Controller
             'colors' => $colors,
         ]);
     }
-
 
     public function update(UpdateProductRequest $request, Product $product)
     {

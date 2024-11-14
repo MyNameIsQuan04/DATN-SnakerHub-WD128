@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { MdOutlineManageAccounts } from "react-icons/md";
 import { CiViewList } from "react-icons/ci";
@@ -14,24 +14,31 @@ const UserProfile = () => {
   );
   const { user } = useAuth();
 
+  useEffect(() => {
+    if (user) {
+      console.log('User data updated:', user);
+      // window.location.reload()
+    }
+  }, [user]);
+
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
 
   const handleButtonClick = (buttonName: string) => {
     setActiveButton(buttonName);
-    setActiveDropdownItem(null); // Reset dropdown item selection
+    setActiveDropdownItem(null); 
   };
 
   const handleDropdownItemClick = (itemName: string) => {
     setActiveDropdownItem(itemName);
-    setActiveButton(null); // Reset main button selection when a dropdown item is clicked
+    setActiveButton(null); 
   };
 
   return (
     <div className="container mx-auto p-6 sm:p-12 lg:p-24 min-h-screen flex flex-col md:flex-row gap-10">
       {/* Sidebar */}
-      <aside className="sidebar w-full md:w-1/3 lg:w-1/4 bg-white shadow-lg rounded-xl p-6">
+      <aside className="sidebar h-[600px] w-full md:w-1/3 lg:w-1/4 bg-white shadow-lg rounded-xl p-6">
         <div className="profile flex items-center gap-3 mb-8">
           <img
             className="rounded-full w-20 h-20  object-cover shadow-lg border-4 border-white hover:border-blue-500"
@@ -161,7 +168,8 @@ const UserProfile = () => {
       </aside>
 
       {/* Main Profile Section with Outlet */}
-      <div className="flex-1 bg-white shadow-lg rounded-xl p-6">
+      {/* bg-white shadow-lg rounded-xl */}
+      <div className="flex-1 h-auto">
         <Outlet />
       </div>
     </div>
