@@ -30,7 +30,7 @@ const UpdateCategory = () => {
   return (
     <div>
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-semibold mb-6">Thêm danh mục</h1>
+        <h1 className="text-3xl font-semibold mb-6">Sửa danh mục</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Tên sản phẩm */}
           <div className="mb-4">
@@ -62,7 +62,7 @@ const UpdateCategory = () => {
             type="submit"
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
           >
-            Thêm danh mục
+            Sửa danh mục
           </button>
           <Link to="/admin/category">
             <button
