@@ -4,7 +4,7 @@ import { Formik, Form, Field, FieldArray } from "formik";
 import { CategoryCT } from "../../../contexts/CategoryContext";
 import { ColorCT } from "../../../contexts/ColorContext";
 import { SizeCT } from "../../../contexts/SizeContext";
-import { ProductCT } from "../../../contexts/productContext";
+import { ProductCT } from "../../../contexts/ProductContext";
 import { Category } from "../../../interfaces/Category";
 import { Color } from "../../../interfaces/Color";
 import { Size } from "../../../interfaces/Size";
@@ -127,7 +127,7 @@ const EditProduct = () => {
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center overflow-auto">
       <div className="bg-white w-full max-w-4xl mx-auto p-8 rounded-lg shadow-lg relative overflow-y-auto max-h-screen">
-        <h1 className="text-3xl font-semibold mb-6"> Sản Phẩm Mới</h1>
+        <h1 className="text-3xl font-semibold mb-6">Sửa Sản Phẩm</h1>
 
         <Formik
           initialValues={initialValues}
@@ -383,7 +383,7 @@ const EditProduct = () => {
                           })
                         }
                       >
-                        Thêm biến thể
+                        Sửa biến thể
                       </button>
                     </>
                   )}
@@ -395,7 +395,7 @@ const EditProduct = () => {
                   type="submit"
                   className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
                 >
-                  Thêm sản phẩm
+                  Sửa sản phẩm
                 </button>
                 <Link
                   to="/admin/product"

@@ -96,10 +96,7 @@ class ProductController extends Controller
         $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
         return $product;
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(UpdateProductRequest $request, Product $product)
     {
         DB::beginTransaction();
@@ -189,10 +186,6 @@ class ProductController extends Controller
         }
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Product $product)
     {
         try {
