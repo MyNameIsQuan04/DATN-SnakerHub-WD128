@@ -17,11 +17,21 @@ const UserOrderHistory = () => {
   const token = localStorage.getItem("access_token");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedReason, setSelectedReason] = useState("");
-
+  const [isModalRatingOpen, setIsModalRatingOpen] = useState(false);
+  const [rating, setRating] = useState(0);
+  const handleStarClick = (star: any) => {
+    setRating(star);
+  };
   const openModalComplanit = () => {
     setIsModalOpen(true);
   };
-
+  const openModalRating = () => {
+    setIsModalRatingOpen(true);
+  };
+  const handleCloseModalRating = () => {
+    setIsModalRatingOpen(false); // Đóng modal
+    setSelectedReason("");
+  };
   const handleCloseModal = () => {
     setIsModalOpen(false); // Đóng modal
     setSelectedReason("");
@@ -303,35 +313,120 @@ const UserOrderHistory = () => {
                     alt="Product"
                     className="w-24 h-24 object-cover rounded-lg shadow-md"
                   />
-                  <div className="flex flex-col">
-                    <div className="flex gap-[5px] items-center">
-                      <p className="text-lg text-gray-700">Tên sản phẩm:</p>
-                      <p className="text-lg text-gray-700 uppercase font-bold">
-                        {item.product_variant?.product.name || "Không có"}
+                  <div className="flex">
+                    <div className="flex flex-col ">
+                      <div className="flex gap-[5px] items-center w-[500px]">
+                        <p className="text-lg text-gray-700">Tên sản phẩm:</p>
+                        <p className="text-lg text-gray-700 uppercase font-bold">
+                          {item.product_variant?.product.name || "Không có"}
+                        </p>
+                      </div>
+                      <p className="text-lg text-gray-700">
+                        Số lượng: {item.quantity}
+                      </p>
+                      <p className="text-lg text-gray-700">
+                        Giá đơn hàng:{" "}
+                        <span className="font-bold text-gray-900">
+                          {formatCurrency(order.total_price)} đ
+                        </span>
+                      </p>
+                      <p className="text-lg text-gray-700">
+                        Giá sản phẩm:{" "}
+                        <span className="font-bold text-gray-900">
+                          {formatCurrency(item.product_variant?.price)} đ
+                        </span>
+                      </p>
+                      <p className="text-lg text-gray-700">
+                        Màu sắc:{" "}
+                        {item.product_variant?.color.name || "Không có"}
+                      </p>
+                      <p className="text-lg text-gray-700">
+                        Kích thước:{" "}
+                        {item.product_variant?.size.name || "Không có"}
                       </p>
                     </div>
-                    <p className="text-lg text-gray-700">
-                      Số lượng: {item.quantity}
-                    </p>
-                    <p className="text-lg text-gray-700">
-                      Giá đơn hàng:{" "}
-                      <span className="font-bold text-gray-900">
-                        {formatCurrency(order.total_price)} đ
-                      </span>
-                    </p>
-                    <p className="text-lg text-gray-700">
-                      Giá sản phẩm:{" "}
-                      <span className="font-bold text-gray-900">
-                        {formatCurrency(item.product_variant?.price)} đ
-                      </span>
-                    </p>
-                    <p className="text-lg text-gray-700">
-                      Màu sắc: {item.product_variant?.color.name || "Không có"}
-                    </p>
-                    <p className="text-lg text-gray-700">
-                      Kích thước:{" "}
-                      {item.product_variant?.size.name || "Không có"}
-                    </p>
+                    <div className="mt-[60px]">
+                      <button
+                        className="ml-4 px-6 py-2 text-sm font-semibold border border-red-500 text-red-500 rounded-lg transition-all duration-300"
+                        onClick={openModalRating}
+                      >
+                        Đánh giá
+                      </button>
+                      {isModalRatingOpen && (
+                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                            <h2 className="text-xl font-semibold mb-4">
+                              Gửi đánh giá
+                            </h2>
+                            <div className="flex gap-[10px]">
+                              <img
+                                src={
+                                  item.product_variant?.image ||
+                                  "https://via.placeholder.com/150" // Hình ảnh mặc định nếu không có
+                                }
+                                alt="Product"
+                                className="w-[90px] h-[90px] object-cover rounded-lg shadow-md"
+                              />
+                              <div className="flex flex-col ">
+                                <div className="flex gap-[5px] items-center w-[500px]">
+                                  <p className="text-lg text-gray-700">
+                                    Tên sản phẩm:
+                                  </p>
+                                  <p className="text-lg text-gray-700 uppercase font-bold">
+                                    {item.product_variant?.product.name ||
+                                      "Không có"}
+                                  </p>
+                                </div>
+                                <p className="text-lg text-gray-700">
+                                  Màu sắc:{" "}
+                                  {item.product_variant?.color.name ||
+                                    "Không có"}
+                                </p>
+                                <p className="text-lg text-gray-700">
+                                  Kích thước:{" "}
+                                  {item.product_variant?.size.name ||
+                                    "Không có"}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="">
+                              <div className="flex gap-1 mt-[10px]">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <svg
+                                    key={star}
+                                    onClick={() => handleStarClick(star)}
+                                    className={`w-6 h-6 cursor-pointer rounded-sm ${
+                                      star <= rating
+                                        ? "text-yellow-500"
+                                        : "text-gray-400"
+                                    }`}
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path d="M12 .587l3.668 7.568L24 9.75l-6 5.845L19.335 24 12 20.401 4.665 24 6 15.595 0 9.75l8.332-1.595L12 .587z" />
+                                  </svg>
+                                ))}
+                              </div>
+                              <textarea
+                                className="border border-gray-400 w-full mt-[10px] rounded-lg pl-[10px] p-[5px]"
+                                id=""
+                              ></textarea>
+                            </div>
+                            <div className="flex justify-end mt-[10px]">
+                              <button
+                                onClick={handleCloseModalRating}
+                                className="px-4 py-2 text-red-500 border border-red-500 rounded-lg mr-2"
+                              >
+                                Đóng
+                              </button>
+                              <button className="px-4 py-2 bg-red-500 text-white rounded-lg">
+                                Gửi đánh giá
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
