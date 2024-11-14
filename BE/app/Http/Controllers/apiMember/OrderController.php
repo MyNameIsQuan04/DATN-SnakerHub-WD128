@@ -21,7 +21,7 @@ class OrderController extends Controller
     {
         $prefix = 'ORD';
         $timestamp = time();
-        $randomString = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 5));
+        $randomString = strtoupper(substr(md5(uniqid(mt_rand(), true)), 1, 5));
 
         return $prefix . $timestamp . $randomString;
     }
@@ -178,26 +178,41 @@ class OrderController extends Controller
                 $dataValidate = $request->validate([
                     'status' => 'required|in:Trả hàng,Hoàn thành',
                 ]);
-                foreach ($order->orderItems as $orderItem) {
-                    $productVariant = Product_Variant::find($orderItem['product__variant_id']);
-
-                    $stock = $productVariant['stock'] + $orderItem['quantity'];
-                    $productVariant->update([
-                        'stock' => $stock,
+                if ($dataValidate['status'] === 'Trả hàng') {
+                    $note = $request->validate([
+                        'note' => 'required|in:Giao hàng không đúng yêu cầu,Sản phẩm có lỗi từ nhà cung cấp,Lý do khác',
                     ]);
 
-                    $product = Product::find($productVariant['product_id']);
+                    foreach ($order->orderItems as $orderItem) {
+                        $productVariant = Product_Variant::find($orderItem['product__variant_id']);
 
-                    $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
-                    $product->update([
-                        'sales_count' => $newSalesCount
+                        $stock = $productVariant['stock'] + $orderItem['quantity'];
+                        $productVariant->update([
+                            'stock' => $stock,
+                        ]);
+
+                        $product = Product::find($productVariant['product_id']);
+
+                        $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
+                        $product->update([
+                            'sales_count' => $newSalesCount
+                        ]);
+                    }
+
+                    $order->update([
+                        'status' => $dataValidate['status'],
+                        'note' => $note,
                     ]);
+
+                    $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                    return $order;
+                } else {
+                    $order->update([
+                        'status' => $dataValidate['status'],
+                    ]);
+                    $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                    return $order;
                 }
-                $order->update([
-                    'status' => $dataValidate['status'],
-                ]);
-                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
-                return $order;
             } else {
                 return response()->json([
                     'success' => false,

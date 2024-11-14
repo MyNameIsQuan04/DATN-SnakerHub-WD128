@@ -102,10 +102,10 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
+        DB::beginTransaction();
         try {
             $validatedData = $request->validated();
 
-            // Cập nhật thông tin sản phẩm
             $dataProduct = [
                 'category_id' => $validatedData['category_id'],
                 'name' => $validatedData['name'],
@@ -113,32 +113,31 @@ class ProductController extends Controller
                 'short_description' => $validatedData['short_description'],
                 'price' => $validatedData['price'],
             ];
+
             if (isset($validatedData['thumbnail'])) {
-                $thumbnailPath = Storage::put('images', $validatedData['thumbnail']);
+                $thumbnailPath = $validatedData['thumbnail']->store('images', 'public');
                 $dataProduct['thumbnail'] = Storage::url($thumbnailPath);
             }
-            $product->update($dataProduct);
 
-            // Cập nhật hoặc thêm mới gallery
+            $product->update($dataProduct);
             foreach ($validatedData['galleries'] ?? [] as $gallery) {
                 if (isset($gallery['id'])) {
                     $existingGallery = $product->galleries()->where('id', $gallery['id'])->first();
                     if ($existingGallery) {
+                        $imagePath = $gallery['image']->store('images', 'public');
                         $existingGallery->update([
-                            'image_path' => Storage::url(Storage::put('images', $gallery['image'])),
+                            'image_path' => Storage::url($imagePath),
                         ]);
                     }
                 } else {
-                    $image_path = Storage::url(Storage::put('images', $gallery['image']));
+                    $imagePath = $gallery['image']->store('images', 'public');
                     $product->galleries()->create([
-                        'image_path' => $image_path,
+                        'image_path' => Storage::url($imagePath),
                     ]);
                 }
             }
 
-            // Lưu lại danh sách biến thể ID để giữ lại những biến thể được cập nhật
             $variantIds = [];
-
             foreach ($validatedData['variants'] as $variant) {
                 $dataVariant = [
                     'color_id' => $variant['color_id'],
@@ -148,31 +147,30 @@ class ProductController extends Controller
                     'sku' => $variant['sku'],
                 ];
                 if (isset($variant['image'])) {
-                    $dataVariant['image'] = Storage::url(Storage::put('images', $variant['image']));
+                    $variantImagePath = $variant['image']->store('images', 'public');
+                    $dataVariant['image'] = Storage::url($variantImagePath);
                 }
 
                 if (isset($variant['id'])) {
-                    // Cập nhật biến thể nếu có ID
                     $existingVariant = $product->productVariants()->where('id', $variant['id'])->first();
                     if ($existingVariant) {
                         $existingVariant->update($dataVariant);
-                        $variantIds[] = $existingVariant->id; // Lưu ID biến thể đã cập nhật
+                        $variantIds[] = $existingVariant->id;
                     }
                 } else {
-                    // Tạo mới biến thể nếu không có ID
                     $newVariant = $product->productVariants()->create($dataVariant);
-                    $variantIds[] = $newVariant->id; // Lưu ID biến thể mới
+                    $variantIds[] = $newVariant->id;
                 }
             }
 
-            // Xóa các biến thể không có trong danh sách cập nhật
             $product->productVariants()->whereNotIn('id', $variantIds)->delete();
 
-            // Load lại các thông tin liên quan để trả về JSON response
             $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
             $categories = Category::query()->pluck('name', 'id')->all();
             $sizes = Size::all()->pluck('name', 'id');
             $colors = Color::all()->pluck('name', 'id');
+
+            DB::commit();
 
             return response()->json([
                 'success' => true,
@@ -181,7 +179,7 @@ class ProductController extends Controller
                 'categories' => $categories,
                 'sizes' => $sizes,
                 'colors' => $colors,
-            ], 201);
+            ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([

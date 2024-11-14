@@ -44,7 +44,7 @@ const Detail = () => {
       fetchProduct(id);
     }
   }, [id]);
-  console.log(product);
+
   // Chọn màu sắc
   const handleSelectColor = (colorId: number) => {
     setSelectedColor(colorId);
@@ -410,7 +410,7 @@ const Detail = () => {
           {activeTab === 1 && <div>Nội dung của Tab 2</div>}
         </div>
       </div>
-      <ToastContainer className="mt-[80px]"/>
+      <ToastContainer className="mt-[80px]" />
     </div>
   );
 };

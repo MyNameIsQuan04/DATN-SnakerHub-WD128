@@ -12,7 +12,9 @@ const Cart = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const token = localStorage.getItem("access_token");
-
+  if (!token) {
+    alert("Bạn cần đăng nhập để sử dụng chức năng");
+  }
   const handleSelectItem = (id: number) => {
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
@@ -155,7 +157,9 @@ const Cart = () => {
   }
 
   if (!Array.isArray(cartItems) || cartItems.length === 0) {
-    return <div className=" px-[100px] text-center mt-[100px]">Giỏ hàng trống.</div>;
+    return (
+      <div className=" px-[100px] text-center mt-[100px]">Giỏ hàng trống.</div>
+    );
   }
 
   return (
