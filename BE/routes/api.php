@@ -9,13 +9,14 @@ use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\DashboardController;
 use App\Http\Controllers\Client\VoucherController;
-use App\Http\Controllers\ApiController\SizeApiController;
-use App\Http\Controllers\ApiController\UserApiController;
-use App\Http\Controllers\ApiController\ColorApiController;
+use App\Http\Controllers\api\SizeApiController;
+use App\Http\Controllers\api\UserApiController;
+use App\Http\Controllers\api\ColorApiController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
-use App\Http\Controllers\apiMember\OrderController as ApiMemberOrderController;
+use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\api\SlideController;
+use App\Http\Controllers\Client\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -130,3 +131,5 @@ Route::middleware('auth:api')->group(function() {
     });
 
     Route::get('/search', [ClientProductController::class, 'search']);
+
+    Route::post('/rate',[CommentController::class, 'search']);

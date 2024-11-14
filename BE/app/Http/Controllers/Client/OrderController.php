@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\apiMember;
+namespace App\Http\Controllers\Client;
 
 use App\Models\Order;
 use App\Models\Customer;
@@ -208,15 +208,6 @@ class OrderController extends Controller
                     $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
                     return $order;
                 } else if ($dataValidate['status'] === 'Hoàn thành') {
-                    $dataRate = $request->validate([
-                        'user_id' => 'required|exists:users,id',
-                        'product_id' => 'required|exists:products,id',
-                        'star' => 'required|integer|min:1|max:5',
-                        'content' => 'nullable|string',
-                    ]);
-
-                    Comment::query()->create($dataRate);
-
                     $order->update([
                         'status' => $dataValidate['status'],
                     ]);

@@ -17,7 +17,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::all();
+        $orders = Order::orderByDesc('id')->get();
         $orders->load('customer', 'orderItems.productVariant.product');
         return $orders;
     }
