@@ -100,6 +100,12 @@ class UserApiController extends Controller
             unset($validatedData['password']);
         }
 
+      
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $validatedData['avatar'] = $avatarPath;
+        }
+
         $user->update($validatedData);
 
         return response()->json($user);
