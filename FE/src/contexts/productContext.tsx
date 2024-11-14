@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { Product } from "../interfaces/Product";
 import { useNavigate } from "react-router-dom";
+import {  toast } from "react-toastify";
 import {
   addProduct,
   getProducts,
@@ -27,7 +28,7 @@ const ProductContext = ({ children }: Props) => {
     if (confirm) {
       try {
         await removeProduct(id);
-        alert("Thanh cong");
+        toast.success("Xóa sản phẩm thành công ")
         const newProductsAfterDelete = products.filter(
           (product) => product.id !== id
         );

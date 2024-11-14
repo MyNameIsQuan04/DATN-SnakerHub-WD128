@@ -96,7 +96,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/users/{id}', [UserApiController::class, 'show'])->middleware('type:admin,user');
 
     // Cập nhật thông tin người dùng (cho cả Admin và User)
-    Route::put('/users/{id}', [UserApiController::class, 'update'])->middleware('type:admin,user');
+    Route::post('/users/{id}', [UserApiController::class, 'update'])->middleware('type:admin,user');
 
     // Xóa người dùng (Admin)
     Route::delete('/users/{id}', [UserApiController::class, 'destroy'])->middleware('type:admin');
@@ -108,7 +108,7 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/users/{id}/unlock', [UserApiController::class, 'unlockAccount'])->middleware('type:admin');
 
     // Hiển thị thông tin của chính người dùng đã đăng nhập
-    Route::get('/profile', [UserApiController::class, 'profile']);
+    // Route::get('/profile', [UserApiController::class, 'profile']);
 
     // Cập nhật thông tin của chính người dùng đã đăng nhập
     // Route::put('/users/{id}', [UserApiController::class, 'updateProfile']);

@@ -1,6 +1,5 @@
 import React from "react";
 
-
 const Contact = () => {
   return (
     <div className="flex mt-[180px]">
