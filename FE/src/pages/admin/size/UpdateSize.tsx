@@ -25,7 +25,7 @@ const UpdateSize = () => {
     })();
   }, []);
   const onSubmit = async (data: Size) => {
-    onAddSize(data);
+    onAddSize(data, params?.id as number | string);
   };
   return (
     <div>
