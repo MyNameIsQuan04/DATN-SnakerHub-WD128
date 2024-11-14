@@ -89,6 +89,7 @@ class UserApiController extends Controller
             'gender' => 'nullable|in:male,female,other',
             'birthday' => 'nullable|date',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'islocked' => 'sometimes|boolean'
         ]);
         if (isset($request['avatar'])) {
             $validatedData['avatar'] = Storage::url($request['avatar']->store('avatars', 'public'));

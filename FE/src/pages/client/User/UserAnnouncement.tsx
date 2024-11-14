@@ -7,6 +7,7 @@ const UserAnnouncement = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("access_token");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,7 +79,7 @@ const UserAnnouncement = () => {
                   className="w-16 h-16 object-cover rounded-lg"
                 />
                 <div>
-                  <p className="text-lg font-semibold text-gray-800">Đơn hàng ID: {order.id}</p>
+                  <p className="text-lg font-semibold text-gray-800">Đơn hàng : {order.id}</p>
                   <p className="text-sm text-gray-500">
                     Tên sản phẩm: {order.order_items[0]?.product_variant?.product?.name || "N/A"}
                   </p>

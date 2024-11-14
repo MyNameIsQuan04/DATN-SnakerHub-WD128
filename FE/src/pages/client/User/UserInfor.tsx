@@ -17,6 +17,7 @@ const UserInfor = () => {
     address: "",
     avatar: "",
     created_at: "",
+    update_at: "",
     isLocked: false,
   });
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -37,7 +38,7 @@ const UserInfor = () => {
         })
         .catch((error) => {
           console.error("Lỗi lấy dữ liệu hồ sơ:", error);
-          toast.success("Không thể lấy thông tin hồ sơ, vui lòng thử lại sau.");
+          toast.error("Không thể lấy thông tin hồ sơ, vui lòng thử lại sau.");
           setLoading(false); // Tắt loading khi có lỗi
         });
     }
@@ -109,7 +110,7 @@ const UserInfor = () => {
         }
       } catch (error) {
         console.error("Lỗi cập nhật hồ sơ:", error);
-        toast.success("Có lỗi xảy ra khi cập nhật hồ sơ.");
+        toast.error("Có lỗi xảy ra khi cập nhật hồ sơ.");
       } finally {
         setLoading(false); // Tắt loading sau khi hoàn thành
       }
@@ -127,7 +128,7 @@ const UserInfor = () => {
   };
 
   return (
-    <div className="bg-white p-6 max-w-7xl mx-auto">
+    <div className="bg-white shadow-lg rounded-xl p-6 max-w-7xl mx-auto">
       <section>
         <p className="text-lg text-gray-600 mb-3 font-medium">
           Quản lý thông tin hồ sơ để bảo mật tài khoản
@@ -152,7 +153,7 @@ const UserInfor = () => {
                 value={profile.name || ""}
                 onChange={handleChange}
                 placeholder="Nhập tên"
-                className="w-full p-4 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm"
+                className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               />
             </div>
 
@@ -170,7 +171,7 @@ const UserInfor = () => {
                 value={profile.email || ""}
                 onChange={handleChange}
                 placeholder="Nhập email"
-                className="w-full p-4 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm"
+                className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               />
             </div>
 
@@ -189,7 +190,7 @@ const UserInfor = () => {
                   value={profile.phone_number || ""}
                   onChange={handleChange}
                   placeholder="Nhập số điện thoại"
-                  className="w-full p-4 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm"
+                  className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
               </div>
 
@@ -202,7 +203,7 @@ const UserInfor = () => {
                   name="birthday"
                   value={profile.birthday || ""}
                   onChange={handleChange}
-                  className="w-full p-4 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm"
+                  className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
               </div>
             </div>
@@ -274,7 +275,7 @@ const UserInfor = () => {
                 value={profile.address || ""}
                 onChange={handleChange}
                 placeholder="Nhập địa chỉ"
-                className="w-full p-4 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm"
+                className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               />
             </div>
           </div>

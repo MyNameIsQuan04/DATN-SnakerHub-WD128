@@ -17,25 +17,25 @@ const SimpleSlider = () => {
   };
 
   return (
-    <div className="w-full h-[600px] mt-[80px] mx-5">
+    <div className="w-full h-[600px]">
       <Slider {...settings}>
         <div>
           <img
-            src="https://i.pinimg.com/originals/df/10/36/df10364ff6c599bb59309472326b02d7.jpg" 
+            src="https://i.pinimg.com/originals/df/10/36/df10364ff6c599bb59309472326b02d7.jpg"
             alt="Slide 1"
             className="w-full h-[600px] object-cover"
           />
         </div>
         <div>
           <img
-            src="https://i.pinimg.com/474x/ad/fd/09/adfd0919c7041f9415884283accb66f7.jpg" 
+            src="https://i.pinimg.com/474x/ad/fd/09/adfd0919c7041f9415884283accb66f7.jpg"
             alt="Slide 2"
             className="w-full h-[600px] object-cover"
           />
         </div>
         <div>
           <img
-            src="https://i.pinimg.com/originals/c5/d7/ad/c5d7ad69e83209167e809a3db42d1502.jpg" 
+            src="https://i.pinimg.com/originals/c5/d7/ad/c5d7ad69e83209167e809a3db42d1502.jpg"
             alt="Slide 3"
             className="w-full h-[600px] object-cover"
           />

@@ -25,6 +25,7 @@ export interface IUser {
   birthday?: string; // Định dạng ngày sinh, có thể là 'YYYY-MM-DD' hoặc định dạng tùy ý
   avatar?: string; // Đường dẫn URL đến ảnh đại diện
   type?: "admin" | "user" | "guest"; // Kiểu người dùng
-  created_at: string; // Ngày tạo tài khoản, bắt buộc
+  created_at: string; 
+  update_at:string;// Ngày tạo tài khoản, bắt buộc
   isLocked: boolean; // Trạng thái khóa tài khoản, bắt buộc
 }
