@@ -16,7 +16,7 @@ use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\apiMember\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\api\SlideController;
-use App\Http\Controllers\Client\ReviewController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -119,7 +119,7 @@ Route::middleware('auth:api')->group(function() {
     Route::put('/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
     Route::delete('/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
     //lọc sản phẩm
-    Route::get('/products/filter', [ProductController::class, 'filterProducts']);
+    Route::get('/products/filter', [ClientProductController::class, 'filterProducts']);
 
     Route::prefix('slides')->group(function () {
         Route::get('/', [SlideController::class, 'index']);  // Lấy danh sách slide
@@ -129,11 +129,4 @@ Route::middleware('auth:api')->group(function() {
         Route::delete('{id}', [SlideController::class, 'destroy']);  // Xóa slide
     });
 
-    Route::get('/products/search', [ProductController::class, 'search']);
-
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/products/{product_id}/reviews', [ReviewController::class, 'getReviews']);
-        Route::post('/reviews', [ReviewController::class, 'store']);
-        Route::put('/reviews/{id}', [ReviewController::class, 'update']);
-        Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
-    });
+    Route::get('/search', [ClientProductController::class, 'search']);
