@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Order_Item;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
@@ -16,6 +17,7 @@ return new class extends Migration
         Schema::create('comments', function (Blueprint $table) {
             $table->foreignIdFor(User::class)->constrained();
             $table->foreignIdFor(Product::class)->constrained();
+            $table->foreignIdFor(Order_Item::class)->constrained();
             
             $table->id();
             $table->text('content');
