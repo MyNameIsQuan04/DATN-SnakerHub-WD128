@@ -74,8 +74,8 @@ const UserOrderHistory = () => {
           order.id === idOrder ? { ...order, status: "Đã hủy" } : order
         );
         setOrders(updatedOrders);
-        localStorage.setItem("orders", JSON.stringify(updatedOrders)); 
-        localStorage.setItem("lastUpdate", `Đơn hàng ID ${idOrder} đã hủy`); 
+        localStorage.setItem("orders", JSON.stringify(updatedOrders)); // Cập nhật localStorage
+        localStorage.setItem("lastUpdate", `Đơn hàng ID ${idOrder} đã hủy`); // Thông báo cập nhật
       } catch (error) {
         console.error("Lỗi khi hủy đơn hàng:", error);
       }
@@ -89,7 +89,7 @@ const UserOrderHistory = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-          },
+},
         }
       );
 
@@ -123,9 +123,15 @@ const UserOrderHistory = () => {
       console.error("Lỗi khi gửi khiếu nại đơn hàng đơn hàng:", error);
     }
   };
+
+  const filteredOrders =
+    selectedStatus === "all"
+      ? orders
+      : orders.filter((order) => order.status === selectedStatus);
+
   return (
-    <div className="min-h-screen bg-white font-inter">
-      <div className="max-w-7xl mx-auto bg-white rounded-xl">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto p-6 bg-white rounded-xl">
         {/* Tabs trạng thái */}
         <div className="flex justify-center gap-[5px] mb-8">
           {[
@@ -138,25 +144,17 @@ const UserOrderHistory = () => {
             "Đã hủy",
             "Trả hàng",
           ].map((status) => (
-            <div
+            <button
               key={status}
-              className={`relative px-2 py-3 transition-all duration-300 ease-in-out ${
+              onClick={() => setSelectedStatus(status)}
+              className={`px-6 py-3 text-lg font-semibold transition-all duration-300 transform rounded-[20px] border-2 ${
                 selectedStatus === status
-                  ? "border-b-2 border-orange-600 mt-6" 
-                  : "hover:border-b-2 hover:border-orange-400 mt-6" 
+                  ? "bg-orange-500 text-white border-orange-500 scale-105"
+                  : "bg-white text-gray-800 border-gray-300 hover:bg-orange-400 hover:text-white"
               }`}
             >
-              <button
-                onClick={() => setSelectedStatus(status)}
-                className={`w-full px-6 py-4 text-base font-medium transition-all duration-300 ease-in-out transform rounded-md ${
-                  selectedStatus === status
-                    ? "bg-orange-600 text-white scale-105" 
-                    : "bg-gray-200 text-gray-800 hover:bg-orange-500 hover:text-white" 
-                }`}
-              >
-                {status === "all" ? "Tất cả" : status}
-              </button>
-            </div>
+              {status === "all" ? "Tất cả" : status}
+            </button>
           ))}
         </div>
 
@@ -175,8 +173,7 @@ const UserOrderHistory = () => {
             </button>
           </div>
         )}
-
-        {/* Hiển thị lỗi khi không thể tải đơn hàng */}
+{/* Hiển thị lỗi khi không thể tải đơn hàng */}
         {error && <p className="text-center text-xl text-red-500">{error}</p>}
 
         {/* Hiển thị các đơn hàng đã lọc */}
@@ -190,58 +187,32 @@ const UserOrderHistory = () => {
               key={order.id}
               className="bg-white shadow-md rounded-lg p-6 mb-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300"
             >
+              {/* Order Header: Date, Price, and Status */}
               <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-6">
-                  {order.order_items.slice(0, 1).map((item) => (
-                    <div key={item.id} className="flex items-center gap-4">
-                      <img
-                        src={
-                          item.product_variant?.image ||
-                          "https://via.placeholder.com/150"
-                        }
-                        alt="Product"
-                        className="w-24 h-24 object-cover rounded-lg shadow-md"
-                      />
-                      <div className="flex flex-col">
-                        <p className="text-lg font-semibold text-gray-700">
-                          {item.product_variant?.product.name}
-                        </p>
-                        <div className="flex ">
-                          <p className="text-lg text-gray-700">Loại hàng: </p>
-                          <p className="text-lg text-gray-700">
-                            {item.product_variant?.color.name || "Không có"}
-                          </p>
-                          <p className="text-lg text-gray-700">
-                            {", "}
-                            {item.product_variant?.size.name || "Không có"}
-                          </p>
-                        </div>
-                        <p className="text-lg text-gray-700">
-                          x{item.quantity}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="text-right">
-                  {/* Order Status */}
-                  <p
-                    className={`text-lg font-semibold px-2 py-1 inline-block ${
-                      order.status === "Hoàn thành"
-                        ? "text-green-600"
-                        : order.status === "Đã hủy"
-                        ? "text-red-600"
-                        : "text-yellow-500"
-                    }`}
-                  >
-                    {order.status}
+                <div>
+                  <p className="text-lg font-semibold text-gray-800">
+                    Ngày tạo: {new Date(order.created_at).toLocaleDateString()}
                   </p>
-                  {/* Total Price */}
-                  <p className="text-lg font-medium text-red-600">
-                    Thành tiền:{" "}
-                    <span className="font-medium">
-                      {formatCurrency(order.total_price)} vnđ
+                  <p className="text-lg font-semibold text-red-600">
+                    Tổng tiền:{" "}
+                    <span className="font-bold">
+                      {formatCurrency(order.total_price)} đ
+                    </span>
+                  </p>
+                </div>
+                <div className="flex items-center">
+                  <p className="text-lg font-semibold text-gray-800">
+                    Trạng thái:
+                    <span
+                      className={`font-bold ${
+                        order.status === "hoàn thành"
+                          ? "text-green-600"
+                          : order.status === "đã hủy"
+                          ? "text-red-600"
+                          : "text-yellow-500"
+                      }`}
+                    >
+                      {order.status}
                     </span>
                   </p>
                   {/* Conditional Cancel Button */}
@@ -263,7 +234,7 @@ const UserOrderHistory = () => {
                       </button>
                       <button
                         onClick={openModalComplanit}
-                        className="ml-4 px-6 py-2 text-lg font-semibold border border-red-500 text-red-500 rounded-lg transition-all duration-300"
+className="ml-4 px-6 py-2 text-lg font-semibold border border-red-500 text-red-500 rounded-lg transition-all duration-300"
                       >
                         Khiếu nại
                       </button>
@@ -323,8 +294,7 @@ const UserOrderHistory = () => {
                   Số điện thoại: {order.customer.phone_number}
                 </p>
               </div>
-
-              {/* Order Items */}
+{/* Order Items */}
               <h3 className="mt-6 text-xl font-semibold text-gray-800">
                 Chi tiết sản phẩm:
               </h3>
