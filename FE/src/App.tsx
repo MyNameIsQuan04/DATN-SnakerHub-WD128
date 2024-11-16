@@ -45,6 +45,7 @@ import UserChangepass from "./pages/client/User/UserChangepass";
 import UserOrderhistory from "./pages/client/User/UserOrderhistory";
 import UserAnnouncement from "./pages/client/User/UserAnnouncement";
 import Payment from "./pages/client/payment";
+import UserOrderhistorydetail from "./pages/client/User/UserOrderhistorydetail";
 
 function App() {
   return (
@@ -88,6 +89,7 @@ function App() {
               path="/profile/order-history"
               element={<UserOrderhistory />}
             />
+            <Route path="/profile/order-detail/:id" element={<UserOrderhistorydetail/>}/>
             <Route
               path="/profile/announcement"
               element={<UserAnnouncement />}
