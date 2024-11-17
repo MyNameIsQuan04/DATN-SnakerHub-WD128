@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Order } from "../../../interfaces/Order";
+import { Order, OrderItem } from "../../../interfaces/Order";
 import axios from "axios";
 
 const formatCurrency = (amount: number) => {
@@ -19,19 +19,27 @@ const UserOrderHistory = () => {
   const [selectedReason, setSelectedReason] = useState("");
   const [isModalRatingOpen, setIsModalRatingOpen] = useState(false);
   const [rating, setRating] = useState(0);
-  const [comment, setCommet] = useState("");
+  const [comment, setComment] = useState("");
+  const [selectedItem, setSelectedItem] = useState<OrderItem | null>(null);
+
   const handleStarClick = (star: any) => {
     setRating(star);
+  };
+  const handleCommentChange = (e: any) => {
+    setComment(e.target.value); // Cập nhật nội dung bình luận
   };
   const openModalComplanit = () => {
     setIsModalOpen(true);
   };
-  const openModalRating = () => {
+  const openModalRating = (item: OrderItem) => {
+    setSelectedItem(item);
+    console.log(item);
     setIsModalRatingOpen(true);
   };
   const handleCloseModalRating = () => {
     setIsModalRatingOpen(false); // Đóng modal
-    setSelectedReason("");
+    setRating(0);
+    setComment("");
   };
   const handleCloseModal = () => {
     setIsModalOpen(false); // Đóng modal
@@ -124,14 +132,45 @@ const UserOrderHistory = () => {
           },
         }
       );
-
+      setIsModalOpen(false);
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order.id === idOrder ? { ...order, status: "Hoàn thành" } : order
+          order.id === idOrder ? { ...order, status: "Trả hàng" } : order
         )
       );
     } catch (error) {
       console.error("Lỗi khi gửi khiếu nại đơn hàng đơn hàng:", error);
+    }
+  };
+  const handleSubmitRating = async (
+    orderItemId: number,
+    userId: number,
+    productId: number,
+    orderId: number
+  ) => {
+    const reviewData = {
+      order__item_id: orderItemId,
+      user_id: userId,
+      product_id: productId,
+      star: rating,
+      content: comment,
+    };
+    console.log(reviewData);
+    try {
+      const response = await axios.patch(
+        `http://localhost:8000/api/client/orders/${orderId}`,
+        reviewData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      handleCloseModalRating();
+      console.log("Đánh giá đã được gửi:", response.data);
+    } catch (error) {
+      console.error("Lỗi khi gửi đánh giá:", error);
     }
   };
 
@@ -359,11 +398,11 @@ const UserOrderHistory = () => {
                       <div className="mt-[60px]">
                         <button
                           className="ml-4 px-6 py-2 text-sm font-semibold border border-red-500 text-red-500 rounded-lg transition-all duration-300"
-                          onClick={openModalRating}
+                          onClick={() => openModalRating(item)}
                         >
                           Đánh giá
                         </button>
-                        {isModalRatingOpen && (
+                        {isModalRatingOpen && selectedItem && (
                           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                               <h2 className="text-xl font-semibold mb-4">
@@ -372,7 +411,7 @@ const UserOrderHistory = () => {
                               <div className="flex gap-[10px]">
                                 <img
                                   src={
-                                    item.product_variant?.image ||
+                                    selectedItem.product_variant?.image ||
                                     "https://via.placeholder.com/150" // Hình ảnh mặc định nếu không có
                                   }
                                   alt="Product"
@@ -384,18 +423,18 @@ const UserOrderHistory = () => {
                                       Tên sản phẩm:
                                     </p>
                                     <p className="text-lg text-gray-700 uppercase font-bold">
-                                      {item.product_variant?.product.name ||
-                                        "Không có"}
+                                      {selectedItem.product_variant?.product
+                                        .name || "Không có"}
                                     </p>
                                   </div>
                                   <p className="text-lg text-gray-700">
                                     Màu sắc:{" "}
-                                    {item.product_variant?.color.name ||
+                                    {selectedItem.product_variant?.color.name ||
                                       "Không có"}
                                   </p>
                                   <p className="text-lg text-gray-700">
                                     Kích thước:{" "}
-                                    {item.product_variant?.size.name ||
+                                    {selectedItem.product_variant?.size.name ||
                                       "Không có"}
                                   </p>
                                 </div>
@@ -419,8 +458,9 @@ const UserOrderHistory = () => {
                                   ))}
                                 </div>
                                 <textarea
+                                  value={comment}
+                                  onChange={handleCommentChange}
                                   className="border h-[200px] border-gray-400 w-full mt-[10px] rounded-lg pl-[10px] p-[5px]"
-                                  id=""
                                 ></textarea>
                               </div>
                               <div className="flex justify-end mt-[10px]">
@@ -430,7 +470,17 @@ const UserOrderHistory = () => {
                                 >
                                   Đóng
                                 </button>
-                                <button className="px-4 py-2 bg-red-500 text-white rounded-lg">
+                                <button
+                                  onClick={() =>
+                                    handleSubmitRating(
+                                      item.id,
+                                      order.customer.user_id,
+                                      item.product_variant.product.id as number,
+                                      order.id
+                                    )
+                                  }
+                                  className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                                >
                                   Gửi đánh giá
                                 </button>
                               </div>

@@ -9,6 +9,7 @@ import { Category } from "../../../interfaces/Category";
 import { Color } from "../../../interfaces/Color";
 import { Size } from "../../../interfaces/Size";
 import { getProductById } from "../../../services/product";
+import { Gallery } from "../../../interfaces/Gallery";
 
 const EditProduct = () => {
   const { categories } = useContext(CategoryCT);
@@ -27,7 +28,7 @@ const EditProduct = () => {
     galleries: [
       {
         id: "",
-        image: null,
+        image_path: null,
       },
     ],
     variants: [
@@ -58,7 +59,7 @@ const EditProduct = () => {
             galleries: product.galleries || [
               {
                 id: "",
-                image: null,
+                image_path: null,
               },
             ],
             variants: product.product_variants || [
@@ -99,14 +100,15 @@ const EditProduct = () => {
     formData.append("description", values.description);
     formData.append("short_description", values.short_description);
 
-    if (values.thumbnail) {
+    if (values.thumbnail instanceof File) {
       formData.append("thumbnail", values.thumbnail);
     }
-
-    values.galleries.forEach((gallery: any, index: number) => {
-      formData.append(`galleries[${index}][image]`, gallery.image);
-      formData.append(`galleries[${index}][id]`, gallery.id);
-    });
+    if (values.galleries instanceof File) {
+      values.galleries.forEach((gallery: Gallery, index: number) => {
+        formData.append(`galleries[${index}][image]`, gallery.image_path);
+        formData.append(`galleries[${index}][id]`, gallery.id.toString());
+      });
+    }
 
     values.variants.forEach((variant: any, index: number) => {
       formData.append(`variants[${index}][price]`, variant.price.toString());
@@ -116,8 +118,9 @@ const EditProduct = () => {
       formData.append(`variants[${index}][sku]`, variant.sku);
 
       // Kiểm tra nếu có ảnh variant và thêm vào FormData
-
-      formData.append(`variants[${index}][image]`, variant.image);
+      if (variant.image instanceof File) {
+        formData.append(`variants[${index}][image]`, variant.image);
+      }
     });
     checkFormData(formData);
     // Gửi dữ liệu lên server
@@ -228,11 +231,11 @@ const EditProduct = () => {
                       Thư viện ảnh sản phẩm
                     </label>
 
-                    {/* Kiểm tra nếu gallery.image có URL và hiển thị ảnh */}
-                    {gallery.image && (
-                      <div className="mb-2" key={gallery.id}>
+                    {/* Hiển thị ảnh cũ nếu có */}
+                    {gallery.image_path && (
+                      <div className="mb-2">
                         <img
-                          src={gallery.image} // Sử dụng URL ảnh từ DB
+                          src={gallery.image_path} // Sử dụng URL ảnh từ DB
                           alt={`Gallery Image ${index}`}
                           className="w-32 h-32 object-cover rounded-lg"
                         />
@@ -244,15 +247,33 @@ const EditProduct = () => {
                       type="file"
                       className="w-full px-3 py-2 border rounded-lg"
                       onChange={(e) => {
-                        // Chỉ lấy một file duy nhất thay vì mảng file
                         const file = e.target.files ? e.target.files[0] : null;
                         if (file) {
-                          setFieldValue(`galleries[${index}].image`, file); // Cập nhật file duy nhất
+                          // Thêm ảnh mới vào gallery
+                          const newGalleries = [...values.galleries];
+                          newGalleries[index] = {
+                            ...newGalleries[index],
+                            image_path: file,
+                          };
+                          setFieldValue("galleries", newGalleries); // Cập nhật lại giá trị gallery
                         }
                       }}
                     />
                   </div>
                 ))}
+                <button
+                  type="button"
+                  className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded mt-4"
+                  onClick={() => {
+                    const newGalleries = [...values.galleries];
+                    newGalleries.push(
+                      { id: "", image_path: "" } // Thêm ảnh mới vào mảng gallery
+                    );
+                    setFieldValue("galleries", newGalleries); // Cập nhật lại giá trị galleries
+                  }}
+                >
+                  Thêm ảnh mới
+                </button>
               </div>
 
               {/* Biến thể sản phẩm */}
@@ -351,13 +372,42 @@ const EditProduct = () => {
                             <input
                               type="file"
                               className="w-full px-3 py-2 border rounded-lg"
-                              onChange={(e) =>
-                                setFieldValue(
-                                  `variants[${index}].image`,
-                                  e.target.files?.[0]
-                                )
-                              }
+                              accept="image/*" // Chỉ cho phép chọn file ảnh
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  setFieldValue(
+                                    `variants[${index}].image`,
+                                    file
+                                  ); // Cập nhật giá trị
+                                } else {
+                                  setFieldValue(
+                                    `variants[${index}].image`,
+                                    null
+                                  ); // Xóa giá trị nếu không có ảnh
+                                }
+                              }}
                             />
+                            {values.variants[index]?.image && (
+                              <div className="mt-2">
+                                {typeof values.variants[index].image ===
+                                "string" ? (
+                                  <img
+                                    src={values.variants[index].image}
+                                    alt="Ảnh đã lưu"
+                                    className="w-20 h-20 object-cover rounded"
+                                  />
+                                ) : (
+                                  <img
+                                    src={URL.createObjectURL(
+                                      values.variants[index].image
+                                    )}
+                                    alt="Ảnh mới chọn"
+                                    className="w-20 h-20 object-cover rounded"
+                                  />
+                                )}
+                              </div>
+                            )}
                           </div>
 
                           <button

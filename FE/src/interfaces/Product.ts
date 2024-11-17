@@ -18,7 +18,7 @@ export interface Product {
   updated_at: string;
   deleted_at: string | null;
   galleries: Gallery[];
-  product_variants: product_variants[];
+  variants: product_variants[];
 }
 
 export interface product_variants {
@@ -31,7 +31,7 @@ export interface product_variants {
   sku: string;
   price: number;
   stock: number;
-  image: string;
+  image: File;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ProductCT } from "../../contexts/productContext";
+import { ProductCT } from "../../contexts/ProductContext";
 import { Product } from "../../interfaces/Product";
 import { Link } from "react-router-dom";
 import { CategoryCT } from "../../contexts/CategoryContext";
@@ -8,10 +8,12 @@ import SimpleSlider from "../../components/Slider";
 import Slider from "react-slick";
 
 const Home = () => {
-  const { products } = useContext(ProductCT);
+  const { productsClient } = useContext(ProductCT);
+  console.log(productsClient.products);
+  const productsHome = productsClient.products;
   const { categories } = useContext(CategoryCT);
-  const bestSellers = products.slice(0, 10);
-  const favouriteProducts = products.slice(20, 30);
+  const bestSellers = productsHome?.slice(0, 10) || [];
+  const favouriteProducts = productsHome?.slice(20, 30) || [];
   const PrevArrow = (props: any) => {
     const { className, onClick } = props;
     return (
