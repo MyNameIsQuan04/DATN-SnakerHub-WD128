@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers\api;
 
 use Carbon\Carbon;
 use App\Models\Voucher;

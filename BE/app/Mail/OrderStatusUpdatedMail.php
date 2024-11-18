@@ -28,7 +28,7 @@ class OrderStatusUpdatedMail extends Mailable
         {
             $htmlContent = "
                 <h1>Xin chào, {$this->order->customer->user->name}</h1>
-                <p>Trạng thái đơn hàng #{$this->order->id} của bạn đã được cập nhật thành \"{$this->newStatus}\".</p>
+                <p>Trạng thái đơn hàng {$this->order->order_code} của bạn đã được cập nhật thành \"{$this->newStatus}\".</p>
             ";
     
             return $this->from(env('MAIL_FROM_ADDRESS'))

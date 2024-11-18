@@ -132,6 +132,7 @@ const UserOrderHistory = () => {
           },
         }
       );
+
       setIsModalOpen(false);
       setOrders((prevOrders) =>
         prevOrders.map((order) =>

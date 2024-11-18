@@ -8,7 +8,7 @@ use App\Http\Controllers\api\ProductController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\DashboardController;
-use App\Http\Controllers\Client\VoucherController;
+use App\Http\Controllers\api\VoucherController;
 use App\Http\Controllers\api\SizeApiController;
 use App\Http\Controllers\api\UserApiController;
 use App\Http\Controllers\api\ColorApiController;

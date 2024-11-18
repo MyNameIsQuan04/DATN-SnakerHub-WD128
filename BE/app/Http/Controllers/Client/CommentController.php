@@ -12,6 +12,7 @@ class CommentController extends Controller
     public function store(Request $request)
     {
         $dataRate = $request->validate([
+            'order__item_id' => 'required|exists:order__items,id',
             'user_id' => 'required|exists:users,id',
             'product_id' => 'required|exists:products,id',
             'star' => 'required|integer|min:1|max:5',
