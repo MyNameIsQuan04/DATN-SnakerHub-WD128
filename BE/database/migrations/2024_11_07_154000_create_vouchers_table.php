@@ -19,6 +19,7 @@ return new class extends Migration
         $table->date('expiration_date')->nullable(); // ngày hết hạn
         $table->integer('usage_limit')->nullable(); // giới hạn số lần sử dụng (có thể null)
         $table->timestamps();
+        $table->softDeletes();
         });
     }
 

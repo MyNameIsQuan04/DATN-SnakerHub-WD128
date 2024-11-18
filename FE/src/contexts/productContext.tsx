@@ -1,10 +1,12 @@
 import { createContext, useEffect, useState } from "react";
 import { Product } from "../interfaces/Product";
 import { useNavigate } from "react-router-dom";
-import {  toast } from "react-toastify";
+
+import { toast } from "react-toastify";
 import {
   addProduct,
   getProducts,
+  getProductsClients,
   removeProduct,
   updateProduct,
 } from "../services/product";
@@ -15,6 +17,7 @@ type Props = {
 export const ProductCT = createContext({} as any);
 const ProductContext = ({ children }: Props) => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [productsClient, setProductsClient] = useState<Product[]>([]);
   const router = useNavigate();
   useEffect(() => {
     (async () => {
@@ -23,12 +26,19 @@ const ProductContext = ({ children }: Props) => {
     })();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      const data = await getProductsClients();
+      setProductsClient(data);
+    })();
+  }, []);
   const onRemoveProduct = async (id: number | string) => {
     const confirm = window.confirm("Xoa ?");
     if (confirm) {
       try {
         await removeProduct(id);
-        toast.success("Xóa sản phẩm thành công ")
+
+        toast.success("Xóa sản phẩm thành công ");
         const newProductsAfterDelete = products.filter(
           (product) => product.id !== id
         );
@@ -68,7 +78,13 @@ const ProductContext = ({ children }: Props) => {
   return (
     <div>
       <ProductCT.Provider
-        value={{ onAddProduct, onRemoveProduct, onUpdateProduct, products }}
+        value={{
+          productsClient,
+          onAddProduct,
+          onRemoveProduct,
+          onUpdateProduct,
+          products,
+        }}
       >
         {children}
       </ProductCT.Provider>

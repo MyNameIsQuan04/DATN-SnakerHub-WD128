@@ -17,7 +17,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::all();
+        $orders = Order::orderByDesc('id')->get();
         $orders->load('customer', 'orderItems.productVariant.product');
         return $orders;
     }
@@ -50,6 +50,7 @@ class OrderController extends Controller
                     'Đã xác nhận' => ['Đang vận chuyển'],
                     'Đang vận chuyển' => ['Đã giao hàng'],
                     'Đã giao hàng' => ['Hoàn thành','Trả hàng'],
+                    'Trả hàng' => ['Đã hủy'],
                     'Hoàn thành' => [],
                     'Đã hủy' => [],
                 ];

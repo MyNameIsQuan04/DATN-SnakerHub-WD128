@@ -31,4 +31,13 @@ class Handler extends ExceptionHandler
     protected function shouldReturnJson($request, Throwable $e){
         return true;
     }
+
+    public function render($request, Throwable $exception)
+{
+    if ($exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+        return response()->json(['message' => 'No products found'], 404);
+    }
+
+    return parent::render($request, $exception);
+}
 }

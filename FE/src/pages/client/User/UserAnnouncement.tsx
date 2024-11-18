@@ -14,11 +14,14 @@ const UserAnnouncement = () => {
     const fetchOrders = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("http://localhost:8000/api/client/orders", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          "http://localhost:8000/api/client/orders",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setOrders(response.data);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -52,18 +55,18 @@ const UserAnnouncement = () => {
 
       {loading ? (
         <div className="text-center text-xl text-blue-500">
-        <button
-          type="button"
-          className="inline-flex items-center gap-3 rounded-lg bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 px-8 py-4 text-base font-semibold text-white shadow-xl transition-transform duration-300 ease-in-out hover:scale-105 hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 focus:outline-none focus:ring-4 focus:ring-orange-300 focus:ring-opacity-50 disabled:opacity-70"
-          disabled={loading}
-        >
-          <div
-            className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-white border-r-transparent"
-            role="status"
-          />
-          <span>Loading...</span>
-        </button>
-      </div>
+          <button
+            type="button"
+            className="inline-flex items-center gap-3 rounded-lg bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 px-8 py-4 text-base font-semibold text-white shadow-xl transition-transform duration-300 ease-in-out hover:scale-105 hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 focus:outline-none focus:ring-4 focus:ring-orange-300 focus:ring-opacity-50 disabled:opacity-70"
+            disabled={loading}
+          >
+            <div
+              className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-white border-r-transparent"
+              role="status"
+            />
+            <span>Loading...</span>
+          </button>
+        </div>
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
@@ -74,21 +77,30 @@ const UserAnnouncement = () => {
             >
               <div className="flex items-center space-x-4">
                 <img
-                  src={order.order_items[0]?.product_variant?.image || "https://via.placeholder.com/100"}
+                  src={
+                    order.order_items[0]?.product_variant?.image ||
+                    "https://via.placeholder.com/100"
+                  }
                   alt="Order Thumbnail"
                   className="w-16 h-16 object-cover rounded-lg"
                 />
                 <div>
-                  <p className="text-lg font-semibold text-gray-800">Đơn hàng ID: {order.id}</p>
+                  <p className="text-lg font-semibold text-gray-800">
+                    Đơn hàng : {order.id}
+                  </p>
                   <p className="text-sm text-gray-500">
-                    Tên sản phẩm: {order.order_items[0]?.product_variant?.product?.name || "N/A"}
+                    Tên sản phẩm:{" "}
+                    {order.order_items[0]?.product_variant?.product?.name ||
+                      "N/A"}
                   </p>
                 </div>
               </div>
               <div className="flex flex-col items-end">
                 <p
                   className={`text-lg font-medium ${
-                    order.status === "Đã hủy" ? "text-red-500" : "text-green-500"
+                    order.status === "Đã hủy"
+                      ? "text-red-500"
+                      : "text-green-500"
                   }`}
                 >
                   Trạng thái: {order.status}
