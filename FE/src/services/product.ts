@@ -9,7 +9,15 @@ export const getProducts = async () => {
     console.log(error);
   }
 };
-
+export const getProductsClients = async () => {
+  try {
+    const { data } = await api.get("client/products");
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 export const getProductById = async (id: number | string) => {
   try {
     const { data } = await api.get("products/" + id);
@@ -30,7 +38,7 @@ export const addProduct = async (product: Product) => {
 
 export const updateProduct = async (formData: any, id: number) => {
   try {
-    const { data } = await api.post(`products/${id}`, formData);
+    const { data } = await api.post(`products/${id}?_method=PUT`, formData);
     alert("Thành công");
     return data;
   } catch (error) {

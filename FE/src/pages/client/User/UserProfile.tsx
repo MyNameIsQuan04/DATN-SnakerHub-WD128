@@ -16,7 +16,7 @@ const UserProfile = () => {
 
   useEffect(() => {
     if (user) {
-      console.log('User data updated:', user);
+      console.log("User data updated:", user);
       // window.location.reload()
     }
   }, [user]);
@@ -27,12 +27,12 @@ const UserProfile = () => {
 
   const handleButtonClick = (buttonName: string) => {
     setActiveButton(buttonName);
-    setActiveDropdownItem(null); 
+    setActiveDropdownItem(null);
   };
 
   const handleDropdownItemClick = (itemName: string) => {
     setActiveDropdownItem(itemName);
-    setActiveButton(null); 
+    setActiveButton(null);
   };
 
   return (

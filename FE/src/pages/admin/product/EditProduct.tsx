@@ -9,6 +9,7 @@ import { Category } from "../../../interfaces/Category";
 import { Color } from "../../../interfaces/Color";
 import { Size } from "../../../interfaces/Size";
 import { getProductById } from "../../../services/product";
+import { Gallery } from "../../../interfaces/Gallery";
 
 const EditProduct = () => {
   const { categories } = useContext(CategoryCT);
@@ -23,21 +24,22 @@ const EditProduct = () => {
     category_id: 0,
     description: "",
     short_description: "",
-    thumbnail: null,
+    thumbnail: "",
     galleries: [
       {
         id: "",
-        image: null,
+        image_path: "",
       },
     ],
     variants: [
       {
+        id: 0,
         price: 0,
         size_id: "",
         color_id: "",
         stock: 0,
         sku: "",
-        image: null,
+        image: "",
       },
     ],
   });
@@ -58,11 +60,12 @@ const EditProduct = () => {
             galleries: product.galleries || [
               {
                 id: "",
-                image: null,
+                image_path: null,
               },
             ],
             variants: product.product_variants || [
               {
+                id: 0,
                 price: 0,
                 size_id: "",
                 color_id: "",
@@ -90,7 +93,9 @@ const EditProduct = () => {
       }
     }
   };
+
   const onSubmit = (values: any) => {
+    console.log(values);
     const formData = new FormData();
 
     formData.append("name", values.name);
@@ -99,27 +104,36 @@ const EditProduct = () => {
     formData.append("description", values.description);
     formData.append("short_description", values.short_description);
 
-    if (values.thumbnail) {
+    if (values.thumbnail instanceof File) {
       formData.append("thumbnail", values.thumbnail);
     }
 
     values.galleries.forEach((gallery: any, index: number) => {
-      formData.append(`galleries[${index}][image]`, gallery.image);
-      formData.append(`galleries[${index}][id]`, gallery.id);
+      if (gallery.image_path instanceof File) {
+        formData.append(`galleries[${index}][id]`, gallery.id.toString());
+        formData.append(`galleries[${index}][image]`, gallery.image_path);
+      }
     });
 
     values.variants.forEach((variant: any, index: number) => {
+      if (variant.id) {
+        formData.append(`variants[${index}][id]`, variant.id);
+      }
+      console.log(variant.id);
       formData.append(`variants[${index}][price]`, variant.price.toString());
       formData.append(`variants[${index}][size_id]`, variant.size_id);
       formData.append(`variants[${index}][color_id]`, variant.color_id);
       formData.append(`variants[${index}][stock]`, variant.stock.toString());
       formData.append(`variants[${index}][sku]`, variant.sku);
 
-      // Kiểm tra nếu có ảnh variant và thêm vào FormData
-
-      formData.append(`variants[${index}][image]`, variant.image);
+      if (variant.image instanceof File) {
+        formData.append(`variants[${index}][image]`, variant.image);
+      }
     });
+
+    // Kiểm tra FormData trước khi gửi
     checkFormData(formData);
+
     // Gửi dữ liệu lên server
     onUpdateProduct(formData, id);
   };
@@ -228,11 +242,11 @@ const EditProduct = () => {
                       Thư viện ảnh sản phẩm
                     </label>
 
-                    {/* Kiểm tra nếu gallery.image có URL và hiển thị ảnh */}
-                    {gallery.image && (
-                      <div className="mb-2" key={gallery.id}>
+                    {/* Hiển thị ảnh cũ nếu có */}
+                    {gallery.image_path && (
+                      <div className="mb-2">
                         <img
-                          src={gallery.image} // Sử dụng URL ảnh từ DB
+                          src={gallery.image_path} // Sử dụng URL ảnh từ DB
                           alt={`Gallery Image ${index}`}
                           className="w-32 h-32 object-cover rounded-lg"
                         />
@@ -244,15 +258,32 @@ const EditProduct = () => {
                       type="file"
                       className="w-full px-3 py-2 border rounded-lg"
                       onChange={(e) => {
-                        // Chỉ lấy một file duy nhất thay vì mảng file
                         const file = e.target.files ? e.target.files[0] : null;
                         if (file) {
-                          setFieldValue(`galleries[${index}].image`, file); // Cập nhật file duy nhất
+                          const newGalleries = [...values.galleries];
+                          newGalleries[index] = {
+                            ...newGalleries[index],
+                            image_path: file, // Ghi đè bằng tệp tin
+                          };
+                          setFieldValue("galleries", newGalleries);
                         }
                       }}
                     />
                   </div>
                 ))}
+                <button
+                  type="button"
+                  className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded mt-4"
+                  onClick={() => {
+                    const newGalleries = [
+                      ...values.galleries,
+                      { id: "", image_path: null }, // Thêm ảnh trống
+                    ];
+                    setFieldValue("galleries", newGalleries);
+                  }}
+                >
+                  Thêm ảnh mới
+                </button>
               </div>
 
               {/* Biến thể sản phẩm */}
@@ -263,7 +294,10 @@ const EditProduct = () => {
                   {({ push, remove }) => (
                     <>
                       {values.variants.map((variant, index) => (
-                        <div key={index} className="mb-4 border p-4 rounded-lg">
+                        <div
+                          key={variant.id}
+                          className="mb-4 border p-4 rounded-lg"
+                        >
                           <h3 className="text-lg font-semibold mb-2">
                             Biến thể {index + 1}
                           </h3>
@@ -351,6 +385,7 @@ const EditProduct = () => {
                             <input
                               type="file"
                               className="w-full px-3 py-2 border rounded-lg"
+                              accept="image/*"
                               onChange={(e) =>
                                 setFieldValue(
                                   `variants[${index}].image`,
@@ -358,6 +393,26 @@ const EditProduct = () => {
                                 )
                               }
                             />
+                            {values.variants[index]?.image && (
+                              <div className="mt-2">
+                                {typeof values.variants[index].image ===
+                                "string" ? (
+                                  <img
+                                    src={values.variants[index].image}
+                                    alt="Ảnh đã lưu"
+                                    className="w-20 h-20 object-cover rounded"
+                                  />
+                                ) : (
+                                  <img
+                                    src={URL.createObjectURL(
+                                      values.variants[index].image
+                                    )}
+                                    alt="Ảnh mới chọn"
+                                    className="w-20 h-20 object-cover rounded"
+                                  />
+                                )}
+                              </div>
+                            )}
                           </div>
 
                           <button
@@ -374,6 +429,7 @@ const EditProduct = () => {
                         className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded"
                         onClick={() =>
                           push({
+                            id: 0,
                             price: 0,
                             size_id: "",
                             color_id: "",
@@ -383,7 +439,7 @@ const EditProduct = () => {
                           })
                         }
                       >
-                        Sửa biến thể
+                        Thêm biến thể
                       </button>
                     </>
                   )}

@@ -180,7 +180,7 @@ class OrderController extends Controller
                     'status' => 'required|in:Trả hàng,Hoàn thành',
                 ]);
                 if ($dataValidate['status'] === 'Trả hàng') {
-                    $note = $request->validate([
+                    $dataNote = $request->validate([
                         'note' => 'required|in:Giao hàng không đúng yêu cầu,Sản phẩm có lỗi từ nhà cung cấp,Lý do khác',
                     ]);
 
@@ -201,8 +201,8 @@ class OrderController extends Controller
                     }
 
                     $order->update([
+                        'note' => $dataNote['note'],
                         'status' => $dataValidate['status'],
-                        'note' => $note,
                     ]);
 
                     $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
