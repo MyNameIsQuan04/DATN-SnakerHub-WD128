@@ -236,7 +236,7 @@ const Checkout = () => {
               />
               <button
                 onClick={handleApplyVoucher}
-                className="ml-4 bg-blue-500 text-white py-2 px-4 rounded-md"
+                className="ml-4 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600"
               >
                 Áp dụng
               </button>
@@ -420,7 +420,7 @@ const Checkout = () => {
             {/* Nút thanh toán */}
             <button
               onClick={handleSubmit(onSubmit)}
-              className="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
+              className="mt-4 w-full bg-gray-500 text-white py-2 rounded-md hover:bg-gray-600"
             >
               Thanh toán
             </button>
