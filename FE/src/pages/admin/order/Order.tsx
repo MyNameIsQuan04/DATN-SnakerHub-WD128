@@ -51,6 +51,7 @@ const AdminOrder = () => {
       "Hoàn thành",
       "Trả hàng",
       "Đã hủy",
+      "Trả hàng",
     ];
 
     const currentIndex = statusFlow.indexOf(currentStatus);
