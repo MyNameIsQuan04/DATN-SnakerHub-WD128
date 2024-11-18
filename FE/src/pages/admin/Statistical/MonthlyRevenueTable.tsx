@@ -28,6 +28,14 @@ const MonthlyRevenueTable: React.FC = () => {
       });
   }, []);
 
+  // Hàm định dạng tiền tệ Việt Nam
+  const formatCurrency = (amount: string) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(Number(amount));
+  };
+
   if (error) {
     return <div className="text-red-500 font-semibold">{error}</div>;
   }
@@ -46,7 +54,7 @@ const MonthlyRevenueTable: React.FC = () => {
           </h3>
           <p className="text-gray-600">
             <strong className="font-semibold">Tổng doanh thu:</strong>{" "}
-            {data.totalRevenue}
+            {formatCurrency(data.totalRevenue)}
           </p>
           <p className="text-gray-600">
             <strong className="font-semibold">Ngày bắt đầu:</strong>{" "}
@@ -61,8 +69,8 @@ const MonthlyRevenueTable: React.FC = () => {
 
       {/* Bảng chi tiết hàng tháng */}
       <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg">
-        <thead>
-          <tr className="bg-gray-200">
+        <thead className="bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 text-white">
+          <tr>
             <th className="border border-gray-300 p-3 text-left text-gray-700 font-semibold">
               Tháng
             </th>
@@ -76,15 +84,20 @@ const MonthlyRevenueTable: React.FC = () => {
         </thead>
         <tbody>
           {data?.monthlyRevenue.map((item, index) => (
-            <tr key={index} className="hover:bg-gray-100">
+            <tr
+              key={index}
+              className={`hover:bg-gray-100 ${
+                index % 2 === 0 ? "bg-gray-50" : "bg-white"
+              }`}
+            >
               <td className="border border-gray-300 p-3 text-gray-700">
                 {item.month}
               </td>
               <td className="border border-gray-300 p-3 text-gray-700">
                 {item.year}
               </td>
-              <td className="border border-gray-300 p-3 text-gray-700">
-                {item.monthly_total}
+              <td className="border border-gray-300 p-3 text-gray-700 font-semibold text-red-600">
+                {formatCurrency(item.monthly_total)}
               </td>
             </tr>
           ))}
