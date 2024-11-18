@@ -105,6 +105,9 @@ const EditProduct = () => {
 
     values.galleries.forEach((gallery: any, index: number) => {
       formData.append(`galleries[${index}][image]`, gallery.image);
+      if (gallery.image) {
+        formData.append(`galleries[${index}][image]`, gallery.image);
+      }
       formData.append(`galleries[${index}][id]`, gallery.id);
     });
 
@@ -116,8 +119,9 @@ const EditProduct = () => {
       formData.append(`variants[${index}][sku]`, variant.sku);
 
       // Kiểm tra nếu có ảnh variant và thêm vào FormData
-
-      formData.append(`variants[${index}][image]`, variant.image);
+      if (variant.image) {
+        formData.append(`variants[${index}][image]`, variant.image);
+      }
     });
     checkFormData(formData);
     // Gửi dữ liệu lên server

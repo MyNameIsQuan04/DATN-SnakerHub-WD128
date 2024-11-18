@@ -54,6 +54,7 @@ class OrderController extends Controller
                 'district' => 'required|string',
                 'town' => 'required|string',
                 'total_price' => 'required|integer',
+                'payment' => 'required|integer',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -71,6 +72,10 @@ class OrderController extends Controller
             $customer = Customer::create($dataCustomer);
 
             $orderCode = $this->generateOrderCode();
+
+            if ($validatedData['payment'] == 2) {
+                $linkQR = 'https://qr.sepay.vn/img?bank=MBBank&acc=0974290440&template=compact&amount='.$validatedData['total_price'].'&des='.$orderCode;
+            }
 
             $order = Order::create([
                 'customer_id' => $customer->id,
