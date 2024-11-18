@@ -16,7 +16,6 @@ import CategoryContext from "./contexts/CategoryContext";
 import AddCategory from "./pages/admin/category/AddCategory";
 import ListCategory from "./pages/admin/category/ListCategory";
 import Home from "./pages/client/home";
-import ProductContext from "./contexts/productContext";
 import ColorContext from "./contexts/ColorContext";
 import SizeContext from "./contexts/SizeContext";
 import EditProduct from "./pages/admin/product/EditProduct";
@@ -27,7 +26,6 @@ import UpdateColor from "./pages/admin/color/UpdateColor";
 import AddSize from "./pages/admin/size/AddSize";
 import UpdateSize from "./pages/admin/size/UpdateSize";
 import Products from "./pages/client/products";
-import CartContext from "./contexts/CartContext";
 import OrderContext from "./contexts/OrderContext";
 import ThankYou from "./pages/client/Thankyou";
 import Contact from "./pages/client/contact";
@@ -44,6 +42,8 @@ import UserChangepass from "./pages/client/User/UserChangepass";
 import UserOrderhistory from "./pages/client/User/UserOrderhistory";
 import UserAnnouncement from "./pages/client/User/UserAnnouncement";
 import Payment from "./pages/client/payment";
+import UserOrderhistorydetail from "./pages/client/User/UserOrderhistorydetail";
+import ProductContext from "./contexts/ProductContext";
 
 function App() {
   return (
@@ -86,6 +86,10 @@ function App() {
             <Route
               path="/profile/order-history"
               element={<UserOrderhistory />}
+            />
+            <Route
+              path="/profile/order-detail/:id"
+              element={<UserOrderhistorydetail />}
             />
             <Route
               path="/profile/announcement"
