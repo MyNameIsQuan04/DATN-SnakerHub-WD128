@@ -79,6 +79,7 @@ const ProductContext = ({ children }: Props) => {
     <div>
       <ProductCT.Provider
         value={{
+          setProducts,
           productsClient,
           onAddProduct,
           onRemoveProduct,
