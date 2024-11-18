@@ -14,7 +14,7 @@ const Cart = () => {
   const token = localStorage.getItem("access_token");
   if (!token) {
     toast.error("Hãy đăng nhập để sử dụng chức năng!");
-    return; // Trả về ngay nếu không có token
+    return;
   }
   const handleSelectItem = (id: number) => {
     setSelectedItems((prev) =>
@@ -182,8 +182,9 @@ const Cart = () => {
       </div>
       <div className="border border-[#c9c9c9] px-[10px] mt-[20px] *:text-[14px] ">
         {cartItems.map((item, index) => {
-          const productVariant = item.product_variant;
-          const product = productVariant.product;
+          const productVariant = item?.product_variant;
+          const product = productVariant?.product;
+
           return (
             <div key={item.id} className="">
               <div className="flex my-[20px]">

@@ -24,21 +24,22 @@ const EditProduct = () => {
     category_id: 0,
     description: "",
     short_description: "",
-    thumbnail: null,
+    thumbnail: "",
     galleries: [
       {
         id: "",
-        image_path: null,
+        image_path: "",
       },
     ],
     variants: [
       {
+        id: 0,
         price: 0,
         size_id: "",
         color_id: "",
         stock: 0,
         sku: "",
-        image: null,
+        image: "",
       },
     ],
   });
@@ -64,6 +65,7 @@ const EditProduct = () => {
             ],
             variants: product.product_variants || [
               {
+                id: 0,
                 price: 0,
                 size_id: "",
                 color_id: "",
@@ -91,7 +93,9 @@ const EditProduct = () => {
       }
     }
   };
+
   const onSubmit = (values: any) => {
+    console.log(values);
     const formData = new FormData();
 
     formData.append("name", values.name);
@@ -103,26 +107,33 @@ const EditProduct = () => {
     if (values.thumbnail instanceof File) {
       formData.append("thumbnail", values.thumbnail);
     }
-    if (values.galleries instanceof File) {
-      values.galleries.forEach((gallery: Gallery, index: number) => {
-        formData.append(`galleries[${index}][image]`, gallery.image_path);
+
+    values.galleries.forEach((gallery: any, index: number) => {
+      if (gallery.image_path instanceof File) {
         formData.append(`galleries[${index}][id]`, gallery.id.toString());
-      });
-    }
+        formData.append(`galleries[${index}][image]`, gallery.image_path);
+      }
+    });
 
     values.variants.forEach((variant: any, index: number) => {
+      if (variant.id) {
+        formData.append(`variants[${index}][id]`, variant.id);
+      }
+      console.log(variant.id);
       formData.append(`variants[${index}][price]`, variant.price.toString());
       formData.append(`variants[${index}][size_id]`, variant.size_id);
       formData.append(`variants[${index}][color_id]`, variant.color_id);
       formData.append(`variants[${index}][stock]`, variant.stock.toString());
       formData.append(`variants[${index}][sku]`, variant.sku);
 
-      // Kiểm tra nếu có ảnh variant và thêm vào FormData
       if (variant.image instanceof File) {
         formData.append(`variants[${index}][image]`, variant.image);
       }
     });
+
+    // Kiểm tra FormData trước khi gửi
     checkFormData(formData);
+
     // Gửi dữ liệu lên server
     onUpdateProduct(formData, id);
   };
@@ -249,13 +260,12 @@ const EditProduct = () => {
                       onChange={(e) => {
                         const file = e.target.files ? e.target.files[0] : null;
                         if (file) {
-                          // Thêm ảnh mới vào gallery
                           const newGalleries = [...values.galleries];
                           newGalleries[index] = {
                             ...newGalleries[index],
-                            image_path: file,
+                            image_path: file, // Ghi đè bằng tệp tin
                           };
-                          setFieldValue("galleries", newGalleries); // Cập nhật lại giá trị gallery
+                          setFieldValue("galleries", newGalleries);
                         }
                       }}
                     />
@@ -265,11 +275,11 @@ const EditProduct = () => {
                   type="button"
                   className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded mt-4"
                   onClick={() => {
-                    const newGalleries = [...values.galleries];
-                    newGalleries.push(
-                      { id: "", image_path: "" } // Thêm ảnh mới vào mảng gallery
-                    );
-                    setFieldValue("galleries", newGalleries); // Cập nhật lại giá trị galleries
+                    const newGalleries = [
+                      ...values.galleries,
+                      { id: "", image_path: null }, // Thêm ảnh trống
+                    ];
+                    setFieldValue("galleries", newGalleries);
                   }}
                 >
                   Thêm ảnh mới
@@ -284,7 +294,10 @@ const EditProduct = () => {
                   {({ push, remove }) => (
                     <>
                       {values.variants.map((variant, index) => (
-                        <div key={index} className="mb-4 border p-4 rounded-lg">
+                        <div
+                          key={variant.id}
+                          className="mb-4 border p-4 rounded-lg"
+                        >
                           <h3 className="text-lg font-semibold mb-2">
                             Biến thể {index + 1}
                           </h3>
@@ -372,21 +385,13 @@ const EditProduct = () => {
                             <input
                               type="file"
                               className="w-full px-3 py-2 border rounded-lg"
-                              accept="image/*" // Chỉ cho phép chọn file ảnh
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  setFieldValue(
-                                    `variants[${index}].image`,
-                                    file
-                                  ); // Cập nhật giá trị
-                                } else {
-                                  setFieldValue(
-                                    `variants[${index}].image`,
-                                    null
-                                  ); // Xóa giá trị nếu không có ảnh
-                                }
-                              }}
+                              accept="image/*"
+                              onChange={(e) =>
+                                setFieldValue(
+                                  `variants[${index}].image`,
+                                  e.target.files?.[0]
+                                )
+                              }
                             />
                             {values.variants[index]?.image && (
                               <div className="mt-2">
@@ -424,6 +429,7 @@ const EditProduct = () => {
                         className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded"
                         onClick={() =>
                           push({
+                            id: 0,
                             price: 0,
                             size_id: "",
                             color_id: "",

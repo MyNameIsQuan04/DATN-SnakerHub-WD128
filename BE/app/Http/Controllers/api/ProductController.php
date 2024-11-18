@@ -96,7 +96,7 @@ class ProductController extends Controller
         $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
         return $product;
     }
-    
+
     public function update(UpdateProductRequest $request, Product $product)
     {
         DB::beginTransaction();
@@ -143,18 +143,25 @@ class ProductController extends Controller
                     'stock' => $variant['stock'],
                     'sku' => $variant['sku'],
                 ];
-                if (isset($variant['image'])) {
-                    $variantImagePath = $variant['image']->store('images', 'public');
-                    $dataVariant['image'] = Storage::url($variantImagePath);
-                }
+
 
                 if (isset($variant['id'])) {
                     $existingVariant = $product->productVariants()->where('id', $variant['id'])->first();
                     if ($existingVariant) {
+                        if (isset($variant['image'])) {
+                            $variantImagePath = $variant['image']->store('images', 'public');
+                            $dataVariant['image'] = Storage::url($variantImagePath);
+                        } else {
+                            $dataVariant['image'] = $existingVariant['image'];
+                        }
                         $existingVariant->update($dataVariant);
                         $variantIds[] = $existingVariant->id;
                     }
                 } else {
+                    if (isset($variant['image'])) {
+                        $variantImagePath = $variant['image']->store('images', 'public');
+                        $dataVariant['image'] = Storage::url($variantImagePath);
+                    }
                     $newVariant = $product->productVariants()->create($dataVariant);
                     $variantIds[] = $newVariant->id;
                 }
