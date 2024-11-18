@@ -5,11 +5,13 @@ export interface Order {
   id: number;
   total_price: number;
   status: string;
+  note: string
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
   customer: Customer;
   order_items: OrderItem[];
+  order_code : string
 }
 
 export interface Customer {
