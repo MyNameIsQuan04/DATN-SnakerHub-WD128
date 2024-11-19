@@ -1,5 +1,5 @@
-import axios from "axios";
-import React, { useContext, useEffect } from "react";
+
+import { useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useParams } from "react-router-dom";
 import { formDataCategory } from "../../../interfaces/Category";

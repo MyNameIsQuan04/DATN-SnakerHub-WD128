@@ -49,6 +49,7 @@ const AdminOrder = () => {
       "Đang vận chuyển",
       "Đã giao hàng",
       "Hoàn thành",
+      "Trả hàng",
       "Đã hủy",
       "Trả hàng",
     ];
