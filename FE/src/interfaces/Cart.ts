@@ -17,6 +17,7 @@ export type CartItem = {
       id: number;
       name: string;
       thumbnail: string;
+      description: string;
     };
   };
 };

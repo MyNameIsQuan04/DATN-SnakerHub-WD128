@@ -5,6 +5,7 @@ import { CartItem } from "../../interfaces/Cart.ts";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
+import { GrNext } from "react-icons/gr";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const Checkout = () => {
     code: number;
     name: string;
   } | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState<boolean>(true);
   const provinces = useProvinces();
   const districts = useDistricts(selectedProvince?.code);
@@ -32,7 +34,6 @@ const Checkout = () => {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm();
 
@@ -44,14 +45,10 @@ const Checkout = () => {
         },
       });
 
-      console.log(response.data);
-
       if (response.data.success && response.data.cart?.cart__items) {
         const items = response.data.cart.cart__items.filter((item: CartItem) =>
           selectedItems.includes(item.id)
         );
-
-        console.log(items);
 
         setCheckoutItems(items);
         setCartItems(items);
@@ -68,6 +65,7 @@ const Checkout = () => {
   }, [selectedItems, token]);
 
   // Mã giảm giá
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [totalAfterDiscount, setTotalAfterDiscount] = useState<number>(0);
   const [codeDiscount, setCodeDiscount] = useState<string>("");
   const [discount, setDiscount] = useState<number>(0);
@@ -92,9 +90,6 @@ const Checkout = () => {
         }
       );
 
-      // Kiểm tra nội dung phản hồi từ backend
-      console.log("Phản hồi từ server:", response.data);
-
       if (response.data.discount) {
         setDiscount(response.data.discount);
         toast.success(
@@ -103,27 +98,23 @@ const Checkout = () => {
         setTotalAfterDiscount(response.data.total_after_discount);
       } else {
         setDiscount(0);
-        console.error("Lỗi mã giảm giá:", response.data.errors);
         toast.error(
           `Mã giảm giá ${codeDiscount} không hợp lệ hoặc đã hết hạn!`
         );
       }
     } catch (error) {
-      console.error("Lỗi khi áp dụng mã giảm giá:", error);
       toast.error("Không thể áp dụng mã giảm giá!");
     }
   };
-
-  // Hết
 
   const totalPriceItem = (price: number, quantity: number) => price * quantity;
   const grandTotalPrice = checkoutItems.reduce(
     (total, item) => total + item.product_variant.price * item.quantity,
     0
   );
-  // const totalAfterDiscount = (grandTotalPrice * discount) / 100;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (data: any) => {
-    // console.log(cartItems);
     const orderData = {
       ...data,
       province: selectedProvince?.name,
@@ -155,243 +146,288 @@ const Checkout = () => {
         navigate("/thankyou");
       }
     } catch (error) {
-      console.error("Lỗi khi đặt hàng:", error);
-      alert("Có lỗi xảy ra khi đặt hàng.");
+      toast.error("Có lỗi xảy ra khi đặt hàng.");
     }
+  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const formatCurrency = (value: any) => {
+    return value.toLocaleString("vi-VN") + "₫";
   };
 
   return (
     <div className="mt-[100px] px-[150px]">
-      <div className="flex">
-        <p className="text-[14px]">Trang chủ</p>
-        <p className="text-[14px] px-[4px]"> | </p>
-        <p className="text-[14px]">Thanh Toán</p>
-      </div>
-
-      <div className="border border-[#f3f3f3] mt-[30px]">
-        <div className="flex text-[14px] text-center px-[10px] text-[#888888] my-[10px]">
-          <p className="w-[550px]">SẢN PHẨM</p>
-          <p className="w-[178px]">ĐƠN GIÁ</p>
-          <p className="w-[177px]">SỐ LƯỢNG</p>
-          <p className="w-[150px]">SỐ TIỀN</p>
+      <div className="flex items-center space-x-2 mb-4 ">
+          <a
+            href="/"
+            className="text-xl font-medium text-gray-800 hover:text-blue-400 hover:underline"
+          >
+            Trang chủ
+          </a>
+          <GrNext className="text-xl text-gray-600" />
+          <a href="">Thanh toán</a>
         </div>
-      </div>
-      <div className="border border-[#c9c9c9] px-[10px] mt-[20px] text-[14px] ">
-        {checkoutItems.map((item) => {
-          const productVariant = item.product_variant;
-          const product = productVariant.product;
-          return (
-            <div>
-              <div className="flex my-[20px]">
-                <div className="w-[550px]">
-                  <div className="flex justify-center items-center gap-[30px]">
-                    <img
-                      src={product.thumbnail}
-                      alt={product.name}
-                      className="w-[100px] h-[100px]"
-                    />
-                    <p className="text-ellipsis overflow-hidden whitespace-nowrap w-[170px]">
-                      {product.name}
-                    </p>
-                    <p className="text-[#0000008A]">
-                      Màu {productVariant.color.name}, Kích cỡ:{" "}
+      <div className=" px-10 flex gap-10">
+        {/* Phần bên trái: Danh sách sản phẩm */}
+        <div className="w-3/5">
+          <div className="space-y-6">
+            {checkoutItems.map((item) => {
+              const productVariant = item.product_variant;
+              const product = productVariant.product;
+              return (
+                <div
+                  key={item.id}
+                  className="flex items-center border border-gray-300 rounded-md p-4 shadow-sm hover:shadow-lg hover:border-gray-400 transition-all duration-300"
+                >
+                  <img
+                    src={product.thumbnail}
+                    alt={product.name}
+                    className="w-20 h-20 rounded-md"
+                  />
+                  <div className="ml-4 flex-grow">
+                    <p className="font-semibold">{product.name}</p>
+                    <p className="text-gray-600">
+                      Màu: {productVariant.color.name}, Kích cỡ:{" "}
                       {productVariant.size.name}
                     </p>
                   </div>
+                  <p className="w-24 text-center">
+                    {formatCurrency(productVariant.price)}
+                  </p>
+                  <div className="w-16 text-center">{item.quantity}</div>
+                  <p className="w-24 text-center text-red-500">
+                    {formatCurrency(
+                      totalPriceItem(productVariant.price, item.quantity)
+                    )}
+                  </p>
                 </div>
-                <div className="w-[178px]">
-                  <div className="flex justify-center items-center gap-[10px] h-[100px]">
-                    <span className="line-through">
-                      {productVariant.price}đ
-                    </span>
-                    <span className="">{productVariant.price} đ</span>
-                  </div>
-                </div>
-                <div className="w-[177px]">
-                  <div className="flex justify-center items-center h-[100px]">
-                    {item.quantity}
-                  </div>
-                </div>
-                <div className="w-[150px] flex justify-center items-center">
-                  <span className="text-red-500">
-                    {productVariant.price * item.quantity} đ
-                  </span>
-                </div>
-              </div>
-              <hr className="mb-[10px]" />
-            </div>
-          );
-        })}
-      </div>
-      <div className="mt-[20px] text-[14px]">
-        <hr />
-        <div className="flex">
-          <div className="w-1/2"></div>
-          <div className="w-1/2">
-            <div className="flex justify-between my-[10px]">
-              <span>Tổng tiền hàng</span>
-              <span>{grandTotalPrice} đ</span>
-            </div>
-
-            <div className="flex justify-between mt-[5px]">
-              <span>Phí vận chuyển</span>
-              <span>000 đ</span>
-            </div>
-            <div className="my-[10px]">
-              <div className="flex justify-between gap-2">
-                <input
-                  type="text"
-                  value={codeDiscount}
-                  onChange={(e) => setCodeDiscount(e.target.value)}
-                  placeholder="Nhập mã giảm giá"
-                  className="border h-[40px] w-[300px] pl-[10px]"
-                />
-                <button
-                  type="button"
-                  onClick={handleApplyVoucher}
-                  className="bg-blue-500 text-white h-[40px] w-[150px] hover:bg-blue-600"
-                >
-                  Áp dụng
-                </button>
-              </div>
-            </div>
-            {discount > 0 && (
-              <p className="text-green-500 mt-2">
-                Mã giảm giá đã áp dụng: {discount}đ
-              </p>
-            )}
-            <div className="flex justify-between my-[10px]">
-              <span>Mã giảm giá giảm</span>
-              <span>{discount}đ</span>
-            </div>
-            <hr />
-            <div className="flex justify-between mt-[10px]">
-              <span>TỔNG</span>
-              <span className="text-red-500">
-                {grandTotalPrice - discount} đ
-              </span>
-            </div>
+              );
+            })}
           </div>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-[10px]">
-          <p className="font-semibold text-red-500">THÔNG TIN VẬN CHUYỂN</p>
-          <div className="mt-[20px]">
-            <input
-              type="text"
-              {...register("name", { required: true })}
-              placeholder="Họ tên"
-              className="w-[400px] h-[40px] border border-[#c9c9c9] pl-[20px]"
-            />
-            {errors.name && (
-              <span className="text-red-500">Trường này là bắt buộc</span>
-            )}
-            <input
-              type="text"
-              {...register("phone", { required: true })}
-              placeholder="Số điện thoại"
-              className="w-[400px] h-[40px] border border-[#c9c9c9] pl-[20px] ml-[20px]"
-            />
-            {errors.phone && (
-              <span className="text-red-500">Trường này là bắt buộc</span>
-            )}
-            <textarea
-              {...register("address", { required: true })}
-              placeholder="Địa chỉ nhận hàng"
-              className="h-[100px] pl-[20px] pt-[20px] w-full border border-[#c9c9c9] mt-[20px]"
-            ></textarea>
-            {errors.address && (
-              <span className="text-red-500">Trường này là bắt buộc</span>
-            )}
-          </div>
-          <div className="mt-[20px]">
-            <div className="flex items-center justify-between">
-              <div>
-                <label htmlFor="province" className="font-semibold">
-                  Tỉnh/Thành phố:
-                </label>
-                <select
-                  id="province"
-                  value={selectedProvince?.code || ""}
-                  onChange={(e) => {
-                    const province = provinces.find(
-                      (p) => p.code === Number(e.target.value)
-                    );
-                    if (province) setSelectedProvince(province);
-                  }}
-                  className="border h-[40px] ml-[5px]"
-                >
-                  <option value="">Chọn tỉnh/thành phố</option>
-                  {provinces.map((province) => (
-                    <option key={province.code} value={province.code}>
-                      {province.name}
-                    </option>
-                  ))}
-                </select>
 
-                {selectedProvince && (
-                  <>
+        {/* Phần bên phải: Tổng kết đơn hàng và thông tin địa chỉ */}
+        <div className="w-2/5 bg-gray-100 p-6 rounded-lg">
+          <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              <span className="text-sm font-medium">Đơn giá:</span>
+              <span className="text-lg font-semibold text-red-500">
+                {formatCurrency(grandTotalPrice)}
+              </span>
+            </div>
+            {discount > 0 ? (
+              <div className="flex justify-between">
+                <p className="text-green-500">Mã giảm giá đã áp dụng:</p>
+                <p className="text-green-500">{discount}đ</p>
+              </div>
+            ) : (
+              <div className="flex justify-between">
+                <p className="text-red-500">Chưa áp dụng mã giảm giá</p>
+              </div>
+            )}
+
+            <div className="flex justify-between items-center">
+              <input
+                type="text"
+                placeholder="Nhập mã giảm giá"
+                value={codeDiscount}
+                onChange={(e) => setCodeDiscount(e.target.value)}
+                className="flex-grow p-2 border rounded-md"
+              />
+              <button
+                onClick={handleApplyVoucher}
+                className="ml-4 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600"
+              >
+                Áp dụng
+              </button>
+            </div>
+
+            <hr className="my-4" />
+
+            {/* Thông tin địa chỉ */}
+            <div className="space-y-4 mt-4">
+              <h3 className="font-semibold text-lg">Thông tin nhận hàng</h3>
+              <div className="mt-[20px] flex gap-4">
+                {/* Họ tên */}
+                <div className="w-full sm:w-1/2">
+                  <input
+                    type="text"
+                    {...register("name", { required: true })}
+                    placeholder="Họ tên"
+                    className="w-full h-[40px] border border-[#c9c9c9] pl-[20px] rounded-md"
+                  />
+                  {errors.name && (
+                    <span className="text-red-500 text-sm">
+                      Trường này là bắt buộc
+                    </span>
+                  )}
+                </div>
+
+                {/* Số điện thoại */}
+                <div className="w-full sm:w-1/2">
+                  <input
+                    type="text"
+                    {...register("phone", { required: true })}
+                    placeholder="Số điện thoại"
+                    className="w-full h-[40px] border border-[#c9c9c9] pl-[20px] rounded-md"
+                  />
+                  {errors.phone && (
+                    <span className="text-red-500 text-sm">
+                      Trường này là bắt buộc
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="space-y-6">
+                {/* Tỉnh/Thành phố */}
+                <div className="flex gap-4">
+                  <div className="w-full sm:w-1/3">
+                    <label
+                      htmlFor="province"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Tỉnh/Thành phố
+                    </label>
+                    <select
+                      id="province"
+                      value={selectedProvince?.code || ""}
+                      onChange={(e) => {
+                        const selectedProvince = provinces.find(
+                          (province) => province.code === +e.target.value
+                        );
+                        setSelectedProvince(selectedProvince || null);
+                      }}
+                      className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Tỉnh/thành phố</option>
+                      {provinces.map((province) => (
+                        <option key={province.code} value={province.code}>
+                          {province.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Huyện/Quận */}
+                  <div className="w-full sm:w-1/3">
                     <label
                       htmlFor="district"
-                      className="ml-[10px] font-semibold"
+                      className="block text-sm font-medium text-gray-700"
                     >
-                      Quận/Huyện:
+                      Huyện/Quận
                     </label>
                     <select
                       id="district"
                       value={selectedDistrict?.code || ""}
                       onChange={(e) => {
-                        const district = districts.find(
-                          (d) => d.code === Number(e.target.value)
+                        const selectedDistrict = districts.find(
+                          (district) => district.code === +e.target.value
                         );
-                        if (district) setSelectedDistrict(district);
+                        setSelectedDistrict(selectedDistrict || null);
                       }}
-                      className="border h-[40px] ml-[5px]"
+                      className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      <option value="">Chọn quận/huyện</option>
+                      <option value="">Huyện/quận</option>
                       {districts.map((district) => (
                         <option key={district.code} value={district.code}>
                           {district.name}
                         </option>
                       ))}
                     </select>
-                  </>
-                )}
+                  </div>
 
-                {selectedDistrict && (
-                  <>
-                    <label htmlFor="ward" className="ml-[10px] font-semibold">
-                      Xã/Phường:
+                  {/* Xã/Phường */}
+                  <div className="w-full sm:w-1/3">
+                    <label
+                      htmlFor="ward"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Xã/Phường
                     </label>
                     <select
                       id="ward"
                       value={selectedWard?.code || ""}
                       onChange={(e) => {
-                        const ward = wards.find(
-                          (w) => w.code === Number(e.target.value)
+                        const selectedWard = wards.find(
+                          (ward) => ward.code === +e.target.value
                         );
-                        if (ward) setSelectedWard(ward);
+                        setSelectedWard(selectedWard || null);
                       }}
-                      className="border h-[40px] ml-[5px]"
+                      className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      <option value="">Chọn xã/phường</option>
+                      <option value="">Xã/phường</option>
                       {wards.map((ward) => (
                         <option key={ward.code} value={ward.code}>
                           {ward.name}
                         </option>
                       ))}
                     </select>
-                  </>
-                )}
-              </div>
+                  </div>
+                </div>
 
-              <button className="bg-red-500 text-white h-[40px] w-[200px] float-right hover:bg-red-600">
-                ĐẶT HÀNG
-              </button>
+                {/* Địa chỉ cụ thể */}
+                <div className="space-y-2 mt-4">
+                  <label
+                    htmlFor="address"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Địa chỉ cụ thể
+                  </label>
+                  <textarea
+                    id="address"
+                    placeholder="Nhập địa chỉ cụ thể"
+                    className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    rows={3}
+                    {...register("address", {
+                      required: "Địa chỉ không được để trống",
+                    })}
+                  />
+                  {errors.address && (
+                    <span className="text-red-500 text-sm">
+                      Không được để trống
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
+
+            {/* Hiển thị tổng tiền */}
+            <hr className="my-4" />
+            <div>
+              <div className="flex justify-between">
+                <span>Tổng tiền:</span>
+                <span className="text-red-500">
+                  {formatCurrency(grandTotalPrice)}
+                </span>
+              </div>
+              <div className="flex justify-between  ">
+                <span>Phí vận chuyển</span>
+                <span className="text-red-500">{formatCurrency(10000)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Voucher:</span>
+                <span className="text-red-500">{formatCurrency(discount)}</span>
+              </div>
+            </div>
+            <hr className="my-4" />
+            <div className="flex justify-end text-lg">
+              <span>Thành tiền: </span>
+              <span className="text-red-500">
+                {formatCurrency(grandTotalPrice - discount)}
+              </span>
+            </div>
+
+            {/* Nút thanh toán */}
+            <button
+              onClick={handleSubmit(onSubmit)}
+              className="mt-4 w-full bg-gray-500 text-white py-2 rounded-md hover:bg-gray-600"
+            >
+              Thanh toán
+            </button>
           </div>
-        </form>
+        </div>
       </div>
-      <ToastContainer />
+      <ToastContainer className={`mt-20`} />
     </div>
   );
 };

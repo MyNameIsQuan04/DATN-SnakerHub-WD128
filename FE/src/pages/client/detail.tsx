@@ -260,7 +260,6 @@ const Detail = () => {
                 ))}
               </div>
             </div>
-
             <div>
               <p
                 className="text-sm mt-6 cursor-pointer text-blue-500 hover:underline"
@@ -268,7 +267,6 @@ const Detail = () => {
               >
                 HƯỚNG DẪN TÌM SIZE
               </p>
-
               {/* Modal */}
               <Modal
                 isOpen={isOpen}
@@ -292,7 +290,6 @@ const Detail = () => {
                 </button>
               </Modal>
             </div>
-
             <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
               <div className="flex items-center justify-center">
                 <svg
@@ -321,7 +318,7 @@ const Detail = () => {
             <div className="flex gap-4 mt-5">
               <button
                 type="button"
-                className="bg-gray-100 text-center w-48 h-14 rounded-2xl relative text-red-500 text-lg font-semibold border-4 border-white group flex items-center justify-center"
+                className="bg-gray-100 text-center w-48 h-14 rounded-2xl relative text-red-500 text-lg font-medium border-4 border-white group flex items-center justify-center"
               >
                 <div className="bg-orange-400 rounded-xl h-12 w-1/4 grid place-items-center absolute left-0 top-0 group-hover:w-full z-10 transition-all duration-500 ease-in-out">
                   <IoCartOutline className="text-white text-xl" />
@@ -439,7 +436,7 @@ const Detail = () => {
               </div>
             </div>
           )}
-          {activeTab === 1 && <div>Nội dung của Tab 2</div>}
+          {activeTab === 1 && <div>Chưa có bình luận !</div>}
         </div>
       </div>
       <ToastContainer className="mt-[80px]" />

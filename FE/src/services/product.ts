@@ -38,7 +38,7 @@ export const addProduct = async (product: Product) => {
 
 export const updateProduct = async (formData: any, id: number) => {
   try {
-    const { data } = await api.post(`products/${id}`, formData);
+    const { data } = await api.post(`products/${id}?_method=PUT`, formData);
     alert("Thành công");
     return data;
   } catch (error) {

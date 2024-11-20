@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 import { IoMdSearch } from "react-icons/io";
 import React, { useContext, useState } from "react";
-
-import { Product, product_variants } from "../../../interfaces/Product";
+import { Product } from "../../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { ProductCT } from "../../../contexts/productContext";
 

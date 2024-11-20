@@ -439,7 +439,7 @@ const EditProduct = () => {
                           })
                         }
                       >
-                        Sửa biến thể
+                        Thêm biến thể
                       </button>
                     </>
                   )}
