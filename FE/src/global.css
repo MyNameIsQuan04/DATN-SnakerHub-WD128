@@ -7,3 +7,25 @@ body {
   top: 80px; /* Điều chỉnh khoảng cách từ trên, tùy vào độ cao của header */
   z-index: 9999; /* Đảm bảo Toast hiển thị trên các thành phần khác */
 }
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Đảm bảo overlay có màu nền mờ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background-color: white;
+  padding: 20px;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: hidden;
+}

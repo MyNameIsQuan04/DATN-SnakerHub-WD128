@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Order, OrderItem } from "../../../interfaces/Order";
 import axios from "axios";
+
+import { toast, ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
 
 const formatCurrency = (amount: number) => {
@@ -49,7 +51,6 @@ const UserOrderHistory = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSelectReason = (event: any) => {
     setSelectedReason(event.target.value);
-    console.log(selectedReason);
   };
   useEffect(() => {
     const fetchOrders = async () => {
@@ -124,7 +125,7 @@ const UserOrderHistory = () => {
   };
   const handleComplaintOrder = async (idOrder: number) => {
     try {
-      await axios.patch(
+      await axios.put(
         `http://localhost:8000/api/client/orders/${idOrder}`,
         { status: "Trả hàng", note: selectedReason },
         {
@@ -133,6 +134,8 @@ const UserOrderHistory = () => {
           },
         }
       );
+      console.log(selectedReason);
+      toast.success("Khiếu nại thành công");
       setIsModalOpen(false);
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
@@ -141,6 +144,7 @@ const UserOrderHistory = () => {
       );
     } catch (error) {
       console.error("Lỗi khi gửi khiếu nại đơn hàng đơn hàng:", error);
+      setIsModalOpen(false);
     }
   };
 
@@ -478,6 +482,7 @@ const UserOrderHistory = () => {
           ))
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };

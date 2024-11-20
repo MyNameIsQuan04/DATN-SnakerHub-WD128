@@ -1,10 +1,8 @@
-import axios from "axios";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { Size } from "../../../interfaces/Size";
 import { SizeCT } from "../../../contexts/SizeContext";
-import api from "../../../configs/axios";
 
 const AddSize = () => {
   const {

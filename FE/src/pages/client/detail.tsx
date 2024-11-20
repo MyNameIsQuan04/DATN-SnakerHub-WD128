@@ -11,13 +11,17 @@ import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { IoCartOutline } from "react-icons/io5";
 import { GrNext } from "react-icons/gr";
-
+import Modal from "react-modal";
+import "../../global.css";
 const Detail = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const { id } = useParams<{ id: string }>();
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [availableSizes, setAvailableSizes] = useState<number[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => setIsOpen(false);
   const [selectedVariantPrice, setSelectedVariantPrice] = useState<
     number | null
   >(null);
@@ -257,9 +261,37 @@ const Detail = () => {
               </div>
             </div>
 
-            <p className="text-sm mt-6 cursor-pointer text-blue-500 hover:underline">
-              HƯỚNG DẪN TÌM SIZE
-            </p>
+            <div>
+              <p
+                className="text-sm mt-6 cursor-pointer text-blue-500 hover:underline"
+                onClick={openModal}
+              >
+                HƯỚNG DẪN TÌM SIZE
+              </p>
+
+              {/* Modal */}
+              <Modal
+                isOpen={isOpen}
+                onRequestClose={closeModal}
+                contentLabel="Size Guide"
+                className="modal-content"
+                overlayClassName="modal-overlay"
+              >
+                <div className="flex justify-center">
+                  <img
+                    src="https://www.giaykimthanh.net/image/cache/catalog/Fado.VN_1519380156.5984-950x672.jpg"
+                    alt="Size Guide"
+                    className="max-w-full h-auto"
+                  />
+                </div>
+                <button
+                  className="absolute top-2 right-2 text-white bg-gray-600 p-2 rounded"
+                  onClick={closeModal}
+                >
+                  X
+                </button>
+              </Modal>
+            </div>
 
             <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
               <div className="flex items-center justify-center">

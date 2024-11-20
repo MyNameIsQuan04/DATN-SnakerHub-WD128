@@ -59,8 +59,8 @@ const UpdateColor = () => {
           </button>
           <Link to="/admin/color">
             <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg ml-2"
+              type="button" // Thay 'submit' thành 'button'
+              className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg ml-2"
             >
               Quay lại
             </button>

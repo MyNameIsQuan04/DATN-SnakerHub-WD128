@@ -13,13 +13,16 @@ const AddVoucher: React.FC = () => {
   // Hàm xử lý submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(codeDiscount);
+    // Đảm bảo ngày hết hạn luôn ở định dạng yyyy-mm-dd
+    const formattedExpirationDate = expirationDate
+      ? new Date(expirationDate).toISOString().split("T")[0]
+      : "";
 
     const voucherData = {
       codeDiscount,
       discount,
       type,
-      expiration_date: expirationDate,
+      expiration_date: formattedExpirationDate,
       usage_limit: usageLimit,
     };
 
@@ -84,7 +87,7 @@ const AddVoucher: React.FC = () => {
         <div>
           <label className="block">Ngày hết hạn</label>
           <input
-            type="text"
+            type="date"
             value={expirationDate}
             onChange={(e) => setExpirationDate(e.target.value)}
             className="w-full border p-2"
@@ -104,7 +107,7 @@ const AddVoucher: React.FC = () => {
           />
         </div>
         <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-          Thêm Voucher
+          Tạo Voucher
         </button>
       </form>
 
