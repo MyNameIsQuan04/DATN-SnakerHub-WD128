@@ -54,6 +54,7 @@ Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
 Route::get('dashboard', [DashboardController::class, 'index']);
 
 Route::apiResource('client/orders', ApiMemberOrderController::class);
+Route::put('client/return-order/{id}',[ApiMemberOrderController::class, 'returnOrder']);
 
 Route::apiResource('client/products', ClientProductController::class);
 
