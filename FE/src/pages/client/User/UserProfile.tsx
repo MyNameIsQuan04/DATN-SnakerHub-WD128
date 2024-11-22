@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { MdOutlineManageAccounts } from "react-icons/md";
 import { CiViewList } from "react-icons/ci";
-import { MdOutlineAnnouncement } from "react-icons/md";
-import { BiCustomize } from "react-icons/bi";
+// import { MdOutlineAnnouncement } from "react-icons/md";
+// import { BiCustomize } from "react-icons/bi";
 import { useAuth } from "../../../contexts/AuthContext";
 
 const UserProfile = () => {
@@ -75,7 +75,7 @@ const UserProfile = () => {
               }}
               className={`block w-full text-left py-2 px-4 rounded-xl font-semibold cursor-pointer transition-all duration-300 transform hover:bg-orange-100 hover:text-orange-500 ${
                 activeButton === "profile"
-                  ? "bg-orange-500 text-white"
+                  ? "bg-gray-500 text-white"
                   : "bg-gray-100"
               }`}
             >
@@ -92,7 +92,7 @@ const UserProfile = () => {
                 onClick={() => handleDropdownItemClick("userinfo")}
                 className={`block py-2 px-4 rounded-xl transition-all duration-300 transform hover:bg-orange-100 hover:text-orange-500 ${
                   activeDropdownItem === "userinfo"
-                    ? "bg-orange-500 text-white"
+                    ? "bg-gray-500 text-white"
                     : "bg-gray-100"
                 }`}
               >
@@ -103,7 +103,7 @@ const UserProfile = () => {
                 onClick={() => handleDropdownItemClick("address")}
                 className={`block py-2 px-4 rounded-xl transition-all duration-300 transform hover:bg-orange-100 hover:text-orange-500 ${
                   activeDropdownItem === "address"
-                    ? "bg-orange-500 text-white"
+                    ? "bg-gray-500 text-white"
                     : "bg-gray-100"
                 }`}
               >
@@ -114,7 +114,7 @@ const UserProfile = () => {
                 onClick={() => handleDropdownItemClick("change-password")}
                 className={`block py-2 px-4 rounded-xl transition-all duration-300 transform hover:bg-orange-100 hover:text-orange-500 ${
                   activeDropdownItem === "change-password"
-                    ? "bg-orange-500 text-white"
+                    ? "bg-gray-500 text-white"
                     : "bg-gray-100"
                 }`}
               >
@@ -129,7 +129,7 @@ const UserProfile = () => {
             onClick={() => handleButtonClick("order")}
             className={`block w-full text-left py-2 px-4 rounded-xl font-semibold cursor-pointer transition-all duration-300 transform hover:bg-orange-100 hover:text-orange-500 ${
               activeButton === "order"
-                ? "bg-orange-500 text-white"
+                ? "bg-gray-500 text-white"
                 : "bg-gray-100"
             }`}
           >
@@ -138,7 +138,7 @@ const UserProfile = () => {
           </Link>
 
           {/* Thông báo */}
-          <Link
+          {/* <Link
             to="/profile/announcement"
             onClick={() => handleButtonClick("notification")}
             className={`block w-full text-left py-2 px-4 rounded-xl font-semibold cursor-pointer transition-all duration-300 transform hover:bg-orange-100 hover:text-orange-500 ${
@@ -151,7 +151,7 @@ const UserProfile = () => {
             Thông báo
           </Link>
 
-          {/* Cài đặt */}
+      
           <Link
             to="#"
             onClick={() => handleButtonClick("settings")}
@@ -163,7 +163,7 @@ const UserProfile = () => {
           >
             <BiCustomize className="inline-block mr-3" />
             Cài đặt
-          </Link>
+          </Link> */}
         </nav>
       </aside>
 

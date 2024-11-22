@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Order, OrderItem } from "../../../interfaces/Order";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
 
 const formatCurrency = (amount: number) => {
@@ -20,11 +21,16 @@ const UserOrderHistory = () => {
   const [selectedReason, setSelectedReason] = useState("");
   const [isModalRatingOpen, setIsModalRatingOpen] = useState(false);
   const [rating, setRating] = useState(0);
-  // const [comment, setCommet] = useState("");
+  const [comment, setComment] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [selectedItem, setSelectedItem] = useState<OrderItem | null>(null);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleStarClick = (star: any) => {
     setRating(star);
+    console.log(star);
   };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCommentChange = (e: any) => {
     setComment(e.target.value); // Cập nhật nội dung bình luận
   };
@@ -93,8 +99,8 @@ const UserOrderHistory = () => {
           order.id === idOrder ? { ...order, status: "Đã hủy" } : order
         );
         setOrders(updatedOrders);
-        localStorage.setItem("orders", JSON.stringify(updatedOrders)); // Cập nhật localStorage
-        localStorage.setItem("lastUpdate", `Đơn hàng ID ${idOrder} đã hủy`); // Thông báo cập nhật
+        localStorage.setItem("orders", JSON.stringify(updatedOrders));
+        localStorage.setItem("lastUpdate", `Đơn hàng ID ${idOrder} đã hủy`);
       } catch (error) {
         console.error("Lỗi khi hủy đơn hàng:", error);
       }
@@ -132,6 +138,8 @@ const UserOrderHistory = () => {
           },
         }
       );
+      console.log(selectedReason);
+      toast.success("Khiếu nại thành công");
       setIsModalOpen(false);
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
@@ -146,13 +154,13 @@ const UserOrderHistory = () => {
   const handleSubmitRating = async (
     orderItemId: number,
     userId: number,
-    productId: number,
+    product_variant_Id: number,
     orderId: number
   ) => {
     const reviewData = {
       order__item_id: orderItemId,
       user_id: userId,
-      product_id: productId,
+      product__variant_id: product_variant_Id,
       star: rating,
       content: comment,
     };
@@ -199,16 +207,16 @@ const UserOrderHistory = () => {
               key={status}
               className={`relative px-2 py-3 transition-all duration-300 ease-in-out ${
                 selectedStatus === status
-                  ? "border-b-2 border-orange-600 mt-6"
-                  : "hover:border-b-2 hover:border-orange-400 mt-6"
+                  ? "border-b-2 border-gray-600 mt-6"
+                  : "hover:border-b-2 hover:border-gray-400 mt-6"
               }`}
             >
               <button
                 onClick={() => setSelectedStatus(status)}
                 className={`w-full px-6 py-4 text-base font-medium transition-all duration-300 ease-in-out transform rounded-md ${
                   selectedStatus === status
-                    ? "bg-orange-600 text-white scale-105"
-                    : "bg-gray-200 text-gray-800 hover:bg-orange-500 hover:text-white"
+                    ? "bg-gray-600 text-white scale-105"
+                    : "bg-gray-200 text-gray-800 hover:bg-gray-500 hover:text-white"
                 }`}
               >
                 {status === "all" ? "Tất cả" : status}
@@ -249,7 +257,7 @@ const UserOrderHistory = () => {
             >
               <div className="flex justify-between items-center mb-6">
                 <div className="flex flex-col">
-                  {order.order_items.map((item) => (
+                  {order.order_items.map((item: OrderItem) => (
                     <div key={item.id} className="flex items-center gap-4 mb-4">
                       <img
                         src={
@@ -384,11 +392,13 @@ const UserOrderHistory = () => {
                         <div key={item.id}>
                           <button
                             className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-red-500 focus:outline-none bg-white rounded-lg border border-red-500 hover:bg-red-500 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                            onClick={openModalRating}
+                            onClick={() => {
+                              openModalRating(item);
+                            }}
                           >
                             Đánh giá
                           </button>
-                          {isModalRatingOpen && (
+                          {isModalRatingOpen && selectedItem && (
                             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                               <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                                 <h2 className="text-xl font-semibold mb-4">
@@ -397,7 +407,7 @@ const UserOrderHistory = () => {
                                 <div className="flex gap-[10px]">
                                   <img
                                     src={
-                                      item.product_variant?.image ||
+                                      selectedItem.product_variant?.image ||
                                       "https://via.placeholder.com/150" // Hình ảnh mặc định nếu không có
                                     }
                                     alt="Product"
@@ -409,19 +419,19 @@ const UserOrderHistory = () => {
                                         Tên sản phẩm:
                                       </p>
                                       <p className="text-lg text-gray-700 uppercase font-bold">
-                                        {item.product_variant?.product.name ||
-                                          "Không có"}
+                                        {selectedItem.product_variant?.product
+                                          .name || "Không có"}
                                       </p>
                                     </div>
                                     <p className="text-lg text-gray-700">
                                       Màu sắc:{" "}
-                                      {item.product_variant?.color.name ||
-                                        "Không có"}
+                                      {selectedItem.product_variant?.color
+                                        .name || "Không có"}
                                     </p>
                                     <p className="text-lg text-gray-700">
                                       Kích thước:{" "}
-                                      {item.product_variant?.size.name ||
-                                        "Không có"}
+                                      {selectedItem.product_variant?.size
+                                        .name || "Không có"}
                                     </p>
                                   </div>
                                 </div>
@@ -444,8 +454,9 @@ const UserOrderHistory = () => {
                                     ))}
                                   </div>
                                   <textarea
+                                    value={comment}
+                                    onChange={handleCommentChange}
                                     className="border h-[200px] border-gray-400 w-full mt-[10px] rounded-lg pl-[10px] p-[5px]"
-                                    placeholder="Nhập đánh giá của bạn..."
                                   ></textarea>
                                 </div>
                                 <div className="flex justify-end mt-[10px]">
@@ -455,7 +466,17 @@ const UserOrderHistory = () => {
                                   >
                                     Đóng
                                   </button>
-                                  <button className="px-4 py-2 bg-red-500 text-white rounded-lg">
+                                  <button
+                                    onClick={() =>
+                                      handleSubmitRating(
+                                        selectedItem.id,
+                                        order.customer.user_id,
+                                        selectedItem.product_variant.id,
+                                        order.id
+                                      )
+                                    }
+                                    className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                                  >
                                     Gửi đánh giá
                                   </button>
                                 </div>
@@ -466,7 +487,7 @@ const UserOrderHistory = () => {
                       ))}
                     </div>
                   )}
-
+                  {/* /profile/order-detail/${order.id} */}
                   <Link to={`/profile/order-detail/${order.id}`}>
                     <button className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-400 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                       Xem chi tiết đơn

@@ -13,6 +13,11 @@ import { IoCartOutline } from "react-icons/io5";
 import { GrNext } from "react-icons/gr";
 
 const Detail = () => {
+  const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
+
+  const openSizeGuideModal = () => setIsSizeGuideModalOpen(true);
+  const closeSizeGuideModal = () => setIsSizeGuideModalOpen(false);
+
   const [product, setProduct] = useState<Product | null>(null);
   const { id } = useParams<{ id: string }>();
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
@@ -257,10 +262,36 @@ const Detail = () => {
               </div>
             </div>
 
-            <p className="text-sm mt-6 cursor-pointer text-blue-500 hover:underline">
+            <p
+              className="text-sm mt-6 cursor-pointer text-blue-500 hover:underline"
+              onClick={openSizeGuideModal}
+            >
               HƯỚNG DẪN TÌM SIZE
             </p>
-
+            {isSizeGuideModalOpen && (
+              <div
+                className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                onClick={closeSizeGuideModal} // Đóng modal khi click vào nền
+              >
+                <div
+                  className="bg-white rounded-lg shadow-lg p-6 relative w-3/4 max-w-md"
+                  onClick={(e) => e.stopPropagation()} // Ngăn sự kiện đóng modal khi click bên trong modal
+                >
+                  <button
+                    onClick={closeSizeGuideModal}
+                    className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                  >
+                    ✕
+                  </button>
+                  <img
+                    src="https://file.hstatic.net/1000339709/article/bang_cach_do_size_giay_the_thao_7611f668_9ba6_4450_4314_8367b2adbe59_1024x1024_bfdab0bd0460498db6ddc828b0d4c09a.jpg" // Thay bằng đường dẫn ảnh thật
+                    alt="Hướng dẫn tìm size"
+                    className="w-full h-auto rounded-lg"
+                  />
+                </div>
+              </div>
+            )}
+            
             <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
               <div className="flex items-center justify-center">
                 <svg
@@ -289,7 +320,7 @@ const Detail = () => {
             <div className="flex gap-4 mt-5">
               <button
                 type="button"
-                className="bg-gray-100 text-center w-48 h-14 rounded-2xl relative text-red-500 text-lg font-semibold border-4 border-white group flex items-center justify-center"
+                className="bg-gray-100 text-center w-48 h-14 rounded-2xl relative text-red-500 text-lg font-medium border-4 border-white group flex items-center justify-center"
               >
                 <div className="bg-orange-400 rounded-xl h-12 w-1/4 grid place-items-center absolute left-0 top-0 group-hover:w-full z-10 transition-all duration-500 ease-in-out">
                   <IoCartOutline className="text-white text-xl" />
@@ -407,7 +438,7 @@ const Detail = () => {
               </div>
             </div>
           )}
-          {activeTab === 1 && <div>Nội dung của Tab 2</div>}
+          {activeTab === 1 && <div>Chưa có bình luận !</div>}
         </div>
       </div>
       <ToastContainer className="mt-[80px]" />

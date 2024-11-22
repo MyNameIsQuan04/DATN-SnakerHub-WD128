@@ -106,7 +106,7 @@ class ProductController extends Controller
                 ->orWhere('description', 'like', "%{$query}%")
                 ->orWhere('short_description', 'like', "%{$query}%")
                 ->get();
-
+            $products->load('category');
             return response()->json([
                 'success' => true,
                 'message' => 'Search successful!',
