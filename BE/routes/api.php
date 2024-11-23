@@ -54,6 +54,7 @@ Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
 Route::get('dashboard', [DashboardController::class, 'index']);
 
 Route::apiResource('client/orders', ApiMemberOrderController::class);
+Route::put('client/return-order/{order}', [ApiMemberOrderController::class, 'returnOrder']);
 
 Route::apiResource('client/products', ClientProductController::class);
 
@@ -90,7 +91,7 @@ Route::group(['middleware' => ['auth:api']],  function () {
     Route::post('/apply-voucher', [OrderController::class, 'applyVoucher']);
 });
 
-Route::middleware('auth:api')->group(function() {
+Route::middleware('auth:api')->group(function () {
     // Hiển thị danh sách người dùng (Admin chỉ có thể truy cập)
     Route::get('/users', [UserApiController::class, 'index'])->middleware('type:admin');
 
@@ -115,21 +116,21 @@ Route::middleware('auth:api')->group(function() {
     // Cập nhật thông tin của chính người dùng đã đăng nhập
     // Route::put('/users/{id}', [UserApiController::class, 'updateProfile']);
 });
-    Route::get('/vouchers', [VoucherController::class, 'index'])->name('voucher.index');
-    Route::post('/voucher', [VoucherController::class, 'store'])->name('voucher.store');
-    Route::put('/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
-    Route::delete('/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
-    //lọc sản phẩm
-    Route::get('/products/filter', [ClientProductController::class, 'filterProducts']);
+Route::get('/vouchers', [VoucherController::class, 'index'])->name('voucher.index');
+Route::post('/voucher', [VoucherController::class, 'store'])->name('voucher.store');
+Route::put('/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
+Route::delete('/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
+//lọc sản phẩm
+Route::get('/filter', [ClientProductController::class, 'filterProducts']);
 
-    Route::prefix('slides')->group(function () {
-        Route::get('/', [SlideController::class, 'index']);  // Lấy danh sách slide
-        Route::get('{id}', [SlideController::class, 'show']);  // Lấy thông tin slide cụ thể
-        Route::post('/', [SlideController::class, 'store']);  // Tạo mới slide
-        Route::put('{id}', [SlideController::class, 'update']);  // Cập nhật slide
-        Route::delete('{id}', [SlideController::class, 'destroy']);  // Xóa slide
-    });
+Route::prefix('slides')->group(function () {
+    Route::get('/', [SlideController::class, 'index']);  // Lấy danh sách slide
+    Route::get('{id}', [SlideController::class, 'show']);  // Lấy thông tin slide cụ thể
+    Route::post('/', [SlideController::class, 'store']);  // Tạo mới slide
+    Route::put('{id}', [SlideController::class, 'update']);  // Cập nhật slide
+    Route::delete('{id}', [SlideController::class, 'destroy']);  // Xóa slide
+});
 
-    Route::get('/search', [ClientProductController::class, 'search']);
+Route::get('/search', [ClientProductController::class, 'search']);
 
-    Route::post('/rate',[CommentController::class, 'search']);
+Route::post('/rate', [CommentController::class, 'search']);

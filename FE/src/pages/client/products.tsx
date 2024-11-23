@@ -5,6 +5,10 @@ import { CategoryCT } from "../../contexts/CategoryContext";
 import { Category } from "../../interfaces/Category";
 import { Link, useSearchParams } from "react-router-dom";
 import api from "../../configs/axios";
+import { SizeCT } from "../../contexts/SizeContext";
+import { ColorCT } from "../../contexts/ColorContext";
+import { Size } from "../../interfaces/Size";
+import { Color } from "../../interfaces/Color";
 
 interface Filters {
   category: string | number | null;
@@ -17,9 +21,10 @@ interface Filters {
 const Products = () => {
   const { products, setProducts } = useContext(ProductCT);
   const { categories } = useContext(CategoryCT);
-  const [searchParams] = useSearchParams();
+  const { sizes } = useContext(SizeCT);
+  const { colors } = useContext(ColorCT);
+  const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get("keyword") || "";
-  const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState<Filters>({
     category: null,
     price_min: null,
@@ -27,41 +32,50 @@ const Products = () => {
     size: null,
     color: null,
   });
-  const fetchProducts = async (filters: Filters) => {
+
+  const [tempFilters, setTempFilters] = useState<Filters>({ ...filters });
+
+  const fetchSearchedProducts = async (keyword: string) => {
     try {
-      setLoading(true);
-
-      let response;
-      if (keyword) {
-        // Gọi API tìm kiếm nếu có từ khóa
-        response = await api.get("search", {
-          params: { keyword },
-        });
-      } else {
-        // Gọi API lọc nếu không có từ khóa
-        response = await api.get("/products/filter", {
-          params: filters,
-        });
-      }
-
-      // Cập nhật danh sách sản phẩm
+      const response = await api.get("search", {
+        params: { keyword },
+      });
       setProducts(response.data.products);
     } catch (error) {
-      console.error("Có lỗi xảy ra khi tải sản phẩm:", error);
-    } finally {
-      setLoading(false);
+      console.error("Có lỗi xảy ra khi tìm kiếm sản phẩm:", error);
     }
   };
 
-  useEffect(() => {
-    fetchProducts(filters);
-  }, [keyword, filters]);
+  const fetchFilteredProducts = async (filters: Filters) => {
+    try {
+      const response = await api.get("filter", {
+        params: filters,
+      });
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Có lỗi xảy ra khi lọc sản phẩm:", error);
+    }
+  };
 
+  const applyFilters = () => {
+    searchParams.delete("keyword");
+    setSearchParams(searchParams);
+    setFilters(tempFilters);
+    fetchFilteredProducts(tempFilters);
+  };
+
+  useEffect(() => {
+    if (keyword) {
+      fetchSearchedProducts(keyword);
+    } else {
+      fetchFilteredProducts(filters);
+    }
+  }, [keyword, filters]);
+  console.log(sizes);
   return (
     <div>
       <div className="container mx-auto my-8 px-4 md:px-8 mt-[80px]">
         <div className="flex flex-wrap -mx-4">
-          {/* Filters Sidebar */}
           <aside className="w-1/5 px-4 mb-6">
             <h2 className="text-xl font-semibold mb-4">Bộ lọc</h2>
             <h3 className="font-semibold text-lg text-gray-700 mb-3">
@@ -74,9 +88,9 @@ const Products = () => {
                     type="checkbox"
                     className="form-checkbox h-4 w-4 text-blue-600 rounded mr-3"
                     onChange={(e) => {
-                      setFilters((prev) => ({
+                      setTempFilters((prev) => ({
                         ...prev,
-                        category: e.target.checked ? category.id : null, // Cập nhật category với giá trị id của category
+                        category: e.target.checked ? category.id : null,
                       }));
                     }}
                   />
@@ -84,20 +98,83 @@ const Products = () => {
                 </li>
               ))}
             </ul>
+            <h3 className="font-semibold text-lg text-gray-700 mt-4 mb-3">
+              Kích thước
+            </h3>
+            <select
+              className="border px-2 py-1 w-full"
+              onChange={(e) =>
+                setTempFilters((prev) => ({
+                  ...prev,
+                  size: e.target.value ? parseInt(e.target.value) : null,
+                }))
+              }
+            >
+              <option value="">Chọn kích thước</option>
+              {sizes?.map((size: Size) => (
+                <option key={size.id} value={size.id}>
+                  {size.name}
+                </option>
+              ))}
+            </select>
+            <h3 className="font-semibold text-lg text-gray-700 mt-4 mb-3">
+              Màu sắc
+            </h3>
+            <select
+              className="border px-2 py-1 w-full"
+              onChange={(e) =>
+                setTempFilters((prev) => ({
+                  ...prev,
+                  color: e.target.value ? parseInt(e.target.value) : null,
+                }))
+              }
+            >
+              <option value="">Chọn màu sắc</option>
+              {colors?.map((color: Color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
+            <h3 className="font-semibold text-lg text-gray-700 mt-4 mb-3">
+              Giá
+            </h3>
+            <div className="flex space-x-2">
+              <input
+                type="number"
+                placeholder="Giá tối thiểu"
+                className="border px-2 py-1 w-full"
+                onChange={(e) =>
+                  setTempFilters((prev) => ({
+                    ...prev,
+                    price_min: e.target.value ? parseInt(e.target.value) : null,
+                  }))
+                }
+              />
+              <input
+                type="number"
+                placeholder="Giá tối đa"
+                className="border px-2 py-1 w-full"
+                onChange={(e) =>
+                  setTempFilters((prev) => ({
+                    ...prev,
+                    price_max: e.target.value ? parseInt(e.target.value) : null,
+                  }))
+                }
+              />
+            </div>
 
             <button
               className="px-4 py-2 bg-blue-600 text-white rounded mt-4"
-              onClick={() => fetchProducts(filters)}
+              onClick={applyFilters}
             >
               Áp dụng bộ lọc
             </button>
           </aside>
-          {/* Products Section */}
+
           <section className="w-4/5 px-4">
             <h2 className="text-xl font-semibold mb-4">Sản phẩm</h2>
-            {loading ? (
-              <p>Đang tải sản phẩm...</p>
-            ) : products.length > 0 ? (
+            {products?.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {products.map((product: Product) => (
                   <Link to={`/detail/${product.id}`} key={product.id}>
