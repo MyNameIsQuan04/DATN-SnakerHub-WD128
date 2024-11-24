@@ -19,6 +19,7 @@ const UserOrderhistorydetail = () => {
       );
       setOrderDetail(response.data);
       setError(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message || "Lỗi khi tải dữ liệu");
     } finally {
@@ -49,6 +50,7 @@ const UserOrderhistorydetail = () => {
     }
   };
   const totalPriceItem = (price: number, quantity: number) => price * quantity;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formatCurrency = (value: any) => {
     return value.toLocaleString("vi-VN") + "₫";
   };
@@ -608,6 +610,7 @@ const UserOrderhistorydetail = () => {
                   </span>
                 )}
                 <p className="flex gap-2 py-5 px-5">
+                  {/* <strong>{formatCurrency()}</strong> */}
                   <strong>Tổng tiền: </strong>
                   <strong className="text-red-500">
                     {" "}

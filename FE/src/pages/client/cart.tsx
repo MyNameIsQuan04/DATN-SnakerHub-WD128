@@ -4,7 +4,7 @@ import { CartItem } from "../../interfaces/Cart";
 import { useNavigate } from "react-router-dom";
 import api from "../../configs/axios";
 import { toast } from "react-toastify";
-import { Toaster } from "react-hot-toast";
+// import { Toaster } from "react-hot-toast";
 
 const Cart = () => {
   const navigate = useNavigate();

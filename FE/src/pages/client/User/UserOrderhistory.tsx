@@ -98,8 +98,8 @@ const UserOrderHistory = () => {
           order.id === idOrder ? { ...order, status: "Đã hủy" } : order
         );
         setOrders(updatedOrders);
-        localStorage.setItem("orders", JSON.stringify(updatedOrders)); 
-        localStorage.setItem("lastUpdate", `Đơn hàng ID ${idOrder} đã hủy`); 
+        localStorage.setItem("orders", JSON.stringify(updatedOrders));
+        localStorage.setItem("lastUpdate", `Đơn hàng ID ${idOrder} đã hủy`);
       } catch (error) {
         console.error("Lỗi khi hủy đơn hàng:", error);
       }
@@ -153,34 +153,35 @@ const UserOrderHistory = () => {
   const handleSubmitRating = async (
     orderItemId: number,
     userId: number,
-    productId: number,
-    orderId: number
+    productId: number
   ) => {
     const reviewData = {
-      order__item_id: orderItemId,
-      user_id: userId,
+      order_item_id: orderItemId, 
       product_id: productId,
-      star: rating,
-      content: comment,
+      star: rating, 
+      content: comment, 
     };
-    console.log(reviewData);
+  
+    console.log("Dữ liệu đánh giá:", reviewData);
+  
     try {
-      const response = await axios.patch(
-        `http://localhost:8000/api/client/orders/${orderId}`,
+      const response = await axios.post(
+        "http://localhost:8000/api/rate", // Endpoint mới
         reviewData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
-
-      handleCloseModalRating();
-      console.log("Đánh giá đã được gửi:", response.data);
+  
+      console.log("Đánh giá đã được gửi thành công:", response.data);
+      handleCloseModalRating(); 
     } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);
     }
   };
+  
 
   const filteredOrders =
     selectedStatus === "all"
@@ -189,7 +190,7 @@ const UserOrderHistory = () => {
 
   return (
     <div className="min-h-screen bg-white font-inter">
-      <div className="max-w-7xl mx-auto p-6 bg-white rounded-xl">
+      <div className="max-w-7xl mx-auto px-6 bg-white rounded-xl">
         {/* Tabs trạng thái */}
         <div className="flex justify-center mb-6">
           {[
@@ -254,6 +255,12 @@ const UserOrderHistory = () => {
               key={order.id}
               className="bg-white shadow-md rounded-lg p-6 mb-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300"
             >
+              <div className="pb-2">
+                <span className="font-semibold">Mã đơn hàng:</span>
+                <span>
+                  {"# "} {order.order_code}
+                </span>
+              </div>
               <div className="flex justify-between items-center mb-6">
                 <div className="flex flex-col">
                   {order.order_items.map((item) => (
@@ -391,8 +398,9 @@ const UserOrderHistory = () => {
                         <div key={item.id}>
                           <button
                             className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-red-500 focus:outline-none bg-white rounded-lg border border-red-500 hover:bg-red-500 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-
-                            onClick={() => {openModalRating(item)}}
+                            onClick={() => {
+                              openModalRating(item);
+                            }}
                           >
                             Đánh giá
                           </button>
@@ -452,10 +460,10 @@ const UserOrderHistory = () => {
                                     ))}
                                   </div>
                                   <textarea
-                                  value={comment}
-                                  onChange={handleCommentChange}
-                                  className="border h-[200px] border-gray-400 w-full mt-[10px] rounded-lg pl-[10px] p-[5px]"
-                                ></textarea>
+                                    value={comment}
+                                    onChange={handleCommentChange}
+                                    className="border h-[200px] border-gray-400 w-full mt-[10px] rounded-lg pl-[10px] p-[5px]"
+                                  ></textarea>
                                 </div>
                                 <div className="flex justify-end mt-[10px]">
                                   <button
@@ -465,18 +473,18 @@ const UserOrderHistory = () => {
                                     Đóng
                                   </button>
                                   <button
-                                  onClick={() =>
-                                    handleSubmitRating(
-                                      item.id,
-                                      order.customer.user_id,
-                                      item.product_variant.product.id as number,
-                                      order.id
-                                    )
-                                  }
-                                  className="px-4 py-2 bg-red-500 text-white rounded-lg"
-                                >
-                                  Gửi đánh giá
-                                </button>
+                                    onClick={() =>
+                                      handleSubmitRating(
+                                        item.id,
+                                        order.customer.user_id,
+                                        item.product_variant.product
+                                          .id as number,
+                                      )
+                                    }
+                                    className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                                  >
+                                    Gửi đánh giá
+                                  </button>
                                 </div>
                               </div>
                             </div>
@@ -487,11 +495,9 @@ const UserOrderHistory = () => {
                   )}
                   {/* /profile/order-detail/${order.id} */}
                   <Link to={`/profile/order-detail/${order.id}`}>
-                  <button
-                    className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-400 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                  >
-                    Xem chi tiết đơn
-                  </button>
+                    <button className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-400 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                      Xem chi tiết đơn
+                    </button>
                   </Link>
                 </div>
               </div>
@@ -499,7 +505,7 @@ const UserOrderHistory = () => {
           ))
         )}
       </div>
-      <ToastContainer/>
+      <ToastContainer />
     </div>
   );
 };
