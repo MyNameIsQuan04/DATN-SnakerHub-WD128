@@ -7,11 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -185,4 +188,71 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Mật khẩu đã được thay đổi thành công'], 200);
     }
+
+    // Đăng nhập với Google
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->stateless()->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = Socialite::driver('google')->stateless()->user();
+    
+            // Kiểm tra và tạo hoặc cập nhật người dùng trong hệ thống
+            $user = User::updateOrCreate([
+                'email' => $googleUser->getEmail(),
+            ], [
+                'name' => $googleUser->getName(),
+                'google_id' => $googleUser->getId(),
+                'avatar' => $googleUser->getAvatar(),
+            ]);
+    
+            // Tạo JWT cho người dùng
+            $token = JWTAuth::fromUser($user);
+    
+            // Trả về token và thông tin người dùng
+            return response()->json([
+                'token' => $token,
+                'user' => $user,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    
+    public function authenticateGoogle(Request $request)
+    {
+        try {
+            // Lấy mã code từ frontend
+            $code = $request->input('code');
+    
+            // Sử dụng mã code để lấy token từ Google
+            $googleToken = Socialite::driver('google')->stateless()->getAccessTokenResponse($code);
+    
+            // Lấy thông tin người dùng từ Google
+            $googleUser = Socialite::driver('google')->stateless()->userFromToken($googleToken['access_token']);
+    
+            // Kiểm tra và tạo hoặc cập nhật người dùng trong hệ thống
+            $user = User::updateOrCreate([
+                'email' => $googleUser->getEmail(),
+            ], [
+                'name' => $googleUser->getName(),
+                'google_id' => $googleUser->getId(),
+                'avatar' => $googleUser->getAvatar(),
+            ]);
+    
+            // Tạo JWT cho người dùng
+            $token = JWTAuth::fromUser($user);
+    
+            // Trả về token và thông tin người dùng
+            return response()->json([
+                'token' => $token,
+                'user' => $user,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+}
 }

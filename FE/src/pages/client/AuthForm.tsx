@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, registerSchema } from "../../schemas/authSchema";
 import instance from "../../apis/api";
 import { toast, ToastContainer } from "react-toastify";
+import GoogleAuth from "../../components/auth/GoogleAuth";
 
 type Props = {
   isLogin?: boolean;
@@ -198,22 +199,8 @@ const AuthForm = ({ isLogin }: Props) => {
                     {isLogin ? "Đăng nhập" : "Đăng ký"}
                   </button>
                 </div>
-
-                {/* Google Sign-in Button (Only for login) */}
-                {isLogin && (
-                  <div className="mb-3">
-                    <button className="flex flex-wrap justify-center w-full border border-gray-300 hover:border-gray-500 px-2 py-1.5 rounded-md">
-                      <img
-                        className="w-5 mr-2"
-                        src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA"
-                        alt="Google icon"
-                      />
-                      Đăng nhập với Google
-                    </button>
-                  </div>
-                )}
               </form>
-
+              <GoogleAuth></GoogleAuth>
               {/* Footer */}
               <div className="text-center">
                 <span className="text-xs text-gray-400 font-semibold">

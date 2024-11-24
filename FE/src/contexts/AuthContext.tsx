@@ -84,6 +84,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Cập nhật state và điều hướng
     setUser(user);
+    0;
     nav(user.type === "admin" ? "/admin" : "/");
   };
 
@@ -112,11 +113,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = getToken();
     const storedUser = getUser();
 
+    // Kiểm tra xem token và user có hợp lệ không
+    if (token && storedUser) {
+      setUser(storedUser); // Lưu thông tin người dùng vào state
+      setIsLoggedIn(true); // Đánh dấu người dùng đã đăng nhập
+    } else {
+      // Nếu không có token hoặc user, đăng xuất người dùng và điều hướng về login
+      setIsLoggedIn(false);
+      nav("/login");
+    }
+
     // Lấy đường dẫn hiện tại
     const currentPath = window.location.pathname;
 
     // Các đường dẫn không cần kiểm tra token
-    const excludedPaths = ["/forgot-password", "/reset-password"];
+    const excludedPaths = [
+      "/forgot-password",
+      "/reset-password",
+      "/google/callback",
+    ];
 
     if (token && storedUser) {
       setUser(storedUser);

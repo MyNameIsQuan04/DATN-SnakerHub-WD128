@@ -16,6 +16,7 @@ use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\api\SlideController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Client\CommentController;
 
 /*
@@ -62,6 +63,7 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
     Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::post('/auth/google', [GoogleAuthController::class, 'loginWithGoogle']);
 });
 // Route để gửi yêu cầu quên mật khẩu (gửi email)
 Route::post('forget-password', [AuthController::class, 'postForgetPass']);
