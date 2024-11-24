@@ -28,13 +28,16 @@ const UserOrderHistory = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleStarClick = (star: any) => {
     setRating(star);
+    console.log(star);
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCommentChange = (e: any) => {
     setComment(e.target.value); // Cập nhật nội dung bình luận
   };
-  const openModalComplanit = () => {
+  const openModalComplanit = (order) => {
     setIsModalOpen(true);
+    setSelectedItem(order);
+    console.log(order);
   };
   const openModalRating = (item: OrderItem) => {
     setSelectedItem(item);
@@ -69,6 +72,7 @@ const UserOrderHistory = () => {
           }
         );
         setOrders(response.data);
+        console.log(response.data);
         localStorage.setItem("orders", JSON.stringify(response.data)); // Lưu vào localStorage
       } catch (error) {
         setError("Lỗi khi tải trạng thái đơn hàng.");
@@ -127,10 +131,11 @@ const UserOrderHistory = () => {
     }
   };
   const handleComplaintOrder = async (idOrder: number) => {
+    console.log(idOrder);
     try {
       await axios.put(
-        `http://localhost:8000/api/client/orders/${idOrder}`,
-        { status: "Trả hàng", note: selectedReason },
+        `http://localhost:8000/api/client/return-order/${idOrder}`,
+        { note: selectedReason },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -140,11 +145,11 @@ const UserOrderHistory = () => {
       console.log(selectedReason);
       toast.success("Khiếu nại thành công");
       setIsModalOpen(false);
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order.id === idOrder ? { ...order, status: "Trả hàng" } : order
-        )
-      );
+      // setOrders((prevOrders) =>
+      //   prevOrders.map((order) =>
+      //     order.id === idOrder ? { ...order, status: "Trả hàng" } : order
+      //   )
+      // );
     } catch (error) {
       console.error("Lỗi khi gửi khiếu nại đơn hàng đơn hàng:", error);
       setIsModalOpen(false);
@@ -153,13 +158,15 @@ const UserOrderHistory = () => {
   const handleSubmitRating = async (
     orderItemId: number,
     userId: number,
-    productId: number
+    product_variant_Id: number,
+    orderId: number
   ) => {
     const reviewData = {
-      order_item_id: orderItemId, 
-      product_id: productId,
-      star: rating, 
-      content: comment, 
+      order__item_id: orderItemId,
+      user_id: userId,
+      product__variant_id: product_variant_Id,
+      star: rating,
+      content: comment,
     };
   
     console.log("Dữ liệu đánh giá:", reviewData);
@@ -250,7 +257,7 @@ const UserOrderHistory = () => {
             Không có đơn hàng.
           </p>
         ) : (
-          filteredOrders.map((order) => (
+          filteredOrders.map((order: Order) => (
             <div
               key={order.id}
               className="bg-white shadow-md rounded-lg p-6 mb-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300"
@@ -263,7 +270,7 @@ const UserOrderHistory = () => {
               </div>
               <div className="flex justify-between items-center mb-6">
                 <div className="flex flex-col">
-                  {order.order_items.map((item) => (
+                  {order.order_items.map((item: OrderItem) => (
                     <div key={item.id} className="flex items-center gap-4 mb-4">
                       <img
                         src={
@@ -347,12 +354,12 @@ const UserOrderHistory = () => {
                         Hoàn thành
                       </button>
                       <button
-                        onClick={openModalComplanit}
+                        onClick={() => openModalComplanit(order)}
                         className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-red-600 focus:outline-none bg-white rounded-lg border border-red-600 hover:bg-gray-100 hover:text-red-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-red-400 dark:border-red-600 dark:hover:text-white dark:hover:bg-gray-700"
                       >
                         Khiếu nại
                       </button>
-                      {isModalOpen && (
+                      {isModalOpen && selectedItem && (
                         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                             <h2 className="text-xl font-semibold mb-4">
@@ -381,7 +388,9 @@ const UserOrderHistory = () => {
                                 Đóng
                               </button>
                               <button
-                                onClick={() => handleComplaintOrder(order.id)}
+                                onClick={() =>
+                                  handleComplaintOrder(selectedItem.id)
+                                }
                                 className="px-4 py-2 bg-red-500 text-white rounded-lg"
                               >
                                 Gửi khiếu nại
@@ -404,7 +413,7 @@ const UserOrderHistory = () => {
                           >
                             Đánh giá
                           </button>
-                          {isModalRatingOpen && (
+                          {isModalRatingOpen && selectedItem && (
                             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                               <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                                 <h2 className="text-xl font-semibold mb-4">
@@ -413,7 +422,7 @@ const UserOrderHistory = () => {
                                 <div className="flex gap-[10px]">
                                   <img
                                     src={
-                                      item.product_variant?.image ||
+                                      selectedItem.product_variant?.image ||
                                       "https://via.placeholder.com/150" // Hình ảnh mặc định nếu không có
                                     }
                                     alt="Product"
@@ -425,19 +434,19 @@ const UserOrderHistory = () => {
                                         Tên sản phẩm:
                                       </p>
                                       <p className="text-lg text-gray-700 uppercase font-bold">
-                                        {item.product_variant?.product.name ||
-                                          "Không có"}
+                                        {selectedItem.product_variant?.product
+                                          .name || "Không có"}
                                       </p>
                                     </div>
                                     <p className="text-lg text-gray-700">
                                       Màu sắc:{" "}
-                                      {item.product_variant?.color.name ||
-                                        "Không có"}
+                                      {selectedItem.product_variant?.color
+                                        .name || "Không có"}
                                     </p>
                                     <p className="text-lg text-gray-700">
                                       Kích thước:{" "}
-                                      {item.product_variant?.size.name ||
-                                        "Không có"}
+                                      {selectedItem.product_variant?.size
+                                        .name || "Không có"}
                                     </p>
                                   </div>
                                 </div>
@@ -475,10 +484,10 @@ const UserOrderHistory = () => {
                                   <button
                                     onClick={() =>
                                       handleSubmitRating(
-                                        item.id,
+                                        selectedItem.id,
                                         order.customer.user_id,
-                                        item.product_variant.product
-                                          .id as number,
+                                        selectedItem.product_variant.id,
+                                        order.id
                                       )
                                     }
                                     className="px-4 py-2 bg-red-500 text-white rounded-lg"

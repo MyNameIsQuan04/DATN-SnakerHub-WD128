@@ -48,36 +48,37 @@ class ProductController extends Controller
     {
         try {
             // Start the query on the Product model
-            $query = Product::with(['productVariants', 'category']); // Eager load relationships
+            $query = Product::query(); // Eager load relationships
 
-            // Lọc theo category (Category filter)
+            // // Lọc theo category (Category filter)
             if ($request->has('category')) {
                 $query->where('category_id', $request->category);
             }
 
-            // Lọc theo khoảng giá (Price range filter)
+            // // Lọc theo khoảng giá (Price range filter)
             if ($request->has('price_min') && $request->has('price_max')) {
                 $query->whereBetween('price', [$request->price_min, $request->price_max]);
             }
 
-            // Lọc theo size (Size filter)
+            // // Lọc theo size (Size filter)
             if ($request->has('size')) {
                 $query->whereHas('productVariants', function ($q) use ($request) {
                     $q->where('size_id', $request->size); // Assuming 'size_id' is the correct field in the product_variants table
                 });
             }
 
-            // Lọc theo color (Color filter)
+            // // Lọc theo color (Color filter)
             if ($request->has('color')) {
                 $query->whereHas('productVariants', function ($q) use ($request) {
                     $q->where('color_id', $request->color); // Assuming 'color_id' is the correct field in the product_variants table
                 });
             }
-
-            // Execute the query and get the filtered products
+            // dd($query->toSql());
+            // // Execute the query and get the filtered products
             $products = $query->get();
+            $products->load('category');
 
-            // If no products are found, return a 404 response with a message
+            // // If no products are found, return a 404 response with a message
             if ($products->isEmpty()) {
                 return response()->json([
                     'message' => 'No products found for the given filters.'
@@ -85,7 +86,7 @@ class ProductController extends Controller
             }
 
             // Return the filtered products
-            return response()->json($products);
+            return response()->json($products, 200);
         } catch (\Exception $e) {
             // Handle unexpected errors
             return response()->json([
@@ -106,7 +107,7 @@ class ProductController extends Controller
                 ->orWhere('description', 'like', "%{$query}%")
                 ->orWhere('short_description', 'like', "%{$query}%")
                 ->get();
-
+            $products->load('category');
             return response()->json([
                 'success' => true,
                 'message' => 'Search successful!',

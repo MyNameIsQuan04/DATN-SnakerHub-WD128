@@ -54,13 +54,17 @@ function App() {
         <Route
           path="/"
           element={
-            <OrderContext>
-              <CategoryContext>
-                <ProductContext>
-                  <LayoutClient />
-                </ProductContext>
-              </CategoryContext>
-            </OrderContext>
+            <ColorContext>
+              <SizeContext>
+                <OrderContext>
+                  <CategoryContext>
+                    <ProductContext>
+                      <LayoutClient />
+                    </ProductContext>
+                  </CategoryContext>
+                </OrderContext>
+              </SizeContext>
+            </ColorContext>
           }
         >
           <Route index element={<Home />} />
@@ -89,7 +93,10 @@ function App() {
               path="/profile/order-history"
               element={<UserOrderhistory />}
             />
-            <Route path="/profile/order-detail/:id" element={<UserOrderhistorydetail/>}/>
+            <Route
+              path="/profile/order-detail/:id"
+              element={<UserOrderhistorydetail />}
+            />
             <Route
               path="/profile/announcement"
               element={<UserAnnouncement />}

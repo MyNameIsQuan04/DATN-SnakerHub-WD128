@@ -100,9 +100,9 @@ const Cart = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-  
+
         console.log("API Response:", response.data);
-  
+
         if (response.data.success && response.data.cart?.cart__items) {
           setCartItems(response.data.cart.cart__items);
           setSelectedItems(
@@ -118,10 +118,9 @@ const Cart = () => {
         setLoading(false); // Kết thúc loading sau khi fetch xong
       }
     };
-  
+
     fetchCartItems();
   }, [token]);
-  
 
   const handleCheckout = () => {
     if (selectedItems.length > 0) {
@@ -139,8 +138,6 @@ const Cart = () => {
       currency: "VND",
     }).format(value);
   };
-
-
 
   if (!Array.isArray(cartItems) || cartItems.length === 0) {
     return (
@@ -196,7 +193,10 @@ const Cart = () => {
                   <h5 className="font-manrope font-bold text-lg leading-6 text-gray-900">
                     {product.name}
                   </h5>
-                  <button className="rounded-full group flex items-center justify-center focus-within:outline-none"  onClick={() => handleRemoveItem(item.id)}>
+                  <button
+                    className="rounded-full group flex items-center justify-center focus-within:outline-none"
+                    onClick={() => handleRemoveItem(item.id)}
+                  >
                     <svg
                       width="34"
                       height="34"
@@ -216,15 +216,14 @@ const Cart = () => {
                         stroke="#EF4444"
                         strokeWidth="1.4"
                         strokeLinecap="round"
-                       
                       />
                     </svg>
                   </button>
                 </div>
-               <div className="flex gap-2">
+                <div className="flex gap-2">
                   <span>Size: {productVariant.size.name}</span>
                   <span>Color: {productVariant.color.name}</span>
-               </div>
+                </div>
                 <p className="font-normal text-xs leading-5 text-gray-500 mb-2">
                   {product.description || "Mô tả sản phẩm."}
                 </p>
@@ -288,7 +287,7 @@ const Cart = () => {
           );
         })}
 
-        <div className="max-lg:max-w-md max-lg:mx-auto">
+        <div className="w-2/12 ">
           <button
             onClick={handleCheckout}
             className="rounded-full py-2 px-4 bg-gray-600 text-white text-base w-full transition-all hover:bg-gray-700"
