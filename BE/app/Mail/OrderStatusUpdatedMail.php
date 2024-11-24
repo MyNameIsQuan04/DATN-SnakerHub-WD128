@@ -18,22 +18,32 @@ class OrderStatusUpdatedMail extends Mailable
 
     public function __construct($order, $newStatus)
     {
+        if (!isset($order->customer->user->email)) {
+            throw new \Exception("Email khách hàng không tồn tại");
+        }
+
         $this->order = $order;
         $this->newStatus = $newStatus;
     }
 
 
+
     public function build()
-    {
-        {
+    { {
             $htmlContent = "
-                <h1>Xin chào, {$this->order->customer->user->name}</h1>
-                <p>Trạng thái đơn hàng {$this->order->order_code} của bạn đã được cập nhật thành \"{$this->newStatus}\".</p>
+                <h1 style=\"font-family: Arial, sans-serif; color: #333;\">Xin chào, {$this->order->customer->user->name}</h1>
+                <p style=\"font-family: Arial, sans-serif; font-size: 16px; color: #555;\">
+                    Trạng thái đơn hàng <strong>{$this->order->order_code}</strong> của bạn đã được cập nhật thành <strong style=\"color: #2E86C1;\">{$this->newStatus}</strong>.
+                </p>
+                <p style=\"font-family: Arial, sans-serif; font-size: 14px; color: #777;\">
+                    Nếu bạn có bất kỳ câu hỏi nào, xin vui lòng liên hệ với chúng tôi.
+                </p>
             ";
-    
-            return $this->from(env('MAIL_FROM_ADDRESS'))
-                        ->subject('Cập nhật trạng thái đơn hàng')
-                        ->html($htmlContent);
+
+
+            return $this->from(config('mail.from.address'))
+                ->subject('Cập nhật trạng thái đơn hàng')
+                ->html($htmlContent);
         }
     }
 }

@@ -14,13 +14,13 @@ class DashboardController extends Controller
     public function index(){
         $countCustomer = User::where('type','user')->count();
 
-        $countOrder = Order::whereNotIn('status', ['hoàn thành', 'đã hủy'])->count();
+        $countOrder = Order::whereNotIn('status', ['Hoàn thành', 'Đã hủy'])->count();
 
-        $countOrderDone = Order::where('status', 'hoàn thành')->count();
+        $countOrderDone = Order::where('status', 'Hoàn thành')->count();
 
-        $countOrderDestroy1 = Order::where('status', 'đã hủy')->where('note', 'Giao hàng không đúng yêu cầu')->count();
-        $countOrderDestroy2 = Order::where('status', 'đã hủy')->where('note', 'Sản phẩm có lỗi từ nhà cung cấp')->count();
-        $countOrderDestroy3 = Order::where('status', 'đã hủy')->where('note', 'Lý do khác')->count();
+        $countOrderDestroy1 = Order::where('status', 'Trả hàng')->where('note', 'Giao hàng không đúng yêu cầu')->count();
+        $countOrderDestroy2 = Order::where('status', 'Trả hàng')->where('note', 'Sản phẩm có lỗi từ nhà cung cấp')->count();
+        $countOrderDestroy3 = Order::where('status', 'Trả hàng')->where('note', 'Lý do khác')->count();
 
         $list5Pro = Product::orderByDesc('sales_count')->get();
 

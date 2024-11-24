@@ -4,20 +4,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\api\OrderController;
+use App\Http\Controllers\api\SlideController;
 use App\Http\Controllers\api\ProductController;
-use App\Http\Controllers\Client\CartController;
-use App\Http\Controllers\api\CategoryController;
-use App\Http\Controllers\api\DashboardController;
-use App\Http\Controllers\api\VoucherController;
 use App\Http\Controllers\api\SizeApiController;
 use App\Http\Controllers\api\UserApiController;
+use App\Http\Controllers\api\VoucherController;
+use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ColorApiController;
-use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
-use App\Http\Controllers\Client\ProductController as ClientProductController;
-use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
-use App\Http\Controllers\api\SlideController;
+use App\Http\Controllers\api\DashboardController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Client\CommentController;
+use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
+use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
+use App\Http\Controllers\Client\ProductController as ClientProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +55,7 @@ Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
 Route::get('dashboard', [DashboardController::class, 'index']);
 
 Route::apiResource('client/orders', ApiMemberOrderController::class);
+Route::put('client/return-order/{id}',[ApiMemberOrderController::class, 'returnOrder']);
 
 Route::apiResource('client/products', ClientProductController::class);
 
