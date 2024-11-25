@@ -159,7 +159,7 @@ const UserOrderHistory = () => {
     orderItemId: number,
     userId: number,
     product_variant_Id: number,
-    orderId: number
+    orderId: number 
   ) => {
     const reviewData = {
       order__item_id: orderItemId,
@@ -514,7 +514,7 @@ const UserOrderHistory = () => {
           ))
         )}
       </div>
-      <ToastContainer />
+      <ToastContainer className={`mt-20`}/>
     </div>
   );
 };

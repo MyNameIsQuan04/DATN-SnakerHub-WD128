@@ -18,6 +18,9 @@ const Detail = () => {
   const openSizeGuideModal = () => setIsSizeGuideModalOpen(true);
   const closeSizeGuideModal = () => setIsSizeGuideModalOpen(false);
 
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isSlideshowActive, setIsSlideshowActive] = useState(true);
+
   const [product, setProduct] = useState<Product | null>(null);
   const { id } = useParams<{ id: string }>();
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
@@ -27,7 +30,7 @@ const Detail = () => {
     number | null
   >(null);
   const token = localStorage.getItem("access_token");
-  const [activeTab, setActiveTab] = useState(0); // 0 là tab đầu tiên
+  const [activeTab, setActiveTab] = useState(0);
 
   const handleTabClick = (index: number) => {
     setActiveTab(index);
@@ -130,6 +133,37 @@ const Detail = () => {
     }
   };
 
+  useEffect(() => {
+    let slideshowInterval: NodeJS.Timeout;
+    let resetSlideshowTimeout: NodeJS.Timeout;
+
+    if (isSlideshowActive && product?.product_variants.length) {
+      slideshowInterval = setInterval(() => {
+        setCurrentImageIndex((prevIndex) =>
+          prevIndex === product.product_variants.length - 1 ? 0 : prevIndex + 1
+        );
+      }, 3000);
+
+      resetSlideshowTimeout = setTimeout(() => {
+        setIsSlideshowActive(true);
+      }, 2000); 
+    }
+
+    return () => {
+      clearInterval(slideshowInterval);
+      clearTimeout(resetSlideshowTimeout);
+    };
+  }, [isSlideshowActive, product]);
+
+  const handleImageClick = (index: number) => {
+    setIsSlideshowActive(false);
+    setCurrentImageIndex(index);
+
+    setTimeout(() => {
+      setIsSlideshowActive(true);
+    }, 2000);
+  };
+
   if (!product) {
     return <div>Đang tải...</div>;
   }
@@ -165,22 +199,52 @@ const Detail = () => {
         </div>
 
         <div className="flex gap-5 px-5">
-          <div className="w-1/2">
-            {/* Hình ảnh chính của sản phẩm */}
+          <div className="w-1/2 relative">
+            {/* Ảnh chính */}
             <img
-              src={product.thumbnail}
-              alt={product.name}
-              className="w-full rounded-md"
+              key={currentImageIndex} // Cập nhật key để React nhận diện khi thay đổi ảnh
+              src={product.product_variants[currentImageIndex].image}
+              alt={`Thumbnail ${currentImageIndex + 1}`}
+              className="w-full h-[550px] object-cover rounded-md transition-opacity duration-500 ease-in-out"
             />
+            <button
+              onClick={() =>
+                setCurrentImageIndex((prevIndex) =>
+                  prevIndex === 0
+                    ? product.product_variants.length - 1
+                    : prevIndex - 1
+                )
+              }
+              className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600"
+            >
+              ❮
+            </button>
+            <button
+              onClick={() =>
+                setCurrentImageIndex((prevIndex) =>
+                  prevIndex === product.product_variants.length - 1
+                    ? 0
+                    : prevIndex + 1
+                )
+              }
+              className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600"
+            >
+              ❯
+            </button>
 
-            {/* Hình ảnh thu nhỏ */}
-            <div className="flex mt-2 space-x-2">
-              {[...Array(4)].map((_, index) => (
+            {/* Ảnh nhỏ bên dưới */}
+            <div className="flex mt-4 space-x-2 justify-center">
+              {product.product_variants.map((variant, index) => (
                 <img
                   key={index}
-                  src={product.thumbnail}
-                  className="w-1/5 h-auto cursor-pointer rounded-md hover:opacity-80"
-                  alt=""
+                  src={variant.image}
+                  alt={`Variant ${index + 1}`}
+                  className={`w-[100px] h-[100px] object-cover cursor-pointer rounded-md hover:opacity-80 transition-all duration-300 ${
+                    currentImageIndex === index
+                      ? "border-2 border-orange-500"
+                      : "border"
+                  }`}
+                  onClick={() => handleImageClick(index)}
                 />
               ))}
             </div>
@@ -291,7 +355,7 @@ const Detail = () => {
                 </div>
               </div>
             )}
-            
+
             <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
               <div className="flex items-center justify-center">
                 <svg
