@@ -50,7 +50,8 @@ class OrderController extends Controller
                     'Chờ xử lý' => ['Đã xác nhận', 'Đã hủy'],
                     'Đã xác nhận' => ['Đang vận chuyển'],
                     'Đang vận chuyển' => ['Đã giao hàng'],
-                    'Đã giao hàng' => ['Hoàn thành', 'Trả hàng'],
+                    'Đã giao hàng' => ['Hoàn thành'],
+                    'Yêu cầu trả hàng' => ['Trả hàng'],
                     'Trả hàng' => [],
                     'Hoàn thành' => [],
                     'Đã hủy' => [],
@@ -66,7 +67,7 @@ class OrderController extends Controller
                 $order->update($request->only('status'));
 
                 $order->load('customer.user', 'orderItems.productVariant.product');
-
+                
                 // Đẩy job vào hàng đợi thay vì gửi email trực tiếp
                 SendOrderStatusEmail::dispatch($order, $newStatus);
             });
