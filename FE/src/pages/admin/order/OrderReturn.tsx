@@ -1,85 +1,80 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
 import { Order } from "../../../interfaces/Order";
 import { Link } from "react-router-dom";
 
-const AdminOrder = () => {
+const OrderReturn = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filterStatus, setFilterStatus] = useState<string>("");
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Tải danh sách đơn hàng khi component được mount
+  
   useEffect(() => {
     fetchOrders();
   }, []);
 
-  // Lọc đơn hàng khi có thay đổi về từ khóa tìm kiếm, trạng thái hoặc danh sách đơn hàng
-  useEffect(() => {
-    filterOrders();
-  }, [searchTerm, filterStatus, orders]);
-
-  // Lấy danh sách đơn hàng từ API
   const fetchOrders = async () => {
     try {
+      setIsLoading(true); 
+      const loadingToast = toast.loading("Đang tải dữ liệu...");
       const { data } = await axios.get("http://localhost:8000/api/orders");
-      setOrders(data);
-      setFilteredOrders(data);
+      const filtered = data.filter(
+        (order: Order) => order.status === "Yêu cầu trả hàng"
+      );
+      setOrders(filtered);
+      setFilteredOrders(filtered);
+      toast.update(loadingToast, {
+        render: "Tải dữ liệu thành công!",
+        type: "success",
+        isLoading: false,
+        autoClose: false,
+      });
+      
     } catch (error) {
       console.error("Error fetching orders:", error);
+      toast.error("Không thể tải danh sách đơn hàng!");
+    } finally {
+      setIsLoading(false); 
     }
   };
 
-  // Lọc đơn hàng theo từ khóa tìm kiếm và trạng thái
-  const filterOrders = () => {
-    let filtered = orders;
-
-    // Lọc theo trạng thái
-    if (filterStatus) {
-      filtered = filtered.filter((order) => order.status === filterStatus);
-    }
-
-    // Lọc theo từ khóa tìm kiếm
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (order) =>
-          order.order_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.customer.name
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          order.customer.phone_number.includes(searchTerm)
-      );
-    }
-
-    setFilteredOrders(filtered);
-  };
-
-  // Cập nhật trạng thái đơn hàng
-  const handleUpdateStatus = async (orderId: number, newStatus: string) => {
-    const updatedOrders = orders.map((order) =>
-      order.id === orderId ? { ...order, status: newStatus } : order
+ 
+  useEffect(() => {
+    const filtered = orders.filter((order) =>
+      [order.order_code, order.customer?.name, order.customer?.phone_number]
+        .filter(Boolean) 
+        .some((field) => field.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-    setOrders(updatedOrders);
-
-    try {
-      const response = await axios.patch(
-        `http://localhost:8000/api/orders/${orderId}`,
-        { status: newStatus }
-      );
-      if (response) {
-        toast.success("Cập nhật trạng thái thành công!");
-      }
-    } catch (error) {
-      console.error("Error updating order status:", error);
-      setOrders(orders);
-      toast.error("Cập nhật trạng thái thất bại !");
-    }
-  };
+    setFilteredOrders(filtered);
+  }, [searchTerm, orders]);
 
   
+  const handleConfirmReturn = async (orderId: number) => {
+    try {
+      const loadingToast = toast.loading("Đang xử lý yêu cầu...");
+      await axios.patch(`http://localhost:8000/api/orders/${orderId}`, {
+        status: "Trả hàng",
+      });
+
+      
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) => order.id !== orderId)
+      );
+
+      toast.update(loadingToast, {
+        render: "Xác nhận trả hàng thành công!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    } catch (error) {
+      console.error("Lỗi khi xác nhận trả hàng:", error);
+      toast.error("Xác nhận trả hàng thất bại. Vui lòng thử lại.");
+    }
+  };
 
   const toggleExpandOrder = (orderId: number) => {
     setExpandedOrderId((prevOrderId) =>
@@ -87,24 +82,11 @@ const AdminOrder = () => {
     );
   };
 
-  // Danh sách trạng thái có sẵn để lọc
-  const getStatusButtons = () => [
-    { label: "Tất cả", value: "" },
-    { label: "Chờ xử lý", value: "Chờ xử lý" },
-    { label: "Đã xác nhận", value: "Đã xác nhận" },
-    { label: "Đang vận chuyển", value: "Đang vận chuyển" },
-    { label: "Đã giao hàng", value: "Đã giao hàng" },
-    { label: "Hoàn thành", value: "Hoàn thành" },
-    { label: "Đã hủy", value: "Đã hủy" },
-    { label: "Trả hàng", value: "Trả hàng" },
-    
-  ];
-
   return (
     <div className="container mx-auto p-4">
       <div className="sticky top-0 bg-white shadow-lg z-10 p-4">
         <h1 className="text-3xl font-bold mb-4 text-gray-800">
-          Quản lý đơn hàng
+          Quản lý yêu cầu trả hàng
         </h1>
         <div className="flex flex-wrap items-center gap-4 mb-4">
           <input
@@ -114,38 +96,27 @@ const AdminOrder = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="border border-gray-300 rounded-lg py-2 px-4 w-full md:w-1/2 lg:w-1/3 transition duration-300 focus:ring-2 focus:ring-yellow-500"
           />
-          <Link to={`/admin/order-return`}>
+          <Link to={`/admin/order`}>
             <button className="mt-4 md:mt-0 px-4 py-2 rounded-md border text-sm bg-gray-500 text-white border-gray-500 hover:bg-gray-600 hover:gray-green-600 transition duration-200">
-              Yêu cầu trả hàng
+              Danh sách đơn hàng
             </button>
           </Link>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {getStatusButtons().map((status) => (
-            <button
-              key={status.value}
-              onClick={() => setFilterStatus(status.value)}
-              className={`px-4 py-2 rounded-md border text-sm transition duration-200 
-                ${
-                  filterStatus === status.value
-                    ? "bg-gray-500 text-white border-gray-500"
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                }
-              `}
-            >
-              {status.label}
-            </button>
-          ))}
-        </div>
       </div>
 
-      {filteredOrders.length === 0 && searchTerm && (
-        <div className="mt-4 text-center text-red-500 font-semibold">
-          Không tìm thấy đơn hàng với từ khóa tìm kiếm "{searchTerm}"
+      {isLoading && (
+        <div className="mt-4 text-center text-blue-500 font-semibold">
+          Đang tải dữ liệu...
         </div>
       )}
 
-      {filteredOrders.length > 0 && (
+      {!isLoading && filteredOrders.length === 0 && (
+        <div className="mt-4 text-center text-red-500 font-semibold">
+          Không có đơn hàng phù hợp.
+        </div>
+      )}
+
+      {!isLoading && filteredOrders.length > 0 && (
         <div className="overflow-y-auto mt-4" style={{ maxHeight: "540px" }}>
           <table className="min-w-full bg-white border border-gray-100 shadow-md">
             <thead className="bg-gray-100 sticky top-0">
@@ -156,8 +127,7 @@ const AdminOrder = () => {
                   "Thông tin",
                   "Ngày tạo",
                   "Tổng tiền",
-                  "Đơn hàng",
-                  "Tùy chỉnh",
+                  "Chi tiết",
                 ].map((heading) => (
                   <th
                     key={heading}
@@ -169,7 +139,7 @@ const AdminOrder = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.map((item: Order) => (
+            {filteredOrders.map((item: Order) => (
                 <React.Fragment key={item.id}>
                   <tr className="hover:bg-gray-200 cursor-pointer transition duration-200 ease-in-out">
                     <td className="py-3 px-4 border-b text-center">
@@ -199,35 +169,30 @@ const AdminOrder = () => {
                       </button>
                     </td>
 
-                    <td className="py-3 px-4 border-b text-center">
-                      <select
-                        value={item.status}
-                        onChange={(e) =>
-                          handleUpdateStatus(item.id, e.target.value)
-                        }
-                        className={`border rounded px-2 py-1 transition duration-300 
-                          ${
-                            item.status === "Chờ xử lý" ||
-                            item.status === "Đã xác nhận"
-                              ? "border-red-500 text-red-500 focus:ring-2 focus:ring-red-500"
-                              : item.status === "Đang vận chuyển"
-                              ? "border-orange-500 text-orange-500 focus:ring-2 focus:ring-orange-500"
-                              : item.status === "Đã giao hàng" ||
-                                item.status === "Hoàn thành"
-                              ? "border-green-500 text-green-500 focus:ring-2 focus:ring-green-500"
-                              : "border-gray-300 text-gray-700 focus:ring-2 focus:ring-yellow-500"
-                          }`}
-                      >
-                        {getStatusButtons()
-                          .filter((status) => status.label !== "Tất cả")
-                          .map((status) => (
-                            <option key={status.value} value={status.value}>
-                              {status.label}
-                            </option>
-                          ))}
-                      </select>
-                    </td>
+                    
                   </tr>
+                  {item.status === "Yêu cầu trả hàng" && (
+                    <tr>
+                      <td colSpan={9} className="py-6 px-6 border-b bg-gray-50">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                          <div>
+                            <h1 className="text-lg font-semibold text-gray-800 mb-2 md:mb-0">
+                              Yêu cầu trả hàng:
+                            </h1>
+                            <h2 className="text-sm text-gray-600">
+                              {item.note}
+                            </h2>
+                          </div>
+                          <button
+                            className="mt-4 md:mt-0 px-4 py-2 rounded-md border text-sm bg-gray-500 text-white border-gray-500 hover:bg-gray-600 hover:gray-green-600 transition duration-200"
+                            onClick={() => handleConfirmReturn(item.id)}
+                          >
+                            Xác nhận yêu cầu
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )} 
 
                   {expandedOrderId === item.id && (
                     <tr>
@@ -283,4 +248,4 @@ const AdminOrder = () => {
   );
 };
 
-export default AdminOrder;
+export default OrderReturn;

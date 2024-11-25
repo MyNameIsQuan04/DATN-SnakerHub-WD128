@@ -210,7 +210,7 @@ class OrderController extends Controller
             $dataReturn = $request->validate([
                 'status' => 'required|in:Yêu cầu trả hàng',
                 'note' => 'required|in:Giao hàng không đúng yêu cầu,Sản phẩm có lỗi từ nhà cung cấp,Lý do khác',
-            ])['note'];
+            ]);
 
             foreach ($order->orderItems as $orderItem) {
                 $productVariant = Product_Variant::find($orderItem['product__variant_id']);
