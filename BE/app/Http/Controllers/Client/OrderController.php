@@ -207,7 +207,8 @@ class OrderController extends Controller
     public function returnOrder(Request $request, Order $order)
     {
         if ($order['status'] === 'Đã giao hàng') {
-            $note = $request->validate([
+            $dataReturn = $request->validate([
+                'status' => 'required|in:Yêu cầu trả hàng',
                 'note' => 'required|in:Giao hàng không đúng yêu cầu,Sản phẩm có lỗi từ nhà cung cấp,Lý do khác',
             ]);
 
@@ -228,7 +229,8 @@ class OrderController extends Controller
             }
 
             $order->update([
-                'note' => $note,
+                'status' => $dataReturn['status'],
+                'note' => $dataReturn['note'],
             ]);
 
             $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
