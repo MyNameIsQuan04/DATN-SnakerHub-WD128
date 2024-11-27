@@ -133,4 +133,4 @@ Route::prefix('slides')->group(function () {
 
 Route::get('/search', [ClientProductController::class, 'search']);
 
-Route::post('/rate', [CommentController::class, 'search']);
+Route::post('/rate', [CommentController::class, 'store']);
