@@ -205,8 +205,8 @@ const Header = () => {
           {/* Search Bar */}
           <form
             onSubmit={(e) => {
-              e.preventDefault(); // Ngăn chặn hành động submit mặc định
-              handleSearch(); // Gọi hàm handleSearch
+              e.preventDefault(); 
+              handleSearch(); 
             }}
             className="flex items-center border rounded-full px-3 py-1 w-[200px]"
           >
@@ -285,7 +285,8 @@ const Header = () => {
                 <div
                   className="flex items-center gap-2 cursor-pointer"
                   onClick={toggleDropdown}
-                >
+                > 
+                {/* <img src={user?.avatar} className="w-8 h-8 rounded-full"/> */}
                   <span className="font-semibold">{user?.name}</span>
 
                   {/* Dropdown menu */}

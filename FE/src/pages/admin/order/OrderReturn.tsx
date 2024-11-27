@@ -11,47 +11,43 @@ const OrderReturn = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  
   useEffect(() => {
     fetchOrders();
   }, []);
 
   const fetchOrders = async () => {
     try {
-      setIsLoading(true); 
-      const loadingToast = toast.loading("Đang tải dữ liệu...");
+      setIsLoading(true);
+    //   const loadingToast = toast.loading("Đang tải dữ liệu...");
       const { data } = await axios.get("http://localhost:8000/api/orders");
       const filtered = data.filter(
         (order: Order) => order.status === "Yêu cầu trả hàng"
       );
       setOrders(filtered);
       setFilteredOrders(filtered);
-      toast.update(loadingToast, {
-        render: "Tải dữ liệu thành công!",
-        type: "success",
-        isLoading: false,
-        autoClose: false,
-      });
-      
+    //   toast.update(loadingToast, {
+    //     // render: "Tải dữ liệu thành công!",
+    //     type: "success",
+    //     isLoading: false,
+    //     autoClose: false,
+    //   });
     } catch (error) {
       console.error("Error fetching orders:", error);
       toast.error("Không thể tải danh sách đơn hàng!");
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
- 
   useEffect(() => {
     const filtered = orders.filter((order) =>
       [order.order_code, order.customer?.name, order.customer?.phone_number]
-        .filter(Boolean) 
+        .filter(Boolean)
         .some((field) => field.toLowerCase().includes(searchTerm.toLowerCase()))
     );
     setFilteredOrders(filtered);
   }, [searchTerm, orders]);
 
-  
   const handleConfirmReturn = async (orderId: number) => {
     try {
       const loadingToast = toast.loading("Đang xử lý yêu cầu...");
@@ -59,7 +55,6 @@ const OrderReturn = () => {
         status: "Trả hàng",
       });
 
-      
       setOrders((prevOrders) =>
         prevOrders.filter((order) => order.id !== orderId)
       );
@@ -75,6 +70,28 @@ const OrderReturn = () => {
       toast.error("Xác nhận trả hàng thất bại. Vui lòng thử lại.");
     }
   };
+  const handleUpdateReturn = async (orderId: number) => {
+    try {
+      const loadingToast = toast.loading("Đang xử lý yêu cầu...");
+      await axios.patch(`http://localhost:8000/api/orders/${orderId}`, {
+        status: "Đã giao hàng",
+      });
+
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) => order.id !== orderId)
+      );
+
+      toast.update(loadingToast, {
+        render: "Hủy yêu cầu khiếu nại thành công ",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    } catch (error) {
+      console.error("Lỗi khi xác nhận hủy yêu cầu:", error);
+      toast.error("Xác nhận hủy yêu cầu thất bại. Vui lòng thử lại.");
+    }
+  };
 
   const toggleExpandOrder = (orderId: number) => {
     setExpandedOrderId((prevOrderId) =>
@@ -86,7 +103,7 @@ const OrderReturn = () => {
     <div className="container mx-auto p-4">
       <div className="sticky top-0 bg-white shadow-lg z-10 p-4">
         <h1 className="text-3xl font-bold mb-4 text-gray-800">
-          Quản lý yêu cầu trả hàng
+          Yêu cầu khiếu nại
         </h1>
         <div className="flex flex-wrap items-center gap-4 mb-4">
           <input
@@ -139,7 +156,7 @@ const OrderReturn = () => {
               </tr>
             </thead>
             <tbody>
-            {filteredOrders.map((item: Order) => (
+              {filteredOrders.map((item: Order) => (
                 <React.Fragment key={item.id}>
                   <tr className="hover:bg-gray-200 cursor-pointer transition duration-200 ease-in-out">
                     <td className="py-3 px-4 border-b text-center">
@@ -168,8 +185,6 @@ const OrderReturn = () => {
                         {expandedOrderId === item.id ? "Ẩn" : "Chi tiết"}
                       </button>
                     </td>
-
-                    
                   </tr>
                   {item.status === "Yêu cầu trả hàng" && (
                     <tr>
@@ -180,19 +195,27 @@ const OrderReturn = () => {
                               Yêu cầu trả hàng:
                             </h1>
                             <h2 className="text-sm text-gray-600">
-                              {item.note}
+                              - {item.note}
                             </h2>
                           </div>
-                          <button
-                            className="mt-4 md:mt-0 px-4 py-2 rounded-md border text-sm bg-gray-500 text-white border-gray-500 hover:bg-gray-600 hover:gray-green-600 transition duration-200"
-                            onClick={() => handleConfirmReturn(item.id)}
-                          >
-                            Xác nhận yêu cầu
-                          </button>
+                          <div>
+                            <button
+                              className="mr-3 mt-4 md:mt-0 px-4 py-2 rounded-md border text-sm bg-white text-gray-500 border-gray-500 hover:bg-gray-300 hover:gray-green-600 transition duration-200"
+                              onClick={() => handleUpdateReturn(item.id)}
+                            >
+                              Hủy yêu cầu
+                            </button>
+                            <button
+                              className="mt-4 md:mt-0 px-4 py-2 rounded-md border text-sm bg-gray-500 text-white border-gray-500 hover:bg-gray-600 hover:gray-green-600 transition duration-200"
+                              onClick={() => handleConfirmReturn(item.id)}
+                            >
+                              Xác nhận yêu cầu
+                            </button>
+                          </div>
                         </div>
                       </td>
                     </tr>
-                  )} 
+                  )}
 
                   {expandedOrderId === item.id && (
                     <tr>

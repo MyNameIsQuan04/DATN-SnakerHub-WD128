@@ -81,7 +81,7 @@ const EditProduct = () => {
         }
       })();
     }
-  }, [id]);
+  }, []);
   const checkFormData = (formData: FormData) => {
     for (let pair of formData.entries()) {
       const key = pair[0];
