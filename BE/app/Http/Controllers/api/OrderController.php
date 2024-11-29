@@ -43,7 +43,7 @@ class OrderController extends Controller
         try {
             DB::transaction(function () use ($request, $order) {
                 $request->validate([
-                    'status' => 'required|in:Chờ xử lý,Đã xác nhận,Đang vận chuyển,Đã giao hàng,Trả hàng,Hoàn thành,Đã hủy',
+                    'status' => 'required|in:Chờ xử lý,Đã xác nhận,Đang vận chuyển,Đã giao hàng,Xử lý yêu cầu trả hàng,Từ chối trả hàng,Trả hàng,Hoàn thành,Đã hủy',
                 ]);
 
                 $statusOrder = [
@@ -51,8 +51,10 @@ class OrderController extends Controller
                     'Đã xác nhận' => ['Đang vận chuyển'],
                     'Đang vận chuyển' => ['Đã giao hàng'],
                     'Đã giao hàng' => ['Hoàn thành'],
-                    'Yêu cầu trả hàng' => ['Trả hàng'],
+                    'Yêu cầu trả hàng' => ['Xử lý yêu cầu trả hàng'],
+                    'Xử lý yêu cầu trả hàng' => ['Trả hàng','Từ chối trả hàng'],
                     'Trả hàng' => [],
+                    'Từ chối trả hàng' => [],
                     'Hoàn thành' => [],
                     'Đã hủy' => [],
                 ];
