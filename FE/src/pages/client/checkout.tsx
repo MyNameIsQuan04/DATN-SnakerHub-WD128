@@ -128,6 +128,7 @@ const Checkout = () => {
       })),
       total_price: grandTotalPrice - discount,
       codeDiscount,
+      payment: 1,
       discount,
     };
 
@@ -157,15 +158,15 @@ const Checkout = () => {
   return (
     <div className="mt-[100px] px-[150px]">
       <div className="flex items-center space-x-2 mb-4 ">
-          <a
-            href="/"
-            className="text-xl font-medium text-gray-800 hover:text-blue-400 hover:underline"
-          >
-            Trang chủ
-          </a>
-          <GrNext className="text-xl text-gray-600" />
-          <a href="">Thanh toán</a>
-        </div>
+        <a
+          href="/"
+          className="text-xl font-medium text-gray-800 hover:text-blue-400 hover:underline"
+        >
+          Trang chủ
+        </a>
+        <GrNext className="text-xl text-gray-600" />
+        <a href="">Thanh toán</a>
+      </div>
       <div className=" px-10 flex gap-10">
         {/* Phần bên trái: Danh sách sản phẩm */}
         <div className="w-3/5">
@@ -416,7 +417,14 @@ const Checkout = () => {
                 {formatCurrency(grandTotalPrice - discount)}
               </span>
             </div>
-
+            <div className="">
+              <p>Phương thức thanh toán</p>
+              <div className="">
+                <p>Thanh toán vnpay</p>
+                <p>Thanh toán momo</p>
+                <p>Thanh toán khi nhận hàng</p>
+              </div>
+            </div>
             {/* Nút thanh toán */}
             <button
               onClick={handleSubmit(onSubmit)}

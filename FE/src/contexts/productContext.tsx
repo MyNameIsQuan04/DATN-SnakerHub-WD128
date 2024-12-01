@@ -81,6 +81,7 @@ const ProductContext = ({ children }: Props) => {
         value={{
           setProducts,
           productsClient,
+          setProductsClient,
           onAddProduct,
           onRemoveProduct,
           onUpdateProduct,

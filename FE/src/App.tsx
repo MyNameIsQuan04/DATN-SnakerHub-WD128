@@ -52,13 +52,17 @@ function App() {
         <Route
           path="/"
           element={
-            <OrderContext>
-              <CategoryContext>
-                <ProductContext>
-                  <LayoutClient />
-                </ProductContext>
-              </CategoryContext>
-            </OrderContext>
+            <ColorContext>
+              <SizeContext>
+                <OrderContext>
+                  <CategoryContext>
+                    <ProductContext>
+                      <LayoutClient />
+                    </ProductContext>
+                  </CategoryContext>
+                </OrderContext>
+              </SizeContext>
+            </ColorContext>
           }
         >
           <Route index element={<Home />} />

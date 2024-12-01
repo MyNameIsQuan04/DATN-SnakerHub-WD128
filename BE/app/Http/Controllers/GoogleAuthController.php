@@ -6,14 +6,19 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Google\Service\ServiceConsumerManagement\Http;
-use Illuminate\Support\Facades\Auth;
+use Google\Service\ServiceControl\Auth;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class GoogleAuthController extends Controller
 {
+    // Redirect to Google
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->stateless()->redirect();
+    }
+
     public function loginWithGoogle(Request $request)
     {
         $token = $request->input('token');
@@ -34,7 +39,7 @@ class GoogleAuthController extends Controller
                 'email_verified_at' => now(),
             ]
         );
-
+        Auth::login($user);
         // Tạo JWT token
         $jwtToken = JWTAuth::fromUser($user);
 

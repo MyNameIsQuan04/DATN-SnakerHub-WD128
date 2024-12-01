@@ -287,7 +287,7 @@ const Cart = () => {
           );
         })}
 
-        <div className="max-lg:max-w-md max-lg:mx-auto">
+        <div className="w-2/12 ">
           <button
             onClick={handleCheckout}
             className="rounded-full py-2 px-4 bg-gray-600 text-white text-base w-full transition-all hover:bg-gray-700"

@@ -1,17 +1,33 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState } from "react";
 import { IoLogOutOutline } from "react-icons/io5";
 import { toast, ToastContainer } from "react-toastify";
+import api from "../../configs/axios";
 
 const Header = () => {
   const { user, isLoggedIn, logout } = useAuth();
   const [dropdownVisible, setDropdownVisible] = useState(false);
-
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
   };
+  const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
 
+  const handleSearch = async () => {
+    if (!keyword.trim()) return;
+
+    try {
+      const response = await api.get("search", {
+        params: { keyword },
+      });
+
+      console.log(response.data.products);
+      navigate(`/products?keyword=${encodeURIComponent(keyword)}`);
+    } catch (err) {
+      console.error("Có lỗi xảy ra khi tìm kiếm", err);
+    }
+  };
   return (
     <div>
       <header className="fixed top-0 left-0 right-0 z-50 bg-white flex items-center justify-between px-14 py-3 border-b border-gray-200 mb-0">
@@ -187,23 +203,27 @@ const Header = () => {
         <div className="flex items-center space-x-4">
           {/* Search Bar */}
           <div className="flex items-center border rounded-full px-3 py-1 w-[200px]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="size-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-              />
-            </svg>
+            <button onClick={handleSearch}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                className="size-6  "
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                />
+              </svg>
+            </button>
 
             <input
               type="text"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
               placeholder="Tìm kiếm"
               className="w-full px-3 py-1 text-gray-700 focus:outline-none "
             />

@@ -209,7 +209,7 @@ class OrderController extends Controller
         if ($order['status'] === 'Đã giao hàng') {
             $note = $request->validate([
                 'note' => 'required|in:Giao hàng không đúng yêu cầu,Sản phẩm có lỗi từ nhà cung cấp,Lý do khác',
-            ]);
+            ])['note'];
 
             foreach ($order->orderItems as $orderItem) {
                 $productVariant = Product_Variant::find($orderItem['product__variant_id']);
@@ -233,6 +233,6 @@ class OrderController extends Controller
 
             $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
             return $order;
-        } 
+        }
     }
 }
