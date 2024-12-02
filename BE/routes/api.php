@@ -17,7 +17,7 @@ use App\Http\Controllers\Client\CommentController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
-
+use App\Http\Controllers\VNPayController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -133,4 +133,7 @@ Route::prefix('slides')->group(function () {
 
 Route::get('/search', [ClientProductController::class, 'search']);
 
-Route::post('/rate', [CommentController::class, 'search']);
+Route::post('/rate', [CommentController::class, 'store']);
+
+Route::post('/vnpay/create', [VNPayController::class, 'createPayment']);
+Route::get('/vnpay/return', [VNPayController::class, 'vnpayReturn']);

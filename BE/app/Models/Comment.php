@@ -12,6 +12,7 @@ class Comment extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'order__item_id',
         'user_id',
         'product_id',
         'content',

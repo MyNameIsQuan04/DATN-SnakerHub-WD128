@@ -173,7 +173,12 @@ const Products = () => {
           </aside>
 
           <section className="w-4/5 px-4">
-            <h2 className="text-xl font-semibold mb-4">Sản phẩm</h2>
+            <div className="flex gap-1 items-center">
+              <span className="mb-4">Kết quả tìm kiếm theo từ khóa</span>
+              <h2 className="text-xl font-semibold mb-4 text-red-500">
+                '{keyword}'
+              </h2>
+            </div>
             {products?.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {products.map((product: Product) => (

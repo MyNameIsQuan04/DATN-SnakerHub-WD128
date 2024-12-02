@@ -6,9 +6,9 @@ import { Link } from "react-router-dom";
 
 const formatCurrency = (amount: number) => {
   if (amount === undefined || amount === null) {
-    return "0"; // Trả về giá trị mặc định nếu amount không hợp lệ
+    return "0"; 
   }
-  return amount.toLocaleString("vi-VN"); // Format với dấu phân cách cho số
+  return amount.toLocaleString("vi-VN"); 
 };
 
 const UserOrderHistory = () => {
@@ -32,7 +32,7 @@ const UserOrderHistory = () => {
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCommentChange = (e: any) => {
-    setComment(e.target.value); // Cập nhật nội dung bình luận
+    setComment(e.target.value); 
   };
   const openModalComplanit = (order) => {
     setIsModalOpen(true);
@@ -45,12 +45,12 @@ const UserOrderHistory = () => {
     setIsModalRatingOpen(true);
   };
   const handleCloseModalRating = () => {
-    setIsModalRatingOpen(false); // Đóng modal
+    setIsModalRatingOpen(false); 
     setRating(0);
     setComment("");
   };
   const handleCloseModal = () => {
-    setIsModalOpen(false); // Đóng modal
+    setIsModalOpen(false); 
     setSelectedReason("");
   };
 
@@ -73,7 +73,7 @@ const UserOrderHistory = () => {
         );
         setOrders(response.data);
         console.log(response.data);
-        localStorage.setItem("orders", JSON.stringify(response.data)); // Lưu vào localStorage
+        localStorage.setItem("orders", JSON.stringify(response.data)); 
       } catch (error) {
         setError("Lỗi khi tải trạng thái đơn hàng.");
         console.error(error);
@@ -135,7 +135,7 @@ const UserOrderHistory = () => {
     try {
       await axios.put(
         `http://localhost:8000/api/client/return-order/${idOrder}`,
-        { note: selectedReason },
+        { note: selectedReason, status: "Yêu cầu trả hàng" },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -144,12 +144,10 @@ const UserOrderHistory = () => {
       );
       console.log(selectedReason);
       toast.success("Khiếu nại thành công");
+      setOrders((prev) =>
+        prev.map((order) => (order.id === idOrder ? { ...order, complaintSent: true } : order))
+      );
       setIsModalOpen(false);
-      // setOrders((prevOrders) =>
-      //   prevOrders.map((order) =>
-      //     order.id === idOrder ? { ...order, status: "Trả hàng" } : order
-      //   )
-      // );
     } catch (error) {
       console.error("Lỗi khi gửi khiếu nại đơn hàng đơn hàng:", error);
       setIsModalOpen(false);
@@ -159,7 +157,7 @@ const UserOrderHistory = () => {
     orderItemId: number,
     userId: number,
     product_variant_Id: number,
-    orderId: number
+    orderId: number 
   ) => {
     const reviewData = {
       order__item_id: orderItemId,
@@ -168,24 +166,27 @@ const UserOrderHistory = () => {
       star: rating,
       content: comment,
     };
-    console.log(reviewData);
+  
+    console.log("Dữ liệu đánh giá:", reviewData);
+  
     try {
-      const response = await axios.patch(
-        `http://localhost:8000/api/client/orders/${orderId}`,
+      const response = await axios.post(
+        "http://localhost:8000/api/rate", // Endpoint mới
         reviewData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
-
-      handleCloseModalRating();
-      console.log("Đánh giá đã được gửi:", response.data);
+  
+      console.log("Đánh giá đã được gửi thành công:", response.data);
+      handleCloseModalRating(); 
     } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);
     }
   };
+  
 
   const filteredOrders =
     selectedStatus === "all"
@@ -194,7 +195,7 @@ const UserOrderHistory = () => {
 
   return (
     <div className="min-h-screen bg-white font-inter">
-      <div className="max-w-7xl mx-auto p-6 bg-white rounded-xl">
+      <div className="max-w-7xl mx-auto px-6 bg-white rounded-xl">
         {/* Tabs trạng thái */}
         <div className="flex justify-center mb-6">
           {[
@@ -259,6 +260,12 @@ const UserOrderHistory = () => {
               key={order.id}
               className="bg-white shadow-md rounded-lg p-6 mb-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300"
             >
+              <div className="pb-2">
+                <span className="font-semibold">Mã đơn hàng:</span>
+                <span>
+                  {"# "} {order.order_code}
+                </span>
+              </div>
               <div className="flex justify-between items-center mb-6">
                 <div className="flex flex-col">
                   {order.order_items.map((item: OrderItem) => (
@@ -344,12 +351,14 @@ const UserOrderHistory = () => {
                       >
                         Hoàn thành
                       </button>
-                      <button
+                      {!order.omplaintSent && (
+                        <button
                         onClick={() => openModalComplanit(order)}
                         className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-red-600 focus:outline-none bg-white rounded-lg border border-red-600 hover:bg-gray-100 hover:text-red-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-red-400 dark:border-red-600 dark:hover:text-white dark:hover:bg-gray-700"
                       >
                         Khiếu nại
                       </button>
+                      )}
                       {isModalOpen && selectedItem && (
                         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -505,7 +514,7 @@ const UserOrderHistory = () => {
           ))
         )}
       </div>
-      <ToastContainer />
+      <ToastContainer className={`mt-20`}/>
     </div>
   );
 };

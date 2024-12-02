@@ -27,6 +27,7 @@ const Checkout = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState<boolean>(true);
   const provinces = useProvinces();
+  const [shippingFee, setShippingFee] = useState(0);
   const districts = useDistricts(selectedProvince?.code);
   const wards = useWards(selectedDistrict?.code);
   const token = localStorage.getItem("access_token");
@@ -282,32 +283,29 @@ const Checkout = () => {
               <div className="space-y-6">
                 {/* Tỉnh/Thành phố */}
                 <div className="flex gap-4">
-                  <div className="w-full sm:w-1/3">
-                    <label
-                      htmlFor="province"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Tỉnh/Thành phố
-                    </label>
-                    <select
-                      id="province"
-                      value={selectedProvince?.code || ""}
-                      onChange={(e) => {
-                        const selectedProvince = provinces.find(
-                          (province) => province.code === +e.target.value
-                        );
-                        setSelectedProvince(selectedProvince || null);
-                      }}
-                      className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Tỉnh/thành phố</option>
-                      {provinces.map((province) => (
-                        <option key={province.code} value={province.code}>
-                          {province.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <select
+                    id="province"
+                    value={selectedProvince?.code || ""}
+                    onChange={(e) => {
+                      const selectedProvince = provinces.find(
+                        (province) => province.code === +e.target.value
+                      );
+                      setSelectedProvince(selectedProvince || null);
+                      if (selectedProvince?.name === "Thành phố Hà Nội") {
+                        setShippingFee(20000);
+                      } else {
+                        setShippingFee(30000);
+                      }
+                    }}
+                    className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Tỉnh/thành phố</option>
+                    {provinces.map((province) => (
+                      <option key={province.code} value={province.code}>
+                        {province.name}
+                      </option>
+                    ))}
+                  </select>
 
                   {/* Huyện/Quận */}
                   <div className="w-full sm:w-1/3">
@@ -401,10 +399,13 @@ const Checkout = () => {
                   {formatCurrency(grandTotalPrice)}
                 </span>
               </div>
-              <div className="flex justify-between  ">
+              <div className="flex justify-between">
                 <span>Phí vận chuyển</span>
-                <span className="text-red-500">{formatCurrency(10000)}</span>
+                <span className="text-red-500">
+                  {formatCurrency(shippingFee)}
+                </span>
               </div>
+
               <div className="flex justify-between">
                 <span>Voucher:</span>
                 <span className="text-red-500">{formatCurrency(discount)}</span>
@@ -414,7 +415,7 @@ const Checkout = () => {
             <div className="flex justify-end text-lg">
               <span>Thành tiền: </span>
               <span className="text-red-500">
-                {formatCurrency(grandTotalPrice - discount)}
+                {formatCurrency(grandTotalPrice - discount + shippingFee)}
               </span>
             </div>
             <div className="">

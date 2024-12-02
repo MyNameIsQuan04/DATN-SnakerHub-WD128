@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useContext, useState } from "react";
 import { IoLogOutOutline } from "react-icons/io5";
-import axios from "axios";
+// import axios from "axios";
 import { ProductCT } from "../../contexts/productContext";
 import api from "../../configs/axios";
 
@@ -203,19 +203,25 @@ const Header = () => {
         {/* Search and Icons Section (Right) */}
         <div className="flex items-center space-x-4">
           {/* Search Bar */}
-          <div className="flex items-center border rounded-full px-3 py-1 w-[200px]">
-            <button onClick={handleSearch}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault(); 
+              handleSearch(); 
+            }}
+            className="flex items-center border rounded-full px-3 py-1 w-[200px]"
+          >
+            <button type="submit">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke-width="1.5"
+                strokeWidth="1.5"
                 stroke="currentColor"
-                className="size-6  "
+                className="size-6"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
                 />
               </svg>
@@ -226,9 +232,9 @@ const Header = () => {
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               placeholder="Tìm kiếm"
-              className="w-full px-3 py-1 text-gray-700 focus:outline-none "
+              className="w-full px-3 py-1 text-gray-700 focus:outline-none"
             />
-          </div>
+          </form>
 
           <div className="flex gap-[15px] text-gray-700 ">
             {isLoggedIn ? (
@@ -279,7 +285,8 @@ const Header = () => {
                 <div
                   className="flex items-center gap-2 cursor-pointer"
                   onClick={toggleDropdown}
-                >
+                > 
+                {/* <img src={user?.avatar} className="w-8 h-8 rounded-full"/> */}
                   <span className="font-semibold">{user?.name}</span>
 
                   {/* Dropdown menu */}

@@ -12,6 +12,7 @@ export interface Order {
   customer: Customer;
   order_items: OrderItem[];
   order_code : string
+  omplaintSent: boolean;
 }
 
 export interface Customer {

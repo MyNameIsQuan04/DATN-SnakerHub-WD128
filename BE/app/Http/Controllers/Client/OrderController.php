@@ -63,6 +63,9 @@ class OrderController extends Controller
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
+            if ($validatedData['town'] === 'Hà Nội') {
+                $ship = 21000;
+            } else $ship = 31000;
             $dataCustomer = [
                 'user_id' => $userId,
                 'name' => $validatedData['name'],
@@ -79,7 +82,7 @@ class OrderController extends Controller
 
             $order = Order::create([
                 'customer_id' => $customer->id,
-                'total_price' => $validatedData['total_price'],
+                'total_price' => $validatedData['total_price'] + $ship,
                 'order_code' => $orderCode,
             ]);
 
@@ -131,6 +134,7 @@ class OrderController extends Controller
                 'success' => true,
                 'message' => 'thành công',
                 'order' => $order,
+                'ship' => $ship,
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -210,7 +214,7 @@ class OrderController extends Controller
             $dataReturn = $request->validate([
                 'status' => 'required|in:Yêu cầu trả hàng',
                 'note' => 'required|in:Giao hàng không đúng yêu cầu,Sản phẩm có lỗi từ nhà cung cấp,Lý do khác',
-            ])['note'];
+            ]);
 
             foreach ($order->orderItems as $orderItem) {
                 $productVariant = Product_Variant::find($orderItem['product__variant_id']);

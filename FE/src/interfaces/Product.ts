@@ -24,6 +24,7 @@ export interface Product {
 export interface product_variants {
   id: number;
   product_id: number;
+  name: string;
   color: Color;
   size: Size;
   color_id: number;

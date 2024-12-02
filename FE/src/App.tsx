@@ -27,7 +27,7 @@ import UpdateColor from "./pages/admin/color/UpdateColor";
 import AddSize from "./pages/admin/size/AddSize";
 import UpdateSize from "./pages/admin/size/UpdateSize";
 import Products from "./pages/client/products";
-import CartContext from "./contexts/CartContext";
+// import CartContext from "./contexts/CartContext";
 import OrderContext from "./contexts/OrderContext";
 import ThankYou from "./pages/client/Thankyou";
 import Contact from "./pages/client/contact";
@@ -44,9 +44,11 @@ import UserAddress from "./pages/client/User/UserAddress";
 import UserChangepass from "./pages/client/User/UserChangepass";
 import UserOrderhistory from "./pages/client/User/UserOrderhistory";
 import UserAnnouncement from "./pages/client/User/UserAnnouncement";
-import Payment from "./pages/client/payment";
+
 import UserOrderhistorydetail from "./pages/client/User/UserOrderhistorydetail";
-import AdminOrderRe from "./pages/admin/order/OrderRe";
+import OrderReturn from "./pages/admin/order/OrderReturn";
+import PaymentForm from "./pages/client/paymentForm";
+import PaymentResult from "./pages/client/paymentResult";
 
 function App() {
   return (
@@ -76,7 +78,8 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />
-          <Route path="/payment" element={<Payment />} />
+          <Route path="/paymentform" element={<PaymentForm />} />
+          <Route path="/paymentresult" element={<PaymentResult />} />
           <Route path="/thankyou" element={<ThankYou />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
@@ -136,7 +139,7 @@ function App() {
           <Route path="/admin/size-edit/:id" element={<UpdateSize />} />
           <Route path="/admin/size-edit/:id" element={<UpdateColor />} />
           <Route path="/admin/order" element={<AdminOrder />} />
-          <Route path="/admin/orderre" element={<AdminOrderRe />} />
+          <Route path="/admin/order-return" element={<OrderReturn />} />
           <Route path="/admin/user" element={<ListUser />} />
           <Route path="/admin/vouchers" element={<ListVoucher />} />
           <Route path="/admin/voucher-add" element={<AddVoucher />} />
