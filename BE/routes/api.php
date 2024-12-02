@@ -134,3 +134,5 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/search', [ClientProductController::class, 'search']);
 
     Route::post('/rate',[CommentController::class, 'store']);
+
+    Route::post('/payment',[ApiMemberOrderController::class, 'vnpay_payment']);
