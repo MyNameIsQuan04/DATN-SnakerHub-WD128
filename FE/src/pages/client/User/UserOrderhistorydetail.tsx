@@ -557,6 +557,73 @@ const UserOrderhistorydetail = () => {
                   </ul>
                 </div>
               )}
+              {orderDetail.status === "Đã xác nhận" && (
+                <div>
+                  <ul className="timeline timeline-vertical ml-[-330px]">
+                    <li>
+                      <div className="timeline-middle bg-gray-200 p-2 rounded-full">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-5 w-5"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
+                        Chờ xử lí
+                      </div>
+                      <hr />
+                    </li>
+                    <li>
+                      <div className="timeline-middle">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-5 w-5"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="timeline-end timeline-box min-w-96">
+                      <span>{orderDetail.status}</span>
+                      <span>{orderDetail.updated_at}</span>
+                      </div>
+                      <hr />
+                    </li>
+                    <li>
+                      <div className="timeline-middle">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-5 w-5"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="timeline-end timeline-box min-w-96">
+                        Đang vận chuyển
+                      </div>
+                      <hr />
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
           {/* Thông tin đơn hàng  */}

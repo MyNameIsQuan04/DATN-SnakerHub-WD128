@@ -6,9 +6,9 @@ import { Link } from "react-router-dom";
 
 const formatCurrency = (amount: number) => {
   if (amount === undefined || amount === null) {
-    return "0"; 
+    return "0";
   }
-  return amount.toLocaleString("vi-VN"); 
+  return amount.toLocaleString("vi-VN");
 };
 
 const UserOrderHistory = () => {
@@ -32,7 +32,7 @@ const UserOrderHistory = () => {
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCommentChange = (e: any) => {
-    setComment(e.target.value); 
+    setComment(e.target.value);
   };
   const openModalComplanit = (order) => {
     setIsModalOpen(true);
@@ -45,12 +45,12 @@ const UserOrderHistory = () => {
     setIsModalRatingOpen(true);
   };
   const handleCloseModalRating = () => {
-    setIsModalRatingOpen(false); 
+    setIsModalRatingOpen(false);
     setRating(0);
     setComment("");
   };
   const handleCloseModal = () => {
-    setIsModalOpen(false); 
+    setIsModalOpen(false);
     setSelectedReason("");
   };
 
@@ -73,7 +73,7 @@ const UserOrderHistory = () => {
         );
         setOrders(response.data);
         console.log(response.data);
-        localStorage.setItem("orders", JSON.stringify(response.data)); 
+        localStorage.setItem("orders", JSON.stringify(response.data));
       } catch (error) {
         setError("Lỗi khi tải trạng thái đơn hàng.");
         console.error(error);
@@ -145,7 +145,9 @@ const UserOrderHistory = () => {
       console.log(selectedReason);
       toast.success("Khiếu nại thành công");
       setOrders((prev) =>
-        prev.map((order) => (order.id === idOrder ? { ...order, complaintSent: true } : order))
+        prev.map((order) =>
+          order.id === idOrder ? { ...order, complaintSent: true } : order
+        )
       );
       setIsModalOpen(false);
     } catch (error) {
@@ -157,7 +159,7 @@ const UserOrderHistory = () => {
     orderItemId: number,
     userId: number,
     product_variant_Id: number,
-    orderId: number 
+    orderId: number
   ) => {
     const reviewData = {
       order__item_id: orderItemId,
@@ -166,27 +168,26 @@ const UserOrderHistory = () => {
       star: rating,
       content: comment,
     };
-  
+
     console.log("Dữ liệu đánh giá:", reviewData);
-  
+
     try {
       const response = await axios.post(
         "http://localhost:8000/api/rate", // Endpoint mới
         reviewData,
         {
           headers: {
-            Authorization: `Bearer ${token}`, 
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-  
+
       console.log("Đánh giá đã được gửi thành công:", response.data);
-      handleCloseModalRating(); 
+      handleCloseModalRating();
     } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);
     }
   };
-  
 
   const filteredOrders =
     selectedStatus === "all"
@@ -197,7 +198,7 @@ const UserOrderHistory = () => {
     <div className="min-h-screen bg-white font-inter">
       <div className="max-w-7xl mx-auto px-6 bg-white rounded-xl">
         {/* Tabs trạng thái */}
-        <div className="flex justify-center mb-6">
+        <div className="grid grid-cols-5 mb-6">
           {[
             "all",
             "Chờ xử lý",
@@ -205,23 +206,24 @@ const UserOrderHistory = () => {
             "Đang vận chuyển",
             "Đã giao hàng",
             "Hoàn thành",
+            "Yêu cầu trả hàng",
             "Trả hàng",
             "Đã hủy",
           ].map((status) => (
             <div
               key={status}
-              className={`relative px-2 py-3 transition-all duration-300 ease-in-out ${
+              className={`relative p-1 transition-all duration-300 ease-in-out ${
                 selectedStatus === status
-                  ? "border-b-2 border-gray-600 mt-6"
-                  : "hover:border-b-2 hover:border-gray-400 mt-6"
+                  ? "border-b-2 border-gray-400"
+                  : "hover:border-b-2 hover:border-gray-300"
               }`}
             >
               <button
                 onClick={() => setSelectedStatus(status)}
-                className={`w-full px-6 py-4 text-base font-medium transition-all duration-300 ease-in-out transform rounded-md ${
+                className={`w-full h-full px-4 py-2 text-center text-base font-medium transition-all duration-300 ease-in-out transform rounded-md ${
                   selectedStatus === status
-                    ? "bg-gray-600 text-white scale-105"
-                    : "bg-gray-200 text-gray-800 hover:bg-gray-500 hover:text-white"
+                    ? "bg-gray-400 text-white scale-105"
+                    : "bg-gray-200 text-gray-800 hover:bg-gray-300 hover:text-white"
                 }`}
               >
                 {status === "all" ? "Tất cả" : status}
@@ -353,11 +355,11 @@ const UserOrderHistory = () => {
                       </button>
                       {!order.omplaintSent && (
                         <button
-                        onClick={() => openModalComplanit(order)}
-                        className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-red-600 focus:outline-none bg-white rounded-lg border border-red-600 hover:bg-gray-100 hover:text-red-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-red-400 dark:border-red-600 dark:hover:text-white dark:hover:bg-gray-700"
-                      >
-                        Khiếu nại
-                      </button>
+                          onClick={() => openModalComplanit(order)}
+                          className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-red-600 focus:outline-none bg-white rounded-lg border border-red-600 hover:bg-gray-100 hover:text-red-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-red-400 dark:border-red-600 dark:hover:text-white dark:hover:bg-gray-700"
+                        >
+                          Khiếu nại
+                        </button>
                       )}
                       {isModalOpen && selectedItem && (
                         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -514,7 +516,7 @@ const UserOrderHistory = () => {
           ))
         )}
       </div>
-      <ToastContainer className={`mt-20`}/>
+      <ToastContainer className={`mt-20`} />
     </div>
   );
 };

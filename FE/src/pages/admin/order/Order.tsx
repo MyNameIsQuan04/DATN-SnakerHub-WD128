@@ -36,7 +36,7 @@ const AdminOrder = () => {
     // Nếu không có trạng thái cụ thể (tất cả), loại bỏ trạng thái "Yêu cầu trả hàng"
     if (!filterStatus) {
       filtered = filtered.filter(
-        (order) => order.status !== "Yêu cầu trả hàng"
+        (order) => order.status !== "Yêu cầu trả hàng" && order.status !== "Xử lý yêu cầu trả hàng"
       );
     } else {
       filtered = filtered.filter((order) => order.status === filterStatus);
@@ -93,7 +93,6 @@ const AdminOrder = () => {
     { label: "Hoàn thành", value: "Hoàn thành" },
     { label: "Đã hủy", value: "Đã hủy" },
     { label: "Trả hàng", value: "Trả hàng" },
-    // "Yêu cầu trả hàng" đã bị loại bỏ khỏi danh sách nút trạng thái
   ];
 
   return (
@@ -112,7 +111,7 @@ const AdminOrder = () => {
           />
           <Link to={`/admin/order-return`}>
             <button className="mt-4 md:mt-0 px-4 py-2 rounded-md border text-sm bg-gray-500 text-white border-gray-500 hover:bg-gray-600 transition duration-200">
-              Yêu cầu trả hàng
+              Yêu cầu / Khiếu nại
             </button>
           </Link>
         </div>
@@ -151,7 +150,7 @@ const AdminOrder = () => {
                     key={i}
                     className="py-2 px-5 border border-gray-300 font-semibold text-gray-600 rounded-lg"
                   >
-                    {["Mã đơn hàng", "Họ và tên", "Thông tin", "Tổng tiền", "Đơn hàng", "Tùy chỉnh"][i]}
+                    {["Mã đơn hàng", "Họ và tên", "Thông tin", "Tổng tiền", "Đơn hàng","Trạng thái", "Tùy chỉnh"][i]}
                   </th>
                 ))}
               </tr>
@@ -179,6 +178,9 @@ const AdminOrder = () => {
                       >
                         {expandedOrderId === item.id ? "Ẩn" : "Chi tiết"}
                       </button>
+                    </td>
+                    <td className="py-3 px-4 border-b text-center text-red-500 font-bold">
+                      {item.status}
                     </td>
                     <td className="py-3 px-4 border-b text-center">
                       <select
