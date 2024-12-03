@@ -208,22 +208,6 @@ class OrderController extends Controller
                 'note' => 'required|in:Giao hàng không đúng yêu cầu,Sản phẩm có lỗi từ nhà cung cấp,Lý do khác',
             ]);
 
-            foreach ($order->orderItems as $orderItem) {
-                $productVariant = Product_Variant::find($orderItem['product__variant_id']);
-
-                $stock = $productVariant['stock'] + $orderItem['quantity'];
-                $productVariant->update([
-                    'stock' => $stock,
-                ]);
-
-                $product = Product::find($productVariant['product_id']);
-
-                $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
-                $product->update([
-                    'sales_count' => $newSalesCount
-                ]);
-            }
-
             $order->update([
                 'status' => $dataReturn['status'],
                 'note' => $dataReturn['note'],
@@ -237,6 +221,8 @@ class OrderController extends Controller
 
     public function vnpayPayment(Request $request)
     {
+        DB::beginTransaction(); // Bắt đầu giao dịch
+
         try {
             $userId = Auth::id();
             $validatedData = $request->validate([
@@ -274,7 +260,7 @@ class OrderController extends Controller
             foreach ($validatedData['items'] as $item) {
                 $productVariant = Product_Variant::find($item['product__variant_id']);
                 if ($productVariant['stock'] < $item['quantity']) {
-                    DB::rollBack();
+                    DB::rollBack(); // Rollback nếu không đủ hàng
                     return response()->json([
                         'success' => false,
                         'message' => 'Có lỗi xảy ra: Số lượng yêu cầu vượt quá tồn kho sản phẩm',
@@ -306,8 +292,6 @@ class OrderController extends Controller
                     ]);
                 }
                 $product = Product::find($productVariant['product_id']);
-
-
                 $newSalesCount = $product['sales_count'] + $orderItem['quantity'];
                 $product->update([
                     'sales_count' => $newSalesCount
@@ -316,18 +300,15 @@ class OrderController extends Controller
 
             $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
             $vnp_Returnurl = "http://localhost:5173/thankyou";
-            // $vnp_TmnCode = "OXAWO3IW"; // Ma website tại VNPAY
-            // $vnp_HashSecret = "0GXPKQFPJA8NE2VE2L00WY0575TFRTAZ"; // Chuỗi bì mặt
 
             $vnp_TmnCode = "KF5D2RKH";
             $vnp_HashSecret = "9X1HLVJCZ6U4VRCTEAJBSRDGJDDANXPW";
 
-            $vnp_TxnRef = $order->order_code; // sử dụng mã đơn hàng đã được tạo trước đó
-            $vnp_OrderInfo = "Thanh toán hóa đơn" . $order->order_code;
+            $vnp_TxnRef = $order->order_code;
+            $vnp_OrderInfo = "Thanh toán hóa đơn " . $order->order_code;
             $vnp_OrderType = "100002";
-            $vnp_Amount = $order->total_price * 100; // Quy đổi thành đồng
+            $vnp_Amount = $order->total_price * 100;
             $vnp_Locale = "VN";
-            // $vnp_BankCode = "NCB";
             $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
             $inputData = [
                 "vnp_Version" => "2.1.0",
@@ -343,12 +324,7 @@ class OrderController extends Controller
                 "vnp_ReturnUrl" => $vnp_Returnurl,
                 "vnp_TxnRef" => $vnp_TxnRef
             ];
-            // if (isset($vnp_BankCode) && $vnp_BankCode != "") {
-            //     $inputData['vnp_BankCode'] = $vnp_BankCode;
-            // }
-
             ksort($inputData);
-            // return $inputData;
             $query = "";
             $i = 0;
             $hashdata = "";
@@ -361,15 +337,17 @@ class OrderController extends Controller
                 }
                 $query .= urlencode($key) . "=" . urlencode($value) . '&';
             }
-            // Tạo URL với các tham số đã mà hóa
             $vnp_Url = $vnp_Url . "?" . $query;
             if (isset($vnp_HashSecret)) {
-                $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret); //  
+                $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
                 $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
             }
 
+            DB::commit();
+
             return $vnp_Url;
         } catch (\Exception $e) {
+            DB::rollBack(); // Rollback nếu có lỗi
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra: ' . $e->getMessage(),
