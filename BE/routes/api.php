@@ -134,6 +134,3 @@ Route::prefix('slides')->group(function () {
 Route::get('/search', [ClientProductController::class, 'search']);
 
 Route::post('/rate', [CommentController::class, 'store']);
-
-Route::post('/vnpay/create', [VNPayController::class, 'createPayment']);
-Route::get('/vnpay/return', [VNPayController::class, 'vnpayReturn']);
