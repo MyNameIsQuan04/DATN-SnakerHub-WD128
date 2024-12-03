@@ -354,4 +354,65 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
+    public function vnpayReturn(Request $request)
+{
+    // Lấy các tham số cần thiết từ URL trả về
+    $vnp_TxnRef = $request->input('vnp_TxnRef'); // Mã đơn hàng
+    $vnp_ResponseCode = $request->input('vnp_ResponseCode'); // Mã trạng thái
+    $vnp_SecureHash = $request->input('vnp_SecureHash'); // Mã bảo mật
+
+    // Lấy secret key từ cấu hình
+    $vnp_HashSecret = "9X1HLVJCZ6U4VRCTEAJBSRDGJDDANXPW"; // Secret key VNPay
+
+    // Lọc các tham số bắt đầu bằng 'vnp_' và loại bỏ 'vnp_SecureHash'
+    $inputData = [];
+    foreach ($request->all() as $key => $value) {
+        if (substr($key, 0, 4) == "vnp_" && $key != "vnp_SecureHash") {
+            $inputData[$key] = $value;
+        }
+    }
+
+    // Sắp xếp tham số theo thứ tự bảng chữ cái
+    ksort($inputData);
+
+    // Tạo chuỗi hash data
+    $hashData = '';
+    foreach ($inputData as $key => $value) {
+        $hashData .= urlencode($key) . '=' . urlencode($value) . '&';
+    }
+    $hashData = rtrim($hashData, '&');
+
+    // Tính toán mã bảo mật
+    $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
+
+    // Kiểm tra mã bảo mật và trạng thái giao dịch
+    if ($secureHash === $vnp_SecureHash) {
+        if ($vnp_ResponseCode == '00') {
+            // Giao dịch thành công, cập nhật trạng thái đơn hàng
+            $order = Order::where('order_code', $vnp_TxnRef)->first();
+            if ($order) {
+                $order->update(['status' => 'Đã thanh toán']);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Thanh toán thành công',
+            ]);
+        } else {
+            // Giao dịch thất bại
+            return response()->json([
+                'success' => false,
+                'message' => 'Thanh toán thất bại',
+            ]);
+        }
+    } else {
+        // Mã bảo mật không hợp lệ
+        return response()->json([
+            'success' => false,
+            'message' => 'Chữ ký không hợp lệ',
+        ]);
+    }
+}
+
 }

@@ -139,3 +139,4 @@ Route::post('/rate', [CommentController::class, 'store']);
 //   Route::post('/test/payment',[PaymentController::class, 'vnpay_payment']);  
 
 Route::post('/vnpay-payment', [ApiMemberOrderController::class, 'vnpayPayment'])->name('api.vnpay.payment');
+Route::get('/vnpay-return', [ApiMemberOrderController::class, 'vnpayReturn'])->middleware('auth:api');
