@@ -11,23 +11,32 @@ const PaymentResult = () => {
   const status =
     queryParams.get("vnp_ResponseCode") === "00" ? "thành công" : "thất bại";
 
-  const paymentStatus = async () => {
-    try {
-      // Tạo payload với chuỗi query từ dấu ? trở đi
-      const queryString = location.search.substring(1); // Bỏ dấu ?
-
-      await axios.get("http://localhost:8000/api/vnpay-return", {
-        params: { query: queryString }, // Đặt query string vào params
-        headers: {
-          Authorization: `Bearer ${token}`, // Đặt token vào headers
-        },
-      });
-
-      console.log("Request thành công!");
-    } catch (error) {
-      console.error("Lỗi khi gửi request:", error);
-    }
+    const paymentStatus = async () => {
+      try {
+          // Lấy chuỗi query từ URL
+          const queryString = location.search.substring(1); // Bỏ dấu ?
+  
+          // Tách query string thành các cặp key-value
+          const params: any = {};
+          queryString.split("&").forEach((pair) => {
+              const [key, value] = pair.split("=");
+              params[key] = decodeURIComponent(value); // Giải mã URL
+          });
+  
+          // Gửi request với từng `vnp_` làm key trong params
+          await axios.get("http://localhost:8000/api/vnpay-return", {
+              params: params, // Đặt các tham số đã tách vào params
+              headers: {
+                  Authorization: `Bearer ${token}`, // Đặt token vào headers
+              },
+          });
+  
+          console.log("Request thành công!");
+      } catch (error) {
+          console.error("Lỗi khi gửi request:", error);
+      }
   };
+  
 
   // Gọi hàm paymentStatus khi cần
 
