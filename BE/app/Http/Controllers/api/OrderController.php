@@ -53,8 +53,8 @@ class OrderController extends Controller
                     'Đã giao hàng' => ['Hoàn thành'],
                     'Yêu cầu trả hàng' => ['Xử lý yêu cầu trả hàng'],
                     'Xử lý yêu cầu trả hàng' => ['Trả hàng','Từ chối trả hàng'],
-                    'Trả hàng' => [],
-                    'Từ chối trả hàng' => [],
+                    'Trả hàng' => ['Đã hủy'],
+                    'Từ chối trả hàng' => ['Hoàn thành'],
                     'Hoàn thành' => [],
                     'Đã hủy' => [],
                 ];

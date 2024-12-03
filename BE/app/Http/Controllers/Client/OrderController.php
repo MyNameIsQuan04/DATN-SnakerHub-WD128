@@ -319,15 +319,15 @@ class OrderController extends Controller
             // $vnp_TmnCode = "OXAWO3IW"; // Ma website tại VNPAY
             // $vnp_HashSecret = "0GXPKQFPJA8NE2VE2L00WY0575TFRTAZ"; // Chuỗi bì mặt
 
-            $vnp_TmnCode = "LZZ8K6NC";
-            $vnp_HashSecret = "I616E8HA3LU15I68MHW9GGWIFYJA6IPT";
+            $vnp_TmnCode = "KF5D2RKH";
+            $vnp_HashSecret = "9X1HLVJCZ6U4VRCTEAJBSRDGJDDANXPW";
 
             $vnp_TxnRef = $order->order_code; // sử dụng mã đơn hàng đã được tạo trước đó
             $vnp_OrderInfo = "Thanh toán hóa đơn" . $order->order_code;
             $vnp_OrderType = "100002";
             $vnp_Amount = $order->total_price * 100; // Quy đổi thành đồng
             $vnp_Locale = "VN";
-            $vnp_BankCode = "NCB";
+            // $vnp_BankCode = "NCB";
             $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
             $inputData = [
                 "vnp_Version" => "2.1.0",
@@ -343,9 +343,9 @@ class OrderController extends Controller
                 "vnp_ReturnUrl" => $vnp_Returnurl,
                 "vnp_TxnRef" => $vnp_TxnRef
             ];
-            if (isset($vnp_BankCode) && $vnp_BankCode != "") {
-                $inputData['vnp_BankCode'] = $vnp_BankCode;
-            }
+            // if (isset($vnp_BankCode) && $vnp_BankCode != "") {
+            //     $inputData['vnp_BankCode'] = $vnp_BankCode;
+            // }
 
             ksort($inputData);
             // return $inputData;
