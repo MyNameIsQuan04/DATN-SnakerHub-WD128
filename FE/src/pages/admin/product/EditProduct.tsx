@@ -16,6 +16,9 @@ const EditProduct = () => {
   const { colors } = useContext(ColorCT);
   const { sizes } = useContext(SizeCT);
   const { onUpdateProduct } = useContext(ProductCT);
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState<
+    null | number
+  >(null);
 
   const { id } = useParams();
   const [initialValues, setInitialValues] = useState({
@@ -94,6 +97,7 @@ const EditProduct = () => {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
     console.log(values);
     const formData = new FormData();
@@ -108,6 +112,7 @@ const EditProduct = () => {
       formData.append("thumbnail", values.thumbnail);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     values.galleries.forEach((gallery: any, index: number) => {
       if (gallery.image_path instanceof File) {
         formData.append(`galleries[${index}][id]`, gallery.id.toString());
@@ -115,6 +120,7 @@ const EditProduct = () => {
       }
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     values.variants.forEach((variant: any, index: number) => {
       if (variant.id) {
         formData.append(`variants[${index}][id]`, variant.id);
@@ -139,169 +145,183 @@ const EditProduct = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center overflow-auto">
-      <div className="bg-white w-full max-w-4xl mx-auto p-8 rounded-lg shadow-lg relative overflow-y-auto max-h-screen">
-        <h1 className="text-3xl font-semibold mb-6">Sửa Sản Phẩm</h1>
+    <div className="container mx-auto p-8">
+      <h1 className="text-3xl font-semibold mb-6">Sửa Sản Phẩm</h1>
 
-        <Formik
-          initialValues={initialValues}
-          enableReinitialize
-          onSubmit={onSubmit}
-        >
-          {({ values, setFieldValue }) => (
-            <Form className="p-4">
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4">Thông tin sản phẩm</h2>
+      <Formik
+        initialValues={initialValues}
+        enableReinitialize
+        onSubmit={onSubmit}
+      >
+        {({ values, setFieldValue }) => (
+          <Form className="p-4">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-4">Thông tin sản phẩm</h2>
 
-                {/* Tên sản phẩm */}
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Tên sản phẩm
-                  </label>
-                  <Field
-                    name="name"
-                    type="text"
-                    className="w-full px-3 py-2 border rounded-lg"
-                    placeholder="Nhập tên sản phẩm"
-                  />
-                </div>
+              {/* Tên sản phẩm */}
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2">
+                  Tên sản phẩm
+                </label>
+                <Field
+                  name="name"
+                  type="text"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Nhập tên sản phẩm"
+                />
+              </div>
 
-                {/* Giá sản phẩm */}
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Giá sản phẩm
-                  </label>
-                  <Field
-                    name="price"
-                    type="number"
-                    className="w-full px-3 py-2 border rounded-lg"
-                    placeholder="Nhập giá sản phẩm"
-                  />
-                </div>
+              {/* Giá sản phẩm */}
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2">
+                  Giá sản phẩm
+                </label>
+                <Field
+                  name="price"
+                  type="number"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Nhập giá sản phẩm"
+                />
+              </div>
 
-                {/* Danh mục sản phẩm */}
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Danh mục sản phẩm
-                  </label>
-                  <Field
-                    as="select"
-                    name="category_id"
-                    className="w-full px-3 py-2 border rounded-lg"
-                  >
-                    <option value="">Chọn danh mục</option>
-                    {categories.map((category: Category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </Field>
-                </div>
+              {/* Danh mục sản phẩm */}
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2">
+                  Danh mục sản phẩm
+                </label>
+                <Field
+                  as="select"
+                  name="category_id"
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="">Chọn danh mục</option>
+                  {categories.map((category: Category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </Field>
+              </div>
 
-                {/* Mô tả sản phẩm */}
-                <div className="mb-4">
+              {/* Mô tả sản phẩm */}
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2">
+                  Mô tả sản phẩm
+                </label>
+                <Field
+                  as="textarea"
+                  name="description"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Nhập mô tả sản phẩm"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2">
+                  Mô tả sản phẩm ngắn
+                </label>
+                <Field
+                  as="textarea"
+                  name="short_description"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Nhập mô tả sản phẩm"
+                />
+              </div>
+
+              {/* Ảnh sản phẩm */}
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2">
+                  Ảnh sản phẩm
+                </label>
+                <input
+                  type="file"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  onChange={(e) =>
+                    setFieldValue("thumbnail", e.target.files?.[0])
+                  }
+                />
+              </div>
+
+              {/* Thư viện ảnh sản phẩm */}
+              {values.galleries.map((gallery, index) => (
+                <div className="mb-4" key={index}>
                   <label className="block text-gray-700 font-bold mb-2">
-                    Mô tả sản phẩm
+                    Thư viện ảnh sản phẩm
                   </label>
-                  <Field
-                    as="textarea"
-                    name="description"
-                    className="w-full px-3 py-2 border rounded-lg"
-                    placeholder="Nhập mô tả sản phẩm"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Mô tả sản phẩm ngắn
-                  </label>
-                  <Field
-                    as="textarea"
-                    name="short_description"
-                    className="w-full px-3 py-2 border rounded-lg"
-                    placeholder="Nhập mô tả sản phẩm"
-                  />
-                </div>
-                {/* Ảnh sản phẩm */}
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Ảnh sản phẩm
-                  </label>
+
+                  {/* Hiển thị ảnh cũ nếu có */}
+                  {gallery.image_path && (
+                    <div className="mb-2">
+                      <img
+                        src={gallery.image_path} // Sử dụng URL ảnh từ DB
+                        alt={`Gallery Image ${index}`}
+                        className="w-32 h-32 object-cover rounded-lg"
+                      />
+                    </div>
+                  )}
+
+                  {/* Input để chọn ảnh mới */}
                   <input
                     type="file"
                     className="w-full px-3 py-2 border rounded-lg"
-                    onChange={(e) =>
-                      setFieldValue("thumbnail", e.target.files?.[0])
-                    }
+                    onChange={(e) => {
+                      const file = e.target.files ? e.target.files[0] : null;
+                      if (file) {
+                        const newGalleries = [...values.galleries];
+                        newGalleries[index] = {
+                          ...newGalleries[index],
+                          image_path: file, // Ghi đè bằng tệp tin
+                        };
+                        setFieldValue("galleries", newGalleries);
+                      }
+                    }}
                   />
                 </div>
+              ))}
+              <button
+                type="button"
+                className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded mt-4"
+                onClick={() => {
+                  const newGalleries = [
+                    ...values.galleries,
+                    { id: "", image_path: null }, // Thêm ảnh trống
+                  ];
+                  setFieldValue("galleries", newGalleries);
+                }}
+              >
+                Thêm ảnh mới
+              </button>
+            </div>
 
-                {/* Thư viện ảnh sản phẩm */}
-                {values.galleries.map((gallery, index) => (
-                  <div className="mb-4" key={index}>
-                    <label className="block text-gray-700 font-bold mb-2">
-                      Thư viện ảnh sản phẩm
-                    </label>
+            {/* Biến thể sản phẩm */}
+            <div className="mb-8 bg-gray-100">
+              <h2 className="text-2xl font-bold mb-4">Biến thể sản phẩm</h2>
 
-                    {/* Hiển thị ảnh cũ nếu có */}
-                    {gallery.image_path && (
-                      <div className="mb-2">
-                        <img
-                          src={gallery.image_path} // Sử dụng URL ảnh từ DB
-                          alt={`Gallery Image ${index}`}
-                          className="w-32 h-32 object-cover rounded-lg"
-                        />
-                      </div>
-                    )}
+              <FieldArray name="variants">
+                {({ push, remove }) => (
+                  <>
+                    {values.variants.map((variant, index) => (
+                      <div
+                        key={variant.id}
+                        className="mb-4 border p-4 rounded-lg"
+                      >
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg mb-2">Biến thể {index + 1}</h3>
+                          {/* Hiển thị hình ảnh biến thể */}
+                          {variant.image && (
+                            <img
+                              src={
+                                typeof variant.image === "string"
+                                  ? variant.image
+                                  : URL.createObjectURL(variant.image)
+                              }
+                              alt={`Variant ${index + 1}`}
+                              className="w-16 h-16 object-cover rounded"
+                            />
+                          )}
+                        </div>
 
-                    {/* Input để chọn ảnh mới */}
-                    <input
-                      type="file"
-                      className="w-full px-3 py-2 border rounded-lg"
-                      onChange={(e) => {
-                        const file = e.target.files ? e.target.files[0] : null;
-                        if (file) {
-                          const newGalleries = [...values.galleries];
-                          newGalleries[index] = {
-                            ...newGalleries[index],
-                            image_path: file, // Ghi đè bằng tệp tin
-                          };
-                          setFieldValue("galleries", newGalleries);
-                        }
-                      }}
-                    />
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded mt-4"
-                  onClick={() => {
-                    const newGalleries = [
-                      ...values.galleries,
-                      { id: "", image_path: null }, // Thêm ảnh trống
-                    ];
-                    setFieldValue("galleries", newGalleries);
-                  }}
-                >
-                  Thêm ảnh mới
-                </button>
-              </div>
-
-              {/* Biến thể sản phẩm */}
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4">Biến thể sản phẩm</h2>
-
-                <FieldArray name="variants">
-                  {({ push, remove }) => (
-                    <>
-                      {values.variants.map((variant, index) => (
-                        <div
-                          key={variant.id}
-                          className="mb-4 border p-4 rounded-lg"
-                        >
-                          <h3 className="text-lg font-semibold mb-2">
-                            Biến thể {index + 1}
-                          </h3>
-
+                        {/* Luôn hiển thị form chỉnh sửa thông tin cho biến thể */}
+                        <div className="mt-4">
                           {/* Giá biến thể */}
                           <div className="mb-4">
                             <label className="block text-gray-700 font-bold mb-2">
@@ -325,7 +345,7 @@ const EditProduct = () => {
                               className="w-full px-3 py-2 border rounded-lg"
                             >
                               <option value="">Chọn màu sắc</option>
-                              {colors.map((color: Color) => (
+                              {colors.map((color) => (
                                 <option key={color.id} value={color.id}>
                                   {color.name}
                                 </option>
@@ -344,7 +364,7 @@ const EditProduct = () => {
                               className="w-full px-3 py-2 border rounded-lg"
                             >
                               <option value="">Chọn kích cỡ</option>
-                              {sizes.map((size: Size) => (
+                              {sizes.map((size) => (
                                 <option key={size.id} value={size.id}>
                                   {size.name}
                                 </option>
@@ -393,24 +413,17 @@ const EditProduct = () => {
                                 )
                               }
                             />
-                            {values.variants[index]?.image && (
+                            {variant.image && (
                               <div className="mt-2">
-                                {typeof values.variants[index].image ===
-                                "string" ? (
-                                  <img
-                                    src={values.variants[index].image}
-                                    alt="Ảnh đã lưu"
-                                    className="w-20 h-20 object-cover rounded"
-                                  />
-                                ) : (
-                                  <img
-                                    src={URL.createObjectURL(
-                                      values.variants[index].image
-                                    )}
-                                    alt="Ảnh mới chọn"
-                                    className="w-20 h-20 object-cover rounded"
-                                  />
-                                )}
+                                <img
+                                  src={
+                                    typeof variant.image === "string"
+                                      ? variant.image
+                                      : URL.createObjectURL(variant.image)
+                                  }
+                                  alt="Ảnh đã lưu"
+                                  className="w-20 h-20 object-cover rounded"
+                                />
                               </div>
                             )}
                           </div>
@@ -423,47 +436,47 @@ const EditProduct = () => {
                             Xóa biến thể
                           </button>
                         </div>
-                      ))}
-                      <button
-                        type="button"
-                        className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded"
-                        onClick={() =>
-                          push({
-                            id: 0,
-                            price: 0,
-                            size_id: "",
-                            color_id: "",
-                            stock: 0,
-                            sku: "",
-                            image: null,
-                          })
-                        }
-                      >
-                        Sửa biến thể
-                      </button>
-                    </>
-                  )}
-                </FieldArray>
-              </div>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded"
+                      onClick={() =>
+                        push({
+                          id: 0,
+                          price: 0,
+                          size_id: "",
+                          color_id: "",
+                          stock: 0,
+                          sku: "",
+                          image: null,
+                        })
+                      }
+                    >
+                      Thêm biến thể
+                    </button>
+                  </>
+                )}
+              </FieldArray>
+            </div>
 
-              <div className="text-right">
-                <button
-                  type="submit"
-                  className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
-                >
-                  Sửa sản phẩm
-                </button>
-                <Link
-                  to="/admin/product"
-                  className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded ml-4"
-                >
-                  Hủy
-                </Link>
-              </div>
-            </Form>
-          )}
-        </Formik>
-      </div>
+            <div className="text-right">
+              <button
+                type="submit"
+                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
+              >
+                Sửa sản phẩm
+              </button>
+              <Link
+                to="/admin/product"
+                className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded ml-4"
+              >
+                Hủy
+              </Link>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };

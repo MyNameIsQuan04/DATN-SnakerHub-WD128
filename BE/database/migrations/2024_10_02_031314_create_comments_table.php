@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained();
             $table->foreignIdFor(Product::class)->constrained();
             $table->foreignIdFor(Order_Item::class)->constrained();
-            
+
             $table->id();
             $table->text('content');
             $table->tinyInteger('star');

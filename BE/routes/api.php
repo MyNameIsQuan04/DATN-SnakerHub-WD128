@@ -55,7 +55,7 @@ Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
 Route::get('dashboard', [DashboardController::class, 'index']);
 
 Route::apiResource('client/orders', ApiMemberOrderController::class);
-Route::put('client/return-order/{id}', [ApiMemberOrderController::class, 'returnOrder']);
+Route::put('client/return-order/{order}', [ApiMemberOrderController::class, 'returnOrder']);
 
 Route::apiResource('client/products', ClientProductController::class);
 
@@ -122,7 +122,7 @@ Route::post('/voucher', [VoucherController::class, 'store'])->name('voucher.stor
 Route::put('/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
 Route::delete('/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
 //lọc sản phẩm
-Route::get('/products/filter', [ClientProductController::class, 'filterProducts']);
+Route::get('/filter', [ClientProductController::class, 'filterProducts']);
 
 Route::prefix('slides')->group(function () {
     Route::get('/', [SlideController::class, 'index']);  // Lấy danh sách slide
@@ -136,5 +136,7 @@ Route::get('/search', [ClientProductController::class, 'search']);
 
 Route::post('/rate', [CommentController::class, 'store']);
 
-Route::post('/vnpay-payment', [ApiMemberOrderController::class, 'vnpayPayment'])->name('api.vnpay.payment')->middleware('auth:api');
+//   Route::post('/test/payment',[PaymentController::class, 'vnpay_payment']);  
+
+Route::post('/vnpay-payment', [ApiMemberOrderController::class, 'vnpayPayment'])->name('api.vnpay.payment');
 Route::get('/vnpay-return', [ApiMemberOrderController::class, 'vnpayReturn'])->middleware('auth:api');

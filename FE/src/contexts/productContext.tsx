@@ -68,7 +68,7 @@ const ProductContext = ({ children }: Props) => {
       );
       setProducts(newProductsAfterUpdate);
       router("/admin/product");
-      // window.location.reload();
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }
@@ -79,6 +79,7 @@ const ProductContext = ({ children }: Props) => {
         value={{
           setProducts,
           productsClient,
+          setProductsClient,
           onAddProduct,
           onRemoveProduct,
           onUpdateProduct,

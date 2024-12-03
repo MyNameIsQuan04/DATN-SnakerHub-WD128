@@ -284,7 +284,7 @@ const UserInfor = () => {
           <div className="mt-10 col-span-2">
             <button
               type="submit"
-              className="w-full md:w-96 px-8 py-3 text-white bg-orange-400 hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded-md shadow-lg hover:shadow-2xl focus:shadow-2xl font-bold text-lg transition duration-300 transform hover:scale-105 hover:shadow-lg focus:scale-105 focus:shadow-lg"
+              className="w-full md:w-96 px-8 py-3 text-white bg-gray-400 hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded-md shadow-lg hover:shadow-2xl focus:shadow-2xl font-bold text-lg transition duration-300 transform hover:scale-105 hover:shadow-lg focus:scale-105 focus:shadow-lg"
             >
               Lưu
             </button>

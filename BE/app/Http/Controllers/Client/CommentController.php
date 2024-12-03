@@ -12,6 +12,7 @@ class CommentController extends Controller
     
     public function store(Request $request)
     {
+        
         $dataRate = $request->validate([
             'order__item_id' => 'required|exists:order__items,id',
             'user_id' => 'required|exists:users,id',
@@ -22,7 +23,7 @@ class CommentController extends Controller
 
         $product_id = Product_Variant::where('id', $dataRate['product__variant_id'])->first()->product_id;
 
-        $rate = Comment::query()->create([
+        $rate = Comment::create([
             'order__item_id' => $dataRate['order__item_id'],
             'user_id' => $dataRate['user_id'],
             'product_id' => $product_id,

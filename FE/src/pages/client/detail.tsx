@@ -13,6 +13,14 @@ import { IoCartOutline } from "react-icons/io5";
 import { GrNext } from "react-icons/gr";
 
 const Detail = () => {
+  const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
+
+  const openSizeGuideModal = () => setIsSizeGuideModalOpen(true);
+  const closeSizeGuideModal = () => setIsSizeGuideModalOpen(false);
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isSlideshowActive, setIsSlideshowActive] = useState(true);
+
   const [product, setProduct] = useState<Product | null>(null);
   const { id } = useParams<{ id: string }>();
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
@@ -22,7 +30,7 @@ const Detail = () => {
     number | null
   >(null);
   const token = localStorage.getItem("access_token");
-  const [activeTab, setActiveTab] = useState(0); // 0 là tab đầu tiên
+  const [activeTab, setActiveTab] = useState(0);
 
   const handleTabClick = (index: number) => {
     setActiveTab(index);
@@ -125,6 +133,37 @@ const Detail = () => {
     }
   };
 
+  useEffect(() => {
+    let slideshowInterval: NodeJS.Timeout;
+    let resetSlideshowTimeout: NodeJS.Timeout;
+
+    if (isSlideshowActive && product?.product_variants.length) {
+      slideshowInterval = setInterval(() => {
+        setCurrentImageIndex((prevIndex) =>
+          prevIndex === product.product_variants.length - 1 ? 0 : prevIndex + 1
+        );
+      }, 3000);
+
+      resetSlideshowTimeout = setTimeout(() => {
+        setIsSlideshowActive(true);
+      }, 2000); 
+    }
+
+    return () => {
+      clearInterval(slideshowInterval);
+      clearTimeout(resetSlideshowTimeout);
+    };
+  }, [isSlideshowActive, product]);
+
+  const handleImageClick = (index: number) => {
+    setIsSlideshowActive(false);
+    setCurrentImageIndex(index);
+
+    setTimeout(() => {
+      setIsSlideshowActive(true);
+    }, 2000);
+  };
+
   if (!product) {
     return <div>Đang tải...</div>;
   }
@@ -160,22 +199,52 @@ const Detail = () => {
         </div>
 
         <div className="flex gap-5 px-5">
-          <div className="w-1/2">
-            {/* Hình ảnh chính của sản phẩm */}
+          <div className="w-1/2 relative">
+            {/* Ảnh chính */}
             <img
-              src={product.thumbnail}
-              alt={product.name}
-              className="w-full rounded-md"
+              key={currentImageIndex} // Cập nhật key để React nhận diện khi thay đổi ảnh
+              src={product.product_variants[currentImageIndex].image}
+              alt={`Thumbnail ${currentImageIndex + 1}`}
+              className="w-full h-[550px] object-cover rounded-md transition-opacity duration-500 ease-in-out"
             />
+            <button
+              onClick={() =>
+                setCurrentImageIndex((prevIndex) =>
+                  prevIndex === 0
+                    ? product.product_variants.length - 1
+                    : prevIndex - 1
+                )
+              }
+              className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600"
+            >
+              ❮
+            </button>
+            <button
+              onClick={() =>
+                setCurrentImageIndex((prevIndex) =>
+                  prevIndex === product.product_variants.length - 1
+                    ? 0
+                    : prevIndex + 1
+                )
+              }
+              className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600"
+            >
+              ❯
+            </button>
 
-            {/* Hình ảnh thu nhỏ */}
-            <div className="flex mt-2 space-x-2">
-              {[...Array(4)].map((_, index) => (
+            {/* Ảnh nhỏ bên dưới */}
+            <div className="flex mt-4 space-x-2 justify-center">
+              {product.product_variants.map((variant, index) => (
                 <img
                   key={index}
-                  src={product.thumbnail}
-                  className="w-1/5 h-auto cursor-pointer rounded-md hover:opacity-80"
-                  alt=""
+                  src={variant.image}
+                  alt={`Variant ${index + 1}`}
+                  className={`w-[100px] h-[100px] object-cover cursor-pointer rounded-md hover:opacity-80 transition-all duration-300 ${
+                    currentImageIndex === index
+                      ? "border-2 border-orange-500"
+                      : "border"
+                  }`}
+                  onClick={() => handleImageClick(index)}
                 />
               ))}
             </div>
@@ -257,9 +326,35 @@ const Detail = () => {
               </div>
             </div>
 
-            <p className="text-sm mt-6 cursor-pointer text-blue-500 hover:underline">
+            <p
+              className="text-sm mt-6 cursor-pointer text-blue-500 hover:underline"
+              onClick={openSizeGuideModal}
+            >
               HƯỚNG DẪN TÌM SIZE
             </p>
+            {isSizeGuideModalOpen && (
+              <div
+                className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                onClick={closeSizeGuideModal} // Đóng modal khi click vào nền
+              >
+                <div
+                  className="bg-white rounded-lg shadow-lg p-6 relative w-3/4 max-w-md"
+                  onClick={(e) => e.stopPropagation()} // Ngăn sự kiện đóng modal khi click bên trong modal
+                >
+                  <button
+                    onClick={closeSizeGuideModal}
+                    className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                  >
+                    ✕
+                  </button>
+                  <img
+                    src="https://file.hstatic.net/1000339709/article/bang_cach_do_size_giay_the_thao_7611f668_9ba6_4450_4314_8367b2adbe59_1024x1024_bfdab0bd0460498db6ddc828b0d4c09a.jpg" // Thay bằng đường dẫn ảnh thật
+                    alt="Hướng dẫn tìm size"
+                    className="w-full h-auto rounded-lg"
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
               <div className="flex items-center justify-center">
@@ -289,7 +384,7 @@ const Detail = () => {
             <div className="flex gap-4 mt-5">
               <button
                 type="button"
-                className="bg-gray-100 text-center w-48 h-14 rounded-2xl relative text-red-500 text-lg font-semibold border-4 border-white group flex items-center justify-center"
+                className="bg-gray-100 text-center w-48 h-14 rounded-2xl relative text-red-500 text-lg font-medium border-4 border-white group flex items-center justify-center"
               >
                 <div className="bg-orange-400 rounded-xl h-12 w-1/4 grid place-items-center absolute left-0 top-0 group-hover:w-full z-10 transition-all duration-500 ease-in-out">
                   <IoCartOutline className="text-white text-xl" />
@@ -407,7 +502,7 @@ const Detail = () => {
               </div>
             </div>
           )}
-          {activeTab === 1 && <div>Nội dung của Tab 2</div>}
+          {activeTab === 1 && <div>Chưa có bình luận !</div>}
         </div>
       </div>
       <ToastContainer className="mt-[80px]" />

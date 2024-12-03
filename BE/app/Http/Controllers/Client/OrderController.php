@@ -299,7 +299,7 @@ class OrderController extends Controller
             }
 
             $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-            $vnp_Returnurl = "http://localhost:5173/thankyou";
+            $vnp_Returnurl = "http://localhost:5173/paymentresult";
 
             $vnp_TmnCode = "KF5D2RKH";
             $vnp_HashSecret = "9X1HLVJCZ6U4VRCTEAJBSRDGJDDANXPW";
