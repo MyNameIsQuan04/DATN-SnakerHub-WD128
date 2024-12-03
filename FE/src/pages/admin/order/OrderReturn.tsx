@@ -18,19 +18,14 @@ const OrderReturn = () => {
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
-    //   const loadingToast = toast.loading("Đang tải dữ liệu...");
       const { data } = await axios.get("http://localhost:8000/api/orders");
       const filtered = data.filter(
-        (order: Order) => order.status === "Yêu cầu trả hàng"
+        (order: Order) =>
+          order.status === "Yêu cầu trả hàng" ||
+          order.status === "Xử lý yêu cầu trả hàng"
       );
       setOrders(filtered);
       setFilteredOrders(filtered);
-    //   toast.update(loadingToast, {
-    //     // render: "Tải dữ liệu thành công!",
-    //     type: "success",
-    //     isLoading: false,
-    //     autoClose: false,
-    //   });
     } catch (error) {
       console.error("Error fetching orders:", error);
       toast.error("Không thể tải danh sách đơn hàng!");
@@ -52,7 +47,7 @@ const OrderReturn = () => {
     try {
       const loadingToast = toast.loading("Đang xử lý yêu cầu...");
       await axios.patch(`http://localhost:8000/api/orders/${orderId}`, {
-        status: "Trả hàng",
+        status: "Xử lý yêu cầu trả hàng",
       });
 
       setOrders((prevOrders) =>
@@ -65,11 +60,13 @@ const OrderReturn = () => {
         isLoading: false,
         autoClose: 3000,
       });
+      fetchOrders()
     } catch (error) {
       console.error("Lỗi khi xác nhận trả hàng:", error);
       toast.error("Xác nhận trả hàng thất bại. Vui lòng thử lại.");
     }
   };
+
   const handleUpdateReturn = async (orderId: number) => {
     try {
       const loadingToast = toast.loading("Đang xử lý yêu cầu...");
@@ -87,9 +84,35 @@ const OrderReturn = () => {
         isLoading: false,
         autoClose: 3000,
       });
+      fetchOrders()
     } catch (error) {
       console.error("Lỗi khi xác nhận hủy yêu cầu:", error);
       toast.error("Xác nhận hủy yêu cầu thất bại. Vui lòng thử lại.");
+    }
+  };
+
+  const handleStatusUpdate = async (orderId: number, status: string) => {
+    try {
+      const loadingToast = toast.loading("Đang cập nhật trạng thái...");
+      await axios.patch(`http://localhost:8000/api/orders/${orderId}`, {
+        status,
+      });
+
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.id === orderId ? { ...order, status } : order
+        )
+      );
+
+      toast.update(loadingToast, {
+        render: "Cập nhật trạng thái thành công!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái:", error);
+      toast.error("Cập nhật trạng thái thất bại. Vui lòng thử lại.");
     }
   };
 
@@ -144,6 +167,7 @@ const OrderReturn = () => {
                   "Thông tin",
                   "Ngày tạo",
                   "Tổng tiền",
+                  "Trạng thái",
                   "Chi tiết",
                 ].map((heading) => (
                   <th
@@ -161,13 +185,13 @@ const OrderReturn = () => {
                   <tr className="hover:bg-gray-200 cursor-pointer transition duration-200 ease-in-out">
                     <td className="py-3 px-4 border-b text-center">
                       <span className="mr-1">#</span>
-                      <span>{item.order_code}</span>
+                      {item.order_code}
                     </td>
                     <td className="py-3 px-4 border-b text-center">
                       {item.customer.name}
                     </td>
                     <td className="py-3 px-4 border-b text-center">
-                      <span>{item.customer.phone_number}</span> ,{" "}
+                      <span>{item.customer.phone_number}</span>,{" "}
                       {item.customer.address}
                     </td>
                     <td className="py-3 px-4 border-b text-center">
@@ -176,10 +200,12 @@ const OrderReturn = () => {
                     <td className="py-3 px-4 border-b text-center text-red-500 font-bold">
                       {item.total_price.toLocaleString()} VNĐ
                     </td>
+                    <td className="py-3 px-4 border-b text-center text-red-500 font-bold">
+                      {item.status}
+                    </td>
                     <td className="border-b text-center">
                       <button
-                        className="text-gray-500 bg-white w-20 h-8 rounded-md border-2 border-gray-500 transition duration-200 ease-in-out 
-                        hover:bg-gray-200 hover:border-gray-400 focus:outline-none"
+                        className="text-gray-500 bg-white w-20 h-8 rounded-md border-2 border-gray-500 transition duration-200 ease-in-out hover:bg-gray-200 hover:border-gray-400 focus:outline-none"
                         onClick={() => toggleExpandOrder(item.id)}
                       >
                         {expandedOrderId === item.id ? "Ẩn" : "Chi tiết"}
@@ -211,6 +237,33 @@ const OrderReturn = () => {
                             >
                               Xác nhận yêu cầu
                             </button>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                  {item.status === "Xử lý yêu cầu trả hàng" && (
+                    <tr>
+                      <td colSpan={9} className="py-6 px-6 border-b bg-white">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                          <div>
+                            <h1 className="text-lg font-semibold text-gray-800 mb-2 md:mb-0">
+                              Cập nhật trạng thái:
+                            </h1>
+                          </div>
+                          <div>
+                            <select
+                              className="px-4 py-2 rounded-md border text-sm bg-white text-yellow-500 border-yellow-500 focus:ring-yellow-500 focus:border-yellow-500 hover:border-yellow-500 shadow-md transition duration-200"
+                              onChange={(e) =>
+                                handleStatusUpdate(item.id, e.target.value)
+                              }
+                              value={item.status}
+                            >
+                              <option value="Xử lý yêu cầu trả hàng">
+                                Xử lý yêu cầu trả hàng
+                              </option>
+                              <option value="Trả hàng">Trả hàng</option>
+                            </select>
                           </div>
                         </div>
                       </td>

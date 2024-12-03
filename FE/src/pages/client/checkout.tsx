@@ -224,7 +224,7 @@ const Checkout = () => {
               </div>
             ) : (
               <div className="flex justify-between">
-                <p className="text-red-500">Chưa áp dụng mã giảm giá</p>
+                {/* <p className="text-red-500">Chưa áp dụng mã giảm giá</p> */}
               </div>
             )}
 
