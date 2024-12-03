@@ -15,6 +15,7 @@ use App\Models\Comment;
 use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Support\Facades\Auth;
+use Str;
 
 class OrderController extends Controller
 {
@@ -54,7 +55,6 @@ class OrderController extends Controller
                 'district' => 'required|string',
                 'town' => 'required|string',
                 'total_price' => 'required|integer',
-                'payment' => 'required|integer',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -63,9 +63,6 @@ class OrderController extends Controller
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
-            if ($validatedData['town'] === 'Hà Nội') {
-                $ship = 21000;
-            } else $ship = 31000;
             $dataCustomer = [
                 'user_id' => $userId,
                 'name' => $validatedData['name'],
@@ -76,13 +73,9 @@ class OrderController extends Controller
 
             $orderCode = $this->generateOrderCode();
 
-            if ($validatedData['payment'] == 2) {
-                $linkQR = 'https://qr.sepay.vn/img?bank=MBBank&acc=0974290440&template=compact&amount=' . $validatedData['total_price'] . '&des=' . $orderCode;
-            }
-
             $order = Order::create([
                 'customer_id' => $customer->id,
-                'total_price' => $validatedData['total_price'] + $ship,
+                'total_price' => $validatedData['total_price'],
                 'order_code' => $orderCode,
             ]);
 
@@ -134,7 +127,6 @@ class OrderController extends Controller
                 'success' => true,
                 'message' => 'thành công',
                 'order' => $order,
-                'ship' => $ship,
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -239,6 +231,149 @@ class OrderController extends Controller
 
             $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
             return $order;
+        }
+    }
+
+
+    public function vnpayPayment(Request $request)
+    {
+        try {
+            $userId = Auth::id();
+            $validatedData = $request->validate([
+                'name' => 'required|string',
+                'phone' => 'required|string',
+                'address' => 'nullable|string',
+                'province' => 'required|string',
+                'district' => 'required|string',
+                'town' => 'required|string',
+                'total_price' => 'required|integer',
+                'items' => 'required|array',
+                'items.*.product__variant_id' => 'required|integer',
+                'items.*.quantity' => 'required|integer',
+                'items.*.price' => 'required|integer',
+            ]);
+
+            $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
+
+            $dataCustomer = [
+                'user_id' => $userId,
+                'name' => $validatedData['name'],
+                'phone_number' => $validatedData['phone'],
+                'address' => $address,
+            ];
+            $customer = Customer::create($dataCustomer);
+
+            $orderCode = $this->generateOrderCode();
+
+            $order = Order::create([
+                'customer_id' => $customer->id,
+                'total_price' => $validatedData['total_price'],
+                'order_code' => $orderCode,
+            ]);
+
+            foreach ($validatedData['items'] as $item) {
+                $productVariant = Product_Variant::find($item['product__variant_id']);
+                if ($productVariant['stock'] < $item['quantity']) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Có lỗi xảy ra: Số lượng yêu cầu vượt quá tồn kho sản phẩm',
+                    ], 500);
+                }
+
+                $dataItem = [
+                    'order_id' => $order->id,
+                    'product__variant_id' => $item['product__variant_id'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
+                ];
+
+                $cart = Cart::where('user_id', $userId)->first();
+                if (isset($cart)) {
+                    foreach ($cart->cart_Items as $item) {
+                        Cart_Item::where('cart_id', $cart->id)
+                            ->where('product__variant_id', $item['product__variant_id'])
+                            ->forceDelete();
+                    }
+                }
+
+                $orderItem = Order_Item::create($dataItem);
+
+                if (isset($orderItem)) {
+                    $stock = $productVariant['stock'] - $orderItem['quantity'];
+                    $productVariant->update([
+                        'stock' => $stock,
+                    ]);
+                }
+                $product = Product::find($productVariant['product_id']);
+
+
+                $newSalesCount = $product['sales_count'] + $orderItem['quantity'];
+                $product->update([
+                    'sales_count' => $newSalesCount
+                ]);
+            }
+
+            $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+            $vnp_Returnurl = "http://localhost:5173/thankyou";
+            // $vnp_TmnCode = "OXAWO3IW"; // Ma website tại VNPAY
+            // $vnp_HashSecret = "0GXPKQFPJA8NE2VE2L00WY0575TFRTAZ"; // Chuỗi bì mặt
+
+            $vnp_TmnCode = "KF5D2RKH";
+            $vnp_HashSecret = "9X1HLVJCZ6U4VRCTEAJBSRDGJDDANXPW";
+
+            $vnp_TxnRef = $order->order_code; // sử dụng mã đơn hàng đã được tạo trước đó
+            $vnp_OrderInfo = "Thanh toán hóa đơn" . $order->order_code;
+            $vnp_OrderType = "100002";
+            $vnp_Amount = $order->total_price * 100; // Quy đổi thành đồng
+            $vnp_Locale = "VN";
+            // $vnp_BankCode = "NCB";
+            $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
+            $inputData = [
+                "vnp_Version" => "2.1.0",
+                "vnp_TmnCode" => $vnp_TmnCode,
+                "vnp_Amount" => $vnp_Amount,
+                "vnp_Command" => "pay",
+                "vnp_CreateDate" => date('YmdHis'),
+                "vnp_CurrCode" => "VND",
+                "vnp_IpAddr" => $vnp_IpAddr,
+                "vnp_Locale" => $vnp_Locale,
+                "vnp_OrderInfo" => $vnp_OrderInfo,
+                "vnp_OrderType" => $vnp_OrderType,
+                "vnp_ReturnUrl" => $vnp_Returnurl,
+                "vnp_TxnRef" => $vnp_TxnRef
+            ];
+            // if (isset($vnp_BankCode) && $vnp_BankCode != "") {
+            //     $inputData['vnp_BankCode'] = $vnp_BankCode;
+            // }
+
+            ksort($inputData);
+            // return $inputData;
+            $query = "";
+            $i = 0;
+            $hashdata = "";
+            foreach ($inputData as $key => $value) {
+                if ($i == 1) {
+                    $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
+                } else {
+                    $hashdata .= urlencode($key) . "=" . urlencode($value);
+                    $i = 1;
+                }
+                $query .= urlencode($key) . "=" . urlencode($value) . '&';
+            }
+            // Tạo URL với các tham số đã mà hóa
+            $vnp_Url = $vnp_Url . "?" . $query;
+            if (isset($vnp_HashSecret)) {
+                $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret); //  
+                $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
+            }
+
+            return $vnp_Url;
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }
