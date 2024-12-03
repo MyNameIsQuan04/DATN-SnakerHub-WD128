@@ -71,7 +71,7 @@ const OrderReturn = () => {
     try {
       const loadingToast = toast.loading("Đang xử lý yêu cầu...");
       await axios.patch(`http://localhost:8000/api/orders/${orderId}`, {
-        status: "Đã giao hàng",
+        status: "Hoàn thành",
       });
 
       setOrders((prevOrders) =>

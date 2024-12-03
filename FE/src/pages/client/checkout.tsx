@@ -12,6 +12,7 @@ const Checkout = () => {
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
   const [checkoutItems, setCheckoutItems] = useState<CartItem[]>([]);
+  const [paymentMethod, setPayment] = useState(2);
   const [selectedProvince, setSelectedProvince] = useState<{
     code: number;
     name: string;
@@ -113,9 +114,17 @@ const Checkout = () => {
     (total, item) => total + item.product_variant.price * item.quantity,
     0
   );
+  const handlePaymentChange = (event : any) => {
+    console.log(event.target.value)
+    setPayment(event.target.value);
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (data: any) => {
+    const apiUrl = paymentMethod == 1 
+      ? "http://localhost:8000/api/client/orders" 
+      : "http://localhost:8000/api/payment";
+
     const orderData = {
       ...data,
       province: selectedProvince?.name,
@@ -129,20 +138,18 @@ const Checkout = () => {
       })),
       total_price: grandTotalPrice - discount,
       codeDiscount,
-      payment: 1,
       discount,
     };
 
+    // Xác định URL API dựa trên payment method
+    
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/client/orders",
-        orderData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.post(apiUrl, orderData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       if (response.data.success) {
         toast.success("Đặt hàng thành công!");
         navigate("/thankyou");
@@ -419,11 +426,31 @@ const Checkout = () => {
               </span>
             </div>
             <div className="">
-              <p>Phương thức thanh toán</p>
-              <div className="">
-                <p>Thanh toán vnpay</p>
-                <p>Thanh toán momo</p>
-                <p>Thanh toán khi nhận hàng</p>
+              <h2>Thanh toán</h2>
+              <div>
+                <p>Phương thức thanh toán</p>
+                <div>
+                  <label>
+                    <input
+                      type="radio"
+                      value={1}
+                      checked={paymentMethod === 1}
+                      onChange={handlePaymentChange}
+                    />
+                    Thanh toán khi nhận hàng
+                  </label>
+                </div>
+                <div>
+                  <label>
+                    <input
+                      type="radio"
+                      value={2}
+                      checked={paymentMethod === 2}
+                      onChange={handlePaymentChange}
+                    />
+                    Thanh toán VNPay
+                  </label>
+                </div>
               </div>
             </div>
             {/* Nút thanh toán */}
