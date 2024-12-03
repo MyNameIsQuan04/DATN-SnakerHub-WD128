@@ -235,12 +235,9 @@ class OrderController extends Controller
     }
 
 
-    public function vnpay_payment(Request $request)
+    public function vnpayPayment(Request $request)
     {
         try {
-            if (Auth::check()) {
-                return redirect()->route('login')->withErrors(['message' => 'Bạn cần đăng nhập để thanh toán.']);
-            };
             $userId = Auth::id();
             $validatedData = $request->validate([
                 'name' => 'required|string',
@@ -318,16 +315,16 @@ class OrderController extends Controller
             }
 
             $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-            $vnp_Returnurl = "http://127.0.0.1:8000/thankyou";
+            $vnp_Returnurl = "http://localhost:5173/thankyou";
             // $vnp_TmnCode = "OXAWO3IW"; // Ma website tại VNPAY
             // $vnp_HashSecret = "0GXPKQFPJA8NE2VE2L00WY0575TFRTAZ"; // Chuỗi bì mặt
-            
-            $vnp_TmnCode = "LZZ8K6NC"; // Ma website tại VNPAY
-            $vnp_HashSecret = "I616E8HA3LU15I68MHW9GGWIFYJA6IPT"; // Chuỗi bì mặt
+
+            $vnp_TmnCode = "LZZ8K6NC";
+            $vnp_HashSecret = "I616E8HA3LU15I68MHW9GGWIFYJA6IPT";
 
             $vnp_TxnRef = $order->order_code; // sử dụng mã đơn hàng đã được tạo trước đó
-            $vnp_OrderInfo = "Thanh toán hóa đơn".$order->order_code;
-            $vnp_OrderType = "Datch Fashion";
+            $vnp_OrderInfo = "Thanh toán hóa đơn" . $order->order_code;
+            $vnp_OrderType = "100002";
             $vnp_Amount = $order->total_price * 100; // Quy đổi thành đồng
             $vnp_Locale = "VN";
             $vnp_BankCode = "NCB";
@@ -341,7 +338,7 @@ class OrderController extends Controller
                 "vnp_CurrCode" => "VND",
                 "vnp_IpAddr" => $vnp_IpAddr,
                 "vnp_Locale" => $vnp_Locale,
-                "vnp_Order Info" => $vnp_OrderInfo,
+                "vnp_OrderInfo" => $vnp_OrderInfo,
                 "vnp_OrderType" => $vnp_OrderType,
                 "vnp_ReturnUrl" => $vnp_Returnurl,
                 "vnp_TxnRef" => $vnp_TxnRef
@@ -351,6 +348,7 @@ class OrderController extends Controller
             }
 
             ksort($inputData);
+            // return $inputData;
             $query = "";
             $i = 0;
             $hashdata = "";
@@ -361,19 +359,21 @@ class OrderController extends Controller
                     $hashdata .= urlencode($key) . "=" . urlencode($value);
                     $i = 1;
                 }
-                $query = urlencode($key) . "=" . urlencode($value) . '&';
+                $query .= urlencode($key) . "=" . urlencode($value) . '&';
             }
             // Tạo URL với các tham số đã mà hóa
             $vnp_Url = $vnp_Url . "?" . $query;
             if (isset($vnp_HashSecret)) {
-                $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
-                $vnp_Url .= 'vnp SecureHash=' . $vnpSecureHash;
+                $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret); //  
+                $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
             }
-            // Mail::to($order->email)->send(new OrderSuccessMail($order));
-            // Chuyển hướng đến VNPAY
-            return redirect()->away($vnp_Url);
+
+            return $vnp_Url;
         } catch (\Exception $e) {
-            return back()->withErrors(['message' => 'Có lỗi xảy ra:'. $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }

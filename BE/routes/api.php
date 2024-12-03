@@ -17,6 +17,7 @@ use App\Http\Controllers\Client\CommentController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -135,4 +136,6 @@ Route::middleware('auth:api')->group(function() {
 
     Route::post('/rate',[CommentController::class, 'store']);
 
-    Route::post('/payment',[ApiMemberOrderController::class, 'vnpay_payment']);
+//   Route::post('/test/payment',[PaymentController::class, 'vnpay_payment']);  
+
+Route::post('/vnpay-payment', [ApiMemberOrderController::class, 'vnpayPayment'])->name('api.vnpay.payment');
