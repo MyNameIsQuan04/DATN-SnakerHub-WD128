@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\api;
 
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
+use App\Models\Product_Variant;
 use App\Jobs\SendOrderStatusEmail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -51,8 +53,8 @@ class OrderController extends Controller
                     'Đã xác nhận' => ['Đang vận chuyển'],
                     'Đang vận chuyển' => ['Đã giao hàng'],
                     'Đã giao hàng' => ['Hoàn thành'],
-                    'Yêu cầu trả hàng' => ['Xử lý yêu cầu trả hàng','Hoàn thành'],
-                    'Xử lý yêu cầu trả hàng' => ['Trả hàng','Từ chối trả hàng'],
+                    'Yêu cầu trả hàng' => ['Xử lý yêu cầu trả hàng'],
+                    'Xử lý yêu cầu trả hàng' => ['Trả hàng', 'Từ chối trả hàng'],
                     'Trả hàng' => ['Đã hủy'],
                     'Từ chối trả hàng' => ['Hoàn thành'],
                     'Hoàn thành' => [],
@@ -62,6 +64,24 @@ class OrderController extends Controller
                 $currentStatus = $order->status;
                 $newStatus = $request->status;
 
+                if ($newStatus === 'Đã hủy') {
+                    foreach ($order->orderItems as $orderItem) {
+                        $productVariant = Product_Variant::find($orderItem['product__variant_id']);
+
+                        $stock = $productVariant['stock'] + $orderItem['quantity'];
+                        $productVariant->update([
+                            'stock' => $stock,
+                        ]);
+
+                        $product = Product::find($productVariant['product_id']);
+
+                        $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
+                        $product->update([
+                            'sales_count' => $newSalesCount
+                        ]);
+                    }
+                }
+
                 if (!in_array($newStatus, $statusOrder[$currentStatus])) {
                     throw new \Exception('Không thể thay đổi trạng thái lùi hoặc không hợp lệ!');
                 }
@@ -69,7 +89,7 @@ class OrderController extends Controller
                 $order->update($request->only('status'));
 
                 $order->load('customer.user', 'orderItems.productVariant.product');
-                
+
                 // Đẩy job vào hàng đợi thay vì gửi email trực tiếp
                 SendOrderStatusEmail::dispatch($order, $newStatus);
             });

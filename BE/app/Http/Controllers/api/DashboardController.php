@@ -18,9 +18,9 @@ class DashboardController extends Controller
 
         $countOrderDone = Order::where('status', 'Hoàn thành')->count();
 
-        $countOrderDestroy1 = Order::where('status', 'Trả hàng')->where('note', 'Giao hàng không đúng yêu cầu')->count();
-        $countOrderDestroy2 = Order::where('status', 'Trả hàng')->where('note', 'Sản phẩm có lỗi từ nhà cung cấp')->count();
-        $countOrderDestroy3 = Order::where('status', 'Trả hàng')->where('note', 'Lý do khác')->count();
+        $countOrderDestroy1 = Order::where('status', 'Đã hủy')->where('note', 'Giao hàng không đúng yêu cầu')->count();
+        $countOrderDestroy2 = Order::where('status', 'Đã hủy')->where('note', 'Sản phẩm có lỗi từ nhà cung cấp')->count();
+        $countOrderDestroy3 = Order::where('status', 'Đã hủy')->where('note', 'Lý do khác')->count();
 
         $list5Pro = Product::orderByDesc('sales_count')->get();
 

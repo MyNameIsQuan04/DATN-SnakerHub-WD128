@@ -44,10 +44,8 @@ import UserAddress from "./pages/client/User/UserAddress";
 import UserChangepass from "./pages/client/User/UserChangepass";
 import UserOrderhistory from "./pages/client/User/UserOrderhistory";
 import UserAnnouncement from "./pages/client/User/UserAnnouncement";
-
 import UserOrderhistorydetail from "./pages/client/User/UserOrderhistorydetail";
 import OrderReturn from "./pages/admin/order/OrderReturn";
-import PaymentForm from "./pages/client/paymentForm";
 import PaymentResult from "./pages/client/paymentResult";
 
 function App() {
@@ -78,7 +76,6 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />
-          <Route path="/paymentform" element={<PaymentForm />} />
           <Route path="/paymentresult" element={<PaymentResult />} />
           <Route path="/thankyou" element={<ThankYou />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
