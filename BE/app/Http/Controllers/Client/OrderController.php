@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Product_Variant;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendLinkPayment;
 use App\Models\Cart;
 use App\Models\Cart_Item;
 use App\Models\Comment;
@@ -116,9 +117,9 @@ class OrderController extends Controller
                 $product = Product::find($productVariant['product_id']);
 
 
-                $newSalesCount = $product['sales_count'] + $orderItem['quantity'];
+                $newSellCount = $product['sell_count'] + $orderItem['quantity'];
                 $product->update([
-                    'sales_count' => $newSalesCount
+                    'sell_count' => $newSellCount
                 ]);
             }
             $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
@@ -166,9 +167,9 @@ class OrderController extends Controller
 
                     $product = Product::find($productVariant['product_id']);
 
-                    $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
+                    $newSellCount = $product['sell_count'] - $orderItem['quantity'];
                     $product->update([
-                        'sales_count' => $newSalesCount
+                        'sell_count' => $newSellCount
                     ]);
                 }
                 $order->update([
@@ -292,9 +293,9 @@ class OrderController extends Controller
                     ]);
                 }
                 $product = Product::find($productVariant['product_id']);
-                $newSalesCount = $product['sales_count'] + $orderItem['quantity'];
+                $newSellCount = $product['sell_count'] + $orderItem['quantity'];
                 $product->update([
-                    'sales_count' => $newSalesCount
+                    'sell_count' => $newSellCount
                 ]);
             }
 
@@ -345,6 +346,9 @@ class OrderController extends Controller
 
             DB::commit();
 
+            $user = Auth::user();
+            SendLinkPayment::dispatch($vnp_Url, $user->email, $user->name);
+
             return $vnp_Url;
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback nếu có lỗi
@@ -357,12 +361,39 @@ class OrderController extends Controller
 
     public function vnpayReturn(Request $request)
     {
-        if ($request['vnp_ResponseCode'] == '00') {
-            $order = Order::where('order_code', $request['vnp_TxnRef'] )->first();
-            if ($order) {
-                $order->update(['status-payment' => 'Đã thanh toán']);
+        $vnp_HashSecret = "9X1HLVJCZ6U4VRCTEAJBSRDGJDDANXPW";
+        $vnp_SecureHash = $request['vnp_SecureHash'];
+        $inputData = array();
+        foreach ($_GET as $key => $value) {
+            if (substr($key, 0, 4) == "vnp_") {
+                $inputData[$key] = $value;
             }
-            return response()->json([
+        }
+
+        unset($inputData['vnp_SecureHash']);
+        ksort($inputData);
+        $i = 0;
+        $hashData = "";
+        foreach ($inputData as $key => $value) {
+            if ($i == 1) {
+                $hashData = $hashData . '&' . urlencode($key) . "=" . urlencode($value);
+            } else {
+                $hashData = $hashData . urlencode($key) . "=" . urlencode($value);
+                $i = 1;
+            }
+        }
+
+        $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
+
+        if ($secureHash === $vnp_SecureHash) {
+            if ($request['vnp_ResponseCode'] == '00') {
+                // Giao dịch thành công, cập nhật trạng thái đơn hàng
+                $order = Order::where('order_code', $request['vnp_TxnRef'])->first();
+                if ($order) {
+                    $order->update(['status-payment' => 'Đã thanh toán']);
+                }
+
+                return response()->json([
                     'success' => true,
                     'message' => 'Thanh toán thành công',
                 ]);
@@ -372,5 +403,6 @@ class OrderController extends Controller
                     'message' => 'Thanh toán thất bại',
                 ]);
             }
+        }
     }
 }

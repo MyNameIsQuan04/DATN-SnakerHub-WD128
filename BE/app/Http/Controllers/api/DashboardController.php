@@ -7,11 +7,17 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Product_Variant;
 use App\Models\User;
 
 class DashboardController extends Controller
 {
     public function index(){
+
+        $totalSells = Product::sum('sell_count');
+
+        $totalStocks = Product_Variant::sum('stock');
+
         $countCustomer = User::where('type','user')->count();
 
         $countOrder = Order::whereNotIn('status', ['Hoàn thành', 'Đã hủy'])->count();
@@ -22,7 +28,7 @@ class DashboardController extends Controller
         $countOrderDestroy2 = Order::where('status', 'Đã hủy')->where('note', 'Sản phẩm có lỗi từ nhà cung cấp')->count();
         $countOrderDestroy3 = Order::where('status', 'Đã hủy')->where('note', 'Lý do khác')->count();
 
-        $list5Pro = Product::orderByDesc('sales_count')->get();
+        $list5Pro = Product::orderByDesc('sell_count')->get();
 
         $startDate = Carbon::now()->subDays(7)->startOfDay();
 
@@ -49,6 +55,8 @@ class DashboardController extends Controller
             'totalRevenue' => $totalRevenue,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'totalSells' => $totalSells,
+            'totalStocks' => $totalStocks,
         ], 201);
     }
     public function daily(Request $request)

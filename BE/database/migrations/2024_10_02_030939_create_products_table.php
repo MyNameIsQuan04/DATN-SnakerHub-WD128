@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->integer('price');
             $table->string('thumbnail');
-            $table->integer('sales_count')->default(0);
+            $table->integer('sell_count')->default(0);
             $table->timestamps();
         });
     }
