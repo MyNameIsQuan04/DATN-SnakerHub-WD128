@@ -75,9 +75,9 @@ class OrderController extends Controller
 
                         $product = Product::find($productVariant['product_id']);
 
-                        $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
+                        $newSellCount = $product['sell_count'] - $orderItem['quantity'];
                         $product->update([
-                            'sales_count' => $newSalesCount
+                            'sell_count' => $newSellCount
                         ]);
                     }
                 }
