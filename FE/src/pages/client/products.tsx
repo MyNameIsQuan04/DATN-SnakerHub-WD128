@@ -25,8 +25,9 @@ const Products = () => {
   const { colors } = useContext(ColorCT);
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get("keyword") || "";
+  const categoryId = searchParams.get("categoryId");
   const [filters, setFilters] = useState<Filters>({
-    category: null,
+    category: categoryId ? parseInt(categoryId) : null,
     price_min: null,
     price_max: null,
     size: null,
@@ -71,7 +72,15 @@ const Products = () => {
       fetchFilteredProducts(filters);
     }
   }, [keyword, filters]);
-  console.log(sizes);
+  useEffect(() => {
+    // Cập nhật filters khi categoryId trên URL thay đổi
+    if (categoryId) {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        category: parseInt(categoryId),
+      }));
+    }
+  }, [categoryId]);
   return (
     <div>
       <div className="container mx-auto my-8 px-4 md:px-8 mt-[80px]">
@@ -173,11 +182,16 @@ const Products = () => {
           </aside>
 
           <section className="w-4/5 px-4">
+            {keyword && (
+              <div className="flex gap-1 items-center">
+                <span className="mb-4">Kết quả tìm kiếm theo từ khóa</span>
+                <h2 className="text-xl font-semibold mb-4 text-red-500">
+                  '{keyword}'
+                </h2>
+              </div>
+            )}
             <div className="flex gap-1 items-center">
-              <span className="mb-4">Kết quả tìm kiếm theo từ khóa</span>
-              <h2 className="text-xl font-semibold mb-4 text-red-500">
-                '{keyword}'
-              </h2>
+              <span className="text-xl font-semibold mb-4">Sản phẩm</span>
             </div>
             {products?.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
