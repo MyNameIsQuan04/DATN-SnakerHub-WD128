@@ -11,33 +11,25 @@ import { CgSize } from "react-icons/cg";
 
 import { Outlet, Link } from "react-router-dom";
 import { RiDiscountPercentFill } from "react-icons/ri";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const LayoutAdmin = () => {
-  // const [isSidebarOpen, setSidebarOpen] = useState(false);
-
-  // const toggleSidebar = () => {
-  //   setSidebarOpen(!isSidebarOpen);
-  // };
-
-  // const [isSidebarOpen, setSidebarOpen] = useState(false);
-
-  // const toggleSidebar = () => {
-  //   setSidebarOpen(!isSidebarOpen);
-  // };
-
+  const { user } = useAuth();
   return (
     <>
       <div className="flex min-h-screen bg-gray-100">
         {/* Sidebar cố định */}
-        <div className="fixed top-0 left-0 w-1/6 h-full bg-gray-800 text-white flex flex-col">
+        <div className="fixed top-0 left-0 w-1/6 h-full bg-gray-500 text-white flex flex-col">
           <div className="p-6 flex flex-col items-center">
             {/* Avatar Admin */}
             <img
-              src="https://via.placeholder.com/150"
+              src={user?.avatar || "https://via.placeholder.com/150"}
               alt="Admin Avatar"
-              className="w-[120px] h-[120px] rounded-full mb-4"
+              className="w-[120px] h-[120px] rounded-full mb-4 object-cover"
             />
-            <h2 className="text-2xl font-bold mb-6">Hello Admin</h2>
+            <h2 className="text-2xl font-semibold mb-6">
+              Hi, <span className="font-medium underline">{user?.name}</span>
+            </h2>
             <ul className="space-y-4 w-full">
               {/* Các mục sidebar */}
               <li>
@@ -46,7 +38,7 @@ const LayoutAdmin = () => {
                   to="/admin"
                 >
                   <FaTachometerAlt className="mr-2" />
-                  Thống kê
+                  Bảng điều khiển
                 </Link>
               </li>
               <li>

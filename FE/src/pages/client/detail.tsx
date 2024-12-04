@@ -356,7 +356,7 @@ const Detail = () => {
               </div>
             )}
 
-            <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
+            {/* <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
               <div className="flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -379,7 +379,7 @@ const Detail = () => {
                 </svg>
                 <span className="text-red-600 text-sm">TÌM TẠI CỬA HÀNG</span>
               </div>
-            </div>
+            </div> */}
 
             <div className="flex gap-4 mt-5">
               <button
