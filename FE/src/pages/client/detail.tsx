@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { MdOutlineLocalShipping } from "react-icons/md";
 import { FaPhoneVolume } from "react-icons/fa6";
 import { TbTruckReturn } from "react-icons/tb";
@@ -11,8 +11,37 @@ import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { IoCartOutline } from "react-icons/io5";
 import { GrNext } from "react-icons/gr";
+import Slider from "react-slick";
+import { ProductCT } from "../../contexts/productContext";
 
 const Detail = () => {
+  const PrevArrow = (props: any) => {
+    const { className, onClick } = props;
+    return (
+      <button
+        className={`${className} z-10 left-[20px] text-white bg-black hover:bg-black transition-colors duration-200 rounded-full w-10 h-10 flex items-center justify-center`}
+        onClick={onClick}
+      >
+        &lt;
+      </button>
+    );
+  };
+
+  const NextArrow = (props: any) => {
+    const { className, onClick } = props;
+    return (
+      <button
+        className={`${className} z-10 right-[20px] text-white bg-black hover:bg-black transition-colors duration-200 rounded-full w-10 h-10 flex items-center justify-center`}
+        onClick={onClick}
+      >
+        &gt;
+      </button>
+    );
+  };
+  const { productsClient } = useContext(ProductCT);
+  const products = productsClient.products;
+  const fearturedProducts = products?.slice(0, 10) || [];
+
   const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
 
   const openSizeGuideModal = () => setIsSizeGuideModalOpen(true);
@@ -26,6 +55,7 @@ const Detail = () => {
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [availableSizes, setAvailableSizes] = useState<number[]>([]);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [selectedVariantPrice, setSelectedVariantPrice] = useState<
     number | null
   >(null);
@@ -35,6 +65,35 @@ const Detail = () => {
   const handleTabClick = (index: number) => {
     setActiveTab(index);
   };
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4, // Số sản phẩm hiển thị trên một slide
+    slidesToScroll: 1,
+    prevArrow: <PrevArrow />,
+    nextArrow: <NextArrow />,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
   // Hàm lấy thông tin sản phẩm
   const fetchProduct = async (productId: string) => {
     try {
@@ -42,11 +101,31 @@ const Detail = () => {
         `http://localhost:8000/api/products/${productId}`
       );
       setProduct(response.data);
+      const product = response.data;
+      fetchRelatedProducts(product.category.id as number, productId);
     } catch (error) {
       console.error("Lỗi khi lấy thông tin sản phẩm:", error);
     }
   };
-
+  const fetchRelatedProducts = async (
+    categoryId: number,
+    currentProductId: number
+  ) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/products/category/${categoryId}`
+      );
+      const products = response.data.products;
+      console.log(products);
+      const relatedProducts = products.filter(
+        (product: Product) => product.id !== Number(currentProductId)
+      );
+      setRelatedProducts(relatedProducts);
+      console.log(relatedProducts);
+    } catch (error) {
+      console.error("Lỗi khi lấy sản phẩm liên quan:", error);
+    }
+  };
   useEffect(() => {
     if (id) {
       fetchProduct(id);
@@ -146,7 +225,7 @@ const Detail = () => {
 
       resetSlideshowTimeout = setTimeout(() => {
         setIsSlideshowActive(true);
-      }, 2000); 
+      }, 2000);
     }
 
     return () => {
@@ -183,7 +262,9 @@ const Detail = () => {
       product.product_variants.find((variant) => variant.size.id === sizeId)
         ?.size
   );
-
+  const isOutOfStock = product.product_variants.every(
+    (variant: any) => variant.stock === 0
+  );
   return (
     <div className="mt-[80px]">
       {/* Thông tin sản phẩm */}
@@ -267,9 +348,6 @@ const Detail = () => {
             </div>
 
             <div className="flex items-center gap-3 mt-4">
-              <span className="line-through text-gray-400 text-xl">
-                230.000đ
-              </span>
               <span className="text-red-600 text-3xl font-semibold">
                 {selectedVariantPrice
                   ? selectedVariantPrice.toLocaleString("vi-VN")
@@ -278,8 +356,8 @@ const Detail = () => {
               </span>
             </div>
 
-            <div className="text-red-600 text-sm mt-2 font-semibold">
-              FLASH SALE
+            <div className="text-red-300 text-sm mt-2 font-semibold uppercase">
+              {product.category.name}
             </div>
             <p className="text-sm mt-4 font-semibold">
               {product.short_description}
@@ -332,6 +410,17 @@ const Detail = () => {
             >
               HƯỚNG DẪN TÌM SIZE
             </p>
+            <p className="mt-[20px] gap-[5px] cursor-pointer flex text-black text-sm font-semibold uppercase">
+              Số lượng còn lại:
+              {product.product_variants.map((variants) => (
+                <p>{variants.stock}</p>
+              ))}
+            </p>
+            {isOutOfStock && (
+              <p className="mt-4 text-red-500 text-sm font-semibold">
+                Sản phẩm hiện đã hết hàng.
+              </p>
+            )}
             {isSizeGuideModalOpen && (
               <div
                 className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
@@ -356,7 +445,7 @@ const Detail = () => {
               </div>
             )}
 
-            {/* <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
+            <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
               <div className="flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -379,7 +468,7 @@ const Detail = () => {
                 </svg>
                 <span className="text-red-600 text-sm">TÌM TẠI CỬA HÀNG</span>
               </div>
-            </div> */}
+            </div>
 
             <div className="flex gap-4 mt-5">
               <button
@@ -393,9 +482,15 @@ const Detail = () => {
                   Mua ngay
                 </p>
               </button>
+
               <button
+                disabled={isOutOfStock}
                 onClick={() => addToCart(product, selectedColor, selectedSize)}
-                className="border border-orange-500 text-orange-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out transform"
+                className={`border border-orange-500 text-orange-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out transform ${
+                  isOutOfStock
+                    ? "cursor-not-allowed text-black border-orange-500"
+                    : ""
+                }`}
               >
                 THÊM VÀO GIỎ HÀNG
               </button>
@@ -503,6 +598,48 @@ const Detail = () => {
             </div>
           )}
           {activeTab === 1 && <div>Chưa có bình luận !</div>}
+        </div>
+      </div>
+      <div className="">
+        <p>Sản phẩm liên quan</p>
+        <div className="px-[40px]">
+          <Slider {...settings} className="custom-slider">
+            {relatedProducts.map((product: Product) => (
+              <div key={product.id} className="gap-[10px]">
+                <Link to={`/detail/${product.id}`}>
+                  <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
+                    <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1">
+                      HOT
+                    </div>
+                    <div className="h-[245px] w-full overflow-hidden">
+                      <img
+                        src={product.thumbnail}
+                        alt={product.name}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                    <div className="w-full px-2 mx-auto mt-3">
+                      <div className="text-[19px] font-bold uppercase transition duration-300 hover:text-[#f2611c]">
+                        {product.name}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between px-2">
+                      <p className="text-[17px] uppercase pt-[5px] text-gray-400">
+                        {product.category.name}
+                      </p>
+                      <div className="flex text-yellow-400 text-sm">
+                        <span>⭐</span> <span>⭐</span> <span>⭐</span>{" "}
+                        <span>⭐</span> <span>⭐</span>
+                      </div>
+                    </div>
+                    <p className="text-[17px] px-2 font-bold py-[5px]">
+                      {product.price.toLocaleString("vi-VN")} đ
+                    </p>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </Slider>
         </div>
       </div>
       <ToastContainer className="mt-[80px]" />

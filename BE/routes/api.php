@@ -49,7 +49,7 @@ $crud = [
 foreach ($crud as $key => $controller) {
     Route::apiResource($key, $controller);
 }
-
+Route::get('/products/category/{id}', [ClientProductController::class, 'filterByCategory']);
 Route::get('dashboard/daily', [DashboardController::class, 'daily']);
 Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
 Route::get('dashboard', [DashboardController::class, 'index']);

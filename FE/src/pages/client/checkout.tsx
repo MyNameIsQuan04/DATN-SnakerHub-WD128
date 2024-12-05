@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { GrNext } from "react-icons/gr";
 
 const Checkout = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
@@ -137,13 +138,13 @@ const Checkout = () => {
         price: item.product_variant.price,
         total: totalPriceItem(item.product_variant.price, item.quantity),
       })),
-      total_price: grandTotalPrice - discount,
+      total_price: grandTotalPrice - discount + shippingFee,
       codeDiscount,
       discount,
     };
 
     // Xác định URL API dựa trên payment method
-
+    setIsSubmitting(true);
     try {
       const response = await axios.post(apiUrl, orderData, {
         headers: {
@@ -161,6 +162,8 @@ const Checkout = () => {
       }
     } catch (error) {
       toast.error("Có lỗi xảy ra khi đặt hàng.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -459,10 +462,11 @@ const Checkout = () => {
             </div>
             {/* Nút thanh toán */}
             <button
+              disabled={isSubmitting}
               onClick={handleSubmit(onSubmit)}
               className="mt-4 w-full bg-gray-500 text-white py-2 rounded-md hover:bg-gray-600"
             >
-              Thanh toán
+              {isSubmitting ? "Đang xử lý..." : "Thanh toán"}
             </button>
           </div>
         </div>

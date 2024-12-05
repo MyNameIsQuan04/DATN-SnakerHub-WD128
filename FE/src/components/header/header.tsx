@@ -40,7 +40,7 @@ const Header = () => {
         <div className="flex items-center w-[279px]">
           <a href="/">
             <img
-              src="https://tse2.mm.bing.net/th?id=OIP.EU9eW6G8cb7vKHpH7bb2aAHaEK&pid=Api&P=0&h=220"
+              src="https://imgur.com/kntXu4j.jpeg"
               alt="SneakerHub Logo"
               className="h-8"
             />
@@ -51,7 +51,7 @@ const Header = () => {
             <ul key={category.id}>
               <li className="relative group">
                 <Link
-                  to={`/category/${category.id}`}
+                  to={`/products?categoryId=${category.id}`}
                   className="hover:text-gray-900 uppercase"
                 >
                   {category.name}

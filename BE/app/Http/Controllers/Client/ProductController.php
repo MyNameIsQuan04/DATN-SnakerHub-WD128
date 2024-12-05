@@ -7,6 +7,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 
 class ProductController extends Controller
 {
@@ -15,7 +16,7 @@ class ProductController extends Controller
         $products = Product::orderByDesc('id')->get()
             ->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
 
-        $top10 = Product::orderByDesc('sales_count')->get();
+        $top10 = Product::orderByDesc('sell_count')->get();
 
         return response()->json([
             'success' => true,
@@ -95,7 +96,28 @@ class ProductController extends Controller
             ], 500);
         }
     }
+    public function filterByCategory($id)
+    {
+        // Kiểm tra danh mục tồn tại
+        $category = Category::find($id);
+        if (!$category) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Category not found'
+            ], 404);
+        }
 
+        // Lọc sản phẩm theo category
+        $products = Product::where('category_id', $id)->get();
+        $products->load('category');
+
+        // Trả về danh sách sản phẩm
+        return response()->json([
+            'status' => 'success',
+            'category' => $category->name,
+            'products' => $products
+        ], 200);
+    }
     public function search(Request $request)
     {
         try {
