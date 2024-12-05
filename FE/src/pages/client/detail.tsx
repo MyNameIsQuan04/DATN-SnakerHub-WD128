@@ -69,7 +69,7 @@ const Detail = () => {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: 5, // Số sản phẩm hiển thị trên một slide
+    slidesToShow: 4, // Số sản phẩm hiển thị trên một slide
     slidesToScroll: 1,
     prevArrow: <PrevArrow />,
     nextArrow: <NextArrow />,
@@ -102,18 +102,26 @@ const Detail = () => {
       );
       setProduct(response.data);
       const product = response.data;
-      fetchRelatedProducts(product.category.id as number);
+      fetchRelatedProducts(product.category.id as number, productId);
     } catch (error) {
       console.error("Lỗi khi lấy thông tin sản phẩm:", error);
     }
   };
-  const fetchRelatedProducts = async (categoryId: number) => {
+  const fetchRelatedProducts = async (
+    categoryId: number,
+    currentProductId: number
+  ) => {
     try {
       const response = await axios.get(
         `http://localhost:8000/api/products/category/${categoryId}`
       );
-      const products = response.data.products || [];
-      setRelatedProducts(products);
+      const products = response.data.products;
+      console.log(products);
+      const relatedProducts = products.filter(
+        (product: Product) => product.id !== Number(currentProductId)
+      );
+      setRelatedProducts(relatedProducts);
+      console.log(relatedProducts);
     } catch (error) {
       console.error("Lỗi khi lấy sản phẩm liên quan:", error);
     }
@@ -254,7 +262,9 @@ const Detail = () => {
       product.product_variants.find((variant) => variant.size.id === sizeId)
         ?.size
   );
-
+  const isOutOfStock = product.product_variants.every(
+    (variant: any) => variant.stock === 0
+  );
   return (
     <div className="mt-[80px]">
       {/* Thông tin sản phẩm */}
@@ -400,6 +410,17 @@ const Detail = () => {
             >
               HƯỚNG DẪN TÌM SIZE
             </p>
+            <p className="mt-[20px] gap-[5px] cursor-pointer flex text-black text-sm font-semibold uppercase">
+              Số lượng còn lại:
+              {product.product_variants.map((variants) => (
+                <p>{variants.stock}</p>
+              ))}
+            </p>
+            {isOutOfStock && (
+              <p className="mt-4 text-red-500 text-sm font-semibold">
+                Sản phẩm hiện đã hết hàng.
+              </p>
+            )}
             {isSizeGuideModalOpen && (
               <div
                 className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
@@ -461,9 +482,15 @@ const Detail = () => {
                   Mua ngay
                 </p>
               </button>
+
               <button
+                disabled={isOutOfStock}
                 onClick={() => addToCart(product, selectedColor, selectedSize)}
-                className="border border-orange-500 text-orange-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out transform"
+                className={`border border-orange-500 text-orange-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out transform ${
+                  isOutOfStock
+                    ? "cursor-not-allowed text-black border-orange-500"
+                    : ""
+                }`}
               >
                 THÊM VÀO GIỎ HÀNG
               </button>
@@ -579,7 +606,7 @@ const Detail = () => {
           <Slider {...settings} className="custom-slider">
             {relatedProducts.map((product: Product) => (
               <div key={product.id} className="gap-[10px]">
-                <Link to={`detail/${product.id}`}>
+                <Link to={`/detail/${product.id}`}>
                   <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
                     <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1">
                       HOT
