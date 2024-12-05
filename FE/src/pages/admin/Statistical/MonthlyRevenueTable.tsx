@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import axios from "axios";
@@ -36,6 +37,47 @@ export interface Monthly {
 const MonthlyRevenueChart: React.FC = () => {
   const [data, setData] = useState<Monthly | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [dashboardData, setDashboardData] = useState({
+    totalStocks: 0,
+    totalSells: 0,
+    countCustomer: 0,
+    countOrder: 0,
+    countOrderDone: 0,
+    countOrderDestroy1: 0,
+    countOrderDestroy2: 0,
+    countOrderDestroy3: 0,
+  });
+
+  useEffect(() => {
+    fetch("http://localhost:8000/api/dashboard")
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.success) {
+          setDashboardData({
+            totalSells: result.totalSells,
+            totalStocks: result.totalStocks,
+            countCustomer: result.countCustomer,
+            countOrder: result.countOrder,
+            countOrderDone: result.countOrderDone,
+            countOrderDestroy1: result.countOrderDestroy1,
+            countOrderDestroy2: result.countOrderDestroy2,
+            countOrderDestroy3: result.countOrderDestroy3,
+          });
+        } else {
+          throw new Error("Invalid data format received");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching dashboard data:", error);
+        setError("Failed to fetch dashboard data");
+      });
+  }, []);
+
+  if (error) {
+    return (
+      <div className="text-red-500 text-center font-medium p-4">{error}</div>
+    );
+  }
 
   useEffect(() => {
     axios
@@ -111,27 +153,59 @@ const MonthlyRevenueChart: React.FC = () => {
 
   return (
     <div className="flex flex-col lg:flex-row w-full p-6 bg-gray-50 rounded-lg shadow-lg min-h-[600px]">
-      <div className="lg:w-[35%] w-full p-4 bg-white rounded-lg shadow-md mb-6 lg:mb-0">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
+      <div className="lg:w-[35%] w-full p-8 bg-gradient-to-r from-white to-gray-50 rounded-xl shadow-lg border border-gray-300 mb-6 lg:mb-0">
+        <h3 className="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-blue-500 pb-4">
           Tổng quan
         </h3>
         {data && (
-          <div>
-            <p className="text-gray-600">
-              <strong className="font-semibold">Tổng doanh thu:</strong>{" "}
-              {parseFloat(data.totalRevenue).toLocaleString()} VNĐ
-            </p>
-            <p className="text-gray-600">
-              <strong className="font-semibold">Ngày bắt đầu:</strong>{" "}
-              {new Date(data.startDate).toLocaleDateString()}
-            </p>
-            <p className="text-gray-600">
-              <strong className="font-semibold">Ngày kết thúc:</strong>{" "}
-              {new Date(data.endDate).toLocaleDateString()}
-            </p>
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-lg text-gray-700">
+                Tổng doanh thu:
+              </span>
+              <span className="text-green-600 font-bold text-2xl">
+                {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(data.totalRevenue)}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-lg text-gray-700">
+                Tổng số sản phẩm:
+              </span>
+              <span className="text-blue-600 font-medium text-xl">
+                {dashboardData.totalStocks}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-lg text-gray-700">
+                Sản phẩm đã bán:
+              </span>
+              <span className="text-blue-500 font-medium text-xl">
+                {dashboardData.totalSells}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-lg text-gray-700">
+                Ngày bắt đầu:
+              </span>
+              <span className="text-gray-600 text-lg">
+                {new Date(data.startDate).toLocaleDateString()}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-lg text-gray-700">
+                Ngày kết thúc:
+              </span>
+              <span className="text-gray-600 text-lg">
+                {new Date(data.endDate).toLocaleDateString()}
+              </span>
+            </div>
           </div>
         )}
       </div>
+
       <div className="lg:w-[65%] w-full p-4">
         <h1 className="pb-4 font-normal text-[20px]">Thống kê theo tháng</h1>
         <div className="h-[400px] lg:h-[500px] p-4 rounded-lg shadow-lg bg-white">

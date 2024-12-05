@@ -6,15 +6,16 @@ import { FaPhoneVolume } from "react-icons/fa6";
 import { TbTruckReturn } from "react-icons/tb";
 import { GrAnnounce } from "react-icons/gr";
 import { AiOutlineBank } from "react-icons/ai";
-import { Product } from "../../interfaces/Product";
+import { Product, Rate } from "../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
-import { IoCartOutline } from "react-icons/io5";
+// import { IoCartOutline } from "react-icons/io5";
 import { GrNext } from "react-icons/gr";
 import Slider from "react-slick";
 import { ProductCT } from "../../contexts/productContext";
 
 const Detail = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const PrevArrow = (props: any) => {
     const { className, onClick } = props;
     return (
@@ -27,6 +28,7 @@ const Detail = () => {
     );
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const NextArrow = (props: any) => {
     const { className, onClick } = props;
     return (
@@ -40,6 +42,7 @@ const Detail = () => {
   };
   const { productsClient } = useContext(ProductCT);
   const products = productsClient.products;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const fearturedProducts = products?.slice(0, 10) || [];
 
   const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
@@ -61,6 +64,9 @@ const Detail = () => {
   >(null);
   const token = localStorage.getItem("access_token");
   const [activeTab, setActiveTab] = useState(0);
+  const [ratings, setRatings] = useState<Rate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [averageRate, setAverageRate] = useState(0);
 
   const handleTabClick = (index: number) => {
     setActiveTab(index);
@@ -95,11 +101,12 @@ const Detail = () => {
     ],
   };
   // Hàm lấy thông tin sản phẩm
-  const fetchProduct = async (productId: string) => {
+  const fetchProduct = async (productId: number) => {
     try {
       const response = await axios.get<Product>(
         `http://localhost:8000/api/products/${productId}`
       );
+      // console.log(response.data)
       setProduct(response.data);
       const product = response.data;
       fetchRelatedProducts(product.category.id as number);
@@ -112,6 +119,7 @@ const Detail = () => {
       const response = await axios.get(
         `http://localhost:8000/api/products/category/${categoryId}`
       );
+      console.log(response.data.products)
       const products = response.data.products || [];
       setRelatedProducts(products);
     } catch (error) {
@@ -158,6 +166,28 @@ const Detail = () => {
     }
   };
 
+  // Đánh giá
+  useEffect(() => {
+    const fetchRatings = async (productID: string) => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/client/products/${productID}`
+        );
+        console.log(response.data)
+        setRatings(response.data.rates);
+        setAverageRate(response.data.averageRates);
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        console.error("Lỗi khi tải đánh giá:", err);
+      }
+    };
+  
+    if (id) { 
+      fetchRatings(id);
+    }
+  }, [id]);
+  
   // Thêm vào giỏ hàng
   const addToCart = async (
     product: Product,
@@ -204,6 +234,7 @@ const Detail = () => {
     }
   };
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     let slideshowInterval: NodeJS.Timeout;
     let resetSlideshowTimeout: NodeJS.Timeout;
@@ -423,34 +454,8 @@ const Detail = () => {
                 </div>
               </div>
             )}
-
-            {/* <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
-              <div className="flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="red"
-                  className="w-6 h-6 mr-2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-                  />
-                </svg>
-                <span className="text-red-600 text-sm">TÌM TẠI CỬA HÀNG</span>
-              </div>
-            </div> */}
-
             <div className="flex gap-4 mt-5">
-              <button
+              {/* <button
                 type="button"
                 className="bg-gray-100 text-center w-48 h-14 rounded-2xl relative text-red-500 text-lg font-medium border-4 border-white group flex items-center justify-center"
               >
@@ -460,10 +465,10 @@ const Detail = () => {
                 <p className="translate-x-4 group-hover:translate-x-0 transition-all duration-500 ease-in-out">
                   Mua ngay
                 </p>
-              </button>
+              </button> */}
               <button
                 onClick={() => addToCart(product, selectedColor, selectedSize)}
-                className="border border-orange-500 text-orange-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out transform"
+                className="w-full border-2 font-semibold border-orange-500 text-orange-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out transform"
               >
                 THÊM VÀO GIỎ HÀNG
               </button>
@@ -509,7 +514,7 @@ const Detail = () => {
           </div>
         </div>
       </div>
-      <div className="max-w-[1400px] mx-auto mt-10 border-t-2 border-gray-400">
+      <div className="max-w-[1400px] min-h-64 mx-auto mt-10 border-t-2 border-gray-400">
         {/* Tab Buttons */}
         <div className="flex border-b bg-gray-200 border-gray-200 py-[10px] px-[80px] gap-[20px]">
           <button
@@ -526,7 +531,7 @@ const Detail = () => {
               activeTab === 1 ? "bg-white" : "text-gray-600"
             }`}
           >
-            Bình luận
+            Đánh giá
           </button>
         </div>
         <hr className="border-t-2 border-gray-400" />
@@ -570,15 +575,62 @@ const Detail = () => {
               </div>
             </div>
           )}
-          {activeTab === 1 && <div>Chưa có bình luận !</div>}
+          {activeTab === 1 && (
+            <div className="ratings-container">
+            {ratings.length > 0 ? (
+              <ul className="rating-list">
+                {ratings.map((rating) => (
+                  <li key={rating.id} className="rating-item">
+                    <div className="user-info flex items-center gap-3">
+                      <img
+                        src={rating.user.avatar}
+                        alt={`${rating.user.name}'s avatar`}
+                        className="user-avatar w-14 h-14 rounded-full mb-4 object-cover"
+                      />
+                      <div>
+                        <strong>{rating.user.name}</strong>
+                        <p className="rating-date">
+                          {new Date(rating.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="rating-content">
+                      <div className="flex">
+                        <h2 className="font-semibold">Sản phẩm :{""} </h2>
+                        <p>{rating.product.name}</p>
+                      </div>
+                      <div className="rating-stars">
+                        {Array.from({ length: 5 }, (_, index) => (
+                          <span
+                          key={index}
+                          className={`star text-yellow-500 w-6 h-6 text-xl ${index < rating.star ? "filled" : ""}`}
+                        >
+                          ★
+                        </span>
+                        
+                        ))}
+                      </div>
+                      <p>Nội dung đánh giá: {rating.content}</p>
+                    </div>
+                    <hr />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Chưa có đánh giá nào .</p>
+            )}
+          </div>
+          
+          )}
         </div>
       </div>
-      <div className="">
-        <p>Sản phẩm liên quan</p>
-        <div className="px-[40px]">
+
+      <div className="container mx-auto mt-[20px]">
+        <h2 className="font-bold text-2xl mb-5 ml-[50px]">Sản phẩm liên quan</h2>
+        <div className="px-[60px]">
           <Slider {...settings} className="custom-slider">
             {relatedProducts.map((product: Product) => (
-              <div key={product.id} className="gap-[10px]">
+              <div key={product.id} className="gap-[10px] flex">
                 <Link to={`detail/${product.id}`}>
                   <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
                     <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1">
