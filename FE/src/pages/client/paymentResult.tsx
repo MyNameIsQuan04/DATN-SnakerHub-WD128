@@ -1,8 +1,5 @@
-import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import api from "../../configs/axios";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { object } from "zod";
 
 const PaymentResult = () => {
   const location = useLocation();

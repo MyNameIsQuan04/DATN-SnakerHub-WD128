@@ -9,6 +9,7 @@ export interface Product {
   thumbnail: string;
   sales_count: number;
   short_description: string;
+  sell_count : number
 }
 
 const List5Pro = () => {
@@ -91,7 +92,7 @@ const List5Pro = () => {
                     {product.price.toLocaleString()} VND
                   </span>
                   <span className="text-sm text-gray-500">
-                    {product.sales_count} đã bán
+                    {product.sell_count} đã bán
                   </span>
                 </div>
               </div>

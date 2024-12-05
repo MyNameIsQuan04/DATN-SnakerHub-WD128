@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Product_Variant;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendLinkPayment;
 use App\Models\Cart;
 use App\Models\Cart_Item;
 use App\Models\Comment;
@@ -116,9 +117,9 @@ class OrderController extends Controller
                 $product = Product::find($productVariant['product_id']);
 
 
-                $newSalesCount = $product['sales_count'] + $orderItem['quantity'];
+                $newSellCount = $product['sell_count'] + $orderItem['quantity'];
                 $product->update([
-                    'sales_count' => $newSalesCount
+                    'sell_count' => $newSellCount
                 ]);
             }
             $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
@@ -166,9 +167,9 @@ class OrderController extends Controller
 
                     $product = Product::find($productVariant['product_id']);
 
-                    $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
+                    $newSellCount = $product['sell_count'] - $orderItem['quantity'];
                     $product->update([
-                        'sales_count' => $newSalesCount
+                        'sell_count' => $newSellCount
                     ]);
                 }
                 $order->update([
@@ -292,9 +293,9 @@ class OrderController extends Controller
                     ]);
                 }
                 $product = Product::find($productVariant['product_id']);
-                $newSalesCount = $product['sales_count'] + $orderItem['quantity'];
+                $newSellCount = $product['sell_count'] + $orderItem['quantity'];
                 $product->update([
-                    'sales_count' => $newSalesCount
+                    'sell_count' => $newSellCount
                 ]);
             }
 
@@ -344,6 +345,9 @@ class OrderController extends Controller
             }
 
             DB::commit();
+
+            $user = Auth::user();
+            SendLinkPayment::dispatch($vnp_Url, $user->email, $user->name);
 
             return $vnp_Url;
         } catch (\Exception $e) {
@@ -400,6 +404,6 @@ class OrderController extends Controller
                     'message' => 'Thanh toán thất bại',
                 ]);
             }
+        }
     }
-}
 }
