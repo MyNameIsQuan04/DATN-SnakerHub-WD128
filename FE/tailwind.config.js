@@ -1,4 +1,4 @@
-import daisyui from 'daisyui'; // Sử dụng import thay vì require
+import daisyui from "daisyui"; // Sử dụng import thay vì require
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -6,11 +6,12 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Roboto', 'Arial', 'sans-serif'], // Đặt font chữ mặc định
+        sans: ["Roboto", "Arial", "sans-serif"], // Đặt font chữ mặc định
       },
     },
   },
-  plugins: [
-    daisyui, // Thêm DaisyUI vào danh sách plugins
-  ],
+  plugins: [daisyui], // Đảm bảo DaisyUI đã được thêm
+  daisyui: {
+    themes: ["light"], // Đặt giao diện mặc định là "light"
+  },
 };

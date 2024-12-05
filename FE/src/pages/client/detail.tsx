@@ -654,7 +654,7 @@ const Detail = () => {
           <Slider {...settings} className="custom-slider">
             {relatedProducts.map((product: Product) => (
               <div key={product.id} className="gap-[10px] flex">
-                <Link to={`detail/${product.id}`}>
+                <Link to={`/detail/${product.id}`}>
                   <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
                     <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1">
                       HOT
