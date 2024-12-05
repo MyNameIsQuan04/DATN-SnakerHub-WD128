@@ -51,7 +51,7 @@ const Header = () => {
             <ul key={category.id}>
               <li className="relative group">
                 <Link
-                  to={`/category/${category.id}`}
+                  to={`/products?categoryId=${category.id}`}
                   className="hover:text-gray-900 uppercase"
                 >
                   {category.name}

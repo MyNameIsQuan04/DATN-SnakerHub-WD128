@@ -9,7 +9,6 @@ import Slider from "react-slick";
 
 const Home = () => {
   const { productsClient } = useContext(ProductCT);
-  console.log(productsClient.products);
   const productsHome = productsClient.products;
   const { categories } = useContext(CategoryCT);
   const bestSellers = productsHome?.slice(0, 10) || [];
