@@ -119,7 +119,7 @@ const Detail = () => {
       const response = await axios.get(
         `http://localhost:8000/api/products/category/${categoryId}`
       );
-      console.log(response.data.products)
+      console.log(response.data.products);
       const products = response.data.products || [];
       setRelatedProducts(products);
     } catch (error) {
@@ -173,7 +173,7 @@ const Detail = () => {
         const response = await axios.get(
           `http://localhost:8000/api/client/products/${productID}`
         );
-        console.log(response.data)
+        console.log(response.data);
         setRatings(response.data.rates);
         setAverageRate(response.data.averageRates);
         setLoading(false);
@@ -182,12 +182,12 @@ const Detail = () => {
         console.error("Lỗi khi tải đánh giá:", err);
       }
     };
-  
-    if (id) { 
+
+    if (id) {
       fetchRatings(id);
     }
   }, [id]);
-  
+
   // Thêm vào giỏ hàng
   const addToCart = async (
     product: Product,
@@ -359,13 +359,32 @@ const Detail = () => {
 
             <div className="flex mt-4 items-center">
               <div className="flex text-yellow-400 text-lg mr-5">
-                <span>⭐</span> <span>⭐</span> <span>⭐</span> <span>⭐</span>
-                <span>⭐</span>
+                {Array.from({ length: 5 }, (_, index) => {
+                  // Kiểm tra nếu index < averageRate để hiển thị sao đầy, nếu là nửa sao thì index < averageRate - 0.5
+                  const isHalfStar =
+                    averageRate - index >= 0.5 && averageRate - index < 1;
+                  const isFullStar = index < averageRate;
+
+                  return (
+                    <span
+                      key={index}
+                      className={`star text-xl w-6 h-6 ${
+                        isFullStar
+                          ? "text-yellow-500"
+                          : isHalfStar
+                          ? "text-yellow-500"
+                          : "text-gray-400"
+                      } ${isHalfStar ? "star-half" : ""}`}
+                    >
+                      {isHalfStar ? "★" : isFullStar ? "★" : "☆"}
+                    </span>
+                  );
+                })}
               </div>
-              <div className="flex gap-3 text-sm text-gray-500">
+              {/* <div className="flex gap-3 text-sm text-gray-500">
                 <span>1401 đánh giá</span>
                 <span>890 lượt thích</span>
-              </div>
+              </div> */}
             </div>
 
             <div className="flex items-center gap-3 mt-4">
@@ -577,56 +596,60 @@ const Detail = () => {
           )}
           {activeTab === 1 && (
             <div className="ratings-container">
-            {ratings.length > 0 ? (
-              <ul className="rating-list">
-                {ratings.map((rating) => (
-                  <li key={rating.id} className="rating-item">
-                    <div className="user-info flex items-center gap-3">
-                      <img
-                        src={rating.user.avatar}
-                        alt={`${rating.user.name}'s avatar`}
-                        className="user-avatar w-14 h-14 rounded-full mb-4 object-cover"
-                      />
-                      <div>
-                        <strong>{rating.user.name}</strong>
-                        <p className="rating-date">
-                          {new Date(rating.created_at).toLocaleString()}
-                        </p>
+              {ratings.length > 0 ? (
+                <ul className="rating-list">
+                  {ratings.map((rating) => (
+                    <li key={rating.id} className="rating-item">
+                      <div className="user-info flex items-center gap-3">
+                        <img
+                          src={rating.user.avatar}
+                          alt={`${rating.user.name}'s avatar`}
+                          className="user-avatar w-14 h-14 rounded-full mb-4 object-cover"
+                        />
+                        <div>
+                          <strong>{rating.user.name}</strong>
+                          <p className="rating-date">
+                            {new Date(rating.created_at).toLocaleString()}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="rating-content">
-                      <div className="flex">
-                        <h2 className="font-semibold">Sản phẩm :{""} </h2>
-                        <p>{rating.product.name}</p>
+                      <div className="rating-content">
+                        <div className="flex">
+                          <h2 className="font-semibold">Sản phẩm :{""} </h2>
+                          <p>{rating.product.name}</p>
+                        </div>
+                        <div className="rating-stars">
+                          {Array.from({ length: 5 }, (_, index) => (
+                            <span
+                              key={index}
+                              className={` ${
+                                index < rating.star
+                                  ? "star text-yellow-500 w-6 h-6 text-xl filled"
+                                  : "star text-gray-400 w-6 h-6 text-xl filled"
+                              }`}
+                            >
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                        <p>Nội dung đánh giá: {rating.content}</p>
                       </div>
-                      <div className="rating-stars">
-                        {Array.from({ length: 5 }, (_, index) => (
-                          <span
-                          key={index}
-                          className={`star text-yellow-500 w-6 h-6 text-xl ${index < rating.star ? "filled" : ""}`}
-                        >
-                          ★
-                        </span>
-                        
-                        ))}
-                      </div>
-                      <p>Nội dung đánh giá: {rating.content}</p>
-                    </div>
-                    <hr />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>Chưa có đánh giá nào .</p>
-            )}
-          </div>
-          
+                      <hr />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Chưa có đánh giá nào .</p>
+              )}
+            </div>
           )}
         </div>
       </div>
 
       <div className="container mx-auto mt-[20px]">
-        <h2 className="font-bold text-2xl mb-5 ml-[50px]">Sản phẩm liên quan</h2>
+        <h2 className="font-bold text-2xl mb-5 ml-[50px]">
+          Sản phẩm liên quan
+        </h2>
         <div className="px-[60px]">
           <Slider {...settings} className="custom-slider">
             {relatedProducts.map((product: Product) => (
