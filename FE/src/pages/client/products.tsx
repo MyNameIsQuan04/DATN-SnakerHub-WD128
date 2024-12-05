@@ -19,6 +19,8 @@ interface Filters {
 }
 
 const Products = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
   const { products, setProducts } = useContext(ProductCT);
   const { categories } = useContext(CategoryCT);
   const { sizes } = useContext(SizeCT);
@@ -35,7 +37,15 @@ const Products = () => {
   });
 
   const [tempFilters, setTempFilters] = useState<Filters>({ ...filters });
+  const paginatedProducts = products.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  const totalPages = Math.ceil(products.length / itemsPerPage);
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
   const fetchSearchedProducts = async (keyword: string) => {
     try {
       const response = await api.get("search", {
@@ -73,7 +83,6 @@ const Products = () => {
     }
   }, [keyword, filters]);
   useEffect(() => {
-    // Cập nhật filters khi categoryId trên URL thay đổi
     if (categoryId) {
       setFilters((prevFilters) => ({
         ...prevFilters,
@@ -193,41 +202,59 @@ const Products = () => {
             <div className="flex gap-1 items-center">
               <span className="text-xl font-semibold mb-4">Sản phẩm</span>
             </div>
-            {products?.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {products.map((product: Product) => (
-                  <Link to={`/detail/${product.id}`} key={product.id}>
-                    <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
-                      <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1">
-                        HOT
-                      </div>
-                      <div className="h-[245px] w-full overflow-hidden">
-                        <img
-                          src={product.thumbnail}
-                          alt={product.name}
-                          className="object-cover w-full h-full"
-                        />
-                      </div>
-                      <div className="w-full px-2 mx-auto mt-3">
-                        <div className="text-[19px] font-bold uppercase transition duration-300 hover:text-[#f2611c]">
-                          {product.name}
+            {paginatedProducts.length > 0 ? (
+              <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {paginatedProducts.map((product: Product) => (
+                    <Link to={`/detail/${product.id}`} key={product.id}>
+                      <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
+                        <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1">
+                          HOT
                         </div>
-                      </div>
-                      <div className="flex items-center justify-between px-2">
-                        <p className="text-[17px] uppercase pt-[5px] text-gray-400">
-                          {product.category.name}
+                        <div className="h-[245px] w-full overflow-hidden">
+                          <img
+                            src={product.thumbnail}
+                            alt={product.name}
+                            className="object-cover w-full h-full"
+                          />
+                        </div>
+                        <div className="w-full px-2 mx-auto mt-3">
+                          <div className="text-[19px] font-bold uppercase transition duration-300 hover:text-[#f2611c]">
+                            {product.name}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between px-2">
+                          <p className="text-[17px] uppercase pt-[5px] text-gray-400">
+                            {product.category.name}
+                          </p>
+                          <div className="flex text-yellow-400 text-sm">
+                            <span>⭐</span> <span>⭐</span> <span>⭐</span>{" "}
+                            <span>⭐</span> <span>⭐</span>
+                          </div>
+                        </div>
+                        <p className="text-[17px] px-2 font-bold py-[5px]">
+                          {product.price.toLocaleString("vi-VN")} đ
                         </p>
-                        <div className="flex text-yellow-400 text-sm">
-                          <span>⭐</span> <span>⭐</span> <span>⭐</span>{" "}
-                          <span>⭐</span> <span>⭐</span>
-                        </div>
                       </div>
-                      <p className="text-[17px] px-2 font-bold py-[5px]">
-                        {product.price.toLocaleString("vi-VN")} đ
-                      </p>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  ))}
+                </div>
+                {/* Phân trang */}
+                <div className="flex justify-center items-center mt-6">
+                  {[...Array(totalPages)].map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handlePageChange(index + 1)}
+                      className={`px-3 py-1 mx-1 border rounded ${
+                        currentPage === index + 1
+                          ? "bg-blue-600 text-white"
+                          : "bg-white text-gray-700"
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
               </div>
             ) : (
               <p>Không tìm thấy sản phẩm phù hợp.</p>
