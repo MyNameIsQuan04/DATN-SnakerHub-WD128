@@ -188,7 +188,7 @@ const MonthlyRevenueChart: React.FC = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="font-semibold text-lg text-gray-700">
-                Ngày bắt đầu:
+                Tháng bắt đầu:
               </span>
               <span className="text-gray-600 text-lg">
                 {new Date(data.startDate).toLocaleDateString()}
@@ -196,7 +196,7 @@ const MonthlyRevenueChart: React.FC = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="font-semibold text-lg text-gray-700">
-                Ngày kết thúc:
+                Tháng kết thúc:
               </span>
               <span className="text-gray-600 text-lg">
                 {new Date(data.endDate).toLocaleDateString()}
