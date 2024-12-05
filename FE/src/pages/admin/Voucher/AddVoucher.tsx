@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify"; // Import toast
 import "react-toastify/dist/ReactToastify.css"; // Import CSS cho toast
+import { useNavigate } from "react-router-dom";
 
 const AddVoucher: React.FC = () => {
   const [codeDiscount, setCodeDiscount] = useState<string>("");
@@ -9,6 +10,7 @@ const AddVoucher: React.FC = () => {
   const [type, setType] = useState<"percent" | "amount">("percent");
   const [expirationDate, setExpirationDate] = useState<string>("");
   const [usageLimit, setUsageLimit] = useState<number>(1);
+  const navigate = useNavigate();
 
   // Hàm xử lý submit form
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,6 +35,7 @@ const AddVoucher: React.FC = () => {
 
       // Hiển thị thông báo thành công bằng toast
       toast.success("Tạo voucher mới thành công");
+      navigate("/admin/vouchers");
     } catch (error: any) {
       // Hiển thị thông báo lỗi bằng toast
       toast.error(error.response?.data?.message || "Có lỗi xảy ra");
@@ -84,7 +87,7 @@ const AddVoucher: React.FC = () => {
         <div>
           <label className="block">Ngày hết hạn</label>
           <input
-            type="text"
+            type="date"
             value={expirationDate}
             onChange={(e) => setExpirationDate(e.target.value)}
             className="w-full border p-2"

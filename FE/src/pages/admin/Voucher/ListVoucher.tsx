@@ -83,12 +83,12 @@ const ListVoucher = () => {
               <td className="py-4 px-6 border-b text-red-500">
                 <div className="flex space-x-2">
                   {/* Button sửa */}
-                  {/* <Link
+                  <Link
                     to={`/admin/voucher-edit/${voucher.id}`}
                     className="bg-yellow-500 text-white font-semibold rounded py-1 px-3 text-base hover:bg-yellow-600 transition"
                   >
                     Sửa
-                  </Link> */}
+                  </Link>
                   {/* Button xóa */}
                   <button
                     onClick={() => handleDelete(voucher.id)}
