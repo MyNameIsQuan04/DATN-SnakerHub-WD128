@@ -1,9 +1,11 @@
 import { createContext, useEffect, useState } from "react";
 import { Product } from "../interfaces/Product";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   addProduct,
   getProducts,
+  getProductsClients,
   removeProduct,
   updateProduct,
 } from "../services/product";
@@ -14,6 +16,7 @@ type Props = {
 export const ProductCT = createContext({} as any);
 const ProductContext = ({ children }: Props) => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [productsClient, setProductsClient] = useState<Product[]>([]);
   const router = useNavigate();
   useEffect(() => {
     (async () => {
@@ -22,12 +25,18 @@ const ProductContext = ({ children }: Props) => {
     })();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      const data = await getProductsClients();
+      setProductsClient(data);
+    })();
+  }, []);
   const onRemoveProduct = async (id: number | string) => {
     const confirm = window.confirm("Xoa ?");
     if (confirm) {
       try {
         await removeProduct(id);
-        alert("Thanh cong");
+        toast.success("Xóa sản phẩm thành công ");
         const newProductsAfterDelete = products.filter(
           (product) => product.id !== id
         );
@@ -52,9 +61,8 @@ const ProductContext = ({ children }: Props) => {
 
   const onUpdateProduct = async (data: Product, id: number) => {
     try {
-      console.log(data, id);
+      console.log("o ham update", data);
       const product = await updateProduct(data, id);
-      alert("Thanh cong");
       const newProductsAfterUpdate = products.map((pro) =>
         pro.id == id ? product : pro
       );
@@ -68,7 +76,15 @@ const ProductContext = ({ children }: Props) => {
   return (
     <div>
       <ProductCT.Provider
-        value={{ onAddProduct, onRemoveProduct, onUpdateProduct, products }}
+        value={{
+          setProducts,
+          productsClient,
+          setProductsClient,
+          onAddProduct,
+          onRemoveProduct,
+          onUpdateProduct,
+          products,
+        }}
       >
         {children}
       </ProductCT.Provider>

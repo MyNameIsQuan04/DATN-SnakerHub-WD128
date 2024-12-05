@@ -9,8 +9,18 @@ import { AiOutlineBank } from "react-icons/ai";
 import { Product } from "../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
+import { IoCartOutline } from "react-icons/io5";
+import { GrNext } from "react-icons/gr";
 
 const Detail = () => {
+  const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
+
+  const openSizeGuideModal = () => setIsSizeGuideModalOpen(true);
+  const closeSizeGuideModal = () => setIsSizeGuideModalOpen(false);
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isSlideshowActive, setIsSlideshowActive] = useState(true);
+
   const [product, setProduct] = useState<Product | null>(null);
   const { id } = useParams<{ id: string }>();
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
@@ -20,7 +30,11 @@ const Detail = () => {
     number | null
   >(null);
   const token = localStorage.getItem("access_token");
+  const [activeTab, setActiveTab] = useState(0);
 
+  const handleTabClick = (index: number) => {
+    setActiveTab(index);
+  };
   // Hàm lấy thông tin sản phẩm
   const fetchProduct = async (productId: string) => {
     try {
@@ -38,7 +52,7 @@ const Detail = () => {
       fetchProduct(id);
     }
   }, [id]);
-  console.log(product);
+
   // Chọn màu sắc
   const handleSelectColor = (colorId: number) => {
     setSelectedColor(colorId);
@@ -76,9 +90,12 @@ const Detail = () => {
   // Thêm vào giỏ hàng
   const addToCart = async (
     product: Product,
-    selectedColor: any,
-    selectedSize: any
+    selectedColor: unknown,
+    selectedSize: unknown
   ) => {
+    if (!token) {
+      toast.error("Hãy đăng nhập để sử dụng chức năng!");
+    }
     if (!selectedColor || !selectedSize) {
       alert("Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!");
       return;
@@ -107,15 +124,44 @@ const Detail = () => {
         size_id: selectedSize,
         quantity: 1,
       });
-      if (!token) {
-        alert("Ban hay dang nhap de them gio hang");
-      }
+
       console.log(response.data);
 
       toast.success("Thêm sản thành công sản phẩm!");
     } catch (error) {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
     }
+  };
+
+  useEffect(() => {
+    let slideshowInterval: NodeJS.Timeout;
+    let resetSlideshowTimeout: NodeJS.Timeout;
+
+    if (isSlideshowActive && product?.product_variants.length) {
+      slideshowInterval = setInterval(() => {
+        setCurrentImageIndex((prevIndex) =>
+          prevIndex === product.product_variants.length - 1 ? 0 : prevIndex + 1
+        );
+      }, 3000);
+
+      resetSlideshowTimeout = setTimeout(() => {
+        setIsSlideshowActive(true);
+      }, 2000); 
+    }
+
+    return () => {
+      clearInterval(slideshowInterval);
+      clearTimeout(resetSlideshowTimeout);
+    };
+  }, [isSlideshowActive, product]);
+
+  const handleImageClick = (index: number) => {
+    setIsSlideshowActive(false);
+    setCurrentImageIndex(index);
+
+    setTimeout(() => {
+      setIsSlideshowActive(true);
+    }, 2000);
   };
 
   if (!product) {
@@ -139,33 +185,75 @@ const Detail = () => {
   );
 
   return (
-    <div className="">
+    <div className="mt-[80px]">
       {/* Thông tin sản phẩm */}
-      <div className="container mx-auto mt-10">
-        <div className="flex gap-5 px-5">
-          <div className="w-1/2">
-            {/* Hình ảnh chính của sản phẩm */}
-            <img
-              src={product.thumbnail}
-              alt={product.name}
-              className="w-full rounded-md"
-            />
+      <div className="container mx-auto mt-[20px] px-16">
+        <div className="flex items-center space-x-2 mb-4">
+          <a
+            href="/"
+            className="text-xl font-medium text-gray-800 hover:text-blue-400 hover:underline"
+          >
+            Home
+          </a>
+          <GrNext className="text-xl text-gray-600" />
+        </div>
 
-            {/* Hình ảnh thu nhỏ */}
-            <div className="flex mt-2 space-x-2">
-              {[...Array(4)].map((_, index) => (
+        <div className="flex gap-5 px-5">
+          <div className="w-1/2 relative">
+            {/* Ảnh chính */}
+            <img
+              key={currentImageIndex} // Cập nhật key để React nhận diện khi thay đổi ảnh
+              src={product.product_variants[currentImageIndex].image}
+              alt={`Thumbnail ${currentImageIndex + 1}`}
+              className="w-full h-[550px] object-cover rounded-md transition-opacity duration-500 ease-in-out"
+            />
+            <button
+              onClick={() =>
+                setCurrentImageIndex((prevIndex) =>
+                  prevIndex === 0
+                    ? product.product_variants.length - 1
+                    : prevIndex - 1
+                )
+              }
+              className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600"
+            >
+              ❮
+            </button>
+            <button
+              onClick={() =>
+                setCurrentImageIndex((prevIndex) =>
+                  prevIndex === product.product_variants.length - 1
+                    ? 0
+                    : prevIndex + 1
+                )
+              }
+              className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600"
+            >
+              ❯
+            </button>
+
+            {/* Ảnh nhỏ bên dưới */}
+            <div className="flex mt-4 space-x-2 justify-center">
+              {product.product_variants.map((variant, index) => (
                 <img
                   key={index}
-                  src={product.thumbnail}
-                  className="w-1/5 h-auto cursor-pointer rounded-md hover:opacity-80"
-                  alt=""
+                  src={variant.image}
+                  alt={`Variant ${index + 1}`}
+                  className={`w-[100px] h-[100px] object-cover cursor-pointer rounded-md hover:opacity-80 transition-all duration-300 ${
+                    currentImageIndex === index
+                      ? "border-2 border-orange-500"
+                      : "border"
+                  }`}
+                  onClick={() => handleImageClick(index)}
                 />
               ))}
             </div>
           </div>
 
           <div className="w-1/2">
-            <p className="text-3xl font-bold text-gray-800">{product.name}</p>
+            <p className="text-3xl font-bold uppercase text-gray-800">
+              {product.name}
+            </p>
 
             <div className="flex mt-4 items-center">
               <div className="flex text-yellow-400 text-lg mr-5">
@@ -193,7 +281,9 @@ const Detail = () => {
             <div className="text-red-600 text-sm mt-2 font-semibold">
               FLASH SALE
             </div>
-            <p className="text-sm mt-4 font-semibold">SALE THỂ THAO 149K</p>
+            <p className="text-sm mt-4 font-semibold">
+              {product.short_description}
+            </p>
 
             <div className="flex mt-6 items-center">
               <p className="text-sm font-semibold mr-8">MÀU SẮC:</p>
@@ -202,8 +292,8 @@ const Detail = () => {
                   <p
                     key={color?.id}
                     onClick={() => handleSelectColor(color!.id as number)}
-                    className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md hover:bg-red-500 hover:text-white ${
-                      selectedColor === color!.id ? "border-red-500" : ""
+                    className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md hover:bg-orange-500 hover:text-white ${
+                      selectedColor === color!.id ? "border-orange-500" : ""
                     }`}
                   >
                     {color?.name}
@@ -226,9 +316,9 @@ const Detail = () => {
                     }}
                     className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md ${
                       availableSizes.includes(size!.id)
-                        ? "hover:bg-red-500 hover:text-white"
+                        ? "hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out"
                         : "bg-gray-200 cursor-not-allowed text-gray-500"
-                    } ${selectedSize === size!.id ? "border-red-500" : ""}`}
+                    } ${selectedSize === size!.id ? "border-orange-500" : ""}`}
                   >
                     {size?.name}
                   </p>
@@ -236,11 +326,37 @@ const Detail = () => {
               </div>
             </div>
 
-            <p className="text-sm mt-6 cursor-pointer text-blue-500 hover:underline">
+            <p
+              className="text-sm mt-6 cursor-pointer text-blue-500 hover:underline"
+              onClick={openSizeGuideModal}
+            >
               HƯỚNG DẪN TÌM SIZE
             </p>
+            {isSizeGuideModalOpen && (
+              <div
+                className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                onClick={closeSizeGuideModal} // Đóng modal khi click vào nền
+              >
+                <div
+                  className="bg-white rounded-lg shadow-lg p-6 relative w-3/4 max-w-md"
+                  onClick={(e) => e.stopPropagation()} // Ngăn sự kiện đóng modal khi click bên trong modal
+                >
+                  <button
+                    onClick={closeSizeGuideModal}
+                    className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                  >
+                    ✕
+                  </button>
+                  <img
+                    src="https://file.hstatic.net/1000339709/article/bang_cach_do_size_giay_the_thao_7611f668_9ba6_4450_4314_8367b2adbe59_1024x1024_bfdab0bd0460498db6ddc828b0d4c09a.jpg" // Thay bằng đường dẫn ảnh thật
+                    alt="Hướng dẫn tìm size"
+                    className="w-full h-auto rounded-lg"
+                  />
+                </div>
+              </div>
+            )}
 
-            <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
+            {/* <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
               <div className="flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -263,20 +379,27 @@ const Detail = () => {
                 </svg>
                 <span className="text-red-600 text-sm">TÌM TẠI CỬA HÀNG</span>
               </div>
-            </div>
+            </div> */}
 
             <div className="flex gap-4 mt-5">
-              <button className="bg-red-500 text-white px-6 py-2 text-sm rounded-md shadow-md hover:bg-red-600 transition">
-                MUA NGAY
+              <button
+                type="button"
+                className="bg-gray-100 text-center w-48 h-14 rounded-2xl relative text-red-500 text-lg font-medium border-4 border-white group flex items-center justify-center"
+              >
+                <div className="bg-orange-400 rounded-xl h-12 w-1/4 grid place-items-center absolute left-0 top-0 group-hover:w-full z-10 transition-all duration-500 ease-in-out">
+                  <IoCartOutline className="text-white text-xl" />
+                </div>
+                <p className="translate-x-4 group-hover:translate-x-0 transition-all duration-500 ease-in-out">
+                  Mua ngay
+                </p>
               </button>
               <button
                 onClick={() => addToCart(product, selectedColor, selectedSize)}
-                className="border border-red-500 text-red-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-red-50 transition"
+                className="border border-orange-500 text-orange-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out transform"
               >
                 THÊM VÀO GIỎ HÀNG
               </button>
             </div>
-
             {/* Các dịch vụ liên quan */}
             <div className="grid grid-cols-3 mt-6 gap-4">
               <div className="flex flex-col items-center text-sm text-gray-600">
@@ -303,11 +426,86 @@ const Detail = () => {
                 <GrAnnounce className="w-[30px] h-auto" />
                 <p>Ưu đãi tích điểm và hưởng quyền lợi thành viên từ MWC</p>
               </div>
+              {/* Thêm phần mô tả sản phẩm */}
+              {/* <div className="mt-8 border-t-4 border-gray-300 pt-4">
+                <p className="text-lg font-semibold text-gray-800">
+                  MÔ TẢ SẢN PHẨM
+                </p>
+                <div className="mt-4">
+                  <ul className="list-disc pl-5 text-sm text-gray-600">
+                    <li>{product.description}</li>
+                  </ul>
+                </div>
+              </div> */}
             </div>
           </div>
         </div>
       </div>
-      <ToastContainer />
+      <div className="max-w-[1400px] mx-auto mt-10 border-t-2 border-gray-400">
+        {/* Tab Buttons */}
+        <div className="flex border-b bg-gray-200 border-gray-200 py-[10px] px-[80px] gap-[20px]">
+          <button
+            onClick={() => handleTabClick(0)}
+            className={`px-4 py-2 font-semibold rounded-md focus:outline-none ${
+              activeTab === 0 ? "bg-white" : "text-gray-600"
+            }`}
+          >
+            Chi tiết sản phẩm
+          </button>
+          <button
+            onClick={() => handleTabClick(1)}
+            className={`px-4 py-2 font-semibold rounded-md focus:outline-none ${
+              activeTab === 1 ? "bg-white" : "text-gray-600"
+            }`}
+          >
+            Bình luận
+          </button>
+        </div>
+        <hr className="border-t-2 border-gray-400" />
+
+        <div className="px-[80px] py-[10px]">
+          {activeTab === 0 && (
+            <div className="">
+              <div className="flex gap-[5px]">
+                <p className="text-[15px] font-bold">Tên sản phẩm:</p>
+                <p className="text-[15px]">{product.name}</p>
+              </div>
+              <div className="flex gap-[10px]">
+                <p className="text-[15px] font-bold">Màu sắc:</p>
+                {sizes.map((size) => (
+                  <p
+                    className="text-[15px]"
+                    key={size?.id}
+                    onClick={() => {
+                      if (availableSizes.includes(size!.id)) {
+                        handleSelectSize(size!.id);
+                      }
+                    }}
+                  >
+                    {size?.name}
+                  </p>
+                ))}
+                <p className="text-[15px] font-bold">Kích thước: </p>
+                {colors.map((color) => (
+                  <p
+                    className="text-[15px]"
+                    key={color?.id}
+                    onClick={() => handleSelectColor(color!.id as number)}
+                  >
+                    {color?.name}
+                  </p>
+                ))}
+              </div>
+              <div className="flex gap-[10px] items-center">
+                <p className="text-[15px] font-bold">Mô tả: </p>
+                <p className="text-[15px]">{product.description}</p>
+              </div>
+            </div>
+          )}
+          {activeTab === 1 && <div>Chưa có bình luận !</div>}
+        </div>
+      </div>
+      <ToastContainer className="mt-[80px]" />
     </div>
   );
 };

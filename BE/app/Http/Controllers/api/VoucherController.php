@@ -1,7 +1,11 @@
 <?php
+
+namespace App\Http\Controllers\api;
+
+use Carbon\Carbon;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
+use App\Http\Controllers\Controller;
 
 class VoucherController extends Controller
 {
@@ -16,7 +20,7 @@ class VoucherController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'code' => 'required|unique:vouchers,code|max:10',
+            'codeDiscount' => 'required|unique:vouchers,codeDiscount|max:10',
             'discount' => 'required|numeric|min:1|max:100',
             'type' => 'required|in:percent,amount',
             'expiration_date' => 'required|date',
@@ -24,7 +28,7 @@ class VoucherController extends Controller
         ]);
 
         $voucher = Voucher::create([
-            'code' => $request->code,
+            'codeDiscount' => $request->codeDiscount,
             'discount' => $request->discount,
             'type' => $request->type,
             'expiration_date' => Carbon::parse($request->expiration_date),
@@ -40,7 +44,7 @@ class VoucherController extends Controller
         $voucher = Voucher::findOrFail($id);
 
         $request->validate([
-            'code' => 'required|max:10|unique:vouchers,code,' . $voucher->id,
+            'codeDiscount' => 'required|max:10|unique:vouchers,codeDiscount,' . $voucher->id,
             'discount' => 'required|numeric|min:1|max:100',
             'type' => 'required|in:percent,amount',
             'expiration_date' => 'required|date',
@@ -48,7 +52,7 @@ class VoucherController extends Controller
         ]);
 
         $voucher->update([
-            'code' => $request->code,
+            'codeDiscount' => $request->codeDiscount,
             'discount' => $request->discount,
             'type' => $request->type,
             'expiration_date' => Carbon::parse($request->expiration_date),
@@ -66,4 +70,14 @@ class VoucherController extends Controller
 
         return response()->json(['message' => 'Voucher deleted successfully']);
     }
+    // Lấy thông tin voucher
+    public function show($id)
+    {
+    // Tìm voucher theo id, nếu không có thì trả về lỗi 404
+    $voucher = Voucher::findOrFail($id);
+
+    // Trả về thông tin voucher
+    return response()->json(['voucher' => $voucher]);
+}
+
 }

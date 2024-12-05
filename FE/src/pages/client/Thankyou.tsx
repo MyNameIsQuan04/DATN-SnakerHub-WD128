@@ -10,6 +10,12 @@ const ThankYou = () => {
         Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất có thể.
       </p>
       <Link
+        to="/profile/order-history"
+        className="mt-6 px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
+      >
+        Xem đơn hàng  
+      </Link>
+      <Link
         to="/"
         className="mt-6 px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
       >

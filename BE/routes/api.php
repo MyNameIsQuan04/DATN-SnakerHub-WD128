@@ -3,18 +3,21 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\api\CategoryController;
-use App\Http\Controllers\api\DashboardController;
 use App\Http\Controllers\api\OrderController;
+use App\Http\Controllers\api\SlideController;
 use App\Http\Controllers\api\ProductController;
-use App\Http\Controllers\ApiController\SizeApiController;
-use App\Http\Controllers\ApiController\UserApiController;
-use App\Http\Controllers\ApiController\ColorApiController;
-use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
-use App\Http\Controllers\apiMember\OrderController as ApiMemberOrderController;
+use App\Http\Controllers\api\SizeApiController;
+use App\Http\Controllers\api\UserApiController;
+use App\Http\Controllers\api\VoucherController;
 use App\Http\Controllers\Client\CartController;
-use App\Http\Controllers\Client\VoucherController;
+use App\Http\Controllers\api\CategoryController;
+use App\Http\Controllers\api\ColorApiController;
+use App\Http\Controllers\api\DashboardController;
+use App\Http\Controllers\Client\CommentController;
+use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
+use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +55,7 @@ Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
 Route::get('dashboard', [DashboardController::class, 'index']);
 
 Route::apiResource('client/orders', ApiMemberOrderController::class);
+Route::put('client/return-order/{order}', [ApiMemberOrderController::class, 'returnOrder']);
 
 Route::apiResource('client/products', ClientProductController::class);
 
@@ -84,11 +88,11 @@ Route::group(['middleware' => ['auth:api']],  function () {
     // Hiển thị chi tiết một sản phẩm trong giỏ hàng (tùy chọn)
     Route::get('/item/{id}', [CartController::class, 'showCartItem'])->name('cart.showItem');
 
-    Route::post('/validate-voucher', [CartController::class, 'validateVoucher']);
-    Route::post('/apply-voucher', [CartController::class, 'applyVoucher']);
+    Route::post('/validate-voucher', [OrderController::class, 'validateVoucher']);
+    Route::post('/apply-voucher', [OrderController::class, 'applyVoucher']);
 });
 
-Route::middleware('auth:api')->group(function() {
+Route::middleware('auth:api')->group(function () {
     // Hiển thị danh sách người dùng (Admin chỉ có thể truy cập)
     Route::get('/users', [UserApiController::class, 'index'])->middleware('type:admin');
 
@@ -96,7 +100,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/users/{id}', [UserApiController::class, 'show'])->middleware('type:admin,user');
 
     // Cập nhật thông tin người dùng (cho cả Admin và User)
-    Route::put('/users/{id}', [UserApiController::class, 'update'])->middleware('type:admin,user');
+    Route::post('/users/{id}', [UserApiController::class, 'update'])->middleware('type:admin,user');
 
     // Xóa người dùng (Admin)
     Route::delete('/users/{id}', [UserApiController::class, 'destroy'])->middleware('type:admin');
@@ -107,12 +111,32 @@ Route::middleware('auth:api')->group(function() {
     // Mở khóa tài khoản người dùng (Admin)
     Route::post('/users/{id}/unlock', [UserApiController::class, 'unlockAccount'])->middleware('type:admin');
 
+    // Hiển thị thông tin của chính người dùng đã đăng nhập
+    // Route::get('/profile', [UserApiController::class, 'profile']);
+
     // Cập nhật thông tin của chính người dùng đã đăng nhập
-    Route::put('/profile', [UserApiController::class, 'updateProfile']);
+    // Route::put('/users/{id}', [UserApiController::class, 'updateProfile']);
 });
-Route::middleware(['auth:api', 'admin'])->group(function () {
-    Route::get('/admin/vouchers', [VoucherController::class, 'index'])->name('voucher.index');
-    Route::post('/admin/voucher', [VoucherController::class, 'store'])->name('voucher.store');
-    Route::put('/admin/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
-    Route::delete('/admin/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
+Route::get('/vouchers', [VoucherController::class, 'index'])->name('voucher.index');
+Route::post('/voucher', [VoucherController::class, 'store'])->name('voucher.store');
+Route::put('/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
+Route::delete('/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
+Route::get('/voucher/{id}', [VoucherController::class, 'show']);
+
+//lọc sản phẩm
+Route::get('/filter', [ClientProductController::class, 'filterProducts']);
+
+Route::prefix('slides')->group(function () {
+    Route::get('/', [SlideController::class, 'index']);  // Lấy danh sách slide
+    Route::get('{id}', [SlideController::class, 'show']);  // Lấy thông tin slide cụ thể
+    Route::post('/', [SlideController::class, 'store']);  // Tạo mới slide
+    Route::put('{id}', [SlideController::class, 'update']);  // Cập nhật slide
+    Route::delete('{id}', [SlideController::class, 'destroy']);  // Xóa slide
 });
+
+Route::get('/search', [ClientProductController::class, 'search']);
+
+Route::post('/rate', [CommentController::class, 'store']);
+
+Route::post('/vnpay-payment', [ApiMemberOrderController::class, 'vnpayPayment'])->name('api.vnpay.payment');
+Route::get('/vnpay-return', [ApiMemberOrderController::class, 'vnpayReturn']);

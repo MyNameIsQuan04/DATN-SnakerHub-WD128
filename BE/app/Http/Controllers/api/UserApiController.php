@@ -1,9 +1,10 @@
 <?php
-namespace App\Http\Controllers\ApiController;
-
+namespace App\Http\Controllers\api;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserApiController extends Controller
 {
@@ -43,6 +44,13 @@ class UserApiController extends Controller
 
         return response()->json($user, 201);
     }
+    public function profile(Request $request)
+    {
+        // Lấy thông tin người dùng từ token
+        $user = $request->user();
+
+        return response()->json($user);
+    }
 
     /**
      * Display the specified resource (for both admin and user).
@@ -80,9 +88,12 @@ class UserApiController extends Controller
             'type' => 'sometimes|required|in:user,admin',
             'gender' => 'nullable|in:male,female,other',
             'birthday' => 'nullable|date',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'avatar' => 'nullable|image',
+            'islocked' => 'sometimes|boolean'
         ]);
-
+        if (isset($request['avatar'])) {
+            $validatedData['avatar'] = Storage::url($request['avatar']->store('avatars', 'public'));
+        }
         if ($request->has('password') && !empty($validatedData['password'])) {
             $validatedData['password'] = bcrypt($validatedData['password']);
         } else {
@@ -176,5 +187,13 @@ class UserApiController extends Controller
 
         // Trả về thông tin người dùng đã cập nhật
         return response()->json($user);
+            // Tạo lại access_token mới
+    $newToken = JWTAuth::fromUser($user);
+
+    return response()->json([
+        'user' => $user,
+        'access_token' => $newToken
+    ]);
+
     }
 }
