@@ -13,11 +13,10 @@ const Cart = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const token = localStorage.getItem("access_token");
 
-  // Kiểm tra nếu chưa đăng nhập thì thông báo lỗi và return
   if (!token) {
     toast.error("Hãy đăng nhập để sử dụng chức năng!");
-    navigate("/login"); // Điều hướng về trang login nếu chưa đăng nhập
-    return null;
+    navigate("/login");
+    return;
   }
 
   const handleSelectItem = (id: number) => {
