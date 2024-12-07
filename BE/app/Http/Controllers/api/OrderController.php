@@ -89,7 +89,7 @@ class OrderController extends Controller
                 if ($request->only('status') == 'Đã giao hàng') {
                     $order->update([
                         'status' => $request['status'],
-                        'status-payment' => 'Đã thanh toán',
+                        'status_payment' => 'Đã thanh toán',
                     ]);
                 } else {
                     $order->update($request->only('status'));

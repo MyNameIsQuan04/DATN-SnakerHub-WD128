@@ -13,9 +13,9 @@ const Home = () => {
   useEffect(() => {
     (async () => {
       const response = await getProductsClients();
-      const productsData = response.data?.products || []; // Lấy mảng products
+
+      const productsData = response.products || []; // Lấy mảng products
       setProductsClient(productsData);
-      console.log(productsData);
     })();
   }, []);
 
