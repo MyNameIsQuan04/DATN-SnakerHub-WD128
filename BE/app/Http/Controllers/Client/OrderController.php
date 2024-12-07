@@ -84,7 +84,7 @@ class OrderController extends Controller
                 'discount' => $validatedData['discount'],
                 'codeDiscount' => $validatedData['codeDiscount'],
                 'shippingFee' => $validatedData['shippingFee'],
-                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0),
+                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0)+$validatedData['shippingFee'],
             ]);
 
             foreach ($validatedData['items'] as $item) {
