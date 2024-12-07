@@ -7,7 +7,8 @@ import {
   GetCategories,
   removeCategory,
   updateCategory,
-} from "../services/category";
+} from "../services/admin/category";
+import { GetCategoriesClient } from "../services/client/category";
 
 type Props = {
   children: React.ReactNode;
@@ -15,11 +16,18 @@ type Props = {
 export const CategoryCT = createContext({} as any);
 const CategoryContext = ({ children }: Props) => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesClient, setCategoriesClient] = useState<Category[]>([]);
   const router = useNavigate();
   useEffect(() => {
     (async () => {
       const data = await GetCategories();
       setCategories(data);
+    })();
+  }, []);
+  useEffect(() => {
+    (async () => {
+      const data = await GetCategoriesClient();
+      setCategoriesClient(data);
     })();
   }, []);
 
@@ -68,7 +76,13 @@ const CategoryContext = ({ children }: Props) => {
 
   return (
     <CategoryCT.Provider
-      value={{ categories, onRemoveCategory, onAddCategory, onUpdateCategory }}
+      value={{
+        categories,
+        onRemoveCategory,
+        onAddCategory,
+        onUpdateCategory,
+        categoriesClient,
+      }}
     >
       {children}
     </CategoryCT.Provider>

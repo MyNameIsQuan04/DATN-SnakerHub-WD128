@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useParams } from "react-router-dom";
 import { ColorCT } from "../../../contexts/ColorContext";
 import { Color } from "../../../interfaces/Color";
-import { getColorById } from "../../../services/color";
+import { getColorById } from "../../../services/admin/color";
 
 const UpdateColor = () => {
   const {

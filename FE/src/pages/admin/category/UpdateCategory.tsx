@@ -1,10 +1,9 @@
-
 import { useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useParams } from "react-router-dom";
 import { formDataCategory } from "../../../interfaces/Category";
 import { CategoryCT } from "../../../contexts/CategoryContext";
-import { getCategoryById } from "../../../services/category";
+import { getCategoryById } from "../../../services/admin/category";
 
 const UpdateCategory = () => {
   const {

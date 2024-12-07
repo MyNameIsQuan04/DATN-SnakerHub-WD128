@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { Size } from "../../../interfaces/Size";
 import { SizeCT } from "../../../contexts/SizeContext";
 import api from "../../../configs/axios";
-import { getSizeById } from "../../../services/size";
+import { getSizeById } from "../../../services/admin/size";
 
 const UpdateSize = () => {
   const {

@@ -5,10 +5,10 @@ import { toast } from "react-toastify";
 import {
   addProduct,
   getProducts,
-  getProductsClients,
   removeProduct,
   updateProduct,
-} from "../services/product";
+} from "../services/admin/product";
+import { getProductsClients } from "../services/client/product";
 
 type Props = {
   children: React.ReactNode;
@@ -24,7 +24,6 @@ const ProductContext = ({ children }: Props) => {
       setProducts(data);
     })();
   }, []);
-
   useEffect(() => {
     (async () => {
       const data = await getProductsClients();
