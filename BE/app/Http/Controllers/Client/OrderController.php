@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Product_Variant;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendLinkPayment;
 use App\Models\Cart;
 use App\Models\Cart_Item;
 use App\Models\Comment;
@@ -55,6 +56,9 @@ class OrderController extends Controller
                 'district' => 'required|string',
                 'town' => 'required|string',
                 'total_price' => 'required|integer',
+                'discount' => 'required|integer',
+                'codeDiscount' => 'required|integer|exists:vouchers,codeDiscount',
+                'shippingFee' => 'required|integer',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -77,6 +81,10 @@ class OrderController extends Controller
                 'customer_id' => $customer->id,
                 'total_price' => $validatedData['total_price'],
                 'order_code' => $orderCode,
+                'discount' => $validatedData['discount'],
+                'codeDiscount' => $validatedData['codeDiscount'],
+                'shippingFee' => $validatedData['shippingFee'],
+                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0)+$validatedData['shippingFee'],
             ]);
 
             foreach ($validatedData['items'] as $item) {
@@ -116,9 +124,9 @@ class OrderController extends Controller
                 $product = Product::find($productVariant['product_id']);
 
 
-                $newSalesCount = $product['sales_count'] + $orderItem['quantity'];
+                $newSellCount = $product['sell_count'] + $orderItem['quantity'];
                 $product->update([
-                    'sales_count' => $newSalesCount
+                    'sell_count' => $newSellCount
                 ]);
             }
             $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
@@ -152,7 +160,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         try {
-            if ($order['status'] === 'Chờ xử lý') {
+            if ($order['status'] === 'Chờ xử lý' || $order['status'] === 'Đã xác nhận') {
                 $dataValidate = $request->validate([
                     'status' => 'required|in:Đã hủy',
                 ]);
@@ -166,9 +174,9 @@ class OrderController extends Controller
 
                     $product = Product::find($productVariant['product_id']);
 
-                    $newSalesCount = $product['sales_count'] - $orderItem['quantity'];
+                    $newSellCount = $product['sell_count'] - $orderItem['quantity'];
                     $product->update([
-                        'sales_count' => $newSalesCount
+                        'sell_count' => $newSellCount
                     ]);
                 }
                 $order->update([
@@ -292,9 +300,9 @@ class OrderController extends Controller
                     ]);
                 }
                 $product = Product::find($productVariant['product_id']);
-                $newSalesCount = $product['sales_count'] + $orderItem['quantity'];
+                $newSellCount = $product['sell_count'] + $orderItem['quantity'];
                 $product->update([
-                    'sales_count' => $newSalesCount
+                    'sell_count' => $newSellCount
                 ]);
             }
 
@@ -345,6 +353,9 @@ class OrderController extends Controller
 
             DB::commit();
 
+            $user = Auth::user();
+            SendLinkPayment::dispatch($vnp_Url, $user->email, $user->name);
+
             return $vnp_Url;
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback nếu có lỗi
@@ -394,18 +405,11 @@ class OrderController extends Controller
                     'message' => 'Thanh toán thành công',
                 ]);
             } else {
-                // Giao dịch thất bại
                 return response()->json([
                     'success' => false,
                     'message' => 'Thanh toán thất bại',
                 ]);
             }
-        } else {
-            // Mã bảo mật không hợp lệ
-            return response()->json([
-                'success' => false,
-                'message' => 'Chữ ký không hợp lệ',
-            ]);
         }
     }
 }

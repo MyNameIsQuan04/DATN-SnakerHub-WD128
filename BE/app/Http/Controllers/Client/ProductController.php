@@ -16,7 +16,7 @@ class ProductController extends Controller
         $products = Product::orderByDesc('id')->get()
             ->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
 
-        $top10 = Product::orderByDesc('sales_count')->get();
+        $top10 = Product::orderByDesc('sell_count')->get();
 
         return response()->json([
             'success' => true,

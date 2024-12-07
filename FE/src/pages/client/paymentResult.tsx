@@ -27,6 +27,7 @@ const PaymentResult = () => {
       console.error("Lỗi khi gửi request:", error);
     }
   };
+  
 
   // Gọi hàm paymentStatus khi vnp_ResponseCode === "00"
   useEffect(() => {
