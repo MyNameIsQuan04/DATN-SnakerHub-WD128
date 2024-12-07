@@ -175,10 +175,10 @@ const Checkout = () => {
     <div className="mt-[100px] px-[150px]">
       <div className="flex items-center space-x-2 mb-4 ">
         <a
-          href="/"
+          href="/cart"
           className="text-xl font-medium text-gray-800 hover:text-blue-400 hover:underline"
         >
-          Trang chủ
+          Giỏ hàng
         </a>
         <GrNext className="text-xl text-gray-600" />
         <a href="">Thanh toán</a>
@@ -315,9 +315,9 @@ const Checkout = () => {
                         );
                         setSelectedProvince(selectedProvince || null);
                         if (selectedProvince?.name === "Thành phố Hà Nội") {
-                          setShippingFee(20000);
-                        } else {
                           setShippingFee(30000);
+                        } else {
+                          setShippingFee(40000);
                         }
                       }}
                       className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"

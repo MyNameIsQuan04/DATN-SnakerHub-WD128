@@ -10,6 +10,7 @@ const AdminOrder = () => {
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     fetchOrders();
@@ -26,6 +27,8 @@ const AdminOrder = () => {
       setFilteredOrders(data);
     } catch (error) {
       console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -112,12 +115,9 @@ const AdminOrder = () => {
               key={status.value}
               onClick={() => setFilterStatus(status.value)}
               className={`px-4 py-2 rounded-md border text-sm transition duration-200 
-                ${
-                  filterStatus === status.value
-                    ? "bg-gray-500 text-white border-gray-500"
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                }
-              `}
+                ${filterStatus === status.value
+                  ? "bg-gray-500 text-white border-gray-500"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"}`}
             >
               {status.label}
             </button>
@@ -125,13 +125,11 @@ const AdminOrder = () => {
         </div>
       </div>
 
-      {filteredOrders.length === 0 && searchTerm && (
-        <div className="mt-4 text-center text-red-500 font-semibold">
-          Không tìm thấy đơn hàng với từ khóa tìm kiếm "{searchTerm}"
-        </div>
-      )}
-
-      {filteredOrders.length > 0 && (
+      {loading ? (
+        <div className="text-center mt-4">Đang tải đơn hàng...</div>
+      ) : filteredOrders.length === 0 ? (
+        <div className="text-center mt-4 text-red-500 font-semibold">Không có đơn hàng</div>
+      ) : (
         <div className="overflow-y-auto mt-4" style={{ maxHeight: "540px" }}>
           <table className="min-w-full bg-white border border-gray-100 shadow-md">
             <thead className="bg-gray-100 sticky top-0">
@@ -144,10 +142,7 @@ const AdminOrder = () => {
                   "Trạng thái",
                   "Tùy chỉnh",
                 ].map((header, i) => (
-                  <th
-                    key={i}
-                    className="py-2 px-5 border border-gray-300 font-semibold text-gray-600 rounded-lg"
-                  >
+                  <th key={i} className="py-2 px-5 border border-gray-300 font-semibold text-gray-600 rounded-lg">
                     {header}
                   </th>
                 ))}
@@ -155,30 +150,20 @@ const AdminOrder = () => {
             </thead>
             <tbody>
               {filteredOrders.map((item: Order) => (
-                <tr
-                  key={item.id}
-                  className="hover:bg-gray-200 cursor-pointer transition duration-200 ease-in-out"
-                >
+                <tr key={item.id} className="hover:bg-gray-200 cursor-pointer transition duration-200 ease-in-out">
                   <td className="py-3 px-4 border-b text-center">
-                    <Link
-                      to={`/admin/order-detail/${item.id}`}
-                      className="text-blue-500 hover:underline"
-                    >
+                    <Link to={`/admin/order-detail/${item.id}`} className="text-blue-500 hover:underline">
                       #{item.order_code}
                     </Link>
                   </td>
-                  <td className="py-3 px-4 border-b text-center">
-                    {item.customer.name}
-                  </td>
+                  <td className="py-3 px-4 border-b text-center">{item.customer.name}</td>
                   <td className="py-3 px-4 border-b text-center">
                     {item.customer.phone_number}, {item.customer.address}
                   </td>
                   <td className="py-3 px-4 border-b text-center text-red-500 font-bold">
                     {item.total_price.toLocaleString()} VNĐ
                   </td>
-                  <td className="py-3 px-4 border-b text-center text-red-500 font-bold">
-                    {item.status}
-                  </td>
+                  <td className="py-3 px-4 border-b text-center text-red-500 font-bold">{item.status}</td>
                   <td className="py-3 px-4 border-b text-center">
                     <select
                       value={item.status}
