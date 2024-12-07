@@ -138,9 +138,10 @@ const Checkout = () => {
         price: item.product_variant.price,
         total: totalPriceItem(item.product_variant.price, item.quantity),
       })),
-      total_price: grandTotalPrice - discount + shippingFee,
+      total_price: grandTotalPrice,
       codeDiscount,
       discount,
+      shippingFee,
     };
 
     // Xác định URL API dựa trên payment method
@@ -232,28 +233,45 @@ const Checkout = () => {
                 {formatCurrency(grandTotalPrice)}
               </span>
             </div>
-            {discount > 0 ? (
-              <div className="flex justify-between">
-                <p className="text-green-500">Mã giảm giá đã áp dụng:</p>
-                <p className="text-green-500">{discount}đ</p>
-              </div>
-            ) : (
-              <div className="flex justify-between">
-                {/* <p className="text-red-500">Chưa áp dụng mã giảm giá</p> */}
+            {discount > 0 && (
+              <div className="voucher-card flex justify-between items-center p-3 bg-yellow-100 border-l-4 border-yellow-500 rounded-lg shadow-md">
+                <div>
+                  <p className="text-yellow-700 font-semibold text-sm">
+                    Mã giảm giá đã áp dụng:
+                  </p>
+                  <p className="text-yellow-800 font-bold text-lg">
+                    {codeDiscount}
+                  </p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <p className="text-yellow-800 font-semibold text-lg">
+                    {discount.toLocaleString()}đ
+                  </p>
+                  <button
+                    onClick={() => {
+                      setDiscount(0); // Đặt lại discount về 0
+                      setCodeDiscount(""); // Xóa mã giảm giá
+                      toast.info("Mã giảm giá đã được xóa.");
+                    }}
+                    className="text-red-500 hover:text-red-600 font-semibold hover:underline"
+                  >
+                    Xóa mã
+                  </button>
+                </div>
               </div>
             )}
 
-            <div className="flex justify-between items-center">
+            <div className="voucher-input flex justify-between items-center mt-4">
               <input
                 type="text"
                 placeholder="Nhập mã giảm giá"
                 value={codeDiscount}
                 onChange={(e) => setCodeDiscount(e.target.value)}
-                className="flex-grow p-2 border rounded-md"
+                className="flex-grow p-3 border border-gray-300 rounded-lg shadow-sm focus:border-yellow-500 focus:ring focus:ring-yellow-200"
               />
               <button
                 onClick={handleApplyVoucher}
-                className="ml-4 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600"
+                className="ml-4 bg-yellow-500 text-white font-bold py-2 px-5 rounded-lg hover:bg-yellow-600 transition duration-200"
               >
                 Áp dụng
               </button>
@@ -426,13 +444,15 @@ const Checkout = () => {
               <div className="flex justify-between">
                 <span>Phí vận chuyển</span>
                 <span className="text-red-500">
-                  {formatCurrency(shippingFee)}
+                  +{formatCurrency(shippingFee)}
                 </span>
               </div>
 
               <div className="flex justify-between">
                 <span>Voucher:</span>
-                <span className="text-red-500">{formatCurrency(discount)}</span>
+                <span className="text-red-500">
+                  -{formatCurrency(discount)}
+                </span>
               </div>
             </div>
             <hr className="my-4" />
