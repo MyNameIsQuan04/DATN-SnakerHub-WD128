@@ -67,6 +67,40 @@ const Cart = () => {
       })
     );
   };
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleQuantityChange = (
+    index: number,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newQuantity = parseInt(event.target.value, 10);
+
+    // Kiểm tra nếu giá trị nhập vào không phải số hợp lệ
+    if (isNaN(newQuantity) || newQuantity < 1) {
+      return; // Không làm gì nếu giá trị không hợp lệ (âm hoặc không phải số)
+    }
+
+    console.log(newQuantity);
+    if (newQuantity > cartItems[index].product_variant.stock) {
+      alert("Số lượng không thể vượt quá số lượng tồn kho!"); // Hoặc có thể sử dụng một thông báo lỗi trên giao diện
+      return;
+    }
+
+    // Cập nhật số lượng nếu hợp lệ
+    setCartItems((prevItems) =>
+      prevItems.map((item, i) => {
+        if (i === index) {
+          const updatedItem = {
+            ...item,
+            quantity: newQuantity,
+          };
+          updateCartItemQuantity(item.id, newQuantity); // Cập nhật lại số lượng trên backend
+          return updatedItem;
+        }
+        return item;
+      })
+    );
+  };
 
   const totalPriceItem = (price: number, quantity: number) => price * quantity;
   const handleRemoveItem = async (id: number) => {
@@ -88,8 +122,19 @@ const Cart = () => {
     }
   };
 
-  // Fetch giỏ hàng khi component mount
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const stockValidate = cartItems.map((item) => {
+    const product = item.product_variant.product;
+    const stock = item.product_variant.stock;
+    const quantity = item.quantity;
+
+    return {
+      productName: product.name,
+      stock: stock,
+      quantity: quantity,
+      disableIncrease: quantity >= stock,
+    };
+  });
+
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
@@ -228,9 +273,11 @@ const Cart = () => {
                 </p>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
+                    {/* Nút giảm số lượng */}
                     <button
                       className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
                       onClick={() => handleDecrease(index)}
+                      disabled={item.quantity <= 1} // Vô hiệu hóa nếu số lượng <= 1
                     >
                       <svg
                         className="stroke-gray-900"
@@ -248,15 +295,29 @@ const Cart = () => {
                         />
                       </svg>
                     </button>
+
+                    {/* Hiển thị số lượng */}
                     <input
-                      type="text"
                       value={item.quantity}
                       className="border border-gray-200 rounded-full w-8 aspect-square text-gray-900 text-xs py-1 text-center"
-                      readOnly
+                      min="1"
+                      onChange={(e) => handleQuantityChange(index, e)} // Xử lý thay đổi số lượng
+                      onBlur={(e) => {
+                        // Khi mất focus, kiểm tra lại nếu số lượng <= 0 thì đặt lại là 1
+                        if (parseInt(e.target.value, 10) < 1) {
+                          setErrorMessage("Số lượng phải lớn hơn hoặc bằng 1");
+                          handleQuantityChange(index, {
+                            target: { value: "1" },
+                          });
+                        }
+                      }}
                     />
+
+                    {/* Nút tăng số lượng */}
                     <button
                       className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
                       onClick={() => handleIncrease(index)}
+                      disabled={item.quantity >= item.product_variant.stock} // Khóa nút nếu số lượng >= tồn kho
                     >
                       <svg
                         className="stroke-gray-900"
@@ -274,7 +335,15 @@ const Cart = () => {
                         />
                       </svg>
                     </button>
+
+                    {/* Hiển thị thông báo lỗi nếu có */}
+                    {errorMessage && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errorMessage}
+                      </p>
+                    )}
                   </div>
+
                   <h6 className="text-red-500 font-manrope font-bold text-lg leading-6 text-right">
                     {formatCurrency(
                       totalPriceItem(productVariant?.price || 0, item.quantity)

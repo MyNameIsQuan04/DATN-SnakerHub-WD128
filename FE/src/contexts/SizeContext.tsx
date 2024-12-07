@@ -1,7 +1,12 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Size } from "../interfaces/Size";
-import { addSize, getSizes, removeSize, updateSize } from "../services/size";
+import {
+  addSize,
+  getSizes,
+  removeSize,
+  updateSize,
+} from "../services/admin/size";
 
 type Props = {
   children: React.ReactNode;

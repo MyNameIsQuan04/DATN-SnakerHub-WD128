@@ -8,8 +8,8 @@ import { ProductCT } from "../../../contexts/ProductContext";
 import { Category } from "../../../interfaces/Category";
 import { Color } from "../../../interfaces/Color";
 import { Size } from "../../../interfaces/Size";
-import { getProductById } from "../../../services/product";
 import { Gallery } from "../../../interfaces/Gallery";
+import { getProductById } from "../../../services/admin/product";
 
 const EditProduct = () => {
   const { categories } = useContext(CategoryCT);
@@ -345,7 +345,7 @@ const EditProduct = () => {
                               className="w-full px-3 py-2 border rounded-lg"
                             >
                               <option value="">Chọn màu sắc</option>
-                              {colors.map((color) => (
+                              {colors.map((color: Color) => (
                                 <option key={color.id} value={color.id}>
                                   {color.name}
                                 </option>
@@ -364,7 +364,7 @@ const EditProduct = () => {
                               className="w-full px-3 py-2 border rounded-lg"
                             >
                               <option value="">Chọn kích cỡ</option>
-                              {sizes.map((size) => (
+                              {sizes.map((size: Size) => (
                                 <option key={size.id} value={size.id}>
                                   {size.name}
                                 </option>

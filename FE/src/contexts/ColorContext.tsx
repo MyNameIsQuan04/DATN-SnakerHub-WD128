@@ -1,14 +1,13 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Size } from "../interfaces/Size";
-import { getSizes } from "../services/size";
+
 import { Color } from "../interfaces/Color";
 import {
   addColor,
   getColors,
   removeColor,
   updateColor,
-} from "../services/color";
+} from "../services/admin/color";
 
 type Props = {
   children: React.ReactNode;
@@ -37,7 +36,7 @@ const ColorContext = ({ children }: Props) => {
     }
   };
 
-  const onAddColor = async (data: Size) => {
+  const onAddColor = async (data: Color) => {
     try {
       const color = await addColor(data);
       alert("Thanh cong");
@@ -49,7 +48,7 @@ const ColorContext = ({ children }: Props) => {
     }
   };
 
-  const onUpdateColor = async (data: Size, id: number) => {
+  const onUpdateColor = async (data: Color, id: number) => {
     try {
       console.log(data, id);
       const color = await updateColor(data, id);

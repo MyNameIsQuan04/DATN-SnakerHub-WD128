@@ -1,5 +1,7 @@
-import api from "../configs/axios";
-import { Size } from "../interfaces/Size";
+import api from "../../configs/axios";
+import { Size } from "../../interfaces/Size";
+
+const token = localStorage.getItem("access_token");
 
 export const getSizes = async () => {
   try {

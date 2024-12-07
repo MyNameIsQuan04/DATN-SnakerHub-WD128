@@ -5,10 +5,10 @@ import { toast } from "react-toastify";
 import {
   addProduct,
   getProducts,
-  getProductsClients,
   removeProduct,
   updateProduct,
-} from "../services/product";
+} from "../services/admin/product";
+import { getProductsClients } from "../services/client/product";
 
 type Props = {
   children: React.ReactNode;

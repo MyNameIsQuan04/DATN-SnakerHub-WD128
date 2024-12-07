@@ -10,7 +10,7 @@ import Slider from "react-slick";
 const Home = () => {
   const { productsClient } = useContext(ProductCT);
   const productsHome = productsClient.products;
-  const { categories } = useContext(CategoryCT);
+  const { categoriesClient } = useContext(CategoryCT);
   const bestSellers = productsHome?.slice(0, 10) || [];
   const favouriteProducts = productsHome?.slice(20, 30) || [];
   const PrevArrow = (props: any) => {
@@ -140,7 +140,7 @@ const Home = () => {
           DANH MỤC SẢN PHẨM
         </p>
         <div className="flex justify-center gap-[30px] mt-[30px]">
-          {categories.map((category: Category) => (
+          {categoriesClient.map((category: Category) => (
             <div className="w-36 bg-transparent items-center justify-center flex border-2 border-orange-500 shadow-lg hover:bg-orange-500 text-orange-500 hover:text-white duration-300 cursor-pointer active:scale-[0.98]">
               <button className="px-5 py-2">
                 <a className="" href="">

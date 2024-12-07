@@ -3,7 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useContext, useState } from "react";
 import { IoLogOutOutline } from "react-icons/io5";
 // import axios from "axios";
-import { ProductCT } from "../../contexts/productContext";
+import { ProductCT } from "../../contexts/ProductContext";
 import api from "../../configs/axios";
 import { CategoryCT } from "../../contexts/CategoryContext";
 import { Category } from "../../interfaces/Category";

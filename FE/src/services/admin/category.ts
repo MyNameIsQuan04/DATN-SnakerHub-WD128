@@ -1,5 +1,6 @@
-import api from "../configs/axios";
-import { formDataCategory } from "../interfaces/Category";
+import api from "../../configs/axios";
+import { formDataCategory } from "../../interfaces/Category";
+const token = localStorage.getItem("access_token");
 
 export const GetCategories = async () => {
   try {
