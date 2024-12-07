@@ -10,6 +10,9 @@ use App\Http\Controllers\api\SizeApiController;
 use App\Http\Controllers\api\UserApiController;
 use App\Http\Controllers\api\VoucherController;
 use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\ColorController;
+use App\Http\Controllers\Client\SizeController;
+use App\Http\Controllers\Client\VoucherController as ClientVoucherController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ColorApiController;
 use App\Http\Controllers\api\DashboardController;
@@ -40,6 +43,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 Route::apiResource('sizes', SizeApiController::class);
 Route::apiResource('colors', ColorApiController::class);
 Route::apiResource('users', UserApiController::class);
+// Route::apiResource('vouchers', VoucherController::class);
 });
 
 $crud = [
@@ -144,10 +148,10 @@ Route::post('/vnpay-payment', [ApiMemberOrderController::class, 'vnpayPayment'])
 Route::get('/vnpay-return', [ApiMemberOrderController::class, 'vnpayReturn']);
 
 Route::prefix('client')->middleware(['auth:sanctum'])->group(function () {
-    Route::get('colors', [ColorApiController::class, 'index']);
-    Route::get('colors/{id}', [ColorApiController::class, 'show']);
-    Route::get('sizes', [SizeApiController::class, 'index']);
-    Route::get('sizes/{id}', [SizeApiController::class, 'show']);
-    Route::get('vouchers', [VoucherApiController::class, 'index']);
-    Route::get('vouchers/{id}', [VoucherApiController::class, 'show']);
+    Route::get('colors', [ColorController::class, 'index']);
+    Route::get('colors/{id}', [ColorController::class, 'show']);
+    Route::get('sizes', [SizeController::class, 'index']);
+    Route::get('sizes/{id}', [SizeController::class, 'show']);
+    Route::get('vouchers', [ClientVoucherController::class, 'index']);
+    Route::get('vouchers/{id}', [ClientVoucherController::class, 'show']);
 });
