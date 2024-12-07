@@ -56,6 +56,9 @@ class OrderController extends Controller
                 'district' => 'required|string',
                 'town' => 'required|string',
                 'total_price' => 'required|integer',
+                'discount' => 'required|integer',
+                'codeDiscount' => 'required|integer|exists:vouchers,codeDiscount',
+                'shippingFee' => 'required|integer',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -78,6 +81,10 @@ class OrderController extends Controller
                 'customer_id' => $customer->id,
                 'total_price' => $validatedData['total_price'],
                 'order_code' => $orderCode,
+                'discount' => $validatedData['discount'],
+                'codeDiscount' => $validatedData['codeDiscount'],
+                'shippingFee' => $validatedData['shippingFee'],
+                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0),
             ]);
 
             foreach ($validatedData['items'] as $item) {
@@ -153,7 +160,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         try {
-            if ($order['status'] === 'Chờ xử lý') {
+            if ($order['status'] === 'Chờ xử lý' || $order['status'] === 'Đã xác nhận') {
                 $dataValidate = $request->validate([
                     'status' => 'required|in:Đã hủy',
                 ]);

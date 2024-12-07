@@ -47,7 +47,7 @@ $crud = [
 ];
 
 foreach ($crud as $key => $controller) {
-    Route::apiResource($key, $controller);
+    Route::apiResource($key, $controller)->middleware('auth:api')->middleware('type:admin');
 }
 
 Route::get('dashboard/daily', [DashboardController::class, 'daily']);
@@ -136,5 +136,5 @@ Route::get('/search', [ClientProductController::class, 'search']);
 
 Route::post('/rate', [CommentController::class, 'store']);
 
-Route::post('/vnpay-payment', [ApiMemberOrderController::class, 'vnpayPayment'])->name('api.vnpay.payment');
-Route::get('/vnpay-return', [ApiMemberOrderController::class, 'vnpayReturn']);
+Route::post('/vnpay-payment', [ApiMemberOrderController::class, 'vnpayPayment'])->name('api.vnpay.payment')->middleware('auth:api');
+Route::get('/vnpay-return', [ApiMemberOrderController::class, 'vnpayReturn'])->middleware('auth:api');
