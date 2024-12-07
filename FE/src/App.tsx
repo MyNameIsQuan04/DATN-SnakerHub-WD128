@@ -47,6 +47,7 @@ import UserAnnouncement from "./pages/client/User/UserAnnouncement";
 import UserOrderhistorydetail from "./pages/client/User/UserOrderhistorydetail";
 import OrderReturn from "./pages/admin/order/OrderReturn";
 import PaymentResult from "./pages/client/paymentResult";
+import OrderDetailHictory from "./pages/admin/order/OrderDetailHictory";
 
 function App() {
   return (
@@ -136,6 +137,7 @@ function App() {
           <Route path="/admin/size-edit/:id" element={<UpdateSize />} />
           <Route path="/admin/size-edit/:id" element={<UpdateColor />} />
           <Route path="/admin/order" element={<AdminOrder />} />
+          <Route path="/admin/order-detail/:id" element={<OrderDetailHictory/>}/>
           <Route path="/admin/order-return" element={<OrderReturn />} />
           <Route path="/admin/user" element={<ListUser />} />
           <Route path="/admin/vouchers" element={<ListVoucher />} />

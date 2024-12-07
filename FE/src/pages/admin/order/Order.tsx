@@ -10,7 +10,6 @@ const AdminOrder = () => {
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("");
-  const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchOrders();
@@ -78,12 +77,6 @@ const AdminOrder = () => {
     }
   };
 
-  const toggleExpandOrder = (orderId: number) => {
-    setExpandedOrderId((prevOrderId) =>
-      prevOrderId === orderId ? null : orderId
-    );
-  };
-
   const getStatusButtons = () => [
     { label: "Tất cả", value: "" },
     { label: "Chờ xử lý", value: "Chờ xử lý" },
@@ -98,9 +91,7 @@ const AdminOrder = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="sticky top-0 bg-white shadow-lg z-10 p-4">
-        <h1 className="text-3xl font-bold mb-4 text-gray-800">
-          Quản lý đơn hàng
-        </h1>
+        <h1 className="text-3xl font-bold mb-4 text-gray-800">Quản lý đơn hàng</h1>
         <div className="flex flex-wrap items-center gap-4 mb-4">
           <input
             type="text"
@@ -145,108 +136,65 @@ const AdminOrder = () => {
           <table className="min-w-full bg-white border border-gray-100 shadow-md">
             <thead className="bg-gray-100 sticky top-0">
               <tr className="text-center">
-                {[...Array(7)].map((_, i) => (
+                {[
+                  "Mã đơn hàng",
+                  "Họ và tên",
+                  "Thông tin",
+                  "Tổng tiền",
+                  "Trạng thái",
+                  "Tùy chỉnh",
+                ].map((header, i) => (
                   <th
                     key={i}
                     className="py-2 px-5 border border-gray-300 font-semibold text-gray-600 rounded-lg"
                   >
-                    {["Mã đơn hàng", "Họ và tên", "Thông tin", "Tổng tiền", "Đơn hàng","Trạng thái", "Tùy chỉnh"][i]}
+                    {header}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {filteredOrders.map((item: Order) => (
-                <React.Fragment key={item.id}>
-                  <tr className="hover:bg-gray-200 cursor-pointer transition duration-200 ease-in-out">
-                    <td className="py-3 px-4 border-b text-center">
+                <tr
+                  key={item.id}
+                  className="hover:bg-gray-200 cursor-pointer transition duration-200 ease-in-out"
+                >
+                  <td className="py-3 px-4 border-b text-center">
+                    <Link
+                      to={`/admin/order-detail/${item.id}`}
+                      className="text-blue-500 hover:underline"
+                    >
                       #{item.order_code}
-                    </td>
-                    <td className="py-3 px-4 border-b text-center">
-                      {item.customer.name}
-                    </td>
-                    <td className="py-3 px-4 border-b text-center">
-                      {item.customer.phone_number}, {item.customer.address}
-                    </td>
-                    <td className="py-3 px-4 border-b text-center text-red-500 font-bold">
-                      {item.total_price.toLocaleString()} VNĐ
-                    </td>
-                    <td className="border-b text-center">
-                      <button
-                        className="text-gray-500 bg-white w-20 h-8 rounded-md border-2 border-gray-500 transition duration-200 hover:bg-gray-200 focus:outline-none"
-                        onClick={() => toggleExpandOrder(item.id)}
-                      >
-                        {expandedOrderId === item.id ? "Ẩn" : "Chi tiết"}
-                      </button>
-                    </td>
-                    <td className="py-3 px-4 border-b text-center text-red-500 font-bold">
-                      {item.status}
-                    </td>
-                    <td className="py-3 px-4 border-b text-center">
-                      <select
-                        value={item.status}
-                        onChange={(e) =>
-                          handleUpdateStatus(item.id, e.target.value)
-                        }
-                        className={`border rounded px-2 py-1 transition duration-300 ${
-                          item.status === "Chờ xử lý" || item.status === "Đã xác nhận"
-                            ? "border-red-500 text-red-500"
-                            : "border-gray-300 text-gray-700"
-                        }`}
-                      >
-                        {getStatusButtons()
-                          .filter((status) => status.label !== "Tất cả")
-                          .map((status) => (
-                            <option key={status.value} value={status.value}>
-                              {status.label}
-                            </option>
-                          ))}
-                      </select>
-                    </td>
-                  </tr>
-                  {expandedOrderId === item.id && (
-                    <tr>
-                      <td colSpan={9} className="py-4 px-4 border-b">
-                        <h2 className="mb-2 font-medium">Chi tiết đơn hàng:</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {item.order_items.map((product) => (
-                            <div
-                              key={product.id}
-                              className="flex items-center border p-4 rounded-lg shadow-md bg-white transition-transform transform hover:scale-105"
-                            >
-                              <img
-                                src={product.product_variant?.image || ""}
-                                alt="Product"
-                                className="w-24 h-24 object-cover mr-4 rounded-md"
-                              />
-                              <div className="flex-grow">
-                                <div className="font-semibold text-lg">
-                                  <strong>Sản phẩm:</strong>{" "}
-                                  {product.product_variant?.product?.name ||
-                                    "N/A"}
-                                </div>
-                                <div className="text-gray-700">
-                                  <strong>Số lượng:</strong> {product.quantity}
-                                </div>
-                                <div className="text-gray-700">
-                                  <strong>Giá:</strong>{" "}
-                                  <span className="text-red-500 font-medium">
-                                    {product.price.toLocaleString()}
-                                  </span>{" "}
-                                  VNĐ
-                                </div>
-                                <div className="text-gray-700">
-                                  <strong>Mã sản phẩm:</strong>{" "}
-                                  {product.product_variant?.sku || "N/A"}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
+                    </Link>
+                  </td>
+                  <td className="py-3 px-4 border-b text-center">
+                    {item.customer.name}
+                  </td>
+                  <td className="py-3 px-4 border-b text-center">
+                    {item.customer.phone_number}, {item.customer.address}
+                  </td>
+                  <td className="py-3 px-4 border-b text-center text-red-500 font-bold">
+                    {item.total_price.toLocaleString()} VNĐ
+                  </td>
+                  <td className="py-3 px-4 border-b text-center text-red-500 font-bold">
+                    {item.status}
+                  </td>
+                  <td className="py-3 px-4 border-b text-center">
+                    <select
+                      value={item.status}
+                      onChange={(e) => handleUpdateStatus(item.id, e.target.value)}
+                      className="border rounded px-2 py-1 transition duration-300"
+                    >
+                      {getStatusButtons()
+                        .filter((status) => status.label !== "Tất cả")
+                        .map((status) => (
+                          <option key={status.value} value={status.value}>
+                            {status.label}
+                          </option>
+                        ))}
+                    </select>
+                  </td>
+                </tr>
               ))}
             </tbody>
           </table>
