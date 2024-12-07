@@ -17,7 +17,11 @@ class Order extends Model
         'status',
         'order_code',
         'note',
-        'status-payment'
+        'status-payment',
+        'discount',
+        'codeDiscount',
+        'shippingFee',
+        'paymentMethod',
     ];
 
     public function customer()
