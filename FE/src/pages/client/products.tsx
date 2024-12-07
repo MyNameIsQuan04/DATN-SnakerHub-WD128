@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ProductCT } from "../../contexts/ProductContext";
+import { ProductCT } from "../../contexts/productContext";
 import { Product } from "../../interfaces/Product";
 import { CategoryCT } from "../../contexts/CategoryContext";
 import { Category } from "../../interfaces/Category";
@@ -22,7 +22,7 @@ const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const { products, setProducts } = useContext(ProductCT);
-  const { categories } = useContext(CategoryCT);
+
   const { sizes } = useContext(SizeCT);
   const { colors } = useContext(ColorCT);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -100,7 +100,7 @@ const Products = () => {
               Danh mục
             </h3>
             <ul className="space-y-2">
-              {categories.map((category: Category) => (
+              {/* {categories.map((category: Category) => (
                 <li key={category.id} className="flex items-center">
                   <input
                     type="checkbox"
@@ -114,7 +114,7 @@ const Products = () => {
                   />
                   <span className="text-gray-600">{category.name}</span>
                 </li>
-              ))}
+              ))} */}
             </ul>
             <h3 className="font-semibold text-lg text-gray-700 mt-4 mb-3">
               Kích thước

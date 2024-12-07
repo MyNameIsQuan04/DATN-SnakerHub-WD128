@@ -12,7 +12,6 @@ import { toast } from "react-toastify";
 import { IoCartOutline } from "react-icons/io5";
 import { GrNext } from "react-icons/gr";
 import Slider from "react-slick";
-import { ProductCT } from "../../contexts/ProductContext";
 
 const Detail = () => {
   const PrevArrow = (props: any) => {
@@ -38,9 +37,6 @@ const Detail = () => {
       </button>
     );
   };
-  const { productsClient } = useContext(ProductCT);
-  const products = productsClient.products;
-  const fearturedProducts = products?.slice(0, 10) || [];
 
   const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
 
@@ -108,7 +104,7 @@ const Detail = () => {
   const fetchProduct = async (productId: string) => {
     try {
       const response = await axios.get<Product>(
-        `http://localhost:8000/api/products/${productId}`
+        `http://localhost:8000/api/client/products/${productId}`
       );
       setProduct(response.data);
       const product = response.data;

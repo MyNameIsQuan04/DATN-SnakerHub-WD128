@@ -16,7 +16,7 @@ import CategoryContext from "./contexts/CategoryContext";
 import AddCategory from "./pages/admin/category/AddCategory";
 import ListCategory from "./pages/admin/category/ListCategory";
 import Home from "./pages/client/home";
-import ProductContext from "./contexts/ProductContext";
+import ProductContext from "./contexts/productContext";
 import ColorContext from "./contexts/ColorContext";
 import SizeContext from "./contexts/SizeContext";
 import EditProduct from "./pages/admin/product/EditProduct";
@@ -58,11 +58,7 @@ function App() {
             <ColorContext>
               <SizeContext>
                 <OrderContext>
-                  <CategoryContext>
-                    <ProductContext>
-                      <LayoutClient />
-                    </ProductContext>
-                  </CategoryContext>
+                  <LayoutClient />
                 </OrderContext>
               </SizeContext>
             </ColorContext>

@@ -24,7 +24,6 @@ const ProductContext = ({ children }: Props) => {
       setProducts(data);
     })();
   }, []);
-
   useEffect(() => {
     (async () => {
       const data = await getProductsClients();

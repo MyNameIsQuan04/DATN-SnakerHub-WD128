@@ -5,7 +5,7 @@ import { Formik, Form, Field, FieldArray } from "formik";
 import { CategoryCT } from "../../../contexts/CategoryContext";
 import { ColorCT } from "../../../contexts/ColorContext";
 import { SizeCT } from "../../../contexts/SizeContext";
-import { ProductCT } from "../../../contexts/ProductContext";
+import { ProductCT } from "../../../contexts/productContext";
 import { Category } from "../../../interfaces/Category";
 import { Color } from "../../../interfaces/Color";
 import { Size } from "../../../interfaces/Size";
