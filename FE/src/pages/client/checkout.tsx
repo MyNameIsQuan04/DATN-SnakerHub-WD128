@@ -79,7 +79,7 @@ const Checkout = () => {
       return;
     }
     const total_price = checkoutItems.reduce(
-      (sum, item) => sum + item.product_variant.price * item.quantity,
+      (sum, item) => (sum + item.product_variant.price) * item.quantity,
       0
     );
     try {
@@ -112,7 +112,7 @@ const Checkout = () => {
 
   const totalPriceItem = (price: number, quantity: number) => price * quantity;
   const grandTotalPrice = checkoutItems.reduce(
-    (total, item) => total + item.product_variant.price * item.quantity,
+    (total, item) => (total + item.product_variant.price) * item.quantity,
     0
   );
   const handlePaymentChange = (event: any) => {
@@ -251,7 +251,7 @@ const Checkout = () => {
                     onClick={() => {
                       setDiscount(0); // Đặt lại discount về 0
                       setCodeDiscount(""); // Xóa mã giảm giá
-                      toast.info("Mã giảm giá đã được xóa.");
+                      toast.info("Mã giảm giá đã được xóa."); // Hiển thị thông báo xóa
                     }}
                     className="text-red-500 hover:text-red-600 font-semibold hover:underline"
                   >

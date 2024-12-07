@@ -45,6 +45,7 @@ class CartController extends Controller
             'id' => 'required|integer|exists:products,id',
             'color_id' => 'required|integer|exists:colors,id',
             'size_id' => 'required|integer|exists:sizes,id',
+            'quantity' => 'required|integer|min:1'
         ]);
 
         //Tạo hoặc Tìm Giỏ hàng : firstOrCreatePhương pháp này được sử dụng để tìm giỏ hàng hiện có cho người dùng hoặc tạo giỏ hàng mới nếu không tồn tại.
@@ -62,14 +63,14 @@ class CartController extends Controller
             ->first();
         //Cập nhật hoặc Tạo mục giỏ hàng : Nếu mục tồn tại, nó sẽ tăng số lượng. Nếu không, nó sẽ tạo một Cart_Itembản ghi mới.
         if ($cartItem) {
-            $cartItem->quantity++;
+            $cartItem->quantity += $request->quantity;
             $cartItem->save();
         } else {
             // Create a new cart item
             $cartItem = new Cart_Item();
             $cartItem->cart_id = $cart->id;
             $cartItem->product__variant_id = $variant_id;
-            $cartItem->quantity = 1; // Assuming you want to store the price // Store image if needed
+            $cartItem->quantity = $request->quantity;; // Assuming you want to store the price // Store image if needed
             $cartItem->save();
         }
 

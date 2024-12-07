@@ -4,12 +4,12 @@ import { Formik, Form, Field, FieldArray } from "formik";
 import { CategoryCT } from "../../../contexts/CategoryContext";
 import { ColorCT } from "../../../contexts/ColorContext";
 import { SizeCT } from "../../../contexts/SizeContext";
-import { ProductCT } from "../../../contexts/ProductContext";
+import { ProductCT } from "../../../contexts/productContext";
 import { Category } from "../../../interfaces/Category";
 import { Color } from "../../../interfaces/Color";
 import { Size } from "../../../interfaces/Size";
-import { getProductById } from "../../../services/product";
 import { Gallery } from "../../../interfaces/Gallery";
+import { getProductById } from "../../../services/admin/product";
 
 const EditProduct = () => {
   const { categories } = useContext(CategoryCT);
@@ -41,7 +41,6 @@ const EditProduct = () => {
         size_id: "",
         color_id: "",
         stock: 0,
-        sku: "",
         image: "",
       },
     ],
@@ -73,7 +72,6 @@ const EditProduct = () => {
                 size_id: "",
                 color_id: "",
                 stock: 0,
-                sku: "",
                 image: null,
               },
             ],
@@ -130,7 +128,6 @@ const EditProduct = () => {
       formData.append(`variants[${index}][size_id]`, variant.size_id);
       formData.append(`variants[${index}][color_id]`, variant.color_id);
       formData.append(`variants[${index}][stock]`, variant.stock.toString());
-      formData.append(`variants[${index}][sku]`, variant.sku);
 
       if (variant.image instanceof File) {
         formData.append(`variants[${index}][image]`, variant.image);
@@ -345,7 +342,7 @@ const EditProduct = () => {
                               className="w-full px-3 py-2 border rounded-lg"
                             >
                               <option value="">Chọn màu sắc</option>
-                              {colors.map((color) => (
+                              {colors.map((color: Color) => (
                                 <option key={color.id} value={color.id}>
                                   {color.name}
                                 </option>
@@ -364,7 +361,7 @@ const EditProduct = () => {
                               className="w-full px-3 py-2 border rounded-lg"
                             >
                               <option value="">Chọn kích cỡ</option>
-                              {sizes.map((size) => (
+                              {sizes.map((size: Size) => (
                                 <option key={size.id} value={size.id}>
                                   {size.name}
                                 </option>
@@ -381,19 +378,6 @@ const EditProduct = () => {
                               name={`variants[${index}].stock`}
                               type="number"
                               className="w-full px-3 py-2 border rounded-lg"
-                            />
-                          </div>
-
-                          {/* SKU */}
-                          <div className="mb-4">
-                            <label className="block text-gray-700 font-bold mb-2">
-                              SKU
-                            </label>
-                            <Field
-                              name={`variants[${index}].sku`}
-                              type="text"
-                              className="w-full px-3 py-2 border rounded-lg"
-                              placeholder="Nhập SKU"
                             />
                           </div>
 
@@ -448,7 +432,6 @@ const EditProduct = () => {
                           size_id: "",
                           color_id: "",
                           stock: 0,
-                          sku: "",
                           image: null,
                         })
                       }

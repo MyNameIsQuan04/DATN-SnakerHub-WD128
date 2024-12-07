@@ -1,18 +1,23 @@
-import { useContext } from "react";
-import { ProductCT } from "../../contexts/ProductContext";
+import { useEffect, useState } from "react";
 import { Product } from "../../interfaces/Product";
 import { Link } from "react-router-dom";
-import { CategoryCT } from "../../contexts/CategoryContext";
-import { Category } from "../../interfaces/Category";
 import SimpleSlider from "../../components/Slider";
 import Slider from "react-slick";
+import { getProductsClients } from "../../services/client/product";
+import { Category } from "../../interfaces/Category";
+import axios from "axios";
 
 const Home = () => {
-  const { productsClient } = useContext(ProductCT);
-  const productsHome = productsClient.products;
-  const { categories } = useContext(CategoryCT);
-  const bestSellers = productsHome?.slice(0, 10) || [];
-  const favouriteProducts = productsHome?.slice(20, 30) || [];
+  const [productsClient, setProductsClient] = useState<Product[]>([]);
+  useEffect(() => {
+    (async () => {
+      const response = await getProductsClients();
+
+      const productsData = response.products || []; // Lấy mảng products
+      setProductsClient(productsData);
+    })();
+  }, []);
+
   const PrevArrow = (props: any) => {
     const { className, onClick } = props;
     return (
@@ -65,6 +70,18 @@ const Home = () => {
       },
     ],
   };
+
+  // Get Categories
+  const [categories, setCategories] = useState<Category[]>([]);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await axios.get(
+        "http://localhost:8000/api/client/categories"
+      );
+      setCategories(res.data);
+    };
+    fetchCategories();
+  });
 
   return (
     <div className="">
@@ -168,7 +185,7 @@ const Home = () => {
           </Link>
         </div>
         <div className="grid grid-cols-5 px-[40px] gap-[10px] mt-[30px]">
-          {bestSellers.map((product: Product) => (
+          {productsClient.map((product: Product) => (
             <Link to={`detail/${product.id}`} key={product.id}>
               <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
                 <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 ">
@@ -284,7 +301,7 @@ const Home = () => {
         </div>
         <div className="px-[40px]">
           <Slider {...settings} className="custom-slider">
-            {favouriteProducts.map((product: Product) => (
+            {productsClient.map((product: Product) => (
               <div key={product.id} className="">
                 <Link to={`detail/${product.id}`}>
                   <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
@@ -336,7 +353,7 @@ const Home = () => {
         </div>
         <div className="px-[40px]">
           <Slider {...settings} className="custom-slider">
-            {favouriteProducts.map((product: Product) => (
+            {productsClient.map((product: Product) => (
               <div key={product.id} className="gap-[10px]">
                 <Link to={`detail/${product.id}`}>
                   <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">

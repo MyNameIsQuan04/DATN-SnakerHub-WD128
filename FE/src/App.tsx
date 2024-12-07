@@ -58,11 +58,7 @@ function App() {
             <ColorContext>
               <SizeContext>
                 <OrderContext>
-                  <CategoryContext>
-                    <ProductContext>
-                      <LayoutClient />
-                    </ProductContext>
-                  </CategoryContext>
+                  <LayoutClient />
                 </OrderContext>
               </SizeContext>
             </ColorContext>

@@ -12,7 +12,6 @@ import { toast } from "react-toastify";
 import { IoCartOutline } from "react-icons/io5";
 import { GrNext } from "react-icons/gr";
 import Slider from "react-slick";
-import { ProductCT } from "../../contexts/productContext";
 
 const Detail = () => {
   const PrevArrow = (props: any) => {
@@ -38,9 +37,6 @@ const Detail = () => {
       </button>
     );
   };
-  const { productsClient } = useContext(ProductCT);
-  const products = productsClient.products;
-  const fearturedProducts = products?.slice(0, 10) || [];
 
   const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
 
@@ -61,7 +57,17 @@ const Detail = () => {
   >(null);
   const token = localStorage.getItem("access_token");
   const [activeTab, setActiveTab] = useState(0);
+  const [quantity, setQuantity] = useState(1); // Bắt đầu với số lượng 1
 
+  const handleIncrease = () => {
+    setQuantity((prev) => prev + 1); // Tăng số lượng
+  };
+
+  const handleDecrease = () => {
+    if (quantity > 1) {
+      setQuantity((prev) => prev - 1); // Giảm số lượng, không cho về dưới 1
+    }
+  };
   const handleTabClick = (index: number) => {
     setActiveTab(index);
   };
@@ -98,34 +104,33 @@ const Detail = () => {
   const fetchProduct = async (productId: string) => {
     try {
       const response = await axios.get<Product>(
-        `http://localhost:8000/api/products/${productId}`
+        `http://localhost:8000/api/client/products/${productId}`
       );
-      setProduct(response.data);
-      const product = response.data;
-      fetchRelatedProducts(product.category.id as number, productId);
+
+      setProduct(response.data.product);
     } catch (error) {
       console.error("Lỗi khi lấy thông tin sản phẩm:", error);
     }
   };
-  const fetchRelatedProducts = async (
-    categoryId: number,
-    currentProductId: number
-  ) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/api/products/category/${categoryId}`
-      );
-      const products = response.data.products;
-      console.log(products);
-      const relatedProducts = products.filter(
-        (product: Product) => product.id !== Number(currentProductId)
-      );
-      setRelatedProducts(relatedProducts);
-      console.log(relatedProducts);
-    } catch (error) {
-      console.error("Lỗi khi lấy sản phẩm liên quan:", error);
-    }
-  };
+  // const fetchRelatedProducts = async (
+  //   categoryId: number,
+  //   currentProductId: number
+  // ) => {
+  //   try {
+  //     const response = await axios.get(
+  //       `http://localhost:8000/api/products/category/${categoryId}`
+  //     );
+  //     const products = response.data.products;
+  //     console.log(products);
+  //     const relatedProducts = products.filter(
+  //       (product: Product) => product.id !== Number(currentProductId)
+  //     );
+  //     setRelatedProducts(relatedProducts);
+  //     console.log(relatedProducts);
+  //   } catch (error) {
+  //     console.error("Lỗi khi lấy sản phẩm liên quan:", error);
+  //   }
+  // };
   useEffect(() => {
     if (id) {
       fetchProduct(id);
@@ -201,7 +206,7 @@ const Detail = () => {
         id: product.id,
         color_id: selectedColor,
         size_id: selectedSize,
-        quantity: 1,
+        quantity: quantity,
       });
 
       console.log(response.data);
@@ -421,6 +426,54 @@ const Detail = () => {
                 Sản phẩm hiện đã hết hàng.
               </p>
             )}
+            <div className="flex items-center gap-2 mt-[]">
+              <button
+                className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
+                onClick={handleDecrease}
+              >
+                <svg
+                  className="stroke-gray-900"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 18 19"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4.5 9.5H13.5"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+              <input
+                type="text"
+                value={quantity}
+                className="border border-gray-200 rounded-full w-8 aspect-square text-gray-900 text-xs py-1 text-center"
+                readOnly
+              />
+              <button
+                className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
+                onClick={handleIncrease}
+              >
+                <svg
+                  className="stroke-gray-900"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 18 19"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3.75 9.5H14.25M9 14.75V4.25"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
             {isSizeGuideModalOpen && (
               <div
                 className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"

@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->enum('status_payment', ['Chưa thanh toán','Đã thanh toán'])->default('Chưa thanh toán');
+            $table->string('codeDiscount')->nullable();
+            $table->string('discount')->nullable();
+            $table->integer('shippingFee');
+            $table->integer('totalAfterDiscount');
         });
     }
 

@@ -9,10 +9,10 @@ import { CategoryCT } from "../../contexts/CategoryContext";
 import { Category } from "../../interfaces/Category";
 
 const Header = () => {
-  const { categories } = useContext(CategoryCT);
+  // const { categories } = useContext(CategoryCT);
   const { user, isLoggedIn, logout } = useAuth();
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const { setProducts } = useContext(ProductCT);
+
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
   };
@@ -47,7 +47,7 @@ const Header = () => {
           </a>
         </div>
         <nav className="flex justify-center space-x-6 text-base font-medium text-gray-800">
-          {categories.map((category: Category) => (
+          {/* {categories.map((category: Category) => (
             <ul key={category.id}>
               <li className="relative group">
                 <Link
@@ -59,7 +59,28 @@ const Header = () => {
                 <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
               </li>
             </ul>
-          ))}
+
+          ))} */}
+
+          <ul>
+            <li className="relative group">
+              <a href="#" className="hover:text-gray-900">
+                Khuyến mãi
+              </a>
+              <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
+            </li>
+          </ul>
+          {/* Sản phẩm mới */}
+          <ul>
+            <li className="relative group">
+              <Link to={"/contact"}>
+                <a href="#" className="hover:text-gray-900">
+                  Liên hệ
+                </a>
+              </Link>
+              <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
+            </li>
+          </ul>
           {/* Sản phẩm bán chạy */}
           <ul>
             <li className="relative group">

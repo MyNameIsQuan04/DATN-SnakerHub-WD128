@@ -56,6 +56,10 @@ class OrderController extends Controller
                 'district' => 'required|string',
                 'town' => 'required|string',
                 'total_price' => 'required|integer',
+                'discount' => 'required|integer',
+                'codeDiscount' => 'required|integer|exists:vouchers,codeDiscount',
+                'shippingFee' => 'required|integer',
+                'paymentMethod' => 'required|integer',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -78,6 +82,11 @@ class OrderController extends Controller
                 'customer_id' => $customer->id,
                 'total_price' => $validatedData['total_price'],
                 'order_code' => $orderCode,
+                'discount' => $validatedData['discount'],
+                'codeDiscount' => $validatedData['codeDiscount'],
+                'shippingFee' => $validatedData['shippingFee'],
+                'paymentMethod' => $validatedData['paymentMethod'] == 1 ? "COD" : "VNPAY",
+                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0)+$validatedData['shippingFee'],
             ]);
 
             foreach ($validatedData['items'] as $item) {
@@ -153,7 +162,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         try {
-            if ($order['status'] === 'Chờ xử lý') {
+            if ($order['status'] === 'Chờ xử lý' || $order['status'] === 'Đã xác nhận') {
                 $dataValidate = $request->validate([
                     'status' => 'required|in:Đã hủy',
                 ]);
@@ -234,6 +243,10 @@ class OrderController extends Controller
                 'district' => 'required|string',
                 'town' => 'required|string',
                 'total_price' => 'required|integer',
+                'discount' => 'required|integer',
+                'codeDiscount' => 'required|integer|exists:vouchers,codeDiscount',
+                'shippingFee' => 'required|integer',
+                'paymentMethod' => 'required|integer',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -256,12 +269,17 @@ class OrderController extends Controller
                 'customer_id' => $customer->id,
                 'total_price' => $validatedData['total_price'],
                 'order_code' => $orderCode,
+                'discount' => $validatedData['discount'],
+                'codeDiscount' => $validatedData['codeDiscount'],
+                'shippingFee' => $validatedData['shippingFee'],
+                'paymentMethod' => $validatedData['paymentMethod'] == 1 ? "COD" : "VNPAY",
+                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0)+$validatedData['shippingFee'],
             ]);
 
             foreach ($validatedData['items'] as $item) {
                 $productVariant = Product_Variant::find($item['product__variant_id']);
                 if ($productVariant['stock'] < $item['quantity']) {
-                    DB::rollBack(); // Rollback nếu không đủ hàng
+                    DB::rollBack();
                     return response()->json([
                         'success' => false,
                         'message' => 'Có lỗi xảy ra: Số lượng yêu cầu vượt quá tồn kho sản phẩm',
@@ -391,7 +409,7 @@ class OrderController extends Controller
                 // Giao dịch thành công, cập nhật trạng thái đơn hàng
                 $order = Order::where('order_code', $request['vnp_TxnRef'])->first();
                 if ($order) {
-                    $order->update(['status-payment' => 'Đã thanh toán']);
+                    $order->update(['status_payment' => 'Đã thanh toán']);
                 }
 
                 return response()->json([
