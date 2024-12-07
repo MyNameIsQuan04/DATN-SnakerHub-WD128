@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('codeDiscount')->nullable();
             $table->string('discount')->nullable();
             $table->integer('shippingFee');
-            $table->integer('totalAfterDiscount');
+            $table->integer('totalAfterDiscount')->default(0);
         });
     }
 

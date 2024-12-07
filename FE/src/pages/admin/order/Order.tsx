@@ -11,7 +11,7 @@ const AdminOrder = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("");
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
-
+  const token = localStorage.getItem("access_token");
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -22,7 +22,11 @@ const AdminOrder = () => {
 
   const fetchOrders = async () => {
     try {
-      const { data } = await axios.get("http://localhost:8000/api/orders");
+      const { data } = await axios.get("http://localhost:8000/api/orders", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào header Authorization
+        },
+      });
       setOrders(data);
       setFilteredOrders(data);
     } catch (error) {
@@ -36,7 +40,9 @@ const AdminOrder = () => {
     // Nếu không có trạng thái cụ thể (tất cả), loại bỏ trạng thái "Yêu cầu trả hàng"
     if (!filterStatus) {
       filtered = filtered.filter(
-        (order) => order.status !== "Yêu cầu trả hàng" && order.status !== "Xử lý yêu cầu trả hàng"
+        (order) =>
+          order.status !== "Yêu cầu trả hàng" &&
+          order.status !== "Xử lý yêu cầu trả hàng"
       );
     } else {
       filtered = filtered.filter((order) => order.status === filterStatus);
@@ -66,7 +72,12 @@ const AdminOrder = () => {
     try {
       const response = await axios.patch(
         `http://localhost:8000/api/orders/${orderId}`,
-        { status: newStatus }
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Thêm token vào header Authorization
+          },
+        }
       );
       if (response) {
         toast.success("Cập nhật trạng thái thành công!");
@@ -150,7 +161,17 @@ const AdminOrder = () => {
                     key={i}
                     className="py-2 px-5 border border-gray-300 font-semibold text-gray-600 rounded-lg"
                   >
-                    {["Mã đơn hàng", "Họ và tên", "Thông tin", "Tổng tiền", "Đơn hàng","Trạng thái", "Tùy chỉnh"][i]}
+                    {
+                      [
+                        "Mã đơn hàng",
+                        "Họ và tên",
+                        "Thông tin",
+                        "Tổng tiền",
+                        "Đơn hàng",
+                        "Trạng thái",
+                        "Tùy chỉnh",
+                      ][i]
+                    }
                   </th>
                 ))}
               </tr>
@@ -189,7 +210,8 @@ const AdminOrder = () => {
                           handleUpdateStatus(item.id, e.target.value)
                         }
                         className={`border rounded px-2 py-1 transition duration-300 ${
-                          item.status === "Chờ xử lý" || item.status === "Đã xác nhận"
+                          item.status === "Chờ xử lý" ||
+                          item.status === "Đã xác nhận"
                             ? "border-red-500 text-red-500"
                             : "border-gray-300 text-gray-700"
                         }`}
