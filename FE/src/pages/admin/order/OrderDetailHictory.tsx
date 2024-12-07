@@ -33,23 +33,30 @@ const OrderDetailHictory = () => {
 
   const handleUpdateStatus = async (newStatus: string) => {
     if (order?.status === newStatus) {
-      return; // Nếu trạng thái hiện tại giống với trạng thái mới, không làm gì cả
+      // Nếu trạng thái hiện tại giống với trạng thái mới, không làm gì cả
+      toast.info("Trạng thái này đã được cập nhật.");
+      return;
     }
-
+  
     try {
       const response = await axios.patch(
         `http://localhost:8000/api/orders/${id}`,
         { status: newStatus }
       );
-
+  
       if (response.status === 200) {
-        setOrder({ ...order, status: newStatus }); // Cập nhật trạng thái mới cho đơn hàng
+        // Cập nhật trạng thái mới cho đơn hàng
+        setOrder((prevOrder) => {
+          if (!prevOrder) return null; // Trả về null nếu order không tồn tại
+          return { ...prevOrder, status: newStatus, statusUpdated: true }; // Thêm `statusUpdated` để theo dõi trạng thái đã cập nhật
+        });
         toast.success("Cập nhật trạng thái thành công!");
       }
     } catch (error) {
       toast.error("Cập nhật trạng thái thất bại!");
     }
   };
+  
 
   if (loading) {
     return (
