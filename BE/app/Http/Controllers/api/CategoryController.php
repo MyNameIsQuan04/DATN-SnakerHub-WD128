@@ -14,7 +14,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::orderByDesc('id')->get();
+        $categories = Category::withTrashed()->orderByDesc('id')->get();
         // dd($categories);
         // return view('admin.category.index', compact('categories'));
         // return response()->json($categories);
@@ -39,10 +39,15 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Category $category)
-    {
-        return $category;
+    public function show($id)
+{
+    try {
+        $category = Category::withTrashed()->findOrFail($id);
+        return response()->json($category, 200);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Category not found','error' => $e,], 404);
     }
+}
 
     /**
      * Update the specified resource in storage.

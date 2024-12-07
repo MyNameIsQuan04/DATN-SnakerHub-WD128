@@ -17,7 +17,7 @@ use App\Http\Controllers\Client\CommentController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
-use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Client\CategoryControlller as ClientCategoryControlller;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +49,7 @@ $crud = [
 foreach ($crud as $key => $controller) {
     Route::apiResource($key, $controller)->middleware('auth:api')->middleware('type:admin');
 }
+Route::get('client/categories', [ClientCategoryControlller::class, 'index']);
 
 Route::get('dashboard/daily', [DashboardController::class, 'daily']);
 Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
