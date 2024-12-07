@@ -25,7 +25,7 @@ const AddColor = () => {
               className="block text-gray-700 font-bold mb-2"
               htmlFor="name"
             >
-              Tên kích cỡ
+              Tên màu
             </label>
             <input
               {...register("name", {
@@ -34,7 +34,7 @@ const AddColor = () => {
               type="text"
               id="name"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              placeholder="Nhập tên danh mục"
+              placeholder="Nhập tên màu sắc"
             />
             {errors.name && (
               <div className="text-red-500">{errors.name.message}</div>

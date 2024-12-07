@@ -14,7 +14,7 @@ const ListColor = () => {
           to="/admin/color-add"
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mb-6 inline-block"
         >
-          Thêm Danh Mục Mới
+          Thêm Màu Sắc Mới
         </Link>
 
         {/* Table */}

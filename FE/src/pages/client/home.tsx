@@ -1,12 +1,11 @@
-import { useContext, useEffect, useState } from "react";
-import { ProductCT } from "../../contexts/productContext";
+import { useEffect, useState } from "react";
 import { Product } from "../../interfaces/Product";
 import { Link } from "react-router-dom";
-import { CategoryCT } from "../../contexts/CategoryContext";
-import { Category } from "../../interfaces/Category";
 import SimpleSlider from "../../components/Slider";
 import Slider from "react-slick";
 import { getProductsClients } from "../../services/client/product";
+import { Category } from "../../interfaces/Category";
+import axios from "axios";
 
 const Home = () => {
   const [productsClient, setProductsClient] = useState<Product[]>([]);
@@ -71,6 +70,18 @@ const Home = () => {
       },
     ],
   };
+
+  // Get Categories
+  const [categories, setCategories] = useState<Category[]>([]);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await axios.get(
+        "http://localhost:8000/api/client/categories"
+      );
+      setCategories(res.data);
+    };
+    fetchCategories();
+  });
 
   return (
     <div className="">
@@ -146,7 +157,7 @@ const Home = () => {
           DANH MỤC SẢN PHẨM
         </p>
         <div className="flex justify-center gap-[30px] mt-[30px]">
-          {/* {categoriesClient.map((category: Category) => (
+          {categories.map((category: Category) => (
             <div className="w-36 bg-transparent items-center justify-center flex border-2 border-orange-500 shadow-lg hover:bg-orange-500 text-orange-500 hover:text-white duration-300 cursor-pointer active:scale-[0.98]">
               <button className="px-5 py-2">
                 <a className="" href="">
@@ -154,7 +165,7 @@ const Home = () => {
                 </a>
               </button>
             </div>
-          ))} */}
+          ))}
         </div>
         <div className="my-[50px] flex justify-between items-center">
           <div className="relative flex flex-col justify-center pl-[40px]">

@@ -30,7 +30,6 @@ const AddProducts = () => {
         size_id: "",
         color_id: "",
         stock: 0,
-        sku: "",
         image: null,
       },
     ],
@@ -250,19 +249,6 @@ const AddProducts = () => {
                             name={`variants[${index}].stock`}
                             type="number"
                             className="w-full px-3 py-2 border rounded-lg"
-                          />
-                        </div>
-
-                        {/* SKU */}
-                        <div className="mb-4">
-                          <label className="block text-gray-700 font-bold mb-2">
-                            SKU
-                          </label>
-                          <Field
-                            name={`variants[${index}].sku`}
-                            type="text"
-                            className="w-full px-3 py-2 border rounded-lg"
-                            placeholder="Nhập SKU"
                           />
                         </div>
 
