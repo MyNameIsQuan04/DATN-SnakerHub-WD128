@@ -142,6 +142,7 @@ const Checkout = () => {
       codeDiscount,
       discount,
       shippingFee,
+      paymentMethod,
     };
 
     // Xác định URL API dựa trên payment method
