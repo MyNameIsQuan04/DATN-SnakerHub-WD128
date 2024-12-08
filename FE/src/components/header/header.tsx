@@ -1,17 +1,28 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoLogOutOutline } from "react-icons/io5";
 // import axios from "axios";
-import { ProductCT } from "../../contexts/productContext";
 import api from "../../configs/axios";
-import { CategoryCT } from "../../contexts/CategoryContext";
 import { Category } from "../../interfaces/Category";
+import axios from "axios";
 
 const Header = () => {
   // const { categories } = useContext(CategoryCT);
   const { user, isLoggedIn, logout } = useAuth();
   const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  // Get Categories
+  const [categories, setCategories] = useState<Category[]>([]);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await axios.get(
+        "http://localhost:8000/api/client/categories"
+      );
+      setCategories(res.data);
+    };
+    fetchCategories();
+  });
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
@@ -40,14 +51,14 @@ const Header = () => {
         <div className="flex items-center w-[279px]">
           <a href="/">
             <img
-              src="https://imgur.com/kntXu4j.jpeg"
+              src="https://i.imgur.com/jInJnWw.png"
               alt="SneakerHub Logo"
-              className="h-8"
+              className="h-16 w-auto mx-auto p-2 rounded-md shadow-lg"
             />
           </a>
         </div>
         <nav className="flex justify-center space-x-6 text-base font-medium text-gray-800">
-          {/* {categories.map((category: Category) => (
+          {categories.map((category: Category) => (
             <ul key={category.id}>
               <li className="relative group">
                 <Link
@@ -59,8 +70,7 @@ const Header = () => {
                 <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
               </li>
             </ul>
-
-          ))} */}
+          ))}
 
           <ul>
             <li className="relative group">
