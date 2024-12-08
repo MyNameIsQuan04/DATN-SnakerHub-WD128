@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Order } from "../../../interfaces/Order";
 import { Link } from "react-router-dom";
@@ -10,7 +10,9 @@ const AdminOrder = () => {
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("");
-  const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+  const token = localStorage.getItem("access_token");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     fetchOrders();
@@ -22,11 +24,20 @@ const AdminOrder = () => {
 
   const fetchOrders = async () => {
     try {
-      const { data } = await axios.get("http://localhost:8000/api/orders");
+      setLoading(true);
+      const { data } = await axios.get("http://localhost:8000/api/orders", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào header Authorization
+        },
+      });
       setOrders(data);
       setFilteredOrders(data);
+      setError(""); // Reset error
     } catch (error) {
       console.error("Error fetching orders:", error);
+      setError("Tải dữ liệu thất bại! Vui lòng thử lại.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,7 +47,9 @@ const AdminOrder = () => {
     // Nếu không có trạng thái cụ thể (tất cả), loại bỏ trạng thái "Yêu cầu trả hàng"
     if (!filterStatus) {
       filtered = filtered.filter(
-        (order) => order.status !== "Yêu cầu trả hàng" && order.status !== "Xử lý yêu cầu trả hàng"
+        (order) =>
+          order.status !== "Yêu cầu trả hàng" &&
+          order.status !== "Xử lý yêu cầu trả hàng"
       );
     } else {
       filtered = filtered.filter((order) => order.status === filterStatus);
@@ -47,41 +60,13 @@ const AdminOrder = () => {
       filtered = filtered.filter(
         (order) =>
           order.order_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.customer.name
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          order.customer.phone_number.includes(searchTerm)
+          order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          String(order.customer.phone_number).includes(searchTerm) 
       );
     }
+    
 
     setFilteredOrders(filtered);
-  };
-
-  const handleUpdateStatus = async (orderId: number, newStatus: string) => {
-    const updatedOrders = orders.map((order) =>
-      order.id === orderId ? { ...order, status: newStatus } : order
-    );
-    setOrders(updatedOrders);
-
-    try {
-      const response = await axios.patch(
-        `http://localhost:8000/api/orders/${orderId}`,
-        { status: newStatus }
-      );
-      if (response) {
-        toast.success("Cập nhật trạng thái thành công!");
-      }
-    } catch (error) {
-      console.error("Error updating order status:", error);
-      setOrders(orders);
-      toast.error("Cập nhật trạng thái thất bại !");
-    }
-  };
-
-  const toggleExpandOrder = (orderId: number) => {
-    setExpandedOrderId((prevOrderId) =>
-      prevOrderId === orderId ? null : orderId
-    );
   };
 
   const getStatusButtons = () => [
@@ -134,13 +119,25 @@ const AdminOrder = () => {
         </div>
       </div>
 
-      {filteredOrders.length === 0 && searchTerm && (
-        <div className="mt-4 text-center text-red-500 font-semibold">
-          Không tìm thấy đơn hàng với từ khóa tìm kiếm "{searchTerm}"
+      {loading && (
+        <div className="mt-4 text-center text-blue-500 font-semibold">
+          Đang tải đơn hàng ...
         </div>
       )}
 
-      {filteredOrders.length > 0 && (
+      {error && !loading && (
+        <div className="mt-4 text-center text-red-500 font-semibold">
+          {error}
+        </div>
+      )}
+
+      {filteredOrders.length === 0 && !loading && !error && (
+        <div className="mt-4 text-center text-gray-500 font-semibold">
+          Không có đơn hàng nào.
+        </div>
+      )}
+
+      {filteredOrders.length > 0 && !loading && !error && (
         <div className="overflow-y-auto mt-4" style={{ maxHeight: "540px" }}>
           <table className="min-w-full bg-white border border-gray-100 shadow-md">
             <thead className="bg-gray-100 sticky top-0">
@@ -150,7 +147,16 @@ const AdminOrder = () => {
                     key={i}
                     className="py-2 px-5 border border-gray-300 font-semibold text-gray-600 rounded-lg"
                   >
-                    {["Mã đơn hàng", "Họ và tên", "Thông tin", "Tổng tiền", "Đơn hàng","Trạng thái", "Tùy chỉnh"][i]}
+                    {
+                      [
+                        "Mã đơn hàng",
+                        "Thông tin",
+                        "Tổng tiền",
+                        "Phương thức thanh toán ",
+                        "Trạng thái",
+                        "Chi tiết",
+                      ][i]
+                    }
                   </th>
                 ))}
               </tr>
@@ -159,93 +165,60 @@ const AdminOrder = () => {
               {filteredOrders.map((item: Order) => (
                 <React.Fragment key={item.id}>
                   <tr className="hover:bg-gray-200 cursor-pointer transition duration-200 ease-in-out">
-                    <td className="py-3 px-4 border-b text-center">
+                    <td className="py-3 px-4 border-b text-center text-blue-500">
                       #{item.order_code}
                     </td>
-                    <td className="py-3 px-4 border-b text-center">
-                      {item.customer.name}
-                    </td>
-                    <td className="py-3 px-4 border-b text-center">
+                    <td className="py-3 px-4 border-b text-center flex flex-wrap">
+                      <p className="text-red-500">{item.customer.name}</p>
                       {item.customer.phone_number}, {item.customer.address}
                     </td>
-                    <td className="py-3 px-4 border-b text-center text-red-500 font-bold">
-                      {item.total_price.toLocaleString()} VNĐ
-                    </td>
-                    <td className="border-b text-center">
-                      <button
-                        className="text-gray-500 bg-white w-20 h-8 rounded-md border-2 border-gray-500 transition duration-200 hover:bg-gray-200 focus:outline-none"
-                        onClick={() => toggleExpandOrder(item.id)}
-                      >
-                        {expandedOrderId === item.id ? "Ẩn" : "Chi tiết"}
-                      </button>
-                    </td>
-                    <td className="py-3 px-4 border-b text-center text-red-500 font-bold">
-                      {item.status}
+                    <td className="py-3 px-4 border-b text-center text-red-500 font-medium">
+                      {item.totalAfterDiscount.toLocaleString()} VNĐ
                     </td>
                     <td className="py-3 px-4 border-b text-center">
-                      <select
-                        value={item.status}
-                        onChange={(e) =>
-                          handleUpdateStatus(item.id, e.target.value)
-                        }
-                        className={`border rounded px-2 py-1 transition duration-300 ${
-                          item.status === "Chờ xử lý" || item.status === "Đã xác nhận"
-                            ? "border-red-500 text-red-500"
-                            : "border-gray-300 text-gray-700"
-                        }`}
-                      >
-                        {getStatusButtons()
-                          .filter((status) => status.label !== "Tất cả")
-                          .map((status) => (
-                            <option key={status.value} value={status.value}>
-                              {status.label}
-                            </option>
-                          ))}
-                      </select>
+                      {item.paymentMethod === "COD" ? (
+                        <span className="text-yellow-500 font-bold">COD</span>
+                      ) : item.paymentMethod === "VNPAY" ? (
+                        <img
+                          src="https://i.imgur.com/RAtc2Se.png"
+                          alt="VNPay"
+                          className="inline-block w-10 h-10 object-cover"
+                        />
+                      ) : (
+                        <span className="text-gray-500 font-semibold">
+                          Khác
+                        </span>
+                      )}
+                    </td>
+
+                    <td
+                      className={`py-3 px-4 border-b text-center font-semibold ${
+                        item.status === "Chờ xử lý" ||
+                        item.status === "Đã xác nhận"
+                          ? "text-yellow-500"
+                          : item.status === "Đã hủy"
+                          ? "text-red-500"
+                          : item.status === "Hoàn thành"
+                          ? "text-green-500"
+                          : item.status === "Đang vận chuyển" ||
+                            item.status === "Trả hàng"
+                          ? "text-orange-500"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {item.status}
+                    </td>
+
+                    <td className="border-b text-center">
+                      <Link to={`/admin/order-detail/${item.id}`}>
+                        <button
+                          className="text-white bg-gray-400 px-4 py-2 rounded-md transition duration-200 ease-in-out hover:bg-gray-500 focus:outline-none whitespace-nowrap underline"
+                        >
+                          Chi tiết
+                        </button>
+                      </Link>
                     </td>
                   </tr>
-                  {expandedOrderId === item.id && (
-                    <tr>
-                      <td colSpan={9} className="py-4 px-4 border-b">
-                        <h2 className="mb-2 font-medium">Chi tiết đơn hàng:</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {item.order_items.map((product) => (
-                            <div
-                              key={product.id}
-                              className="flex items-center border p-4 rounded-lg shadow-md bg-white transition-transform transform hover:scale-105"
-                            >
-                              <img
-                                src={product.product_variant?.image || ""}
-                                alt="Product"
-                                className="w-24 h-24 object-cover mr-4 rounded-md"
-                              />
-                              <div className="flex-grow">
-                                <div className="font-semibold text-lg">
-                                  <strong>Sản phẩm:</strong>{" "}
-                                  {product.product_variant?.product?.name ||
-                                    "N/A"}
-                                </div>
-                                <div className="text-gray-700">
-                                  <strong>Số lượng:</strong> {product.quantity}
-                                </div>
-                                <div className="text-gray-700">
-                                  <strong>Giá:</strong>{" "}
-                                  <span className="text-red-500 font-medium">
-                                    {product.price.toLocaleString()}
-                                  </span>{" "}
-                                  VNĐ
-                                </div>
-                                <div className="text-gray-700">
-                                  <strong>Mã sản phẩm:</strong>{" "}
-                                  {product.product_variant?.sku || "N/A"}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </td>
-                    </tr>
-                  )}
                 </React.Fragment>
               ))}
             </tbody>

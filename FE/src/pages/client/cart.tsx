@@ -3,7 +3,7 @@ import axios from "axios";
 import { CartItem } from "../../interfaces/Cart";
 import { useNavigate } from "react-router-dom";
 import api from "../../configs/axios";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 // import { Toaster } from "react-hot-toast";
 
 const Cart = () => {
@@ -12,12 +12,20 @@ const Cart = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const token = localStorage.getItem("access_token");
+  const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
 
   if (!token) {
     toast.error("Hãy đăng nhập để sử dụng chức năng!");
     navigate("/login");
     return;
   }
+  useEffect(() => {
+    const initialQuantities = cartItems.reduce((acc, item) => {
+      acc[item.id] = item.quantity;
+      return acc;
+    }, {} as { [key: number]: number });
+    setQuantities(initialQuantities);
+  }, [cartItems]);
 
   const handleSelectItem = (id: number) => {
     setSelectedItems((prev) =>
@@ -47,7 +55,10 @@ const Cart = () => {
       prevItems.map((item, i) => {
         if (i === index) {
           const newQuantity = item.quantity + 1;
-          updateCartItemQuantity(item.id, newQuantity);
+          if (newQuantity > item.product_variant.stock) {
+            toast.error("Số lượng không thể vượt quá tồn kho");
+            return item; // Không thay đổi gì
+          }
           return { ...item, quantity: newQuantity };
         }
         return item;
@@ -59,42 +70,49 @@ const Cart = () => {
     setCartItems((prevItems) =>
       prevItems.map((item, i) => {
         if (i === index && item.quantity > 1) {
-          const newQuantity = item.quantity - 1;
-          updateCartItemQuantity(item.id, newQuantity); // Cập nhật backend
-          return { ...item, quantity: newQuantity };
+          return { ...item, quantity: item.quantity - 1 };
         }
         return item;
       })
     );
   };
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const [errorMessages, setErrorMessages] = useState<{ [key: number]: string }>(
+    {}
+  );
 
   const handleQuantityChange = (
     index: number,
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const newQuantity = parseInt(event.target.value, 10);
+    const inputValue = event.target.value.trim();
 
-    // Kiểm tra nếu giá trị nhập vào không phải số hợp lệ
-    if (isNaN(newQuantity) || newQuantity < 1) {
-      return; // Không làm gì nếu giá trị không hợp lệ (âm hoặc không phải số)
-    }
+    // Kiểm tra giá trị nhập vào
 
+    const newQuantity = Number(inputValue);
+
+    // Kiểm tra nếu giá trị không hợp lệ hoặc nhỏ hơn hoặc bằng 0
     if (newQuantity > cartItems[index].product_variant.stock) {
-      alert("Số lượng không thể vượt quá số lượng tồn kho!"); // Hoặc có thể sử dụng một thông báo lỗi trên giao diện
+      setErrorMessages((prev) => ({
+        ...prev,
+        [index]: `Số lượng không thể vượt quá tồn kho: ${cartItems[index].product_variant.stock}`,
+      }));
       return;
     }
 
-    // Cập nhật số lượng nếu hợp lệ
+    // Cập nhật số lượng và xóa lỗi nếu có
+    setErrorMessages((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[index]; // Xóa lỗi khi số lượng hợp lệ
+      return newErrors;
+    });
+    // Kiểm tra nếu số lượng vượt quá tồn kho
+
+    // Cập nhật số lượng nếu mọi điều kiện đều hợp lệ
     setCartItems((prevItems) =>
       prevItems.map((item, i) => {
         if (i === index) {
-          const updatedItem = {
-            ...item,
-            quantity: newQuantity,
-          };
-          updateCartItemQuantity(item.id, newQuantity); // Cập nhật lại số lượng trên backend
-          return updatedItem;
+          return { ...item, quantity: newQuantity };
         }
         return item;
       })
@@ -144,8 +162,6 @@ const Cart = () => {
           },
         });
 
-        console.log("API Response:", response.data);
-
         if (response.data.success && response.data.cart?.cart__items) {
           setCartItems(response.data.cart.cart__items);
           setSelectedItems(
@@ -165,14 +181,58 @@ const Cart = () => {
     fetchCartItems();
   }, [token]);
 
-  const handleCheckout = () => {
-    if (selectedItems.length > 0) {
+  const handleCheckout = async () => {
+    if (selectedItems.length === 0) {
+      toast.error("Vui lòng chọn ít nhất một sản phẩm để thanh toán");
+      return;
+    }
+
+    // Kiểm tra nếu có sản phẩm nào có số lượng bằng 0 hoặc vượt quá số lượng tồn kho
+    const invalidItems = cartItems.filter((item) => {
+      const isSelected = selectedItems.includes(item.id);
+      const isOutOfStock =
+        item.quantity === 0 || item.quantity > item.product_variant.stock;
+      return isSelected && isOutOfStock;
+    });
+
+    if (invalidItems.length > 0) {
+      const invalidItemsNames = invalidItems
+        .map((item) => {
+          const quantity = item.quantity;
+          const stock = item.product_variant.stock;
+          // Thông báo lỗi nếu số lượng lớn hơn tồn kho
+          if (quantity > stock) {
+            return `${item.product_variant.product.name} (Số lượng: ${quantity}, Tồn kho: ${stock})`;
+          }
+          // Thông báo lỗi nếu số lượng bằng 0
+          return `${item.product_variant.product.name} (Số lượng: ${quantity})`;
+        })
+        .join(", ");
+
+      toast.error(`Số lượng sản phẩm không hợp lệ: ${invalidItemsNames}`);
+      return;
+    }
+
+    try {
+      // Lọc các sản phẩm được chọn
+      const itemsToUpdate = cartItems.filter((item) =>
+        selectedItems.includes(item.id)
+      );
+
+      await Promise.all(
+        itemsToUpdate.map((item) =>
+          updateCartItemQuantity(item.id, item.quantity)
+        )
+      );
+
+      // Điều hướng đến trang checkout sau khi cập nhật thành công
       navigate("/checkout", { state: { selectedItems } });
       toast.success("Đã chuyển đến trang thanh toán");
-    } else {
-      toast.error("Vui lòng chọn ít nhất một sản phẩm để thanh toán");
+    } catch (error) {
+      toast.error("Cập nhật số lượng thất bại, vui lòng thử lại");
     }
   };
+
   // Hàm định dạng tiền tệ
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formatCurrency = (value: any) => {
@@ -297,17 +357,41 @@ const Cart = () => {
 
                     {/* Hiển thị số lượng */}
                     <input
-                      value={item.quantity}
+                      value={cartItems[index]?.quantity || ""}
                       className="border border-gray-200 rounded-full w-8 aspect-square text-gray-900 text-xs py-1 text-center"
                       min="1"
-                      onChange={(e) => handleQuantityChange(index, e)} // Xử lý thay đổi số lượng
+                      onChange={(event) => handleQuantityChange(index, event)} // Xử lý thay đổi số lượng
                       onBlur={(e) => {
-                        // Khi mất focus, kiểm tra lại nếu số lượng <= 0 thì đặt lại là 1
-                        if (parseInt(e.target.value, 10) < 1) {
+                        const inputValue = parseInt(e.target.value, 10);
+                        if (inputValue < 1 || isNaN(inputValue)) {
                           setErrorMessage("Số lượng phải lớn hơn hoặc bằng 1");
-                          handleQuantityChange(index, {
-                            target: { value: "1" },
-                          });
+
+                          setCartItems((prevItems) =>
+                            prevItems.map((item, i) => {
+                              if (i === index) {
+                                return { ...item, quantity: 1 };
+                              }
+                              return item;
+                            })
+                          );
+                        }
+                      }}
+                      onInput={(e) => {
+                        // Lấy giá trị khi người dùng đang nhập
+                        const value = e.target.value;
+                        if (/^\d*$/.test(value)) {
+                          // Chỉ cho phép nhập số
+                          setCartItems((prevItems) =>
+                            prevItems.map((item, i) => {
+                              if (i === index) {
+                                return {
+                                  ...item,
+                                  quantity: parseInt(value) || 0,
+                                };
+                              }
+                              return item;
+                            })
+                          );
                         }
                       }}
                     />
@@ -336,10 +420,10 @@ const Cart = () => {
                     </button>
 
                     {/* Hiển thị thông báo lỗi nếu có */}
-                    {errorMessage && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errorMessage}
-                      </p>
+                    {errorMessages[index] && (
+                      <div className="text-red-500 text-xs">
+                        {errorMessages[index]}
+                      </div>
                     )}
                   </div>
 
@@ -363,6 +447,7 @@ const Cart = () => {
           </button>
         </div>
       </div>
+      <ToastContainer className={`mt-[30px]`} />
     </section>
   );
 };

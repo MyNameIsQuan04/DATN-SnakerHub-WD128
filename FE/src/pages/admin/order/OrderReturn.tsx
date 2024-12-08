@@ -10,6 +10,7 @@ const OrderReturn = () => {
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const token = localStorage.getItem("access_token");
 
   useEffect(() => {
     fetchOrders();
@@ -18,7 +19,13 @@ const OrderReturn = () => {
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
-      const { data } = await axios.get("http://localhost:8000/api/orders");
+      const { data } = await axios.get("http://localhost:8000/api/orders" ,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Thêm token vào header Authorization
+          },
+        }
+      );
       const filtered = data.filter(
         (order: Order) =>
           order.status === "Yêu cầu trả hàng" ||
@@ -28,7 +35,6 @@ const OrderReturn = () => {
       setFilteredOrders(filtered);
     } catch (error) {
       console.error("Error fetching orders:", error);
-      toast.error("Không thể tải danh sách đơn hàng!");
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +66,7 @@ const OrderReturn = () => {
         isLoading: false,
         autoClose: 3000,
       });
-      fetchOrders()
+      fetchOrders();
     } catch (error) {
       console.error("Lỗi khi xác nhận trả hàng:", error);
       toast.error("Xác nhận trả hàng thất bại. Vui lòng thử lại.");
@@ -72,6 +78,10 @@ const OrderReturn = () => {
       const loadingToast = toast.loading("Đang xử lý yêu cầu...");
       await axios.patch(`http://localhost:8000/api/orders/${orderId}`, {
         status: "Hoàn thành",
+
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào header Authorization
+        },
       });
 
       setOrders((prevOrders) =>
@@ -84,7 +94,7 @@ const OrderReturn = () => {
         isLoading: false,
         autoClose: 3000,
       });
-      fetchOrders()
+      fetchOrders();
     } catch (error) {
       console.error("Lỗi khi xác nhận hủy yêu cầu:", error);
       toast.error("Xác nhận hủy yêu cầu thất bại. Vui lòng thử lại.");
@@ -96,6 +106,9 @@ const OrderReturn = () => {
       const loadingToast = toast.loading("Đang cập nhật trạng thái...");
       await axios.patch(`http://localhost:8000/api/orders/${orderId}`, {
         status,
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào header Authorization
+        },
       });
 
       setOrders((prevOrders) =>

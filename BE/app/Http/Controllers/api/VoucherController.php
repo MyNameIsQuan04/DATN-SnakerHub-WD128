@@ -52,7 +52,7 @@ class VoucherController extends Controller
         ]);
 
         $voucher->update([
-            'codeDiscount' => $request->code,
+            'codeDiscount' => $request->codeDiscount,
             'discount' => $request->discount,
             'type' => $request->type,
             'expiration_date' => Carbon::parse($request->expiration_date),
@@ -70,4 +70,14 @@ class VoucherController extends Controller
 
         return response()->json(['message' => 'Voucher deleted successfully']);
     }
+    // Lấy thông tin voucher
+    public function show($id)
+    {
+    // Tìm voucher theo id, nếu không có thì trả về lỗi 404
+    $voucher = Voucher::findOrFail($id);
+
+    // Trả về thông tin voucher
+    return response()->json(['voucher' => $voucher]);
+}
+
 }

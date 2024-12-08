@@ -41,7 +41,6 @@ const EditProduct = () => {
         size_id: "",
         color_id: "",
         stock: 0,
-        sku: "",
         image: "",
       },
     ],
@@ -73,7 +72,6 @@ const EditProduct = () => {
                 size_id: "",
                 color_id: "",
                 stock: 0,
-                sku: "",
                 image: null,
               },
             ],
@@ -130,7 +128,6 @@ const EditProduct = () => {
       formData.append(`variants[${index}][size_id]`, variant.size_id);
       formData.append(`variants[${index}][color_id]`, variant.color_id);
       formData.append(`variants[${index}][stock]`, variant.stock.toString());
-      formData.append(`variants[${index}][sku]`, variant.sku);
 
       if (variant.image instanceof File) {
         formData.append(`variants[${index}][image]`, variant.image);
@@ -384,19 +381,6 @@ const EditProduct = () => {
                             />
                           </div>
 
-                          {/* SKU */}
-                          <div className="mb-4">
-                            <label className="block text-gray-700 font-bold mb-2">
-                              SKU
-                            </label>
-                            <Field
-                              name={`variants[${index}].sku`}
-                              type="text"
-                              className="w-full px-3 py-2 border rounded-lg"
-                              placeholder="Nhập SKU"
-                            />
-                          </div>
-
                           {/* Ảnh biến thể */}
                           <div className="mb-4">
                             <label className="block text-gray-700 font-bold mb-2">
@@ -448,7 +432,6 @@ const EditProduct = () => {
                           size_id: "",
                           color_id: "",
                           stock: 0,
-                          sku: "",
                           image: null,
                         })
                       }

@@ -8,6 +8,7 @@ import {
   removeColor,
   updateColor,
 } from "../services/admin/color";
+import { toast, ToastContainer } from "react-toastify";
 
 type Props = {
   children: React.ReactNode;
@@ -27,7 +28,7 @@ const ColorContext = ({ children }: Props) => {
     if (confirm) {
       try {
         await removeColor(id);
-        alert("Thanh cong");
+        toast.success("Xóa thành công");
         const newColorsAfterDelete = colors.filter((color) => color.id !== id);
         setColors(newColorsAfterDelete);
       } catch (error) {
@@ -39,7 +40,7 @@ const ColorContext = ({ children }: Props) => {
   const onAddColor = async (data: Color) => {
     try {
       const color = await addColor(data);
-      alert("Thanh cong");
+      toast.success("Thêm thành công");
       setColors([...colors, color]);
       router("/admin/color");
       window.location.reload();
@@ -52,7 +53,7 @@ const ColorContext = ({ children }: Props) => {
     try {
       console.log(data, id);
       const color = await updateColor(data, id);
-      alert("Thanh cong");
+      toast.success("Cập nhật thành công");
       const newColosAfterUpdate = colors.map((pro) =>
         pro.id == id ? color : pro
       );
@@ -65,6 +66,7 @@ const ColorContext = ({ children }: Props) => {
   };
   return (
     <div>
+      <ToastContainer />
       <ColorCT.Provider
         value={{ colors, onAddColor, onRemoveColor, onUpdateColor }}
       >

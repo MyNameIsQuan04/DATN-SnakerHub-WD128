@@ -1,13 +1,12 @@
-import { useContext, useEffect, useState } from "react";
-import { ProductCT } from "../../contexts/productContext";
+import { useEffect, useState } from "react";
 import { Product } from "../../interfaces/Product";
 import { Link } from "react-router-dom";
-import { CategoryCT } from "../../contexts/CategoryContext";
-import { Category } from "../../interfaces/Category";
 import SimpleSlider from "../../components/Slider";
 import Slider from "react-slick";
 import { getProductsClients } from "../../services/client/product";
 import { GetCategoriesClient } from "../../services/client/category";
+import { Category } from "../../interfaces/Category";
+import axios from "axios";
 
 const Home = () => {
   const [productsClient, setProductsClient] = useState<Product[]>([]);
@@ -79,6 +78,18 @@ const Home = () => {
       },
     ],
   };
+
+  // Get Categories
+  const [categories, setCategories] = useState<Category[]>([]);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await axios.get(
+        "http://localhost:8000/api/client/categories"
+      );
+      setCategories(res.data);
+    };
+    fetchCategories();
+  });
 
   return (
     <div className="">

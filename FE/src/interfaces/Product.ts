@@ -2,6 +2,7 @@ import { Category } from "./Category";
 import { Color } from "./Color";
 import { Gallery } from "./Gallery";
 import { Size } from "./Size";
+import { IUser } from "./User";
 
 // Product Interface
 export interface Product {
@@ -19,6 +20,20 @@ export interface Product {
   deleted_at: string | null;
   galleries: Gallery[];
   product_variants: product_variants[];
+}
+
+export interface Rate {
+  user_id: number;
+  product_id: number;
+  order__item_id: number;
+  id: number;
+  content: string;
+  star: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  user: IUser;
+  product: Product;
 }
 
 export interface product_variants {

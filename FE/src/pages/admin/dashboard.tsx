@@ -1,13 +1,12 @@
-import DashboardChart from "./Statistical/Chart";
-import DailyRevenueTable from "./Statistical/DailyRevenueTable";
+
 import MonthlyRevenueTable from "./Statistical/MonthlyRevenueTable";
+import OrderDashboard from "./Statistical/OrderDashboard";
 
 const Dashboard = () => {
   return (
     <div>
-      <DailyRevenueTable />
+      <OrderDashboard/>
       <MonthlyRevenueTable />
-      <DashboardChart />
     </div>
   );
 };

@@ -61,7 +61,7 @@ const EditVoucher: React.FC = () => {
 
       // Hiển thị thông báo thành công bằng toast
       toast.success("Voucher đã được cập nhật thành công");
-      navigate("/admin/voucher"); // Chuyển hướng về trang danh sách voucher
+      navigate("/admin/vouchers"); // Chuyển hướng về trang danh sách voucher
     } catch (error: any) {
       // Hiển thị thông báo lỗi bằng toast
       toast.error(
@@ -117,7 +117,7 @@ const EditVoucher: React.FC = () => {
         <div>
           <label className="block">Ngày hết hạn</label>
           <input
-            type="text"
+            type="date"
             value={expirationDate}
             onChange={(e) => setExpirationDate(e.target.value)}
             className="w-full border p-2"

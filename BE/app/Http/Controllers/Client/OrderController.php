@@ -56,8 +56,8 @@ class OrderController extends Controller
                 'district' => 'required|string',
                 'town' => 'required|string',
                 'total_price' => 'required|integer',
-                'discount' => 'required|integer',
-                'codeDiscount' => 'required|integer|exists:vouchers,codeDiscount',
+                'discount' => 'nullable|integer',
+                'codeDiscount' => 'nullable|string|exists:vouchers,codeDiscount',
                 'shippingFee' => 'required|integer',
                 'paymentMethod' => 'required|integer',
                 'items' => 'required|array',
@@ -243,10 +243,11 @@ class OrderController extends Controller
                 'district' => 'required|string',
                 'town' => 'required|string',
                 'total_price' => 'required|integer',
-                'discount' => 'required|integer',
-                'codeDiscount' => 'required|integer|exists:vouchers,codeDiscount',
+                'discount' => 'nullable|integer',
+                'codeDiscount' => 'nullable|string|exists:vouchers,codeDiscount',
                 'shippingFee' => 'required|integer',
                 'paymentMethod' => 'required|integer',
+                // 'totalAfterDiscount' =>'nullable|integer',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -379,6 +380,7 @@ class OrderController extends Controller
 
     public function vnpayReturn(Request $request)
     {
+
         $vnp_HashSecret = "9X1HLVJCZ6U4VRCTEAJBSRDGJDDANXPW";
         $vnp_SecureHash = $request['vnp_SecureHash'];
         $inputData = array();

@@ -34,7 +34,8 @@ const UserOrderHistory = () => {
   const handleCommentChange = (e: any) => {
     setComment(e.target.value);
   };
-  const openModalComplanit = (order) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const openModalComplanit = (order: any) => {
     setIsModalOpen(true);
     setSelectedItem(order);
     console.log(order);
@@ -159,7 +160,7 @@ const UserOrderHistory = () => {
     orderItemId: number,
     userId: number,
     product_variant_Id: number,
-    orderId: number
+    // orderId: number
   ) => {
     const reviewData = {
       order__item_id: orderItemId,
@@ -327,15 +328,63 @@ const UserOrderHistory = () => {
                 </p>
               </div>
               <div className="">
-                <p
-                  className="
-                 text-right"
-                >
-                  <span>Tổng tiền: </span>
-                  <span className="font-medium text-lg text-red-600">
-                    {formatCurrency(order.total_price)} vnđ
-                  </span>
-                </p>
+                <div className="flex">
+                  <div className="w-2/3">
+                    <div className="flex gap-2 mb-2">
+                      <h1>Trạng thái thanh toán:</h1>
+                      <h1 className="text-orange-400">
+                        {order.status_payment}
+                      </h1>
+                    </div>
+                    {order.status === "Trả hàng" ? (
+                      <span className="flex justify-start">
+                        Khiếu nại: {order.note}
+                      </span>
+                    ) : (
+                      <span className="flex justify-start">
+                        Ghi chú: Không có !
+                      </span>
+                    )}
+                  </div>
+                  <div className="w-1/3 ">
+                    <p
+                      className="
+                 text-right flex justify-between"
+                    >
+                      <span>Tổng tiền: </span>
+                      <span className="font-medium text-lg text-red-600">
+                        {formatCurrency(order.total_price)} vnđ
+                      </span>
+                    </p>
+                    <p
+                      className="
+                 text-right flex justify-between "
+                    >
+                      <span>Phí vận chuyển : </span>
+                      <span className="font-medium text-lg text-red-600">
+                        {formatCurrency(order.shippingFee)} đ
+                      </span>
+                    </p>
+                    <p
+                      className="
+                 text-right flex justify-between border-b-2 border-gray-200 mb-5"
+                    >
+                      <span>Mã giảm giá: </span>
+                      <span className="font-medium text-lg text-red-600">
+                        -{formatCurrency(order.discount)} đ
+                      </span>
+                    </p>
+                    <p
+                      className="
+                 text-right flex justify-between"
+                    >
+                      <span>Tổng tiền sau cùng: </span>
+                      <span className="font-medium text-lg text-red-600">
+                        {formatCurrency(order.totalAfterDiscount)} vnđ
+                      </span>
+                    </p>
+                  </div>
+                </div>
                 <div className="flex justify-end gap-1 mt-4">
                   {["Chờ xử lý", "Đã xác nhận"].includes(order.status) && (
                     <button

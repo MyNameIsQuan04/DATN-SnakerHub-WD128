@@ -122,6 +122,8 @@ Route::get('/vouchers', [VoucherController::class, 'index'])->name('voucher.inde
 Route::post('/voucher', [VoucherController::class, 'store'])->name('voucher.store');
 Route::put('/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
 Route::delete('/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
+Route::get('/voucher/{id}', [VoucherController::class, 'show']);
+
 //lọc sản phẩm
 Route::get('/filter', [ClientProductController::class, 'filterProducts']);
 

@@ -30,7 +30,6 @@ const AddProducts = () => {
         size_id: "",
         color_id: "",
         stock: 0,
-        sku: "",
         image: null,
       },
     ],
