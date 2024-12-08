@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { MdOutlineLocalShipping } from "react-icons/md";
@@ -9,7 +9,6 @@ import { AiOutlineBank } from "react-icons/ai";
 import { Product } from "../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
-import { IoCartOutline } from "react-icons/io5";
 import { GrNext } from "react-icons/gr";
 import Slider from "react-slick";
 
@@ -268,6 +267,7 @@ const Detail = () => {
         ?.size
   );
   const isOutOfStock = product.product_variants.every(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (variant: any) => variant.stock === 0
   );
   return (
@@ -498,44 +498,7 @@ const Detail = () => {
               </div>
             )}
 
-            <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
-              <div className="flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="red"
-                  className="w-6 h-6 mr-2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-                  />
-                </svg>
-                <span className="text-red-600 text-sm">TÌM TẠI CỬA HÀNG</span>
-              </div>
-            </div>
-
             <div className="flex gap-4 mt-5">
-              <button
-                type="button"
-                className="bg-gray-100 text-center w-48 h-14 rounded-2xl relative text-red-500 text-lg font-medium border-4 border-white group flex items-center justify-center"
-              >
-                <div className="bg-orange-400 rounded-xl h-12 w-1/4 grid place-items-center absolute left-0 top-0 group-hover:w-full z-10 transition-all duration-500 ease-in-out">
-                  <IoCartOutline className="text-white text-xl" />
-                </div>
-                <p className="translate-x-4 group-hover:translate-x-0 transition-all duration-500 ease-in-out">
-                  Mua ngay
-                </p>
-              </button>
-
               <button
                 disabled={isOutOfStock}
                 onClick={() => addToCart(product, selectedColor, selectedSize)}
@@ -654,7 +617,7 @@ const Detail = () => {
         </div>
       </div>
       <div className="">
-        <p>Sản phẩm liên quan</p>
+        <p className="mt-5 mb-4 ml-[90px] font-semibold text-[30px]">Sản phẩm liên quan</p>
         <div className="px-[40px]">
           <Slider {...settings} className="custom-slider">
             {relatedProducts.map((product: Product) => (

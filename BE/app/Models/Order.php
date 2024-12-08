@@ -19,6 +19,7 @@ class Order extends Model
         'note',
         'status_payment',
         'discount',
+        'totalAfterDiscount',
         'codeDiscount',
         'shippingFee',
         'paymentMethod',
