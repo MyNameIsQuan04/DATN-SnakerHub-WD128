@@ -3,11 +3,10 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { IoLogOutOutline } from "react-icons/io5";
 // import axios from "axios";
-import { ProductCT } from "../../contexts/productContext";
 import api from "../../configs/axios";
-import { CategoryCT } from "../../contexts/CategoryContext";
 import { Category } from "../../interfaces/Category";
 import { GetCategoriesClient } from "../../services/client/category";
+import axios from "axios";
 
 const Header = () => {
   const [categoriesClient, setCategoriesClient] = useState<Category[]>([]);
@@ -20,6 +19,18 @@ const Header = () => {
   }, []);
   const { user, isLoggedIn, logout } = useAuth();
   const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  // Get Categories
+  const [categories, setCategories] = useState<Category[]>([]);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await axios.get(
+        "http://localhost:8000/api/client/categories"
+      );
+      setCategories(res.data);
+    };
+    fetchCategories();
+  });
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
@@ -48,9 +59,9 @@ const Header = () => {
         <div className="flex items-center w-[279px]">
           <a href="/">
             <img
-              src="https://imgur.com/kntXu4j.jpeg"
+              src="https://i.imgur.com/jInJnWw.png"
               alt="SneakerHub Logo"
-              className="h-8"
+              className="h-16 w-auto mx-auto p-2 rounded-md shadow-lg"
             />
           </a>
         </div>

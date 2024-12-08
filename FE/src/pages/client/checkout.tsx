@@ -112,7 +112,7 @@ const Checkout = () => {
 
   const totalPriceItem = (price: number, quantity: number) => price * quantity;
   const grandTotalPrice = checkoutItems.reduce(
-    (total, item) => (total + item.product_variant.price) * item.quantity,
+    (total, item) => total + (item.product_variant.price * item.quantity),
     0
   );
   const handlePaymentChange = (event: any) => {

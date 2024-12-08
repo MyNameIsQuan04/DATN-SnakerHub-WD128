@@ -247,7 +247,6 @@ class OrderController extends Controller
                 'codeDiscount' => 'nullable|string|exists:vouchers,codeDiscount',
                 'shippingFee' => 'required|integer',
                 'paymentMethod' => 'required|integer',
-                // 'totalAfterDiscount' =>'nullable|integer',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -327,7 +326,7 @@ class OrderController extends Controller
             $vnp_TxnRef = $order->order_code;
             $vnp_OrderInfo = "Thanh toán hóa đơn " . $order->order_code;
             $vnp_OrderType = "100002";
-            $vnp_Amount = $order->total_price * 100;
+            $vnp_Amount = $order->totalAfterDiscount * 100;
             $vnp_Locale = "VN";
             $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
             $inputData = [

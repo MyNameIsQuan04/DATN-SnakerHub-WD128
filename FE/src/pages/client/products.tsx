@@ -1,16 +1,14 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ProductCT } from "../../contexts/productContext";
 import { Product } from "../../interfaces/Product";
-import { CategoryCT } from "../../contexts/CategoryContext";
-import { Category } from "../../interfaces/Category";
 import { Link, useSearchParams } from "react-router-dom";
 import api from "../../configs/axios";
 import { SizeCT } from "../../contexts/SizeContext";
 import { ColorCT } from "../../contexts/ColorContext";
 import { Size } from "../../interfaces/Size";
 import { Color } from "../../interfaces/Color";
-import { getProductsClients } from "../../services/client/product";
-import { GetCategoriesClient } from "../../services/client/category";
+import { Category } from "../../interfaces/Category";
+import axios from "axios";
 
 interface Filters {
   category: string | number | null;
@@ -93,6 +91,18 @@ const Products = () => {
     fetchFilteredProducts(tempFilters);
   };
 
+  // Get Categories
+  const [categories, setCategories] = useState<Category[]>([]);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await axios.get(
+        "http://localhost:8000/api/client/categories"
+      );
+      setCategories(res.data);
+    };
+    fetchCategories();
+  });
+
   useEffect(() => {
     if (keyword) {
       fetchSearchedProducts(keyword);
@@ -118,7 +128,7 @@ const Products = () => {
               Danh mục
             </h3>
             <ul className="space-y-2">
-              {categoriesClient.map((category: Category) => (
+              {categories.map((category: Category) => (
                 <li key={category.id} className="flex items-center">
                   <input
                     type="checkbox"
