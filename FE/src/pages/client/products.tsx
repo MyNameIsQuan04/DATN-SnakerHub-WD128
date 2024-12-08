@@ -9,6 +9,8 @@ import { SizeCT } from "../../contexts/SizeContext";
 import { ColorCT } from "../../contexts/ColorContext";
 import { Size } from "../../interfaces/Size";
 import { Color } from "../../interfaces/Color";
+import { getProductsClients } from "../../services/client/product";
+import { GetCategoriesClient } from "../../services/client/category";
 
 interface Filters {
   category: string | number | null;
@@ -21,7 +23,23 @@ interface Filters {
 const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
-  const { products, setProducts } = useContext(ProductCT);
+  const [productsClient, setProductsClient] = useState<Product[]>([]);
+  const [categoriesClient, setCategoriesClient] = useState<Category[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const response = await getProductsClients();
+      const productsData = response.products || []; // Lấy mảng products
+      setProductsClient(productsData);
+    })();
+  }, []);
+  useEffect(() => {
+    (async () => {
+      const response = await GetCategoriesClient();
+      const categoriesData = response || [];
+      setCategoriesClient(categoriesData);
+    })();
+  }, []);
 
   const { sizes } = useContext(SizeCT);
   const { colors } = useContext(ColorCT);
@@ -37,11 +55,11 @@ const Products = () => {
   });
 
   const [tempFilters, setTempFilters] = useState<Filters>({ ...filters });
-  const paginatedProducts = products.slice(
+  const paginatedProducts = productsClient.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const totalPages = Math.ceil(productsClient.length / itemsPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -51,7 +69,7 @@ const Products = () => {
       const response = await api.get("search", {
         params: { keyword },
       });
-      setProducts(response.data.products);
+      setProductsClient(response.data.products);
     } catch (error) {
       console.error("Có lỗi xảy ra khi tìm kiếm sản phẩm:", error);
     }
@@ -62,7 +80,7 @@ const Products = () => {
       const response = await api.get("filter", {
         params: filters,
       });
-      setProducts(response.data);
+      setProductsClient(response.data);
     } catch (error) {
       console.error("Có lỗi xảy ra khi lọc sản phẩm:", error);
     }
@@ -100,7 +118,7 @@ const Products = () => {
               Danh mục
             </h3>
             <ul className="space-y-2">
-              {/* {categories.map((category: Category) => (
+              {categoriesClient.map((category: Category) => (
                 <li key={category.id} className="flex items-center">
                   <input
                     type="checkbox"
@@ -114,7 +132,7 @@ const Products = () => {
                   />
                   <span className="text-gray-600">{category.name}</span>
                 </li>
-              ))} */}
+              ))}
             </ul>
             <h3 className="font-semibold text-lg text-gray-700 mt-4 mb-3">
               Kích thước

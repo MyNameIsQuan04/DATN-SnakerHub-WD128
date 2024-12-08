@@ -80,7 +80,6 @@ const Cart = () => {
       return; // Không làm gì nếu giá trị không hợp lệ (âm hoặc không phải số)
     }
 
-    console.log(newQuantity);
     if (newQuantity > cartItems[index].product_variant.stock) {
       alert("Số lượng không thể vượt quá số lượng tồn kho!"); // Hoặc có thể sử dụng một thông báo lỗi trên giao diện
       return;

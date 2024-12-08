@@ -1,15 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IoLogOutOutline } from "react-icons/io5";
 // import axios from "axios";
 import { ProductCT } from "../../contexts/productContext";
 import api from "../../configs/axios";
 import { CategoryCT } from "../../contexts/CategoryContext";
 import { Category } from "../../interfaces/Category";
+import { GetCategoriesClient } from "../../services/client/category";
 
 const Header = () => {
-  // const { categories } = useContext(CategoryCT);
+  const [categoriesClient, setCategoriesClient] = useState<Category[]>([]);
+  useEffect(() => {
+    (async () => {
+      const response = await GetCategoriesClient();
+      const categoriesData = response || [];
+      setCategoriesClient(categoriesData);
+    })();
+  }, []);
   const { user, isLoggedIn, logout } = useAuth();
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
@@ -47,7 +55,7 @@ const Header = () => {
           </a>
         </div>
         <nav className="flex justify-center space-x-6 text-base font-medium text-gray-800">
-          {/* {categories.map((category: Category) => (
+          {categoriesClient.map((category: Category) => (
             <ul key={category.id}>
               <li className="relative group">
                 <Link
@@ -59,7 +67,7 @@ const Header = () => {
                 <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
               </li>
             </ul>
-          ))} */}
+          ))}
 
           <ul>
             <li className="relative group">

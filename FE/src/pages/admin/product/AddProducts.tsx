@@ -254,17 +254,6 @@ const AddProducts = () => {
                         </div>
 
                         {/* SKU */}
-                        <div className="mb-4">
-                          <label className="block text-gray-700 font-bold mb-2">
-                            SKU
-                          </label>
-                          <Field
-                            name={`variants[${index}].sku`}
-                            type="text"
-                            className="w-full px-3 py-2 border rounded-lg"
-                            placeholder="Nhập SKU"
-                          />
-                        </div>
 
                         {/* Ảnh biến thể */}
                         <div className="mb-4">
