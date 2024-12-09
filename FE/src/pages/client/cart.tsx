@@ -90,7 +90,13 @@ const Cart = () => {
     // Kiểm tra giá trị nhập vào
 
     const newQuantity = Number(inputValue);
-
+    if (isNaN(newQuantity) || newQuantity <= 0) {
+      setErrorMessages((prev) => ({
+        ...prev,
+        [index]: "Số lượng phải là số nguyên dương.",
+      }));
+      return;
+    }
     // Kiểm tra nếu giá trị không hợp lệ hoặc nhỏ hơn hoặc bằng 0
     if (newQuantity > cartItems[index].product_variant.stock) {
       setErrorMessages((prev) => ({
@@ -364,8 +370,6 @@ const Cart = () => {
                       onBlur={(e) => {
                         const inputValue = parseInt(e.target.value, 10);
                         if (inputValue < 1 || isNaN(inputValue)) {
-                          setErrorMessages("Số lượng phải lớn hơn hoặc bằng 1");
-
                           setCartItems((prevItems) =>
                             prevItems.map((item, i) => {
                               if (i === index) {
