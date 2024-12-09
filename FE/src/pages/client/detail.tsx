@@ -72,9 +72,14 @@ const Detail = () => {
   };
   const handleQuantityChange = (e) => {
     const value = e.target.value;
-    // Chỉ cho phép số và không để giá trị trống
+
     if (/^\d*$/.test(value)) {
       setQuantity(value === "" ? 1 : parseInt(value, 10));
+    }
+    if (value > stock) {
+      alert("Vượt quá số lượng sản phẩm");
+      setQuantity(stock);
+      return;
     }
   };
   const settings = {
@@ -468,6 +473,7 @@ const Detail = () => {
               <button
                 className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
                 onClick={handleIncrease}
+                disabled={quantity >= stock}
               >
                 <svg
                   className="stroke-gray-900"
