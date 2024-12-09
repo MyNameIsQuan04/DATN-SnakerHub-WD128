@@ -443,55 +443,59 @@ const Detail = () => {
                 Sản phẩm hiện đã hết hàng.
               </p>
             )}
-            <div className="flex items-center gap-2 mt-[]">
-              <button
-                className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
-                onClick={handleDecrease}
-              >
-                <svg
-                  className="stroke-gray-900"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 18 19"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+            {selectedSize && selectedColor ? (
+              <div className="flex items-center gap-2 mt-[]">
+                <button
+                  className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
+                  onClick={handleDecrease}
                 >
-                  <path
-                    d="M4.5 9.5H13.5"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-              <input
-                type="text"
-                value={quantity}
-                onChange={handleQuantityChange}
-                className="border border-gray-200 rounded-full w-8 aspect-square text-gray-900 text-xs py-1 text-center"
-              />
-              <button
-                className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
-                onClick={handleIncrease}
-                disabled={quantity >= stock}
-              >
-                <svg
-                  className="stroke-gray-900"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 18 19"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+                  <svg
+                    className="stroke-gray-900"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 18 19"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M4.5 9.5H13.5"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                <input
+                  type="text"
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                  className="border border-gray-200 rounded-full w-8 aspect-square text-gray-900 text-xs py-1 text-center"
+                />
+                <button
+                  className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
+                  onClick={handleIncrease}
+                  disabled={quantity >= stock}
                 >
-                  <path
-                    d="M3.75 9.5H14.25M9 14.75V4.25"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </div>
+                  <svg
+                    className="stroke-gray-900"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 18 19"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M3.75 9.5H14.25M9 14.75V4.25"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <p>Vui lòng chọn kích thước và màu sắc.</p>
+            )}
 
             {isSizeGuideModalOpen && (
               <div
