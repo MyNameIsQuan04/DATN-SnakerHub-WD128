@@ -87,8 +87,6 @@ const Cart = () => {
   ) => {
     const inputValue = event.target.value.trim();
 
-    // Kiểm tra giá trị nhập vào
-
     const newQuantity = Number(inputValue);
     if (isNaN(newQuantity) || newQuantity <= 0) {
       setErrorMessages((prev) => ({
@@ -97,7 +95,7 @@ const Cart = () => {
       }));
       return;
     }
-    // Kiểm tra nếu giá trị không hợp lệ hoặc nhỏ hơn hoặc bằng 0
+
     if (newQuantity > cartItems[index].product_variant.stock) {
       setErrorMessages((prev) => ({
         ...prev,
