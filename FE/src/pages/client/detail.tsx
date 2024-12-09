@@ -70,15 +70,12 @@ const Detail = () => {
   const handleTabClick = (index: number) => {
     setActiveTab(index);
   };
-  const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuantity = parseInt(event.target.value, 10);
-
-    // Kiểm tra số lượng nhập vào
-    if (isNaN(newQuantity) || newQuantity < 1) {
-      return; // Nếu giá trị không hợp lệ, không làm gì
+  const handleQuantityChange = (e) => {
+    const value = e.target.value;
+    // Chỉ cho phép số và không để giá trị trống
+    if (/^\d*$/.test(value)) {
+      setQuantity(value === "" ? 1 : parseInt(value, 10));
     }
-
-    setQuantity(newQuantity);
   };
   const settings = {
     dots: false,
@@ -433,7 +430,7 @@ const Detail = () => {
             </p>
             <p className="mt-[20px] gap-[15px] cursor-pointer flex text-black text-sm font-semibold uppercase">
               Số lượng còn lại:
-              {stock > 0 ? stock : " Hết hàng"}
+              {stock > 0 ? stock : " ..."}
             </p>
 
             {isOutOfStock && (
@@ -441,7 +438,7 @@ const Detail = () => {
                 Sản phẩm hiện đã hết hàng.
               </p>
             )}
-            {/* <div className="flex items-center gap-2 mt-[]">
+            <div className="flex items-center gap-2 mt-[]">
               <button
                 className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
                 onClick={handleDecrease}
@@ -465,8 +462,8 @@ const Detail = () => {
               <input
                 type="text"
                 value={quantity}
+                onChange={handleQuantityChange}
                 className="border border-gray-200 rounded-full w-8 aspect-square text-gray-900 text-xs py-1 text-center"
-                readOnly
               />
               <button
                 className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
@@ -488,7 +485,8 @@ const Detail = () => {
                   />
                 </svg>
               </button>
-            </div> */}
+            </div>
+
             {isSizeGuideModalOpen && (
               <div
                 className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"

@@ -364,7 +364,7 @@ const Cart = () => {
                       onBlur={(e) => {
                         const inputValue = parseInt(e.target.value, 10);
                         if (inputValue < 1 || isNaN(inputValue)) {
-                          setErrorMessage("Số lượng phải lớn hơn hoặc bằng 1");
+                          setErrorMessages("Số lượng phải lớn hơn hoặc bằng 1");
 
                           setCartItems((prevItems) =>
                             prevItems.map((item, i) => {

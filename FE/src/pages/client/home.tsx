@@ -89,7 +89,7 @@ const Home = () => {
       setCategories(res.data);
     };
     fetchCategories();
-  });
+  }, []);
 
   return (
     <div className="">
