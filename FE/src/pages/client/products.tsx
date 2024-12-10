@@ -21,7 +21,23 @@ interface Filters {
 const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
-  const { products, setProducts } = useContext(ProductCT);
+  const [productsClient, setProductsClient] = useState<Product[]>([]);
+  const [categoriesClient, setCategoriesClient] = useState<Category[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const response = await getProductsClients();
+      const productsData = response.products || []; // Lấy mảng products
+      setProductsClient(productsData);
+    })();
+  }, []);
+  useEffect(() => {
+    (async () => {
+      const response = await GetCategoriesClient();
+      const categoriesData = response || [];
+      setCategoriesClient(categoriesData);
+    })();
+  }, []);
 
   const { sizes } = useContext(SizeCT);
   const { colors } = useContext(ColorCT);
@@ -37,11 +53,11 @@ const Products = () => {
   });
 
   const [tempFilters, setTempFilters] = useState<Filters>({ ...filters });
-  const paginatedProducts = products.slice(
+  const paginatedProducts = productsClient.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const totalPages = Math.ceil(productsClient.length / itemsPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -51,7 +67,7 @@ const Products = () => {
       const response = await api.get("search", {
         params: { keyword },
       });
-      setProducts(response.data.products);
+      setProductsClient(response.data.products);
     } catch (error) {
       console.error("Có lỗi xảy ra khi tìm kiếm sản phẩm:", error);
     }
@@ -62,7 +78,7 @@ const Products = () => {
       const response = await api.get("filter", {
         params: filters,
       });
-      setProducts(response.data);
+      setProductsClient(response.data);
     } catch (error) {
       console.error("Có lỗi xảy ra khi lọc sản phẩm:", error);
     }

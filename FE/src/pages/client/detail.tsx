@@ -70,6 +70,18 @@ const Detail = () => {
   const handleTabClick = (index: number) => {
     setActiveTab(index);
   };
+  const handleQuantityChange = (e) => {
+    const value = e.target.value;
+
+    if (/^\d*$/.test(value)) {
+      setQuantity(value === "" ? 1 : parseInt(value, 10));
+    }
+    if (value > stock) {
+      alert("Vượt quá số lượng sản phẩm");
+      setQuantity(stock);
+      return;
+    }
+  };
   const settings = {
     dots: false,
     infinite: true,
@@ -266,6 +278,12 @@ const Detail = () => {
       product.product_variants.find((variant) => variant.size.id === sizeId)
         ?.size
   );
+  const selectedVariant = product.product_variants.find(
+    (variant) =>
+      variant.color_id === selectedColor && variant.size_id === selectedSize
+  );
+
+  const stock = selectedVariant ? selectedVariant.stock : 0;
   const isOutOfStock = product.product_variants.every(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (variant: any) => variant.stock === 0
@@ -415,65 +433,70 @@ const Detail = () => {
             >
               HƯỚNG DẪN TÌM SIZE
             </p>
-            <p className="mt-[20px] gap-[5px] cursor-pointer flex text-black text-sm font-semibold uppercase">
+            <p className="mt-[20px] gap-[15px] cursor-pointer flex text-black text-sm font-semibold uppercase">
               Số lượng còn lại:
-              {product.product_variants.map((variants) => (
-                <p>{variants.stock}</p>
-              ))}
+              {stock > 0 ? stock : " ..."}
             </p>
+
             {isOutOfStock && (
               <p className="mt-4 text-red-500 text-sm font-semibold">
                 Sản phẩm hiện đã hết hàng.
               </p>
             )}
-            <div className="flex items-center gap-2 mt-[]">
-              <button
-                className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
-                onClick={handleDecrease}
-              >
-                <svg
-                  className="stroke-gray-900"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 18 19"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+            {selectedSize && selectedColor ? (
+              <div className="flex items-center gap-2 mt-[]">
+                <button
+                  className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
+                  onClick={handleDecrease}
                 >
-                  <path
-                    d="M4.5 9.5H13.5"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-              <input
-                type="text"
-                value={quantity}
-                className="border border-gray-200 rounded-full w-8 aspect-square text-gray-900 text-xs py-1 text-center"
-                readOnly
-              />
-              <button
-                className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
-                onClick={handleIncrease}
-              >
-                <svg
-                  className="stroke-gray-900"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 18 19"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+                  <svg
+                    className="stroke-gray-900"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 18 19"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M4.5 9.5H13.5"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                <input
+                  type="text"
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                  className="border border-gray-200 rounded-full w-8 aspect-square text-gray-900 text-xs py-1 text-center"
+                />
+                <button
+                  className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
+                  onClick={handleIncrease}
+                  disabled={quantity >= stock}
                 >
-                  <path
-                    d="M3.75 9.5H14.25M9 14.75V4.25"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </div>
+                  <svg
+                    className="stroke-gray-900"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 18 19"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M3.75 9.5H14.25M9 14.75V4.25"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <p>Vui lòng chọn kích thước và màu sắc.</p>
+            )}
+
             {isSizeGuideModalOpen && (
               <div
                 className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
@@ -617,7 +640,9 @@ const Detail = () => {
         </div>
       </div>
       <div className="">
-        <p className="mt-5 mb-4 ml-[90px] font-semibold text-[30px]">Sản phẩm liên quan</p>
+        <p className="mt-5 mb-4 ml-[90px] font-semibold text-[30px]">
+          Sản phẩm liên quan
+        </p>
         <div className="px-[40px]">
           <Slider {...settings} className="custom-slider">
             {relatedProducts.map((product: Product) => (

@@ -55,6 +55,10 @@ Route::get('dashboard/daily', [DashboardController::class, 'daily']);
 Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
 Route::get('dashboard', [DashboardController::class, 'index']);
 
+// Route::get('dashboard/daily', [DashboardController::class, 'daily'])->middleware('auth:api')->middleware('type:admin');
+// Route::get('dashboard/monthly', [DashboardController::class, 'monthly'])->middleware('auth:api')->middleware('type:admin');
+// Route::get('dashboard', [DashboardController::class, 'index'])->middleware('auth:api')->middleware('type:admin');
+
 Route::apiResource('client/orders', ApiMemberOrderController::class);
 Route::put('client/return-order/{order}', [ApiMemberOrderController::class, 'returnOrder']);
 

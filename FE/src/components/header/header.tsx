@@ -1,14 +1,22 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IoLogOutOutline } from "react-icons/io5";
 // import axios from "axios";
 import api from "../../configs/axios";
 import { Category } from "../../interfaces/Category";
+import { GetCategoriesClient } from "../../services/client/category";
 import axios from "axios";
 
 const Header = () => {
-  // const { categories } = useContext(CategoryCT);
+  const [categoriesClient, setCategoriesClient] = useState<Category[]>([]);
+  useEffect(() => {
+    (async () => {
+      const response = await GetCategoriesClient();
+      const categoriesData = response || [];
+      setCategoriesClient(categoriesData);
+    })();
+  }, []);
   const { user, isLoggedIn, logout } = useAuth();
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
@@ -22,7 +30,7 @@ const Header = () => {
       setCategories(res.data);
     };
     fetchCategories();
-  });
+  }, []);
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
@@ -58,7 +66,7 @@ const Header = () => {
           </a>
         </div>
         <nav className="flex justify-center space-x-6 text-base font-medium text-gray-800">
-          {categories.map((category: Category) => (
+          {categoriesClient.map((category: Category) => (
             <ul key={category.id}>
               <li className="relative group">
                 <Link
