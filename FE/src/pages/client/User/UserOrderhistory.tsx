@@ -159,7 +159,7 @@ const UserOrderHistory = () => {
   const handleSubmitRating = async (
     orderItemId: number,
     userId: number,
-    product_variant_Id: number,
+    product_variant_Id: number
     // orderId: number
   ) => {
     const reviewData = {
@@ -537,8 +537,8 @@ const UserOrderHistory = () => {
                                       handleSubmitRating(
                                         selectedItem.id,
                                         order.customer.user_id,
-                                        selectedItem.product_variant.id,
-                                        order.id
+                                        selectedItem.product_variant.id
+                                        // order.id
                                       )
                                     }
                                     className="px-4 py-2 bg-red-500 text-white rounded-lg"

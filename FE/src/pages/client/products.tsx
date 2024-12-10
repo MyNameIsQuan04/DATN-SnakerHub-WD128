@@ -9,6 +9,8 @@ import { Size } from "../../interfaces/Size";
 import { Color } from "../../interfaces/Color";
 import { Category } from "../../interfaces/Category";
 import axios from "axios";
+import { getProductsClients } from "../../services/client/product";
+import { GetCategoriesClient } from "../../services/client/category";
 
 interface Filters {
   category: string | number | null;
@@ -27,10 +29,11 @@ const Products = () => {
   useEffect(() => {
     (async () => {
       const response = await getProductsClients();
-      const productsData = response.products || []; // Lấy mảng products
+      const productsData = response.products || [];
       setProductsClient(productsData);
     })();
   }, []);
+
   useEffect(() => {
     (async () => {
       const response = await GetCategoriesClient();
@@ -101,7 +104,7 @@ const Products = () => {
       setCategories(res.data);
     };
     fetchCategories();
-  });
+  }, []);
 
   useEffect(() => {
     if (keyword) {

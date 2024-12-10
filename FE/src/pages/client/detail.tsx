@@ -117,31 +117,32 @@ const Detail = () => {
       const response = await axios.get<Product>(
         `http://localhost:8000/api/client/products/${productId}`
       );
-
       setProduct(response.data.product);
+      const product = response.data.product;
+      fetchRelatedProducts(product.category.id as number, productId);
     } catch (error) {
       console.error("Lỗi khi lấy thông tin sản phẩm:", error);
     }
   };
-  // const fetchRelatedProducts = async (
-  //   categoryId: number,
-  //   currentProductId: number
-  // ) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `http://localhost:8000/api/products/category/${categoryId}`
-  //     );
-  //     const products = response.data.products;
-  //     console.log(products);
-  //     const relatedProducts = products.filter(
-  //       (product: Product) => product.id !== Number(currentProductId)
-  //     );
-  //     setRelatedProducts(relatedProducts);
-  //     console.log(relatedProducts);
-  //   } catch (error) {
-  //     console.error("Lỗi khi lấy sản phẩm liên quan:", error);
-  //   }
-  // };
+  const fetchRelatedProducts = async (
+    categoryId: number,
+    currentProductId: number
+  ) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/products/category/${categoryId}`
+      );
+      const products = response.data.products;
+      console.log(products);
+      const relatedProducts = products.filter(
+        (product: Product) => product.id !== Number(currentProductId)
+      );
+      setRelatedProducts(relatedProducts);
+      console.log(relatedProducts);
+    } catch (error) {
+      console.error("Lỗi khi lấy sản phẩm liên quan:", error);
+    }
+  };
   useEffect(() => {
     if (id) {
       fetchProduct(id);
