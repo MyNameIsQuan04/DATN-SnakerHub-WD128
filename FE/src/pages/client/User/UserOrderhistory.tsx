@@ -170,7 +170,7 @@ const UserOrderHistory = () => {
   const handleSubmitRating = async (
     orderItemId: number,
     userId: number,
-    product_variant_Id: number,
+    product_variant_Id: number
     // orderId: number
   ) => {
     const reviewData = {

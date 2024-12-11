@@ -30,7 +30,7 @@ const Header = () => {
       setCategories(res.data);
     };
     fetchCategories();
-  });
+  }, []);
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
