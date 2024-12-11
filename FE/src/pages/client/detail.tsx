@@ -6,36 +6,14 @@ import { FaPhoneVolume } from "react-icons/fa6";
 import { TbTruckReturn } from "react-icons/tb";
 import { GrAnnounce } from "react-icons/gr";
 import { AiOutlineBank } from "react-icons/ai";
-import { Product } from "../../interfaces/Product";
+import { Product, Rate } from "../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { GrNext } from "react-icons/gr";
-import Slider from "react-slick";
+
 
 const Detail = () => {
-  const PrevArrow = (props: any) => {
-    const { className, onClick } = props;
-    return (
-      <button
-        className={`${className} z-10 left-[20px] text-white bg-black hover:bg-black transition-colors duration-200 rounded-full w-10 h-10 flex items-center justify-center`}
-        onClick={onClick}
-      >
-        &lt;
-      </button>
-    );
-  };
 
-  const NextArrow = (props: any) => {
-    const { className, onClick } = props;
-    return (
-      <button
-        className={`${className} z-10 right-[20px] text-white bg-black hover:bg-black transition-colors duration-200 rounded-full w-10 h-10 flex items-center justify-center`}
-        onClick={onClick}
-      >
-        &gt;
-      </button>
-    );
-  };
 
   const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
 
@@ -57,6 +35,11 @@ const Detail = () => {
   const token = localStorage.getItem("access_token");
   const [activeTab, setActiveTab] = useState(0);
   const [quantity, setQuantity] = useState(1); // Bắt đầu với số lượng 1
+  const [ratings, setRatings] = useState<Rate[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [averageRate, setAverageRate] = useState(0);
 
   const handleIncrease = () => {
     setQuantity((prev) => prev + 1); // Tăng số lượng
@@ -70,44 +53,17 @@ const Detail = () => {
   const handleTabClick = (index: number) => {
     setActiveTab(index);
   };
-  const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuantity = parseInt(event.target.value, 10);
+  const handleQuantityChange = (e) => {
+    const value = e.target.value;
 
-    // Kiểm tra số lượng nhập vào
-    if (isNaN(newQuantity) || newQuantity < 1) {
-      return; // Nếu giá trị không hợp lệ, không làm gì
+    if (/^\d*$/.test(value)) {
+      setQuantity(value === "" ? 1 : parseInt(value, 10));
     }
-
-    setQuantity(newQuantity);
-  };
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 4, // Số sản phẩm hiển thị trên một slide
-    slidesToScroll: 1,
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-    ],
+    if (value > stock) {
+      alert("Vượt quá số lượng sản phẩm");
+      setQuantity(stock);
+      return;
+    }
   };
   // Hàm lấy thông tin sản phẩm
   const fetchProduct = async (productId: string) => {
@@ -115,31 +71,32 @@ const Detail = () => {
       const response = await axios.get<Product>(
         `http://localhost:8000/api/client/products/${productId}`
       );
-
       setProduct(response.data.product);
+      const product = response.data.product;
+      fetchRelatedProducts(product.category.id as number, productId);
     } catch (error) {
       console.error("Lỗi khi lấy thông tin sản phẩm:", error);
     }
   };
-  // const fetchRelatedProducts = async (
-  //   categoryId: number,
-  //   currentProductId: number
-  // ) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `http://localhost:8000/api/products/category/${categoryId}`
-  //     );
-  //     const products = response.data.products;
-  //     console.log(products);
-  //     const relatedProducts = products.filter(
-  //       (product: Product) => product.id !== Number(currentProductId)
-  //     );
-  //     setRelatedProducts(relatedProducts);
-  //     console.log(relatedProducts);
-  //   } catch (error) {
-  //     console.error("Lỗi khi lấy sản phẩm liên quan:", error);
-  //   }
-  // };
+  const fetchRelatedProducts = async (
+    categoryId: number,
+    currentProductId: number
+  ) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/products/category/${categoryId}`
+      );
+      const products = response.data.products;
+      console.log(products);
+      const relatedProducts = products.filter(
+        (product: Product) => product.id !== Number(currentProductId)
+      );
+      setRelatedProducts(relatedProducts);
+      console.log(relatedProducts);
+    } catch (error) {
+      console.error("Lỗi khi lấy sản phẩm liên quan:", error);
+    }
+  };
   useEffect(() => {
     if (id) {
       fetchProduct(id);
@@ -225,6 +182,28 @@ const Detail = () => {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
     }
   };
+
+  // đánh giá 
+  useEffect(() => {
+    const fetchRatings = async (productID: string) => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/client/products/${productID}`
+        );
+        console.log(response.data)
+        setRatings(response.data.rates);
+        setAverageRate(response.data.averageRates);
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        console.error("Lỗi khi tải đánh giá:", err);
+      }
+    };
+  
+    if (id) { 
+      fetchRatings(id);
+    }
+  }, [id]);
 
   useEffect(() => {
     let slideshowInterval: NodeJS.Timeout;
@@ -433,7 +412,7 @@ const Detail = () => {
             </p>
             <p className="mt-[20px] gap-[15px] cursor-pointer flex text-black text-sm font-semibold uppercase">
               Số lượng còn lại:
-              {stock > 0 ? stock : " Hết hàng"}
+              {stock > 0 ? stock : " ..."}
             </p>
 
             {isOutOfStock && (
@@ -441,54 +420,60 @@ const Detail = () => {
                 Sản phẩm hiện đã hết hàng.
               </p>
             )}
-            {/* <div className="flex items-center gap-2 mt-[]">
-              <button
-                className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
-                onClick={handleDecrease}
-              >
-                <svg
-                  className="stroke-gray-900"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 18 19"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+            {selectedSize && selectedColor ? (
+              <div className="flex items-center gap-2 mt-[]">
+                <button
+                  className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
+                  onClick={handleDecrease}
                 >
-                  <path
-                    d="M4.5 9.5H13.5"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-              <input
-                type="text"
-                value={quantity}
-                className="border border-gray-200 rounded-full w-8 aspect-square text-gray-900 text-xs py-1 text-center"
-                readOnly
-              />
-              <button
-                className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
-                onClick={handleIncrease}
-              >
-                <svg
-                  className="stroke-gray-900"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 18 19"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+                  <svg
+                    className="stroke-gray-900"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 18 19"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M4.5 9.5H13.5"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                <input
+                  type="text"
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                  className="border border-gray-200 rounded-full w-8 aspect-square text-gray-900 text-xs py-1 text-center"
+                />
+                <button
+                  className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
+                  onClick={handleIncrease}
+                  disabled={quantity >= stock}
                 >
-                  <path
-                    d="M3.75 9.5H14.25M9 14.75V4.25"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </div> */}
+                  <svg
+                    className="stroke-gray-900"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 18 19"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M3.75 9.5H14.25M9 14.75V4.25"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <p>Vui lòng chọn kích thước và màu sắc.</p>
+            )}
+
             {isSizeGuideModalOpen && (
               <div
                 className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
@@ -628,7 +613,53 @@ const Detail = () => {
               </div>
             </div>
           )}
-          {activeTab === 1 && <div>Chưa có bình luận !</div>}
+          {activeTab === 1 && (
+            <div className="ratings-container">
+            {ratings.length > 0 ? (
+              <ul className="rating-list">
+                {ratings.map((rating) => (
+                  <li key={rating.id} className="rating-item">
+                    <div className="user-info flex items-center gap-3">
+                      <img
+                        src={rating.user.avatar}
+                        alt={`${rating.user.name}'s avatar`}
+                        className="user-avatar w-14 h-14 rounded-full mb-4 object-cover"
+                      />
+                      <div>
+                        <strong>{rating.user.name}</strong>
+                        <p className="rating-date">
+                          {new Date(rating.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="rating-content">
+                      <div className="flex">
+                        <h2 className="font-semibold">Sản phẩm :{""} </h2>
+                        <p>{rating.product.name}</p>
+                      </div>
+                      <div className="rating-stars">
+                        {Array.from({ length: 5 }, (_, index) => (
+                          <span
+                          key={index}
+                          className={`star text-yellow-500 w-6 h-6 text-xl ${index < rating.star ? "filled" : ""}`}
+                        >
+                          ★
+                        </span>
+                        
+                        ))}
+                      </div>
+                      <p>Nội dung đánh giá: {rating.content}</p>
+                    </div>
+                    <hr />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Chưa có đánh giá nào .</p>
+            )}
+          </div>
+          
+          )}
         </div>
       </div>
       <div className="">
@@ -636,11 +667,14 @@ const Detail = () => {
           Sản phẩm liên quan
         </p>
         <div className="px-[40px]">
-          <Slider {...settings} className="custom-slider">
+          <div className="grid grid-cols-4 gap-[20px]">
             {relatedProducts.map((product: Product) => (
-              <div key={product.id} className="gap-[10px]">
+              <div
+                key={product.id}
+                className="relative border border-gray-200 hover:border-gray-400 transition duration-300"
+              >
                 <Link to={`/detail/${product.id}`}>
-                  <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
+                  <div>
                     <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1">
                       HOT
                     </div>
@@ -672,7 +706,7 @@ const Detail = () => {
                 </Link>
               </div>
             ))}
-          </Slider>
+          </div>
         </div>
       </div>
       <ToastContainer className="mt-[80px]" />
