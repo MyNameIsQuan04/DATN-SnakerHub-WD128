@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
-import { Order } from "../../../interfaces/Order";
+import { Order, OrderItem } from "../../../interfaces/Order";
 import { FcPrevious } from "react-icons/fc";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,17 +15,22 @@ const OrderDetailHictory = () => {
   const token = localStorage.getItem("access_token");
 
   const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = {
+    const optionsDate: Intl.DateTimeFormatOptions = {
       year: "numeric",
       month: "long",
       day: "numeric",
+    };
+    const optionsTime: Intl.DateTimeFormatOptions = {
       hour: "numeric",
       minute: "numeric",
       second: "numeric",
     };
 
     const date = new Date(dateString);
-    return date.toLocaleDateString("vi-VN", options);
+    const formattedDate = date.toLocaleDateString("vi-VN", optionsDate); // Chỉ ngày
+    const formattedTime = date.toLocaleTimeString("vi-VN", optionsTime); // Chỉ giờ
+
+    return `${formattedDate} ${formattedTime}`; 
   };
 
   useEffect(() => {
@@ -38,7 +43,7 @@ const OrderDetailHictory = () => {
         `http://localhost:8000/api/orders/${id}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Thêm token vào header Authorization
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
@@ -51,36 +56,36 @@ const OrderDetailHictory = () => {
     }
   };
 
+  
   const handleUpdateStatus = async (newStatus: string) => {
     if (order?.status === newStatus) {
-      // Nếu trạng thái hiện tại giống với trạng thái mới, không làm gì cả
       toast.info("Trạng thái này đã được cập nhật.");
       return;
     }
-
+  
     try {
-      const response = await axios.patch(
+      const updateData = {
+        status: newStatus,
+        ...(newStatus === "Đã giao hàng" && { status_payment: "Đã thanh toán" }),
+      };
+  
+      const { status } = await axios.put(
         `http://localhost:8000/api/orders/${id}`,
-        { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Thêm token vào header Authorization
-          },
-        }
+        updateData,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      if (response.status === 200) {
-        // Cập nhật trạng thái mới cho đơn hàng
-        setOrder((prevOrder) => {
-          if (!prevOrder) return null; // Trả về null nếu order không tồn tại
-          return { ...prevOrder, status: newStatus, statusUpdated: true }; // Thêm `statusUpdated` để theo dõi trạng thái đã cập nhật
-        });
+  
+      if (status === 200) {
+        setOrder((prev) => (prev ? { ...prev, ...updateData } : null));
         toast.success("Cập nhật trạng thái thành công!");
       }
-    } catch (error) {
+    } catch {
       toast.error("Cập nhật trạng thái thất bại!");
     }
   };
+  
+  
+  
 
   if (loading) {
     return (
@@ -119,12 +124,11 @@ const OrderDetailHictory = () => {
       </div>
 
       <div className="p-4">
-        {order.order_items.map((item: any) => (
+        {order.order_items.map((item: OrderItem) => (
           <div
             key={item.id}
             className="flex flex-wrap md:flex-nowrap border-b py-4 items-center"
           >
-            {/* Phần ảnh sản phẩm */}
             <div className="w-full md:w-1/4 flex justify-center h-60">
               <img
                 src={item.product_variant?.image || ""}
@@ -132,8 +136,6 @@ const OrderDetailHictory = () => {
                 className="object-contain h-full w-full rounded-md"
               />
             </div>
-
-            {/* Phần thông tin sản phẩm */}
             <div className="w-full md:w-3/4 md:pl-6">
               <h2 className="text-lg font-semibold mb-4 text-gray-500">
                 {item.product_variant?.product?.name || "Tên sản phẩm không có"}
@@ -146,6 +148,14 @@ const OrderDetailHictory = () => {
               <div className="flex justify-between items-center mt-4">
                 <p>
                   <strong>Số lượng:</strong> {item.quantity}
+                </p>
+                <p>
+                  <strong>Màu sắc:</strong> {item.product_variant?.color?.name || "Không có thông tin màu sắc"}
+                </p>
+                <p>
+                  <strong>Kích cỡ:</strong>{" "}
+                  {item.product_variant?.size?.name ||
+                    "Không có thông tin kích cỡ"}
                 </p>
                 <p>
                   <strong>Đơn giá:</strong>{" "}
@@ -162,7 +172,9 @@ const OrderDetailHictory = () => {
       <div className="flex">
         <div className="w-1/3"></div>
         <div className="w-2/3 p-4 mt-2 border-b-2">
-          <h2 className="text-xl font-semibold mb-4 text-blue-500">Thông tin khách hàng</h2>
+          <h2 className="text-xl font-semibold mb-4 text-blue-500">
+            Thông tin khách hàng
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <p>
               <strong>Họ và tên:</strong> {order.customer.name}
@@ -183,7 +195,9 @@ const OrderDetailHictory = () => {
       <div className="flex">
         <div className="w-1/3"></div>
         <div className="w-2/3 p-4 mt-2 border-b-2">
-          <h2 className="text-xl font-semibold mb-6 text-blue-500 ">Thông tin đơn hàng</h2>
+          <h2 className="text-xl font-semibold mb-6 text-blue-500 ">
+            Thông tin đơn hàng
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <p>
               <strong>Trạng thái: </strong>
