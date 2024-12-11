@@ -3,6 +3,7 @@ import { Order, OrderItem } from "../../../interfaces/Order";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
+import { TiTick } from "react-icons/ti";
 
 const formatCurrency = (amount: number) => {
   if (amount === undefined || amount === null) {
@@ -59,6 +60,16 @@ const UserOrderHistory = () => {
   const handleSelectReason = (event: any) => {
     setSelectedReason(event.target.value);
   };
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+
+    const day = String(date.getDate()).padStart(2, "0"); // Đảm bảo ngày có 2 chữ số
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0, nên cộng thêm 1
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
+
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
@@ -174,7 +185,7 @@ const UserOrderHistory = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/rate", // Endpoint mới
+        "http://localhost:8000/api/rate",
         reviewData,
         {
           headers: {
@@ -184,6 +195,7 @@ const UserOrderHistory = () => {
       );
 
       console.log("Đánh giá đã được gửi thành công:", response.data);
+      console.log(response.data)
       handleCloseModalRating();
     } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);
@@ -263,12 +275,206 @@ const UserOrderHistory = () => {
               key={order.id}
               className="bg-white shadow-md rounded-lg p-6 mb-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300"
             >
-              <div className="pb-2">
-                <span className="font-semibold">Mã đơn hàng:</span>
-                <span>
-                  {"# "} {order.order_code}
-                </span>
+              <div className="flex pb-2 mb-2 items-center">
+                <div className="flex w-1/2">
+                  <div className="mr-9 flex flex-col">
+                    <span>
+                      {"# "} {order.order_code}
+                    </span>
+                    <span className="text-orange-400">
+                      {order.status_payment}
+                    </span>
+                  </div>
+                  <div className="mr-9 flex flex-col">
+                    <span className="font-semibold">Ngày đặt</span>
+                    <span> {formatDate(order.created_at)}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-semibold">Tổng tiền</span>
+                    <span className="text-red-500">
+                      {formatCurrency(order.totalAfterDiscount)}đ
+                    </span>
+                  </div>
+                </div>
+                <div className="w-1/2">
+                  <div className="flex justify-end gap-1 mt-4">
+                    {["Chờ xử lý", "Đã xác nhận"].includes(order.status) && (
+                      <button
+                        onClick={() => handleCancelOrder(order.id)}
+                        className="focus:outline-none text-white bg-orange-700 hover:bg-orange-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-900"
+                      >
+                        Hủy đơn hàng
+                      </button>
+                    )}
+                    {order.status === "Đã giao hàng" && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleFinishOrder(order.id)}
+                          className="focus:outline-none text-white bg-orange-700 hover:bg-orange-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-900"
+                        >
+                          Hoàn thành
+                        </button>
+                        {!order.omplaintSent && (
+                          <button
+                            onClick={() => openModalComplanit(order)}
+                            className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-red-600 focus:outline-none bg-white rounded-lg border border-red-600 hover:bg-gray-100 hover:text-red-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-red-400 dark:border-red-600 dark:hover:text-white dark:hover:bg-gray-700"
+                          >
+                            Khiếu nại
+                          </button>
+                        )}
+                        {isModalOpen && selectedItem && (
+                          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                              <h2 className="text-xl font-semibold mb-4">
+                                Chọn lý do khiếu nại
+                              </h2>
+                              <select
+                                value={selectedReason}
+                                onChange={handleSelectReason}
+                                className="w-full px-4 py-2 border rounded-lg mb-4"
+                              >
+                                <option value="">Chọn lý do</option>
+                                <option value="Giao hàng không đúng yêu cầu">
+                                  Giao hàng không đúng yêu cầu
+                                </option>
+                                <option value="Sản phẩm có lỗi từ nhà cung cấp">
+                                  Sản phẩm có lỗi từ nhà cung cấp
+                                </option>
+                                <option value="Lý do khác">Lý do khác</option>
+                              </select>
+
+                              <div className="flex justify-end">
+                                <button
+                                  onClick={handleCloseModal}
+                                  className="px-4 py-2 text-red-500 border border-red-500 rounded-lg mr-2"
+                                >
+                                  Đóng
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleComplaintOrder(selectedItem.id)
+                                  }
+                                  className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                                >
+                                  Gửi khiếu nại
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {order.status === "Hoàn thành" && (
+                      <div>
+                        {order.order_items.map((item) => (
+                          <div key={item.id}>
+                            <button
+                              className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-red-500 focus:outline-none bg-white rounded-lg border border-red-500 hover:bg-red-500 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                              onClick={() => {
+                                openModalRating(item);
+                              }}
+                            >
+                              Đánh giá
+                            </button>
+                            {isModalRatingOpen && selectedItem && (
+                              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                                  <h2 className="text-xl font-semibold mb-4">
+                                    Gửi đánh giá
+                                  </h2>
+                                  <div className="flex gap-[10px]">
+                                    <img
+                                      src={
+                                        selectedItem.product_variant?.image ||
+                                        "https://via.placeholder.com/150" // Hình ảnh mặc định nếu không có
+                                      }
+                                      alt="Product"
+                                      className="w-[90px] h-[90px] object-cover rounded-lg shadow-md"
+                                    />
+                                    <div className="flex flex-col">
+                                      <div className="flex gap-[5px] items-center w-[500px]">
+                                        <p className="text-lg text-gray-700">
+                                          Tên sản phẩm:
+                                        </p>
+                                        <p className="text-lg text-gray-700 uppercase font-bold">
+                                          {selectedItem.product_variant?.product
+                                            .name || "Không có"}
+                                        </p>
+                                      </div>
+                                      <p className="text-lg text-gray-700">
+                                        Màu sắc:{" "}
+                                        {selectedItem.product_variant?.color
+                                          .name || "Không có"}
+                                      </p>
+                                      <p className="text-lg text-gray-700">
+                                        Kích thước:{" "}
+                                        {selectedItem.product_variant?.size
+                                          .name || "Không có"}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <div className="flex gap-1 mt-[10px]">
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <svg
+                                          key={star}
+                                          onClick={() => handleStarClick(star)}
+                                          className={`w-6 h-6 cursor-pointer rounded-sm ${
+                                            star <= rating
+                                              ? "text-yellow-500"
+                                              : "text-gray-400"
+                                          }`}
+                                          fill="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path d="M12 .587l3.668 7.568L24 9.75l-6 5.845L19.335 24 12 20.401 4.665 24 6 15.595 0 9.75l8.332-1.595L12 .587z" />
+                                        </svg>
+                                      ))}
+                                    </div>
+                                    <textarea
+                                      value={comment}
+                                      onChange={handleCommentChange}
+                                      className="border h-[200px] border-gray-400 w-full mt-[10px] rounded-lg pl-[10px] p-[5px]"
+                                    ></textarea>
+                                  </div>
+                                  <div className="flex justify-end mt-[10px]">
+                                    <button
+                                      onClick={handleCloseModalRating}
+                                      className="px-4 py-2 text-red-500 border border-red-500 rounded-lg mr-2"
+                                    >
+                                      Đóng
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleSubmitRating(
+                                          selectedItem.id,
+                                          order.customer.user_id,
+                                          selectedItem.product_variant.id,
+                                          // order.id
+                                        )
+                                      }
+                                      className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                                    >
+                                      Gửi đánh giá
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {/* /profile/order-detail/${order.id} */}
+                    <Link to={`/profile/order-detail/${order.id}`}>
+                      <button className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-400 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                        Xem chi tiết đơn
+                      </button>
+                    </Link>
+                  </div>
+                </div>
               </div>
+              <hr className="w-full mb-3" />
               <div className="flex justify-between items-center mb-6">
                 <div className="flex flex-col">
                   {order.order_items.map((item: OrderItem) => (
@@ -303,8 +509,7 @@ const UserOrderHistory = () => {
                         </div>
                       </div>
                       {/* Đẩy đơn giá sát lề phải */}
-                      <div className="ml-[410px] flex items-center gap-1">
-                        <span>Đơn giá: </span>
+                      <div className="ml-[470px] flex items-center gap-1">
                         <p className="text-lg font-medium text-red-600">
                           {formatCurrency(item.product_variant?.price || 0)} vnđ
                         </p>
@@ -314,251 +519,19 @@ const UserOrderHistory = () => {
                 </div>
               </div>
               <hr />
-              <div className="text-right">
-                <p
-                  className={`text-lg font-semibold px-2 py-1 inline-block ${
-                    order.status === "Hoàn thành"
-                      ? "text-green-600"
-                      : order.status === "Đã hủy"
-                      ? "text-red-600"
-                      : "text-yellow-500"
-                  }`}
-                >
-                  {order.status}
-                </p>
-              </div>
-              <div className="">
-                <div className="flex">
-                  <div className="w-2/3">
-                    <div className="flex gap-2 mb-2">
-                      <h1>Trạng thái thanh toán:</h1>
-                      <h1 className="text-orange-400">
-                        {order.status_payment}
-                      </h1>
-                    </div>
-                    {order.status === "Trả hàng" ? (
-                      <span className="flex justify-start">
-                        Khiếu nại: {order.note}
-                      </span>
-                    ) : (
-                      <span className="flex justify-start">
-                        Ghi chú: Không có !
-                      </span>
-                    )}
+              <div className="flex mt-2">
+                <div className="w-1/2 flex items-center gap-2 ">
+                  <div className="bg-green-400 border rounded-full">
+                    <TiTick className="text-white w-6 h-6 " />
                   </div>
-                  <div className="w-1/3 ">
-                    <p
-                      className="
-                 text-right flex justify-between"
-                    >
-                      <span>Tổng tiền: </span>
-                      <span className="font-medium text-lg text-red-600">
-                        {formatCurrency(order.total_price)} vnđ
-                      </span>
-                    </p>
-                    <p
-                      className="
-                 text-right flex justify-between "
-                    >
-                      <span>Phí vận chuyển : </span>
-                      <span className="font-medium text-lg text-red-600">
-                        {formatCurrency(order.shippingFee)} đ
-                      </span>
-                    </p>
-                    <p
-                      className="
-                 text-right flex justify-between border-b-2 border-gray-200 mb-5"
-                    >
-                      <span>Mã giảm giá: </span>
-                      <span className="font-medium text-lg text-red-600">
-                        -{formatCurrency(order.discount)} đ
-                      </span>
-                    </p>
-                    <p
-                      className="
-                 text-right flex justify-between"
-                    >
-                      <span>Tổng tiền sau cùng: </span>
-                      <span className="font-medium text-lg text-red-600">
-                        {formatCurrency(order.totalAfterDiscount)} vnđ
-                      </span>
-                    </p>
-                  </div>
+                  <h1>{order.status} {formatDate(order.updated_at)}</h1>
                 </div>
-                <div className="flex justify-end gap-1 mt-4">
-                  {["Chờ xử lý", "Đã xác nhận"].includes(order.status) && (
-                    <button
-                      onClick={() => handleCancelOrder(order.id)}
-                      className="focus:outline-none text-white bg-orange-700 hover:bg-orange-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-900"
-                    >
-                      Hủy đơn hàng
-                    </button>
-                  )}
-                  {order.status === "Đã giao hàng" && (
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleFinishOrder(order.id)}
-                        className="focus:outline-none text-white bg-orange-700 hover:bg-orange-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-900"
-                      >
-                        Hoàn thành
+                <div className="w-1/2 ">
+                {/* <Link to={`/detail/${order.id}`}>
+                      <button className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-400 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                        Xem sản phẩm
                       </button>
-                      {!order.omplaintSent && (
-                        <button
-                          onClick={() => openModalComplanit(order)}
-                          className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-red-600 focus:outline-none bg-white rounded-lg border border-red-600 hover:bg-gray-100 hover:text-red-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-red-400 dark:border-red-600 dark:hover:text-white dark:hover:bg-gray-700"
-                        >
-                          Khiếu nại
-                        </button>
-                      )}
-                      {isModalOpen && selectedItem && (
-                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                            <h2 className="text-xl font-semibold mb-4">
-                              Chọn lý do khiếu nại
-                            </h2>
-                            <select
-                              value={selectedReason}
-                              onChange={handleSelectReason}
-                              className="w-full px-4 py-2 border rounded-lg mb-4"
-                            >
-                              <option value="">Chọn lý do</option>
-                              <option value="Giao hàng không đúng yêu cầu">
-                                Giao hàng không đúng yêu cầu
-                              </option>
-                              <option value="Sản phẩm có lỗi từ nhà cung cấp">
-                                Sản phẩm có lỗi từ nhà cung cấp
-                              </option>
-                              <option value="Lý do khác">Lý do khác</option>
-                            </select>
-
-                            <div className="flex justify-end">
-                              <button
-                                onClick={handleCloseModal}
-                                className="px-4 py-2 text-red-500 border border-red-500 rounded-lg mr-2"
-                              >
-                                Đóng
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleComplaintOrder(selectedItem.id)
-                                }
-                                className="px-4 py-2 bg-red-500 text-white rounded-lg"
-                              >
-                                Gửi khiếu nại
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {order.status === "Hoàn thành" && (
-                    <div>
-                      {order.order_items.map((item) => (
-                        <div key={item.id}>
-                          <button
-                            className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-red-500 focus:outline-none bg-white rounded-lg border border-red-500 hover:bg-red-500 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                            onClick={() => {
-                              openModalRating(item);
-                            }}
-                          >
-                            Đánh giá
-                          </button>
-                          {isModalRatingOpen && selectedItem && (
-                            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                              <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                                <h2 className="text-xl font-semibold mb-4">
-                                  Gửi đánh giá
-                                </h2>
-                                <div className="flex gap-[10px]">
-                                  <img
-                                    src={
-                                      selectedItem.product_variant?.image ||
-                                      "https://via.placeholder.com/150" // Hình ảnh mặc định nếu không có
-                                    }
-                                    alt="Product"
-                                    className="w-[90px] h-[90px] object-cover rounded-lg shadow-md"
-                                  />
-                                  <div className="flex flex-col">
-                                    <div className="flex gap-[5px] items-center w-[500px]">
-                                      <p className="text-lg text-gray-700">
-                                        Tên sản phẩm:
-                                      </p>
-                                      <p className="text-lg text-gray-700 uppercase font-bold">
-                                        {selectedItem.product_variant?.product
-                                          .name || "Không có"}
-                                      </p>
-                                    </div>
-                                    <p className="text-lg text-gray-700">
-                                      Màu sắc:{" "}
-                                      {selectedItem.product_variant?.color
-                                        .name || "Không có"}
-                                    </p>
-                                    <p className="text-lg text-gray-700">
-                                      Kích thước:{" "}
-                                      {selectedItem.product_variant?.size
-                                        .name || "Không có"}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div>
-                                  <div className="flex gap-1 mt-[10px]">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                      <svg
-                                        key={star}
-                                        onClick={() => handleStarClick(star)}
-                                        className={`w-6 h-6 cursor-pointer rounded-sm ${
-                                          star <= rating
-                                            ? "text-yellow-500"
-                                            : "text-gray-400"
-                                        }`}
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path d="M12 .587l3.668 7.568L24 9.75l-6 5.845L19.335 24 12 20.401 4.665 24 6 15.595 0 9.75l8.332-1.595L12 .587z" />
-                                      </svg>
-                                    ))}
-                                  </div>
-                                  <textarea
-                                    value={comment}
-                                    onChange={handleCommentChange}
-                                    className="border h-[200px] border-gray-400 w-full mt-[10px] rounded-lg pl-[10px] p-[5px]"
-                                  ></textarea>
-                                </div>
-                                <div className="flex justify-end mt-[10px]">
-                                  <button
-                                    onClick={handleCloseModalRating}
-                                    className="px-4 py-2 text-red-500 border border-red-500 rounded-lg mr-2"
-                                  >
-                                    Đóng
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      handleSubmitRating(
-                                        selectedItem.id,
-                                        order.customer.user_id,
-                                        selectedItem.product_variant.id
-                                        // order.id
-                                      )
-                                    }
-                                    className="px-4 py-2 bg-red-500 text-white rounded-lg"
-                                  >
-                                    Gửi đánh giá
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {/* /profile/order-detail/${order.id} */}
-                  <Link to={`/profile/order-detail/${order.id}`}>
-                    <button className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-400 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                      Xem chi tiết đơn
-                    </button>
-                  </Link>
+                    </Link> */}
                 </div>
               </div>
             </div>

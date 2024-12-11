@@ -79,7 +79,7 @@ const Checkout = () => {
       return;
     }
     const total_price = checkoutItems.reduce(
-      (sum, item) => (sum + item.product_variant.price) * item.quantity,
+      (sum, item) => sum + (item.product_variant.price * item.quantity),
       0
     );
     try {

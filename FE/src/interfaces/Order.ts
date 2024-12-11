@@ -17,7 +17,6 @@ export interface Order {
   shippingFee: number
   totalAfterDiscount: number
   paymentMethod: string
-   // Adjusted to match "status-payment" key
   customer: Customer;
   order_items: OrderItem[];
 }
