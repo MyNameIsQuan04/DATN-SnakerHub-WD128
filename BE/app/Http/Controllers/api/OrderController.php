@@ -86,7 +86,7 @@ class OrderController extends Controller
                     throw new \Exception('Không thể thay đổi trạng thái lùi hoặc không hợp lệ!');
                 }
 
-                if ($request->only('status') == 'Đã giao hàng') {
+                if ($request['status'] == 'Đã giao hàng') {
                     $order->update([
                         'status' => $request['status'],
                         'status_payment' => 'Đã thanh toán',
