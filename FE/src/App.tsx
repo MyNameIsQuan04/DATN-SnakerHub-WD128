@@ -30,7 +30,6 @@ import Products from "./pages/client/products";
 // import CartContext from "./contexts/CartContext";
 import OrderContext from "./contexts/OrderContext";
 import ThankYou from "./pages/client/Thankyou";
-import Contact from "./pages/client/contact";
 import PrivateAdmin from "./pages/PrivateAdmin";
 import ForgotPassword from "./pages/client/forgot-password";
 import Mail from "./pages/client/mail";
@@ -105,7 +104,6 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />
           <Route path="/paymentresult" element={<PaymentResult />} />
