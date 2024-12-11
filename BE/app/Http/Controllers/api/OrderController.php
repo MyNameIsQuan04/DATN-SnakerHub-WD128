@@ -139,37 +139,43 @@ class OrderController extends Controller
     public function applyVoucher(Request $request)
     {
         $voucherCode = $request->input('codeDiscount');
-        $total_price = $request->input('total_price'); // Tổng tiền giỏ hàng do FE gửi lên
+        $total_price = $request->input('total_price'); // Tổng tiền giỏ hàng từ FE
 
         // Kiểm tra tổng tiền hợp lệ
-        if (!is_int($total_price) || $total_price <= 0) {
+        if (!is_numeric($total_price) || $total_price <= 0) {
             return response()->json(['message' => 'Tổng tiền không hợp lệ'], 400);
         }
 
+        // Tìm mã giảm giá
         $voucher = Voucher::where('codeDiscount', $voucherCode)->first();
         if (!$voucher || !$voucher->isValid()) {
-            return response()->json(['message' => 'Mã giảm giá không hợp lệ'], 400);
+            return response()->json(['message' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn'], 400);
         }
 
         // Tính toán mức giảm giá
-        $discount = $voucher->type == 'percent'
-            ? ($total_price * $voucher->discount) / 100
-            : $voucher->discount;
+        $discount = 0;
+        if ($voucher->type === 'percent') {
+            $discount = ($total_price * $voucher->discount) / 100;
+        } elseif ($voucher->type === 'fixed') {
+            $discount = $voucher->discount;
+        }
 
-        // Đảm bảo rằng nếu discount lớn hơn total, thì total_after_discount sẽ là 0
-        //    $total_after_discount = max($total_price - $discount, 0);
+        // Đảm bảo giảm giá không vượt quá tổng tiền
+        $discount = min($discount, $total_price);
+        $total_price_after_discount = $total_price - $discount;
 
-        // Giảm số lần sử dụng còn lại nếu có giới hạn
+        // Cập nhật số lần sử dụng mã giảm giá (nếu có giới hạn)
         if ($voucher->usage_limit !== null) {
             $voucher->decrement('usage_limit');
         }
 
-        $total_price = $total_price - $discount;
-
+        // Trả về kết quả
         return response()->json([
             'message' => 'Áp dụng mã giảm giá thành công',
             'discount' => min($discount, $total_price), // Giảm giá tối đa chỉ bằng tổng tiền
-            'total_price' => $total_price,
+            'original_total_price' => $total_price,
+            'discount' => $discount,
+            'total_price_after_discount' => $total_price_after_discount,
         ]);
     }
 }
