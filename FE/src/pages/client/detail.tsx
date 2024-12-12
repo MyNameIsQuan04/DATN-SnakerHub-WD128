@@ -346,7 +346,6 @@ const Detail = () => {
                 <span>890 lượt thích</span>
               </div>
             </div>
-
             <div className="flex items-center gap-3 mt-4">
               <span className="text-red-600 text-3xl font-semibold">
                 {selectedVariantPrice
@@ -569,7 +568,7 @@ const Detail = () => {
               activeTab === 1 ? "bg-white" : "text-gray-600"
             }`}
           >
-            Bình luận
+            Đánh giá
           </button>
         </div>
         <hr className="border-t-2 border-gray-400" />
@@ -632,7 +631,7 @@ const Detail = () => {
                         </p>
                       </div>
                     </div>
-                    <div className="rating-content">
+                    <div className="rating-content mb-3">
                       <div className="flex">
                         <h2 className="font-semibold">Sản phẩm :{""} </h2>
                         <p>{rating.product.name}</p>
@@ -650,7 +649,7 @@ const Detail = () => {
                       </div>
                       <p>Nội dung đánh giá: {rating.content}</p>
                     </div>
-                    <hr />
+                    <hr className="mb-3"/>
                   </li>
                 ))}
               </ul>

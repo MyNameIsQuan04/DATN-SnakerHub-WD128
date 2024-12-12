@@ -11,17 +11,22 @@ const UserOrderhistorydetail = () => {
   const [error, setError] = useState<string | null>(null); // Trạng thái lỗi
 
   const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = {
+    const optionsDate: Intl.DateTimeFormatOptions = {
       year: "numeric",
       month: "long",
       day: "numeric",
+    };
+    const optionsTime: Intl.DateTimeFormatOptions = {
       hour: "numeric",
       minute: "numeric",
       second: "numeric",
     };
 
     const date = new Date(dateString);
-    return date.toLocaleDateString("vi-VN", options);
+    const formattedDate = date.toLocaleDateString("vi-VN", optionsDate); // Chỉ ngày
+    const formattedTime = date.toLocaleTimeString("vi-VN", optionsTime); // Chỉ giờ
+
+    return `${formattedDate} ${formattedTime}`; 
   };
 
   // Hàm gọi API để lấy chi tiết đơn hàng
@@ -83,7 +88,7 @@ const UserOrderhistorydetail = () => {
         </Link>
 
         <div className="flex gap-5 items-center mr-5">
-          <span>Mã #: {orderDetail?.order_code}</span>|
+          <span>Mã #: <span className="text-blue-500">{orderDetail?.order_code}</span></span>|
           <span
             className={`
               ${orderDetail?.status === "Chờ xử lý" ? "text-orange-500" : ""}
@@ -169,7 +174,7 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
                         <span>{orderDetail.status}</span>
-                        <span>{orderDetail.updated_at}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -236,7 +241,7 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
                         <span>{orderDetail.status}</span>
-                        <span>{orderDetail.updated_at}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -323,7 +328,7 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
                         <span>{orderDetail.status}</span>
-                        <span>{orderDetail.updated_at}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -430,7 +435,7 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
                         <span>{orderDetail.status}</span>
-                        <span>{orderDetail.updated_at}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -497,7 +502,7 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
                         <span>{orderDetail.status}</span>
-                        <span>{orderDetail.updated_at}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -524,7 +529,7 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
                         <span>{orderDetail.status}</span>
-                        <span>{orderDetail.updated_at}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -611,7 +616,7 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box min-w-96">
                         <span>{orderDetail.status}</span>
-                        <span>{orderDetail.updated_at}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
