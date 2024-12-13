@@ -6,36 +6,14 @@ import { FaPhoneVolume } from "react-icons/fa6";
 import { TbTruckReturn } from "react-icons/tb";
 import { GrAnnounce } from "react-icons/gr";
 import { AiOutlineBank } from "react-icons/ai";
-import { Product } from "../../interfaces/Product";
+import { Product, Rate } from "../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { GrNext } from "react-icons/gr";
-import Slider from "react-slick";
+
 
 const Detail = () => {
-  const PrevArrow = (props: any) => {
-    const { className, onClick } = props;
-    return (
-      <button
-        className={`${className} z-10 left-[20px] text-white bg-black hover:bg-black transition-colors duration-200 rounded-full w-10 h-10 flex items-center justify-center`}
-        onClick={onClick}
-      >
-        &lt;
-      </button>
-    );
-  };
 
-  const NextArrow = (props: any) => {
-    const { className, onClick } = props;
-    return (
-      <button
-        className={`${className} z-10 right-[20px] text-white bg-black hover:bg-black transition-colors duration-200 rounded-full w-10 h-10 flex items-center justify-center`}
-        onClick={onClick}
-      >
-        &gt;
-      </button>
-    );
-  };
 
   const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
 
@@ -57,6 +35,11 @@ const Detail = () => {
   const token = localStorage.getItem("access_token");
   const [activeTab, setActiveTab] = useState(0);
   const [quantity, setQuantity] = useState(1); // Bắt đầu với số lượng 1
+  const [ratings, setRatings] = useState<Rate[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [averageRate, setAverageRate] = useState(0);
 
   const handleIncrease = () => {
     setQuantity((prev) => prev + 1); // Tăng số lượng
@@ -81,35 +64,6 @@ const Detail = () => {
       setQuantity(stock);
       return;
     }
-  };
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 4, // Số sản phẩm hiển thị trên một slide
-    slidesToScroll: 1,
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-    ],
   };
   // Hàm lấy thông tin sản phẩm
   const fetchProduct = async (productId: string) => {
@@ -228,6 +182,28 @@ const Detail = () => {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
     }
   };
+
+  // đánh giá 
+  useEffect(() => {
+    const fetchRatings = async (productID: string) => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/client/products/${productID}`
+        );
+        console.log(response.data)
+        setRatings(response.data.rates);
+        setAverageRate(response.data.averageRates);
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        console.error("Lỗi khi tải đánh giá:", err);
+      }
+    };
+  
+    if (id) { 
+      fetchRatings(id);
+    }
+  }, [id]);
 
   useEffect(() => {
     let slideshowInterval: NodeJS.Timeout;
@@ -370,7 +346,6 @@ const Detail = () => {
                 <span>890 lượt thích</span>
               </div>
             </div>
-
             <div className="flex items-center gap-3 mt-4">
               <span className="text-red-600 text-3xl font-semibold">
                 {selectedVariantPrice
@@ -593,7 +568,7 @@ const Detail = () => {
               activeTab === 1 ? "bg-white" : "text-gray-600"
             }`}
           >
-            Bình luận
+            Đánh giá
           </button>
         </div>
         <hr className="border-t-2 border-gray-400" />
@@ -637,7 +612,53 @@ const Detail = () => {
               </div>
             </div>
           )}
-          {activeTab === 1 && <div>Chưa có bình luận !</div>}
+          {activeTab === 1 && (
+            <div className="ratings-container">
+            {ratings.length > 0 ? (
+              <ul className="rating-list">
+                {ratings.map((rating) => (
+                  <li key={rating.id} className="rating-item">
+                    <div className="user-info flex items-center gap-3">
+                      <img
+                        src={rating.user.avatar}
+                        alt={`${rating.user.name}'s avatar`}
+                        className="user-avatar w-14 h-14 rounded-full mb-4 object-cover"
+                      />
+                      <div>
+                        <strong>{rating.user.name}</strong>
+                        <p className="rating-date">
+                          {new Date(rating.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="rating-content mb-3">
+                      <div className="flex">
+                        <h2 className="font-semibold">Sản phẩm :{""} </h2>
+                        <p>{rating.product.name}</p>
+                      </div>
+                      <div className="rating-stars">
+                        {Array.from({ length: 5 }, (_, index) => (
+                          <span
+                          key={index}
+                          className={`star text-yellow-500 w-6 h-6 text-xl ${index < rating.star ? "filled" : ""}`}
+                        >
+                          ★
+                        </span>
+                        
+                        ))}
+                      </div>
+                      <p>Nội dung đánh giá: {rating.content}</p>
+                    </div>
+                    <hr className="mb-3"/>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Chưa có đánh giá nào .</p>
+            )}
+          </div>
+          
+          )}
         </div>
       </div>
       <div className="">

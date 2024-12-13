@@ -53,8 +53,8 @@ class OrderController extends Controller
                     'Đã xác nhận' => ['Đang vận chuyển'],
                     'Đang vận chuyển' => ['Đã giao hàng'],
                     'Đã giao hàng' => ['Hoàn thành'],
-                    'Yêu cầu trả hàng' => ['Xử lý yêu cầu trả hàng'],
-                    'Xử lý yêu cầu trả hàng' => ['Trả hàng', 'Từ chối trả hàng'],
+                    'Yêu cầu trả hàng' => ['Xử lý yêu cầu trả hàng', 'Từ chối trả hàng'],
+                    'Xử lý yêu cầu trả hàng' => ['Trả hàng'],
                     'Trả hàng' => ['Đã hủy'],
                     'Từ chối trả hàng' => ['Hoàn thành'],
                     'Hoàn thành' => [],
@@ -86,7 +86,7 @@ class OrderController extends Controller
                     throw new \Exception('Không thể thay đổi trạng thái lùi hoặc không hợp lệ!');
                 }
 
-                if ($request->only('status') == 'Đã giao hàng') {
+                if ($request['status'] == 'Đã giao hàng') {
                     $order->update([
                         'status' => $request['status'],
                         'status_payment' => 'Đã thanh toán',

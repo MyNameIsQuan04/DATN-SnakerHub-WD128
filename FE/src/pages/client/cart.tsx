@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { CartItem } from "../../interfaces/Cart";
@@ -253,7 +254,7 @@ const Cart = () => {
   }
 
   return (
-    <section className="py-6 relative mt-16">
+    <section className="py-6 relative mt-24">
       <div className="w-full max-w-5xl px-3 md:px-4 lg:px-5 mx-auto">
         <h2 className="title font-manrope font-bold text-2xl leading-7 mb-4 text-center text-black">
           Giỏ hàng
@@ -449,7 +450,7 @@ const Cart = () => {
           </button>
         </div>
       </div>
-      <ToastContainer className={`mt-[30px]`} />
+      <ToastContainer className={`mt-[80px]`} />
     </section>
   );
 };

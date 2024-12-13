@@ -168,9 +168,10 @@ const AdminOrder = () => {
                     <td className="py-3 px-4 border-b text-center text-blue-500">
                       #{item.order_code}
                     </td>
-                    <td className="py-3 px-4 border-b text-center flex flex-wrap">
+                    <td className="py-3 px-4 border-b text-center flex flex-col">
                       <p className="text-red-500">{item.customer.name}</p>
-                      {item.customer.phone_number}, {item.customer.address}
+                      <p>{item.customer.phone_number}</p>
+                      {/* , {item.customer.address} */}
                     </td>
                     <td className="py-3 px-4 border-b text-center text-red-500 font-medium">
                       {item.totalAfterDiscount.toLocaleString()} VNĐ
