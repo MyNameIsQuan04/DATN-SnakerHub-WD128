@@ -10,8 +10,6 @@ use App\Http\Controllers\api\SizeApiController;
 use App\Http\Controllers\api\UserApiController;
 use App\Http\Controllers\api\VoucherController;
 use App\Http\Controllers\Client\CartController;
-use App\Http\Controllers\Client\ColorController;
-use App\Http\Controllers\Client\SizeController;
 use App\Http\Controllers\Client\VoucherController as ClientVoucherController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ColorApiController;
@@ -21,6 +19,8 @@ use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\CategoryControlller as ClientCategoryControlller;
+use App\Http\Controllers\Client\ColorController;
+use App\Http\Controllers\Client\SizeController;
 
 /*
 |--------------------------------------------------------------------------

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Size;
-class SizeApiController extends Controller
+class SizeController extends Controller
 {
     /**
      * Display a listing of the resource.
