@@ -32,6 +32,10 @@ class ProductController extends Controller
 
         $rates = Comment::where('product_id', $product['id'])->get()
             ->load('user', 'product');
+        
+        $countRates = Comment::where('product_id', $product['id'])->count();
+
+        $countSell = Product::where('id', $product['id'])->value('sell_count');
 
         $averageRates = $rates->average('star');
 
@@ -40,6 +44,8 @@ class ProductController extends Controller
             'message' => 'thành công!',
             'product' => $product,
             'rates' => $rates,
+            'countRates' => $countRates,
+            'countSell' => $countSell,
             'averageRates' => $averageRates,
         ], 201);
     }
