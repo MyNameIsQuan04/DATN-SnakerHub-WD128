@@ -10,6 +10,7 @@ use App\Http\Controllers\api\SizeApiController;
 use App\Http\Controllers\api\UserApiController;
 use App\Http\Controllers\api\VoucherController;
 use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\VoucherController as ClientVoucherController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ColorApiController;
 use App\Http\Controllers\api\DashboardController;
@@ -18,6 +19,8 @@ use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\CategoryControlller as ClientCategoryControlller;
+use App\Http\Controllers\Client\ColorController;
+use App\Http\Controllers\Client\SizeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,9 +39,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 Route::apiResource('sizes', SizeApiController::class);
 Route::apiResource('colors', ColorApiController::class);
 Route::apiResource('users', UserApiController::class);
+// Route::apiResource('vouchers', VoucherController::class);
+});
 
 $crud = [
     'categories' => CategoryController::class,
@@ -144,5 +150,14 @@ Route::get('/search', [ClientProductController::class, 'search']);
 
 Route::post('/rate', [CommentController::class, 'store']);
 
-Route::post('/vnpay-payment', [ApiMemberOrderController::class, 'vnpayPayment'])->name('api.vnpay.payment')->middleware('auth:api');
-Route::get('/vnpay-return', [ApiMemberOrderController::class, 'vnpayReturn'])->middleware('auth:api');
+Route::post('/vnpay-payment', [ApiMemberOrderController::class, 'vnpayPayment'])->name('api.vnpay.payment');
+Route::get('/vnpay-return', [ApiMemberOrderController::class, 'vnpayReturn']);
+
+Route::prefix('client')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('colors', [ColorController::class, 'index']);
+    Route::get('colors/{id}', [ColorController::class, 'show']);
+    Route::get('sizes', [SizeController::class, 'index']);
+    Route::get('sizes/{id}', [SizeController::class, 'show']);
+    Route::get('vouchers', [ClientVoucherController::class, 'index']);
+    Route::get('vouchers/{id}', [ClientVoucherController::class, 'show']);
+});

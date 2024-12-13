@@ -86,7 +86,7 @@ class OrderController extends Controller
                 'codeDiscount' => $validatedData['codeDiscount'],
                 'shippingFee' => $validatedData['shippingFee'],
                 'paymentMethod' => $validatedData['paymentMethod'] == 1 ? "COD" : "VNPAY",
-                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0)+$validatedData['shippingFee'],
+                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0) + $validatedData['shippingFee'],
             ]);
 
             foreach ($validatedData['items'] as $item) {
@@ -107,11 +107,15 @@ class OrderController extends Controller
                 ];
 
                 $cart = Cart::where('user_id', $userId)->first();
-                if (isset($cart)) {
-                    foreach ($cart->cart_Items as $item) {
-                        Cart_Item::where('cart_id', $cart->id)
-                            ->where('product__variant_id', $item['product__variant_id'])
-                            ->forceDelete();
+
+                if ($cart) {
+                    foreach ($validatedData['items'] as $newItem) {
+                        $existingItem = $cart->cart_Items->firstWhere('product__variant_id', $newItem['product__variant_id']);
+                        if ($existingItem) {
+                            Cart_Item::where('cart_id', $cart->id)
+                                ->where('product__variant_id', $newItem['product__variant_id'])
+                                ->forceDelete();
+                        }
                     }
                 }
 
@@ -283,7 +287,7 @@ class OrderController extends Controller
                 'codeDiscount' => $validatedData['codeDiscount'],
                 'shippingFee' => $validatedData['shippingFee'],
                 'paymentMethod' => $validatedData['paymentMethod'] == 1 ? "COD" : "VNPAY",
-                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0)+$validatedData['shippingFee'],
+                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0) + $validatedData['shippingFee'],
             ]);
 
             foreach ($validatedData['items'] as $item) {
