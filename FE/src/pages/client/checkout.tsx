@@ -52,7 +52,6 @@ const Checkout = () => {
         const items = response.data.cart.cart__items.filter((item: CartItem) =>
           selectedItems.includes(item.id)
         );
-
         setCheckoutItems(items);
         setCartItems(items);
       }
@@ -79,7 +78,7 @@ const Checkout = () => {
       return;
     }
     const total_price = checkoutItems.reduce(
-      (sum, item) => sum + (item.product_variant.price * item.quantity),
+      (sum, item) => sum + item.product_variant.price * item.quantity,
       0
     );
     try {
@@ -112,7 +111,7 @@ const Checkout = () => {
 
   const totalPriceItem = (price: number, quantity: number) => price * quantity;
   const grandTotalPrice = checkoutItems.reduce(
-    (total, item) => total + (item.product_variant.price * item.quantity),
+    (total, item) => total + item.product_variant.price * item.quantity,
     0
   );
   const handlePaymentChange = (event: any) => {
@@ -129,10 +128,12 @@ const Checkout = () => {
 
     const orderData = {
       ...data,
+
       province: selectedProvince?.name,
       district: selectedDistrict?.name,
       town: selectedWard?.name,
       items: cartItems.map((item) => ({
+        item_id: item.id,
         product__variant_id: item.product_variant.id,
         quantity: item.quantity,
         price: item.product_variant.price,
