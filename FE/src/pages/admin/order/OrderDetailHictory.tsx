@@ -30,12 +30,8 @@ const OrderDetailHictory = () => {
     const formattedDate = date.toLocaleDateString("vi-VN", optionsDate); // Chỉ ngày
     const formattedTime = date.toLocaleTimeString("vi-VN", optionsTime); // Chỉ giờ
 
-    return `${formattedDate} ${formattedTime}`; 
+    return `${formattedDate} ${formattedTime}`;
   };
-
-  useEffect(() => {
-    fetchOrderDetail();
-  }, [id]);
 
   const fetchOrderDetail = async () => {
     try {
@@ -43,7 +39,7 @@ const OrderDetailHictory = () => {
         `http://localhost:8000/api/orders/${id}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`, 
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -56,17 +52,30 @@ const OrderDetailHictory = () => {
     }
   };
 
-  
   const handleUpdateStatus = async (newStatus: string) => {
     if (order?.status === newStatus) {
       toast.info("Trạng thái này đã được cập nhật.");
       return;
     }
   
+    // Kiểm tra nếu trạng thái hiện tại là "Đã giao hàng" và thời gian đã trôi qua ít hơn 5 ngày
+    if (order?.status === "Đã giao hàng" && newStatus === "Hoàn thành") {
+      const timeElapsed = new Date().getTime() - new Date(order.updated_at).getTime();
+      // 5 ngày tính bằng giây
+      const fiveDaysInMilliseconds = 3 * 24 * 60 * 60 * 1000; 
+  
+      if (timeElapsed < fiveDaysInMilliseconds) {
+        toast.warn("Chỉ có thể cập nhật thành 'Hoàn thành' sau 3 ngày kể từ khi đã giao đơn hàng.");
+        return;
+      }
+    }
+  
     try {
       const updateData = {
         status: newStatus,
-        ...(newStatus === "Đã giao hàng" && { status_payment: "Đã thanh toán" }),
+        ...(newStatus === "Đã giao hàng" && {
+          status_payment: "Đã thanh toán",
+        }),
       };
   
       const { status } = await axios.put(
@@ -84,8 +93,73 @@ const OrderDetailHictory = () => {
     }
   };
   
-  
-  
+  const handleDeleteRequest = async (orderId: number) => {
+    try {
+      await axios.patch(
+        `http://localhost:8000/api/orders/${orderId}`,
+        {
+          status: "Đã giao hàng",
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setOrder((prevOrder) =>
+        prevOrder ? { ...prevOrder, status: "Đã giao hàng" } : null
+      );
+      toast.success("Hủy yêu cầu thành công!");
+      fetchOrderDetail();
+    } catch (error) {
+      console.error("Lỗi khi xác nhận hủy yêu cầu:", error);
+      toast.error("Xác nhận hủy yêu cầu thất bại. Vui lòng thử lại.");
+    }
+  };
+  const handleConfirmRequest = async (orderId: number) => {
+    try {
+      await axios.patch(
+        `http://localhost:8000/api/orders/${orderId}`,
+        {
+          status: "Xử lý yêu cầu trả hàng",
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setOrder((prevOrder) =>
+        prevOrder ? { ...prevOrder, status: "Xử lý yêu cầu trả hàng" } : null
+      );
+      toast.success("Xác nhận trả hàng thành công");
+      fetchOrderDetail();
+    } catch (error) {
+      console.error("Lỗi khi xác nhận trả hàng:", error);
+      toast.error("Xác nhận trả hàng thất bại. Vui lòng thử lại.");
+    }
+  };
+
+  const UpdateRequest = async (orderId: number, newStatus: string) => {
+    try {
+      await axios.patch(
+        `http://localhost:8000/api/orders/${orderId}`,
+        {
+          status: newStatus, // Truyền trạng thái mới từ tham số vào
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Cập nhật trạng thái mới cho order
+      setOrder((prevOrder) =>
+        prevOrder && prevOrder.id === orderId
+          ? { ...prevOrder, status: newStatus }
+          : prevOrder
+      );
+      toast.success("Cập nhật trạng thái đơn hàng thành công");
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái:", error);
+      toast.error("Cập nhật trạng thái thất bại. Vui lòng thử lại.");
+    }
+  };
+
+  useEffect(() => {
+    fetchOrderDetail();
+  }, [id]);
 
   if (loading) {
     return (
@@ -150,7 +224,9 @@ const OrderDetailHictory = () => {
                   <strong>Số lượng:</strong> {item.quantity}
                 </p>
                 <p>
-                  <strong>Màu sắc:</strong> {item.product_variant?.color?.name || "Không có thông tin màu sắc"}
+                  <strong>Màu sắc:</strong>{" "}
+                  {item.product_variant?.color?.name ||
+                    "Không có thông tin màu sắc"}
                 </p>
                 <p>
                   <strong>Kích cỡ:</strong>{" "}
@@ -245,40 +321,87 @@ const OrderDetailHictory = () => {
               <span className="text-red-500 ">{order.status_payment}</span>
             </p>
           </div>
-          {order.status !== "Hoàn thành" && (
-            <div className="mt-4 flex items-center gap-2 ml-9">
-              <h3 className="text-lg font-medium">Cập nhật trạng thái: </h3>
-              <select
-                value={order.status}
-                onChange={(e) => handleUpdateStatus(e.target.value)}
-                className={`
-                  border px-4 py-2 rounded-md mt-2
-                  ${
-                    order.status === "Chờ xử lý" ||
-                    order.status === "Đã xác nhận"
-                      ? "border-yellow-500 text-yellow-500"
-                      : order.status === "Đang vận chuyển"
-                      ? "border-yellow-500 text-yellow-500"
-                      : order.status === "Hoàn thành" ||
-                        order.status === "Đã giao hàng"
-                      ? "border-green-500 text-green-500"
-                      : order.status === "Trả hàng"
-                      ? "border-orange-500 text-orange-500"
-                      : order.status === "Đã hủy"
-                      ? "border-red-500 text-red-500"
-                      : ""
-                  }`}
-              >
-                <option value="Chờ xử lý">Chờ xử lý</option>
-                <option value="Đã xác nhận">Đã xác nhận</option>
-                <option value="Đang vận chuyển">Đang vận chuyển</option>
-                <option value="Đã giao hàng">Đã giao hàng</option>
-                <option value="Hoàn thành">Hoàn thành</option>
-                <option value="Đã hủy">Đã hủy</option>
-                <option value="Trả hàng">Trả hàng</option>
-              </select>
+          {order.status === "Yêu cầu trả hàng" && (
+            <div className="py-6 px-6 border-b bg-gray-50 w- ">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-lg font-semibold text-gray-800 mb-2">
+                    Yêu cầu trả hàng:
+                  </h1>
+                  <h2 className="text-sm text-gray-600">- {order.note}</h2>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    className="px-4 py-2 rounded-md border text-sm bg-white text-gray-500 border-gray-500 hover:bg-gray-300 transition duration-200"
+                    onClick={() => handleDeleteRequest(order.id)}
+                  >
+                    Hủy yêu cầu
+                  </button>
+                  <button
+                    className="px-4 py-2 rounded-md border text-sm bg-gray-500 text-white border-gray-500 hover:bg-gray-600 transition duration-200"
+                    onClick={() => handleConfirmRequest(order.id)}
+                  >
+                    Xác nhận yêu cầu
+                  </button>
+                </div>
+              </div>
             </div>
           )}
+
+          {order.status === "Xử lý yêu cầu trả hàng" && (
+            <div className="py-6 px-6 border-b bg-white">
+              <div className="flex items-center gap-3">
+                <div>
+                  <h1 className="text-lg font-medium text-gray-800 mb-2">
+                    Cập nhật trạng thái:
+                  </h1>
+                </div>
+                <div>
+                  <select
+                    className="px-4 py-2 rounded-md border text-sm bg-white text-yellow-500 border-yellow-500 focus:ring-yellow-500 focus:border-yellow-500 shadow-md transition duration-200"
+                    onChange={(e) => UpdateRequest(order.id, e.target.value)}
+                    value={order.status}
+                  >
+                    <option value="Xử lý yêu cầu trả hàng">
+                      Xử lý yêu cầu trả hàng
+                    </option>
+                    <option value="Trả hàng">Trả hàng</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {order.status !== "Hoàn thành" &&
+            order.status !== "Yêu cầu trả hàng" &&
+            order.status !== "Xử lý yêu cầu trả hàng" && (
+              <div className="mt-4 flex items-center gap-4">
+                <h3 className="text-lg font-medium">Cập nhật trạng thái:</h3>
+                <select
+                  value={order.status}
+                  onChange={(e) => handleUpdateStatus(e.target.value)}
+                  className={`border px-4 py-2 rounded-md transition duration-300 ${
+                    {
+                      "Chờ xử lý": "border-yellow-500 text-yellow-500",
+                      "Đã xác nhận": "border-yellow-500 text-yellow-500",
+                      "Đang vận chuyển": "border-yellow-500 text-yellow-500",
+                      "Hoàn thành": "border-green-500 text-green-500",
+                      "Đã giao hàng": "border-green-500 text-green-500",
+                      "Trả hàng": "border-orange-500 text-orange-500",
+                      "Đã hủy": "border-red-500 text-red-500",
+                    }[order.status] || "border-gray-500 text-gray-500"
+                  }`}
+                >
+                  <option value="Chờ xử lý">Chờ xử lý</option>
+                  <option value="Đã xác nhận">Đã xác nhận</option>
+                  <option value="Đang vận chuyển">Đang vận chuyển</option>
+                  <option value="Đã giao hàng">Đã giao hàng</option>
+                  <option value="Hoàn thành">Hoàn thành</option>
+                  <option value="Đã hủy">Đã hủy</option>
+                  <option value="Trả hàng">Trả hàng</option>
+                </select>
+              </div>
+            )}
         </div>
       </div>
 
@@ -302,7 +425,10 @@ const OrderDetailHictory = () => {
               </p>
             </div>
             <div className="flex justify-between">
-              <p className="text-gray-600">Mã giảm giá:</p>
+              <div className="flex gap-1">
+                <p className="text-gray-600">Mã giảm giá:</p>
+                <p className="text-blue-600">{order.codeDiscount}</p>
+              </div>
               <p className="text-yellow-600 font-semibold">
                 - {order.discount.toLocaleString()} VNĐ
               </p>
