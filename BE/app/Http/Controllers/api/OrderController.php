@@ -33,7 +33,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load('customer.user', 'orderItems.productVariant.product');
+        $order->load('customer.user', 'orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color');
         return $order;
     }
 

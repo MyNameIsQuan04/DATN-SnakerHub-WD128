@@ -195,6 +195,16 @@ class OrderController extends Controller
                 ]);
                 $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
                 return $order;
+            } else if ($order['status'] === 'Yêu cầu trả hàng') {
+                $dataValidate = $request->validate([
+                    'status' => 'required|in:Hoàn thành',
+                ]);
+                $order->update([
+                    'status' => $dataValidate['status'],
+                    'note' => 'Không',
+                ]);
+                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                return $order;
             } else {
                 return response()->json([
                     'success' => false,
