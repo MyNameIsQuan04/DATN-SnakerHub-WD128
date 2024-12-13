@@ -130,6 +130,7 @@ Route::get('/voucher/{id}', [VoucherController::class, 'show']);
 
 //lọc sản phẩm
 Route::get('/filter', [ClientProductController::class, 'filterProducts']);
+Route::get('/products/category/{id}', [ClientProductController::class, 'filterByCategory']);
 
 Route::prefix('slides')->group(function () {
     Route::get('/', [SlideController::class, 'index']);  // Lấy danh sách slide

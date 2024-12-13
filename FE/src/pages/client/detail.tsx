@@ -117,31 +117,32 @@ const Detail = () => {
       const response = await axios.get<Product>(
         `http://localhost:8000/api/client/products/${productId}`
       );
-
       setProduct(response.data.product);
+      const product = response.data.product;
+      fetchRelatedProducts(product.category.id as number, productId);
     } catch (error) {
       console.error("Lỗi khi lấy thông tin sản phẩm:", error);
     }
   };
-  // const fetchRelatedProducts = async (
-  //   categoryId: number,
-  //   currentProductId: number
-  // ) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `http://localhost:8000/api/products/category/${categoryId}`
-  //     );
-  //     const products = response.data.products;
-  //     console.log(products);
-  //     const relatedProducts = products.filter(
-  //       (product: Product) => product.id !== Number(currentProductId)
-  //     );
-  //     setRelatedProducts(relatedProducts);
-  //     console.log(relatedProducts);
-  //   } catch (error) {
-  //     console.error("Lỗi khi lấy sản phẩm liên quan:", error);
-  //   }
-  // };
+  const fetchRelatedProducts = async (
+    categoryId: number,
+    currentProductId: number
+  ) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/products/category/${categoryId}`
+      );
+      const products = response.data.products;
+      console.log(products);
+      const relatedProducts = products.filter(
+        (product: Product) => product.id !== Number(currentProductId)
+      );
+      setRelatedProducts(relatedProducts);
+      console.log(relatedProducts);
+    } catch (error) {
+      console.error("Lỗi khi lấy sản phẩm liên quan:", error);
+    }
+  };
   useEffect(() => {
     if (id) {
       fetchProduct(id);
@@ -644,11 +645,14 @@ const Detail = () => {
           Sản phẩm liên quan
         </p>
         <div className="px-[40px]">
-          <Slider {...settings} className="custom-slider">
+          <div className="grid grid-cols-4 gap-[20px]">
             {relatedProducts.map((product: Product) => (
-              <div key={product.id} className="gap-[10px]">
+              <div
+                key={product.id}
+                className="relative border border-gray-200 hover:border-gray-400 transition duration-300"
+              >
                 <Link to={`/detail/${product.id}`}>
-                  <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
+                  <div>
                     <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1">
                       HOT
                     </div>
@@ -680,7 +684,7 @@ const Detail = () => {
                 </Link>
               </div>
             ))}
-          </Slider>
+          </div>
         </div>
       </div>
       <ToastContainer className="mt-[80px]" />

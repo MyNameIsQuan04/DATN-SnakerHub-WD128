@@ -19,7 +19,7 @@ const LayoutAdmin = () => {
     <>
       <div className="flex min-h-screen bg-gray-100">
         {/* Sidebar cố định */}
-        <div className="fixed top-0 left-0 w-1/6 h-full bg-gray-500 text-white flex flex-col">
+        <div className="fixed top-0 left-0 w-1/6 h-full bg-gray-800 text-white flex flex-col">
           <div className="p-6 flex flex-col items-center">
             {/* Avatar Admin */}
             <img

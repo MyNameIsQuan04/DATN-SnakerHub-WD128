@@ -80,16 +80,6 @@ const Home = () => {
   };
 
   // Get Categories
-  const [categories, setCategories] = useState<Category[]>([]);
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const res = await axios.get(
-        "http://localhost:8000/api/client/categories"
-      );
-      setCategories(res.data);
-    };
-    fetchCategories();
-  }, []);
 
   return (
     <div className="">

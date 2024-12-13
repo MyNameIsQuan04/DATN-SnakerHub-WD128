@@ -48,8 +48,43 @@ import UserOrderhistorydetail from "./pages/client/User/UserOrderhistorydetail";
 import OrderReturn from "./pages/admin/order/OrderReturn";
 import PaymentResult from "./pages/client/paymentResult";
 import OrderDetailHictory from "./pages/admin/order/OrderDetailHictory";
+import { useEffect } from "react";
 
 function App() {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  useEffect(() => {
+    // Tạo script cho Tawk.to
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://embed.tawk.to/6758ff5549e2fd8dfef61749/1iepqaq7i";
+    script.charset = "UTF-8";
+    script.setAttribute("crossorigin", "*");
+    document.body.appendChild(script);
+    // Thiết lập thông tin người dùng
+    script.onload = () => {
+      if (window.Tawk_API) {
+        // Kết thúc cuộc trò chuyện hiện tại
+        window.Tawk_API.endChat();
+
+        // Sau đó, gắn thông tin người dùng mới
+        if (user && user.name && user.email && user.id) {
+          window.Tawk_API.setAttributes({
+            name: user.name, // Tên khách hàng
+            email: user.email, // Email khách hàng
+            id: user.id, // ID khách hàng
+          });
+
+          // Bắt đầu cuộc trò chuyện mới
+          window.Tawk_API.startChat();
+        }
+      }
+    };
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, [user]);
   return (
     <>
       <Routes>
@@ -133,7 +168,10 @@ function App() {
           <Route path="/admin/size-edit/:id" element={<UpdateSize />} />
           <Route path="/admin/size-edit/:id" element={<UpdateColor />} />
           <Route path="/admin/order" element={<AdminOrder />} />
-          <Route path="/admin/order-detail/:id" element={<OrderDetailHictory/>}/>
+          <Route
+            path="/admin/order-detail/:id"
+            element={<OrderDetailHictory />}
+          />
           <Route path="/admin/order-return" element={<OrderReturn />} />
           <Route path="/admin/user" element={<ListUser />} />
           <Route path="/admin/vouchers" element={<ListVoucher />} />
