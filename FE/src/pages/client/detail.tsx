@@ -263,7 +263,7 @@ const Detail = () => {
     (variant: any) => variant.stock === 0
   );
   return (
-    <div className="mt-[80px]">
+    <div className="mt-[100px]">
       {/* Thông tin sản phẩm */}
       <div className="container mx-auto mt-[20px] px-16">
         <div className="flex items-center space-x-2 mb-4">

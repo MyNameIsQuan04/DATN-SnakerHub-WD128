@@ -5,7 +5,11 @@ const token = localStorage.getItem("access_token");
 
 export const getSizes = async () => {
   try {
-    const { data } = await api.get("sizes");
+    const { data } = await api.get("sizes" , {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return data;
   } catch (error) {
     console.log(error);

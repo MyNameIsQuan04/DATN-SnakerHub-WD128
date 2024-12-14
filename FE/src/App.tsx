@@ -91,13 +91,10 @@ function App() {
         <Route
           path="/"
           element={
-            <ColorContext>
-              <SizeContext>
+            
                 <OrderContext>
                   <LayoutClient />
                 </OrderContext>
-              </SizeContext>
-            </ColorContext>
           }
         >
           <Route index element={<Home />} />

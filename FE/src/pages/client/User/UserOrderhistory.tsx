@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Order, OrderItem } from "../../../interfaces/Order";
-import axios from "axios";
+import axios, { isCancel } from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
 import { TiTick } from "react-icons/ti";
@@ -157,7 +157,7 @@ const UserOrderHistory = () => {
     try {
       if (isCancel) {
         await axios.put(
-          `http://localhost:8000/api/client/return-order/${idOrder}`,
+          `http://localhost:8000/api/client/orders/${idOrder}`,
           { note: "", status: "Đã giao hàng" },
           {
             headers: {
@@ -169,7 +169,7 @@ const UserOrderHistory = () => {
         setOrders((prev) =>
           prev.map((order) =>
             order.id === idOrder
-              ? { ...order, status: "Đã giao hàng", complaintSent: false }
+              ? { ...order, status: "Đã giao hàng", complaintSent: true }
               : order
           )
         );
