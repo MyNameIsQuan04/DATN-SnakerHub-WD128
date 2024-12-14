@@ -88,7 +88,7 @@ const Detail = () => {
       const relatedProducts = products.filter(
         (product: Product) => product.id !== Number(currentProductId)
       );
-      setRelatedProducts(relatedProducts);
+      setRelatedProducts(relatedProducts.slice(0, 4));
       console.log(relatedProducts);
     } catch (error) {
       console.error("Lỗi khi lấy sản phẩm liên quan:", error);
@@ -97,6 +97,7 @@ const Detail = () => {
   useEffect(() => {
     if (id) {
       fetchProduct(id);
+      window.scrollTo(0, 0);
     }
   }, [id]);
 

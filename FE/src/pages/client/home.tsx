@@ -15,7 +15,7 @@ const Home = () => {
     (async () => {
       const response = await getProductsClients();
       const productsData = response.products || [];
-      setProductsClient(productsData);
+      setProductsClient(productsData.slice(0, 5));
     })();
   }, []);
   useEffect(() => {
