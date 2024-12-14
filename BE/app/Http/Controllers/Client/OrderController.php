@@ -201,7 +201,7 @@ class OrderController extends Controller
                 return $order;
             } else if ($order['status'] === 'Yêu cầu trả hàng') {
                 $dataValidate = $request->validate([
-                    'status' => 'required|in:Hoàn thành',
+                    'status' => 'required|in:Đã giao hàng',
                 ]);
                 $order->update([
                     'status' => $dataValidate['status'],

@@ -39,12 +39,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-Route::apiResource('sizes', SizeApiController::class);
-Route::apiResource('colors', ColorApiController::class);
-Route::apiResource('users', UserApiController::class);
-// Route::apiResource('vouchers', VoucherController::class);
-});
+
+Route::apiResource('sizes', SizeApiController::class)->middleware('auth:api')->middleware('type:admin');
+Route::apiResource('colors', ColorApiController::class)->middleware('auth:api')->middleware('type:admin');
+Route::apiResource('users', UserApiController::class)->middleware('auth:api')->middleware('type:admin');
 
 $crud = [
     'categories' => CategoryController::class,
@@ -153,7 +151,7 @@ Route::post('/rate', [CommentController::class, 'store']);
 Route::post('/vnpay-payment', [ApiMemberOrderController::class, 'vnpayPayment'])->name('api.vnpay.payment');
 Route::get('/vnpay-return', [ApiMemberOrderController::class, 'vnpayReturn']);
 
-Route::prefix('client')->middleware(['auth:sanctum'])->group(function () {
+Route::prefix('client')->group(function () {
     Route::get('colors', [ColorController::class, 'index']);
     Route::get('colors/{id}', [ColorController::class, 'show']);
     Route::get('sizes', [SizeController::class, 'index']);
