@@ -314,9 +314,15 @@ const UserOrderHistory = () => {
                     <span className="text-blue-500">
                       {"# "} {order.order_code}
                     </span>
-                    <span className="text-orange-400">
+                    {order.status_payment === "Đã thanh toán" ? (
+                      <span className="text-green-400">
+                        {order.status_payment}
+                      </span>
+                    ) : (
+                      <span className="text-orange-400">
                       {order.status_payment}
                     </span>
+                    )}
                   </div>
                   <div className="mr-9 flex flex-col">
                     <span className="font-semibold">Ngày đặt</span>
