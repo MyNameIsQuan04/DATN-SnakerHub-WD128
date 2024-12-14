@@ -11,10 +11,7 @@ import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { GrNext } from "react-icons/gr";
 
-
 const Detail = () => {
-
-
   const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
 
   const openSizeGuideModal = () => setIsSizeGuideModalOpen(true);
@@ -183,14 +180,14 @@ const Detail = () => {
     }
   };
 
-  // đánh giá 
+  // đánh giá
   useEffect(() => {
     const fetchRatings = async (productID: string) => {
       try {
         const response = await axios.get(
           `http://localhost:8000/api/client/products/${productID}`
         );
-        console.log(response.data)
+        console.log(response.data);
         setRatings(response.data.rates);
         setAverageRate(response.data.averageRates);
         setLoading(false);
@@ -199,8 +196,8 @@ const Detail = () => {
         console.error("Lỗi khi tải đánh giá:", err);
       }
     };
-  
-    if (id) { 
+
+    if (id) {
       fetchRatings(id);
     }
   }, [id]);
@@ -614,50 +611,50 @@ const Detail = () => {
           )}
           {activeTab === 1 && (
             <div className="ratings-container">
-            {ratings.length > 0 ? (
-              <ul className="rating-list">
-                {ratings.map((rating) => (
-                  <li key={rating.id} className="rating-item">
-                    <div className="user-info flex items-center gap-3">
-                      <img
-                        src={rating.user.avatar}
-                        alt={`${rating.user.name}'s avatar`}
-                        className="user-avatar w-14 h-14 rounded-full mb-4 object-cover"
-                      />
-                      <div>
-                        <strong>{rating.user.name}</strong>
-                        <p className="rating-date">
-                          {new Date(rating.created_at).toLocaleString()}
-                        </p>
+              {ratings.length > 0 ? (
+                <ul className="rating-list">
+                  {ratings.map((rating) => (
+                    <li key={rating.id} className="rating-item">
+                      <div className="user-info flex items-center gap-3">
+                        <img
+                          src={rating.user.avatar}
+                          alt={`${rating.user.name}'s avatar`}
+                          className="user-avatar w-14 h-14 rounded-full mb-4 object-cover"
+                        />
+                        <div>
+                          <strong>{rating.user.name}</strong>
+                          <p className="rating-date">
+                            {new Date(rating.created_at).toLocaleString()}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="rating-content mb-3">
-                      <div className="flex">
-                        <h2 className="font-semibold">Sản phẩm :{""} </h2>
-                        <p>{rating.product.name}</p>
+                      <div className="rating-content mb-3">
+                        <div className="flex">
+                          <h2 className="font-semibold">Sản phẩm :{""} </h2>
+                          <p>{rating.product.name}</p>
+                        </div>
+                        <div className="rating-stars">
+                          {Array.from({ length: 5 }, (_, index) => (
+                            <span
+                              key={index}
+                              className={`star text-yellow-500 w-6 h-6 text-xl ${
+                                index < rating.star ? "filled" : ""
+                              }`}
+                            >
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                        <p>Nội dung đánh giá: {rating.content}</p>
                       </div>
-                      <div className="rating-stars">
-                        {Array.from({ length: 5 }, (_, index) => (
-                          <span
-                          key={index}
-                          className={`star text-yellow-500 w-6 h-6 text-xl ${index < rating.star ? "filled" : ""}`}
-                        >
-                          ★
-                        </span>
-                        
-                        ))}
-                      </div>
-                      <p>Nội dung đánh giá: {rating.content}</p>
-                    </div>
-                    <hr className="mb-3"/>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>Chưa có đánh giá nào .</p>
-            )}
-          </div>
-          
+                      <hr className="mb-3" />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Chưa có đánh giá nào .</p>
+              )}
+            </div>
           )}
         </div>
       </div>

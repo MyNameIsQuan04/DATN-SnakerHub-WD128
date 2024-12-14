@@ -1,8 +1,8 @@
 import api from "../../configs/axios";
 
-export const getColors = async () => {
+export const getColorsClient = async () => {
   try {
-    const { data } = await api.get("colors");
+    const { data } = await api.get("client/colors");
     return data;
   } catch (error) {
     console.log(error);
