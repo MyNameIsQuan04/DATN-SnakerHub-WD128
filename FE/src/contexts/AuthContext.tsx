@@ -47,14 +47,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const nav = useNavigate();
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("access_token");
-  //   if (token) {
-  //     const user = JSON.parse(localStorage.getItem("user") || "null");
-  //     setUser(user);
-  //   }
-  // }, []);
-
   const getToken = (): string | null => {
     if (isTokenExpired()) {
       // Xóa token và user nếu token đã hết hạn
@@ -113,27 +105,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = getToken();
     const storedUser = getUser();
 
-    // Kiểm tra xem token và user có hợp lệ không
-    if (token && storedUser) {
-      setUser(storedUser); // Lưu thông tin người dùng vào state
-      setIsLoggedIn(true); // Đánh dấu người dùng đã đăng nhập
-    } else {
-      // Nếu không có token hoặc user, đăng xuất người dùng và điều hướng về login
-      setIsLoggedIn(false);
-      nav("/login");
-    }
-
     // Lấy đường dẫn hiện tại
     const currentPath = window.location.pathname;
 
     // Các đường dẫn không cần kiểm tra token
-    const excludedPaths = ["/forgot-password", "/reset-password"];
+    const excludedPaths = ["/", "/forgot-password", "/reset-password"];
 
     if (token && storedUser) {
-      setUser(storedUser);
-      setIsLoggedIn(true);
+      setUser(storedUser); // Lưu thông tin người dùng vào state
+      setIsLoggedIn(true); // Đánh dấu người dùng đã đăng nhập
     } else if (!excludedPaths.includes(currentPath)) {
-      // Chỉ logout nếu người dùng không nằm trong danh sách các trang loại trừ
+      // Chỉ logout và điều hướng nếu không nằm trong danh sách các trang loại trừ
+      setIsLoggedIn(false);
       logout();
     }
   }, []);
