@@ -635,6 +635,16 @@ const UserOrderHistory = () => {
                     </h1>
                   </div>
                 )}
+                {order.status === "Xử lý yêu cầu trả hàng" && (
+                  <div className="w-1/2 flex items-center gap-2 ">
+                    <div className="border-2 rounded-full border-red-500">
+                      <DatabaseBackup className="text-black w-6 h-6 p-1" />
+                    </div>
+                    <h1>
+                      {order.status} {formatDate(order.updated_at)}
+                    </h1>
+                  </div>
+                )}
                 {order.status === "Trả hàng" && (
                   <div className="w-1/2 flex items-center gap-2 ">
                     <div className="border-2 rounded-full border-black">
