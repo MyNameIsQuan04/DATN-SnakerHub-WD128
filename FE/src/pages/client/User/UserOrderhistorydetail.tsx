@@ -688,9 +688,9 @@ const UserOrderhistorydetail = () => {
               <div className="flex justify-between items-start border-t-2 pt-4">
                 {/* Phần thứ nhất: Khiếu nại, trạng thái đơn hàng, trạng thái thanh toán và phương thức thanh toán */}
                 <div className="w-1/2 pr-6">
-                  {orderDetail.status === "Trả hàng" ? (
+                  {orderDetail.status === "Trả hàng" || orderDetail.status === "Yêu cầu trả hàng" || orderDetail.status === "Xử lý yêu cầu trả hàng" ? (
                     <span className="block mb-2">
-                      <strong>Khiếu nại: </strong>
+                      <strong>Khiếu nại: {""}</strong>
                       {orderDetail.note}
                     </span>
                   ) : (

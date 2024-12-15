@@ -458,7 +458,7 @@ const Checkout = () => {
             </div>
             <hr className="my-4" />
             <div className="flex justify-end text-lg">
-              <span>Thành tiền: </span>
+              <span>Thành tiền: {""}</span>
               <span className="text-red-500">
                 {formatCurrency(grandTotalPrice - discount + shippingFee)}
               </span>
@@ -476,7 +476,7 @@ const Checkout = () => {
                   >
                     <option value={1}>Thanh toán khi nhận hàng</option>
                     <option value={2}>Thanh toán VNPay</option>
-                    <option value={3}>Thanh toán MoMo</option>
+                    {/* <option value={3}>Thanh toán MoMo</option> */}
                   </select>
                 </div>
               </div>
