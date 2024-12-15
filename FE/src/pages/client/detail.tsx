@@ -264,7 +264,7 @@ const Detail = () => {
     (variant: any) => variant.stock === 0
   );
   return (
-    <div className="mt-[80px]">
+    <div className="mt-[100px]">
       {/* Thông tin sản phẩm */}
       <div className="container mx-auto mt-[20px] px-16">
         <div className="flex items-center space-x-2 mb-4">
@@ -638,8 +638,10 @@ const Detail = () => {
                           {Array.from({ length: 5 }, (_, index) => (
                             <span
                               key={index}
-                              className={`star text-yellow-500 w-6 h-6 text-xl ${
-                                index < rating.star ? "filled" : ""
+                              className={` ${
+                                index < rating.star
+                                  ? "star text-yellow-500 w-6 h-6 text-xl filled"
+                                  : "star text-gray-500 w-6 h-6 text-xl filled"
                               }`}
                             >
                               ★

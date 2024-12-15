@@ -16,9 +16,6 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->timestamps();
         });
-        if (!\App\Models\Color::where('name', 'Mặc định')->exists()) {
-            \App\Models\Color::create(['name' => 'Mặc định']);
-        }
     }
 
     /**

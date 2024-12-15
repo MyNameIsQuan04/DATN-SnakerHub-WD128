@@ -30,6 +30,7 @@ import Products from "./pages/client/products";
 // import CartContext from "./contexts/CartContext";
 import OrderContext from "./contexts/OrderContext";
 import ThankYou from "./pages/client/Thankyou";
+// import Contact from "./pages/client/contact";
 import PrivateAdmin from "./pages/PrivateAdmin";
 import ForgotPassword from "./pages/client/forgot-password";
 import Mail from "./pages/client/mail";
@@ -61,24 +62,24 @@ function App() {
     script.setAttribute("crossorigin", "*");
     document.body.appendChild(script);
     // Thiết lập thông tin người dùng
-    script.onload = () => {
-      if (window.Tawk_API) {
-        // Kết thúc cuộc trò chuyện hiện tại
-        window.Tawk_API.endChat();
+    // script.onload = () => {
+    //   if (window.Tawk_API) {
+    //     // Kết thúc cuộc trò chuyện hiện tại
+    //     window.Tawk_API.endChat();
 
-        // Sau đó, gắn thông tin người dùng mới
-        if (user && user.name && user.email && user.id) {
-          window.Tawk_API.setAttributes({
-            name: user.name, // Tên khách hàng
-            email: user.email, // Email khách hàng
-            id: user.id, // ID khách hàng
-          });
+    //     // Sau đó, gắn thông tin người dùng mới
+    //     if (user && user.name && user.email && user.id) {
+    //       window.Tawk_API.setAttributes({
+    //         name: user.name, // Tên khách hàng
+    //         email: user.email, // Email khách hàng
+    //         id: user.id, // ID khách hàng
+    //       });
 
-          // Bắt đầu cuộc trò chuyện mới
-          window.Tawk_API.startChat();
-        }
-      }
-    };
+    //       // Bắt đầu cuộc trò chuyện mới
+    //       window.Tawk_API.startChat();
+    //     }
+    //   }
+    // };
 
     return () => {
       document.body.removeChild(script);
@@ -90,9 +91,10 @@ function App() {
         <Route
           path="/"
           element={
-            <OrderContext>
-              <LayoutClient />
-            </OrderContext>
+            
+                <OrderContext>
+                  <LayoutClient />
+                </OrderContext>
           }
         >
           <Route index element={<Home />} />
@@ -100,6 +102,7 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/cart" element={<Cart />} />
+          {/* <Route path="/contact" element={<Contact />} /> */}
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />
           <Route path="/paymentresult" element={<PaymentResult />} />

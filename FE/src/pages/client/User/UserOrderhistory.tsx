@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Order, OrderItem } from "../../../interfaces/Order";
-import axios from "axios";
+import axios, { isCancel } from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
 import { TiTick } from "react-icons/ti";
@@ -157,7 +157,7 @@ const UserOrderHistory = () => {
     try {
       if (isCancel) {
         await axios.put(
-          `http://localhost:8000/api/client/return-order/${idOrder}`,
+          `http://localhost:8000/api/client/orders/${idOrder}`,
           { note: "", status: "Đã giao hàng" },
           {
             headers: {
@@ -169,7 +169,7 @@ const UserOrderHistory = () => {
         setOrders((prev) =>
           prev.map((order) =>
             order.id === idOrder
-              ? { ...order, status: "Đã giao hàng", complaintSent: false }
+              ? { ...order, status: "Đã giao hàng", complaintSent: true }
               : order
           )
         );
@@ -314,9 +314,15 @@ const UserOrderHistory = () => {
                     <span className="text-blue-500">
                       {"# "} {order.order_code}
                     </span>
-                    <span className="text-orange-400">
+                    {order.status_payment === "Đã thanh toán" ? (
+                      <span className="text-green-400">
+                        {order.status_payment}
+                      </span>
+                    ) : (
+                      <span className="text-orange-400">
                       {order.status_payment}
                     </span>
+                    )}
                   </div>
                   <div className="mr-9 flex flex-col">
                     <span className="font-semibold">Ngày đặt</span>
@@ -628,6 +634,16 @@ const UserOrderHistory = () => {
                 {order.status === "Yêu cầu trả hàng" && (
                   <div className="w-1/2 flex items-center gap-2 ">
                     <div className="border-2 rounded-full border-black">
+                      <DatabaseBackup className="text-black w-6 h-6 p-1" />
+                    </div>
+                    <h1>
+                      {order.status} {formatDate(order.updated_at)}
+                    </h1>
+                  </div>
+                )}
+                {order.status === "Xử lý yêu cầu trả hàng" && (
+                  <div className="w-1/2 flex items-center gap-2 ">
+                    <div className="border-2 rounded-full border-red-500">
                       <DatabaseBackup className="text-black w-6 h-6 p-1" />
                     </div>
                     <h1>

@@ -724,9 +724,15 @@ const UserOrderhistorydetail = () => {
                   </div>
                   <div className="flex gap-2 mb-2">
                     <h1 className="font-medium">Trạng thái thanh toán:</h1>
-                    <h1 className="text-orange-400 font-semibold">
+                    {orderDetail.status_payment === "Đã thanh toán" ? (
+                      <h1 className="text-green-400 font-semibold">
                       {orderDetail.status_payment}
                     </h1>
+                    ) : (
+                      <h1 className="text-orange-400 font-semibold">
+                      {orderDetail.status_payment}
+                    </h1>
+                    )}
                   </div>
 
                   <div className="flex gap-2 mb-2 items-center mb-4">

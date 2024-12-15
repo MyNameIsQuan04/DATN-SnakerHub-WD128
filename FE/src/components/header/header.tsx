@@ -1,13 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoLogOutOutline } from "react-icons/io5";
 // import axios from "axios";
 import api from "../../configs/axios";
 import { Category } from "../../interfaces/Category";
 import { GetCategoriesClient } from "../../services/client/category";
 import axios from "axios";
-
+import { CartItem } from "../../interfaces/Cart";
+import { IoCartOutline } from "react-icons/io5";
 const Header = () => {
   const [categoriesClient, setCategoriesClient] = useState<Category[]>([]);
   useEffect(() => {
@@ -19,6 +20,43 @@ const Header = () => {
   }, []);
   const { user, isLoggedIn, logout } = useAuth();
   const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  // Lưu trữ các sản phẩm trong giỏ hàng
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  // Lấy dữ liệu giỏ hàng từ API khi component mount
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      fetch("http://localhost:8000/api/list", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Gửi token trong header Authorization
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (
+            data.success &&
+            data.cart &&
+            Array.isArray(data.cart.cart__items)
+          ) {
+            // Nếu dữ liệu hợp lệ, cập nhật giỏ hàng
+            setCartItems(data.cart.cart__items);
+          } else {
+            console.error("Dữ liệu giỏ hàng không hợp lệ:", data);
+          }
+        })
+        .catch((error) => console.error("Lỗi khi tải giỏ hàng:", error));
+    } else {
+      console.log("Không tìm thấy token.");
+    }
+  }, []);
+
+  // Tính tổng số lượng sản phẩm trong giỏ hàng
+  const totalQuantity = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
 
   // Get Categories
   const [categories, setCategories] = useState<Category[]>([]);
@@ -148,44 +186,30 @@ const Header = () => {
 
           <div className="flex gap-[15px] text-gray-700 ">
             {isLoggedIn ? (
-              <Link to={"/cart"}>
-                {/* Giỏ hàng */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  className="size-6 "
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                  />
-                </svg>
+              <Link to="/cart" className="relative flex items-center">
+                {/* Thay thế icon giỏ hàng bằng IoCartOutline */}
+                <IoCartOutline className="text-2xl" />
+                {/* Hiển thị số lượng sản phẩm */}
+                {totalQuantity > 0 && (
+                  <span className="absolute top-[-8px] right-[-8px] bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold">
+                    {totalQuantity}
+                  </span>
+                )}
               </Link>
             ) : (
               <button
                 onClick={() =>
                   alert("Bạn cần đăng nhập để sử dụng chức năng giỏ hàng.")
                 }
+                className="relative flex items-center"
               >
-                {/* Giỏ hàng (khóa khi chưa đăng nhập) */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  className="size-6 "
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                  />
-                </svg>
+                <IoCartOutline className="text-2xl" />
+                {/* Hiển thị số lượng sản phẩm */}
+                {totalQuantity > 0 && (
+                  <span className="absolute top-[-8px] right-[-8px] bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold">
+                    {totalQuantity}
+                  </span>
+                )}
               </button>
             )}
 
