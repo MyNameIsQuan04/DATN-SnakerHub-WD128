@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->timestamps();
         });
+        if (!\App\Models\Size::where('name', 'Mặc định')->exists()) {
+            \App\Models\Size::create(['name' => 'Mặc định']);
+        }
     }
 
     /**

@@ -21,20 +21,10 @@ class ProductController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-{
-    $products = Product::withTrashed()
-        ->with([
-            'category',
-            'productVariants',
-            'productVariants.size',
-            'productVariants.color',
-            'galleries',
-        ])
-        ->orderByDesc('id')
-        ->get();
-
-    return $products;
-}
+    {
+        $products = Product::with(['category','productVariants','productVariants.size','productVariants.color','galleries',])->orderByDesc('id')->get();
+        return $products;
+    }
 
 
     public function store(StoreProductRequest $request)
@@ -163,11 +153,13 @@ class ProductController extends Controller
                 $dataVariant = [
                     'color_id' => $variant['color_id'],
                     'size_id' => $variant['size_id'],
-                    'price' => isset($variant['price']) ? $variant['price'] : $product->price,
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
                 ];
 
+                if (isset($variant['price'])) {
+                    $dataVariant['price'] = $variant['price'];
+                };
 
                 if (isset($variant['id'])) {
                     $existingVariant = $product->productVariants()->where('id', $variant['id'])->first();

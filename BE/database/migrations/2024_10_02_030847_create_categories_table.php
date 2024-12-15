@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->timestamps();
         });
+        if (!\App\Models\Category::where('name', 'Chưa phân loại')->exists()) {
+            \App\Models\Category::create(['name' => 'Chưa phân loại']);
+        }
     }
 
     /**
