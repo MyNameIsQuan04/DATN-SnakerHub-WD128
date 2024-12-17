@@ -633,6 +633,18 @@ const Detail = () => {
                         <div className="flex">
                           <h2 className="font-semibold">Sản phẩm :{""} </h2>
                           <p>{rating.product.name}</p>
+                          {/* <p>
+                            {rating.product.product_variants.map((item) => (
+                              <div className="">
+                                <div className="">
+                                  Màu sắc {item.color.name || ""}
+                                </div>
+                                <div className="">
+                                  Màu sắc {item.color.name || ""}
+                                </div>
+                              </div>
+                            ))}
+                          </p> */}
                         </div>
                         <div className="rating-stars">
                           {Array.from({ length: 5 }, (_, index) => (

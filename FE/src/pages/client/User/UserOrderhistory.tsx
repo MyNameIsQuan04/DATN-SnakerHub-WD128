@@ -230,6 +230,7 @@ const UserOrderHistory = () => {
       console.log("Đánh giá đã được gửi thành công:", response.data);
       console.log(response.data);
       handleCloseModalRating();
+      toast.success("Bạn đã đánh giá thành công");
     } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);
     }
@@ -447,7 +448,7 @@ const UserOrderHistory = () => {
                         alt="Product"
                         className="w-24 h-24 object-cover rounded-lg shadow-md"
                       />
-                      <div className="flex flex-col">
+                      <div className="flex flex-col w-[200px]">
                         <p className="text-lg font-semibold text-gray-700">
                           {item.product_variant?.product.name}
                         </p>
