@@ -32,7 +32,7 @@ class ProductController extends Controller
         $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
 
         $rates = Comment::where('product_id', $product['id'])->get()
-            ->load('user', 'product');
+            ->load('user', 'product.productVariants.size', 'product.productVariants.color');
 
         $countRates = Comment::where('product_id', $product['id'])->count();
 

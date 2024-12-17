@@ -27,21 +27,19 @@ class DeleteUnpaidVNPayOrdersJob implements ShouldQueue
 
     public function handle()
     {
-        $orders15p = Order::where('status', 'Chờ xử lý')
-            ->where('status_payment', 'Chưa thanh toán')
+        $orders10p = Order::where('status_payment', 'Chưa thanh toán')
             ->where('paymentMethod', 'VNPAY')
-            ->where('updated_at', '<=', Carbon::now()->subMinutes(15))
+            ->where('updated_at', '<=', Carbon::now()->subMinutes(10))
             ->get();
         
-        foreach ($orders15p as $order) {
+        foreach ($orders10p as $order) {
             $customerEmail = $order->customer->user->email;
             Mail::to($customerEmail)->send(new OrderPendingPaymentMail($order));
         }
 
-        $orders = Order::where('status', 'Chờ xử lý')
-            ->where('status_payment', 'Chưa thanh toán')
+        $orders = Order::where('status_payment', 'Chưa thanh toán')
             ->where('paymentMethod', 'VNPAY')
-            ->where('updated_at', '<=', Carbon::now()->subMinutes(30))
+            ->where('updated_at', '<=', Carbon::now()->subMinutes(15))
             ->get();
 
         foreach ($orders as $order) {
