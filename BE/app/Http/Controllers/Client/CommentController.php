@@ -30,7 +30,8 @@ class CommentController extends Controller
 
         if ($existingRate) {
             return response()->json([
-                'message' => 'Bạn đã đánh giá sản phẩm này cho đơn hàng này rồi.'
+                'message' => 'Bạn đã đánh giá sản phẩm này cho đơn hàng này rồi.',
+                'disable' => false,
             ], 400);
         }
 
