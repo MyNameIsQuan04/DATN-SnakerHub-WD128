@@ -23,7 +23,8 @@ class Order extends Model
         'codeDiscount',
         'shippingFee',
         'paymentMethod',
-        'totalAfterDiscount'
+        'totalAfterDiscount',
+        'paymentURL',
     ];
 
     public function customer()

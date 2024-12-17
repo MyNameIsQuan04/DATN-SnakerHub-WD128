@@ -379,6 +379,10 @@ class OrderController extends Controller
                 $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
             }
 
+            $order->update([
+                'paymentURL' => $vnp_Url,
+            ]);
+
             DB::commit();
 
             $user = Auth::user();
