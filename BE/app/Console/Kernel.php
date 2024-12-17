@@ -14,8 +14,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->job(new UpdateDeliveredStatusJob)->everyFiveSeconds();
-        $schedule->job(new DeleteUnpaidVNPayOrdersJob)->everyFiveSeconds();
+        $schedule->job(new UpdateDeliveredStatusJob)->everyMinute();
+        $schedule->job(new DeleteUnpaidVNPayOrdersJob)->everyMinute();
     }
 
 
