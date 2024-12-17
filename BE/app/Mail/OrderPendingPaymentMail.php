@@ -46,7 +46,7 @@ class OrderPendingPaymentMail extends Mailable
                     Xin chào, {$this->order->customer->name}
                 </h1>
                 <p style=\"font-family: Arial, sans-serif; font-size: 14px; color: #7f8c8d; line-height: 1.4; text-align: center;\">
-                    Đơn hàng <strong>{$this->order->order_code}</strong> của bạn sẽ bị <strong style=\"color: #E74C3C;\">hủy</strong> sau <strong>15 phút</strong> nếu bạn chưa thanh toán.
+                    Đơn hàng <strong>{$this->order->order_code}</strong> của bạn sẽ bị <strong style=\"color: #E74C3C;\">hủy</strong> sau <strong>5 phút</strong> nếu bạn chưa thanh toán.
                     <br>Vui lòng nhấn vào nút bên dưới để thực hiện thanh toán.
                 </p>
                 <div style=\"text-align: center; margin-top: 20px;\">
