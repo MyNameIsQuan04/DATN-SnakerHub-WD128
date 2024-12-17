@@ -92,7 +92,7 @@ const Header = () => {
   };
   return (
     <div>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white flex items-center justify-between px-14 py-3 border-b border-gray-200 mb-0">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white flex items-center justify-between px-14 py-3 border-b border-gray-200 mb-0 ">
         {/* Logo */}
         <div className="flex items-center w-[279px]">
           <a href="/">

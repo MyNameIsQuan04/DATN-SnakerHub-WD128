@@ -532,7 +532,9 @@ const Detail = () => {
               </div>
               <div className="flex flex-col items-center text-sm text-gray-600">
                 <GrAnnounce className="w-[30px] h-auto" />
-                <p>Ưu đãi tích điểm và hưởng quyền lợi thành viên từ MWC</p>
+                <p>
+                  Ưu đãi tích điểm và hưởng quyền lợi thành viên từ SnakerHub
+                </p>
               </div>
               {/* Thêm phần mô tả sản phẩm */}
               {/* <div className="mt-8 border-t-4 border-gray-300 pt-4">
