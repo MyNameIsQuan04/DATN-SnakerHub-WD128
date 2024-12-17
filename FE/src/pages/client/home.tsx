@@ -10,12 +10,15 @@ import axios from "axios";
 
 const Home = () => {
   const [productsClient, setProductsClient] = useState<Product[]>([]);
+  const [productsTop10, setProductsTop10] = useState<Product[]>([]);
   const [categoriesClient, setCategoriesClient] = useState<Category[]>([]);
   useEffect(() => {
     (async () => {
       const response = await getProductsClients();
       const productsData = response.products || [];
+      const productsTop10Data = response.top10 || [];
       setProductsClient(productsData.slice(0, 5));
+      setProductsTop10(productsTop10Data.slice(0.5));
     })();
   }, []);
   useEffect(() => {
@@ -25,7 +28,7 @@ const Home = () => {
       setCategoriesClient(categoriesData);
     })();
   }, []);
-
+  useEffect(() => {}, []);
   const PrevArrow = (props: any) => {
     const { className, onClick } = props;
     return (
@@ -299,7 +302,7 @@ const Home = () => {
         </div>
         <div className="px-[40px]">
           <Slider {...settings} className="custom-slider">
-            {productsClient.map((product: Product) => (
+            {productsTop10.map((product: Product) => (
               <div key={product.id} className="">
                 <Link to={`detail/${product.id}`}>
                   <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">

@@ -320,8 +320,8 @@ const UserOrderHistory = () => {
                       </span>
                     ) : (
                       <span className="text-orange-400">
-                      {order.status_payment}
-                    </span>
+                        {order.status_payment}
+                      </span>
                     )}
                   </div>
                   <div className="mr-9 flex flex-col">
@@ -425,107 +425,6 @@ const UserOrderHistory = () => {
                       </div>
                     )}
 
-                    {order.status === "Hoàn thành" && (
-                      <div>
-                        {order.order_items.map((item) => (
-                          <div key={item.id}>
-                            <button
-                              className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-red-500 focus:outline-none bg-white rounded-lg border border-red-500 hover:bg-red-500 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                              onClick={() => {
-                                openModalRating(item);
-                              }}
-                            >
-                              Đánh giá
-                            </button>
-                            {isModalRatingOpen && selectedItem && (
-                              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                                  <h2 className="text-xl font-semibold mb-4">
-                                    Gửi đánh giá
-                                  </h2>
-                                  <div className="flex gap-[10px]">
-                                    <img
-                                      src={
-                                        selectedItem.product_variant?.image ||
-                                        "https://via.placeholder.com/150"
-                                      }
-                                      alt="Product"
-                                      className="w-[90px] h-[90px] object-cover rounded-lg shadow-md"
-                                    />
-                                    <div className="flex flex-col">
-                                      <div className="flex gap-[5px] items-center w-[500px]">
-                                        <p className="text-lg text-gray-700">
-                                          Tên sản phẩm:
-                                        </p>
-                                        <p className="text-lg text-gray-700 uppercase font-bold">
-                                          {selectedItem.product_variant?.product
-                                            .name || "Không có"}
-                                        </p>
-                                      </div>
-                                      <p className="text-lg text-gray-700">
-                                        Màu sắc:{" "}
-                                        {selectedItem.product_variant?.color
-                                          .name || "Không có"}
-                                      </p>
-                                      <p className="text-lg text-gray-700">
-                                        Kích thước:{" "}
-                                        {selectedItem.product_variant?.size
-                                          .name || "Không có"}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <div className="flex gap-1 mt-[10px]">
-                                      {[1, 2, 3, 4, 5].map((star) => (
-                                        <svg
-                                          key={star}
-                                          onClick={() => handleStarClick(star)}
-                                          className={`w-6 h-6 cursor-pointer rounded-sm ${
-                                            star <= rating
-                                              ? "text-yellow-500"
-                                              : "text-gray-400"
-                                          }`}
-                                          fill="currentColor"
-                                          viewBox="0 0 24 24"
-                                        >
-                                          <path d="M12 .587l3.668 7.568L24 9.75l-6 5.845L19.335 24 12 20.401 4.665 24 6 15.595 0 9.75l8.332-1.595L12 .587z" />
-                                        </svg>
-                                      ))}
-                                    </div>
-                                    <textarea
-                                      value={comment}
-                                      onChange={handleCommentChange}
-                                      className="border h-[200px] border-gray-400 w-full mt-[10px] rounded-lg pl-[10px] p-[5px]"
-                                    ></textarea>
-                                  </div>
-                                  <div className="flex justify-end mt-[10px]">
-                                    <button
-                                      onClick={handleCloseModalRating}
-                                      className="px-4 py-2 text-red-500 border border-red-500 rounded-lg mr-2"
-                                    >
-                                      Đóng
-                                    </button>
-                                    <button
-                                      onClick={() =>
-                                        handleSubmitRating(
-                                          selectedItem.id,
-                                          order.customer.user_id,
-                                          selectedItem.product_variant.id
-                                          // order.id
-                                        )
-                                      }
-                                      className="px-4 py-2 bg-red-500 text-white rounded-lg"
-                                    >
-                                      Gửi đánh giá
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
                     {/* /profile/order-detail/${order.id} */}
                     <Link to={`/profile/order-detail/${order.id}`}>
                       <button className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-400 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
@@ -569,12 +468,110 @@ const UserOrderHistory = () => {
                           </p>
                         </div>
                       </div>
-                      {/* Đẩy đơn giá sát lề phải */}
+
                       <div className="ml-[470px] flex items-center gap-1">
                         <p className="text-lg font-medium text-red-600">
                           {formatCurrency(item.product_variant?.price || 0)} vnđ
                         </p>
                       </div>
+
+                      {/* Nút đánh giá chỉ hiển thị khi order.status là "Hoàn thành" */}
+                      {order.status === "Hoàn thành" && (
+                        <button
+                          className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-red-500 focus:outline-none bg-white rounded-lg border border-red-500 hover:bg-red-500 hover:text-white"
+                          onClick={() => openModalRating(item)}
+                        >
+                          Đánh giá
+                        </button>
+                      )}
+
+                      {/* Modal đánh giá */}
+                      {isModalRatingOpen &&
+                        selectedItem &&
+                        selectedItem.id === item.id && (
+                          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                              <h2 className="text-xl font-semibold mb-4">
+                                Gửi đánh giá
+                              </h2>
+                              <div className="flex gap-[10px]">
+                                <img
+                                  src={
+                                    selectedItem.product_variant?.image ||
+                                    "https://via.placeholder.com/150"
+                                  }
+                                  alt="Product"
+                                  className="w-[90px] h-[90px] object-cover rounded-lg shadow-md"
+                                />
+                                <div className="flex flex-col">
+                                  <div className="flex gap-[5px] items-center w-[500px]">
+                                    <p className="text-lg text-gray-700">
+                                      Tên sản phẩm:
+                                    </p>
+                                    <p className="text-lg text-gray-700 uppercase font-bold">
+                                      {selectedItem.product_variant?.product
+                                        .name || "Không có"}
+                                    </p>
+                                  </div>
+                                  <p className="text-lg text-gray-700">
+                                    Màu sắc:{" "}
+                                    {selectedItem.product_variant?.color.name ||
+                                      "Không có"}
+                                  </p>
+                                  <p className="text-lg text-gray-700">
+                                    Kích thước:{" "}
+                                    {selectedItem.product_variant?.size.name ||
+                                      "Không có"}
+                                  </p>
+                                </div>
+                              </div>
+                              <div>
+                                <div className="flex gap-1 mt-[10px]">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <svg
+                                      key={star}
+                                      onClick={() => handleStarClick(star)}
+                                      className={`w-6 h-6 cursor-pointer rounded-sm ${
+                                        star <= rating
+                                          ? "text-yellow-500"
+                                          : "text-gray-400"
+                                      }`}
+                                      fill="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M12 .587l3.668 7.568L24 9.75l-6 5.845L19.335 24 12 20.401 4.665 24 6 15.595 0 9.75l8.332-1.595L12 .587z" />
+                                    </svg>
+                                  ))}
+                                </div>
+                                <textarea
+                                  value={comment}
+                                  onChange={handleCommentChange}
+                                  className="border h-[200px] border-gray-400 w-full mt-[10px] rounded-lg pl-[10px] p-[5px]"
+                                ></textarea>
+                              </div>
+                              <div className="flex justify-end mt-[10px]">
+                                <button
+                                  onClick={handleCloseModalRating}
+                                  className="px-4 py-2 text-red-500 border border-red-500 rounded-lg mr-2"
+                                >
+                                  Đóng
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleSubmitRating(
+                                      selectedItem.id,
+                                      order.customer.user_id,
+                                      selectedItem.product_variant.id
+                                    )
+                                  }
+                                  className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                                >
+                                  Gửi đánh giá
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                     </div>
                   ))}
                 </div>

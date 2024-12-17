@@ -16,7 +16,8 @@ class ProductController extends Controller
         $products = Product::orderByDesc('id')->get()
             ->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
 
-        $top10 = Product::orderByDesc('sell_count')->get();
+        $top10 = Product::orderByDesc('sell_count')->get()
+            ->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
 
         return response()->json([
             'success' => true,
@@ -32,7 +33,7 @@ class ProductController extends Controller
 
         $rates = Comment::where('product_id', $product['id'])->get()
             ->load('user', 'product');
-        
+
         $countRates = Comment::where('product_id', $product['id'])->count();
 
         $countSell = Product::where('id', $product['id'])->value('sell_count');
