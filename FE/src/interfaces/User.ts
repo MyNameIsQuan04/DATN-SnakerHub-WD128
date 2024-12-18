@@ -12,6 +12,7 @@ export interface IUser {
   avatar?: string; // Đường dẫn URL đến ảnh đại diện
   type?: "admin" | "user" | "guest"; // Kiểu người dùng
   created_at: string; 
-  update_at:string;// Ngày tạo tài khoản, bắt buộc
-  isLocked: boolean; // Trạng thái khóa tài khoản, bắt buộc
+  update_at:string;
+  isLocked: boolean; 
+  delete_at?: null | string
 }
