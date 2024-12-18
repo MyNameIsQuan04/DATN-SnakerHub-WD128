@@ -10,6 +10,7 @@ use App\Models\Product_Variant;
 use App\Jobs\SendOrderStatusEmail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendKhieuNaiOrderEmail;
 use App\Mail\OrderStatusUpdatedMail;
 use Illuminate\Support\Facades\Mail;
 
@@ -98,7 +99,7 @@ class OrderController extends Controller
                 $order->load('customer.user', 'orderItems.productVariant.product');
 
                 // Đẩy job vào hàng đợi thay vì gửi email trực tiếp
-                SendOrderStatusEmail::dispatch($order, $newStatus);
+                SendKhieuNaiOrderEmail::dispatch($order);
             });
 
             return response()->json([
