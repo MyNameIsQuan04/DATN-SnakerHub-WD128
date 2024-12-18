@@ -32,6 +32,7 @@ class VoucherController extends Controller
             'codeDiscount' => $request->codeDiscount,
             'discount' => $request->discount,
             'type' => $request->type,
+            'start_date' => Carbon::parse($request->start_date),
             'expiration_date' => Carbon::parse($request->expiration_date),
             'usage_limit' => $request->usage_limit,
         ]);
@@ -57,6 +58,7 @@ class VoucherController extends Controller
             'codeDiscount' => $request->codeDiscount,
             'discount' => $request->discount,
             'type' => $request->type,
+            'start_date' => Carbon::parse($request->start_date),
             'expiration_date' => Carbon::parse($request->expiration_date),
             'usage_limit' => $request->usage_limit,
         ]);
