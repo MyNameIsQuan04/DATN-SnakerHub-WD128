@@ -92,10 +92,8 @@ class CategoryController extends Controller
         }
         $defaultCategory = Category::firstOrCreate(['name' => 'Chưa phân loại']);
 
-        // Gỡ liên kết tất cả sản phẩm khỏi category đang bị xóa
         $category->products()->update(['category_id' => $defaultCategory->id]);
 
-        // Xóa category (hỗ trợ xóa mềm nếu có)
         $category->delete();
 
         return response()->json(['message' => 'Category deleted and products moved to default category'], 200);
