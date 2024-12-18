@@ -49,7 +49,6 @@ const ProductContext = ({ children }: Props) => {
   const onAddProduct = async (data: Product) => {
     try {
       const product = await addProduct(data);
-      alert("Thanh cong");
       setProducts([...products, product]);
       router("/admin/product");
       window.location.reload();

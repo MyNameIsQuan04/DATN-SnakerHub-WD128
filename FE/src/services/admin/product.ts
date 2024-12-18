@@ -10,6 +10,7 @@ export const getProducts = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
+
     return data;
   } catch (error) {
     console.log(error);
@@ -36,8 +37,10 @@ export const addProduct = async (product: Product) => {
         Authorization: `Bearer ${token}`,
       },
     });
+    alert("Thành công");
     return data;
   } catch (error) {
+    alert("Không thành công");
     console.log(error);
   }
 };
