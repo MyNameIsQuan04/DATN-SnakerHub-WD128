@@ -17,7 +17,7 @@ const SimpleSlider = () => {
   };
 
   return (
-    <div className="w-full h-[600px]">
+    <div className="w-full h-[600px] overflow-hidden mx-auto">
       <Slider {...settings}>
         <div>
           <img

@@ -90,10 +90,9 @@ const Footer = () => {
           </div>
         </div>
       </div>
-
-      {/* Phần 2 Footer */}
-      <footer className="bg-gray-800 text-white pt-10 mt-[60px]">
-        <div className="container grid grid-cols-1 md:grid-cols-4 gap-8 mx-auto px-4 md:px-8">
+      {/* Phần 2 */}
+      <footer className="bg-gray-800 text-white pt-10 w-full">
+        <div className="container mx-auto px-4 grid md:grid-cols-3 gap-3">
           {/* Thông tin công ty */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Công ty</h3>
@@ -104,28 +103,6 @@ const Footer = () => {
           </div>
 
           {/* Liên kết hữu ích */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Liên kết</h3>
-            <ul>
-              <li>
-                <a href="#" className="hover:text-gray-400">
-                  Chính sách bảo mật
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-gray-400">
-                  Điều khoản dịch vụ
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-gray-400">
-                  Chính sách đổi trả
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Danh mục sản phẩm */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Danh mục sản phẩm</h3>
             <ul>
@@ -146,7 +123,6 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-
           {/* Chứng nhận */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Chứng nhận</h3>
