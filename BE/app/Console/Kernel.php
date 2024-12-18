@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Jobs\UpdateDeliveredStatusJob;
+use App\Jobs\DeleteUnpaidVNPayOrdersJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -12,7 +14,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('orders:update-delivered-status')->everyFifteenMinutes();
+        $schedule->job(new UpdateDeliveredStatusJob)->everyMinute();
+        $schedule->job(new DeleteUnpaidVNPayOrdersJob)->everyMinute();
     }
 
 

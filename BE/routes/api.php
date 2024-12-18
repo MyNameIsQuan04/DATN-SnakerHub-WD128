@@ -10,6 +10,7 @@ use App\Http\Controllers\api\SizeApiController;
 use App\Http\Controllers\api\UserApiController;
 use App\Http\Controllers\api\VoucherController;
 use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\VoucherController as ClientVoucherController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ColorApiController;
 use App\Http\Controllers\api\DashboardController;
@@ -17,7 +18,9 @@ use App\Http\Controllers\Client\CommentController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
-use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Client\CategoryControlller as ClientCategoryControlller;
+use App\Http\Controllers\Client\ColorController;
+use App\Http\Controllers\Client\SizeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,9 +39,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('sizes', SizeApiController::class);
-Route::apiResource('colors', ColorApiController::class);
-Route::apiResource('users', UserApiController::class);
+
+Route::apiResource('sizes', SizeApiController::class)->middleware('auth:api')->middleware('type:admin');
+Route::apiResource('colors', ColorApiController::class)->middleware('auth:api')->middleware('type:admin');
+Route::apiResource('users', UserApiController::class)->middleware('auth:api')->middleware('type:admin');
 
 $crud = [
     'categories' => CategoryController::class,
@@ -47,12 +51,17 @@ $crud = [
 ];
 
 foreach ($crud as $key => $controller) {
-    Route::apiResource($key, $controller);
+    Route::apiResource($key, $controller)->middleware('auth:api')->middleware('type:admin');
 }
-Route::get('/products/category/{id}', [ClientProductController::class, 'filterByCategory']);
+Route::get('client/categories', [ClientCategoryControlller::class, 'index']);
+
 Route::get('dashboard/daily', [DashboardController::class, 'daily']);
 Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
 Route::get('dashboard', [DashboardController::class, 'index']);
+
+// Route::get('dashboard/daily', [DashboardController::class, 'daily'])->middleware('auth:api')->middleware('type:admin');
+// Route::get('dashboard/monthly', [DashboardController::class, 'monthly'])->middleware('auth:api')->middleware('type:admin');
+// Route::get('dashboard', [DashboardController::class, 'index'])->middleware('auth:api')->middleware('type:admin');
 
 Route::apiResource('client/orders', ApiMemberOrderController::class);
 Route::put('client/return-order/{order}', [ApiMemberOrderController::class, 'returnOrder']);
@@ -125,6 +134,7 @@ Route::get('/voucher/{id}', [VoucherController::class, 'show']);
 
 //lọc sản phẩm
 Route::get('/filter', [ClientProductController::class, 'filterProducts']);
+Route::get('/products/category/{id}', [ClientProductController::class, 'filterByCategory']);
 
 Route::prefix('slides')->group(function () {
     Route::get('/', [SlideController::class, 'index']);  // Lấy danh sách slide
@@ -140,3 +150,12 @@ Route::post('/rate', [CommentController::class, 'store']);
 
 Route::post('/vnpay-payment', [ApiMemberOrderController::class, 'vnpayPayment'])->name('api.vnpay.payment');
 Route::get('/vnpay-return', [ApiMemberOrderController::class, 'vnpayReturn']);
+
+Route::prefix('client')->group(function () {
+    Route::get('colors', [ColorController::class, 'index']);
+    Route::get('colors/{id}', [ColorController::class, 'show']);
+    Route::get('sizes', [SizeController::class, 'index']);
+    Route::get('sizes/{id}', [SizeController::class, 'show']);
+    Route::get('vouchers', [ClientVoucherController::class, 'index']);
+    Route::get('vouchers/{id}', [ClientVoucherController::class, 'show']);
+});

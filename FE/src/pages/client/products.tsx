@@ -1,14 +1,16 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ProductCT } from "../../contexts/productContext";
 import { Product } from "../../interfaces/Product";
-import { CategoryCT } from "../../contexts/CategoryContext";
-import { Category } from "../../interfaces/Category";
 import { Link, useSearchParams } from "react-router-dom";
 import api from "../../configs/axios";
-import { SizeCT } from "../../contexts/SizeContext";
-import { ColorCT } from "../../contexts/ColorContext";
 import { Size } from "../../interfaces/Size";
 import { Color } from "../../interfaces/Color";
+import { Category } from "../../interfaces/Category";
+import axios from "axios";
+import { getProductsClients } from "../../services/client/product";
+import { GetCategoriesClient } from "../../services/client/category";
+import { getColorsClient } from "../../services/client/color";
+import { getSizesClient } from "../../services/client/size";
 
 interface Filters {
   category: string | number | null;
@@ -21,10 +23,40 @@ interface Filters {
 const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
-  const { products, setProducts } = useContext(ProductCT);
-  const { categories } = useContext(CategoryCT);
-  const { sizes } = useContext(SizeCT);
-  const { colors } = useContext(ColorCT);
+  const [productsClient, setProductsClient] = useState<Product[]>([]);
+  const [categoriesClient, setCategoriesClient] = useState<Category[]>([]);
+  const [colorsClient, setColorsClient] = useState<Color[]>([]);
+  const [sizesClient, setSizesClient] = useState<Size[]>([]);
+  useEffect(() => {
+    (async () => {
+      const response = await getProductsClients();
+      const productsData = response.products || [];
+      setProductsClient(productsData);
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const response = await GetCategoriesClient();
+      const categoriesData = response || [];
+      setCategoriesClient(categoriesData);
+    })();
+  }, []);
+  useEffect(() => {
+    (async () => {
+      const response = await getColorsClient();
+      const categoriesData = response || [];
+      setColorsClient(categoriesData);
+    })();
+  }, []);
+  useEffect(() => {
+    (async () => {
+      const response = await getSizesClient();
+      const categoriesData = response || [];
+      setSizesClient(categoriesData);
+    })();
+  }, []);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get("keyword") || "";
   const categoryId = searchParams.get("categoryId");
@@ -37,11 +69,11 @@ const Products = () => {
   });
 
   const [tempFilters, setTempFilters] = useState<Filters>({ ...filters });
-  const paginatedProducts = products.slice(
+  const paginatedProducts = productsClient.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const totalPages = Math.ceil(productsClient.length / itemsPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -51,7 +83,7 @@ const Products = () => {
       const response = await api.get("search", {
         params: { keyword },
       });
-      setProducts(response.data.products);
+      setProductsClient(response.data.products);
     } catch (error) {
       console.error("Có lỗi xảy ra khi tìm kiếm sản phẩm:", error);
     }
@@ -62,7 +94,7 @@ const Products = () => {
       const response = await api.get("filter", {
         params: filters,
       });
-      setProducts(response.data);
+      setProductsClient(response.data);
     } catch (error) {
       console.error("Có lỗi xảy ra khi lọc sản phẩm:", error);
     }
@@ -74,6 +106,18 @@ const Products = () => {
     setFilters(tempFilters);
     fetchFilteredProducts(tempFilters);
   };
+
+  // Get Categories
+  const [categories, setCategories] = useState<Category[]>([]);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await axios.get(
+        "http://localhost:8000/api/client/categories"
+      );
+      setCategories(res.data);
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (keyword) {
@@ -92,7 +136,7 @@ const Products = () => {
   }, [categoryId]);
   return (
     <div>
-      <div className="container mx-auto my-8 px-4 md:px-8 mt-[80px]">
+      <div className="container mx-auto my-8 px-4 md:px-8 mt-[100px]">
         <div className="flex flex-wrap -mx-4">
           <aside className="w-1/5 px-4 mb-6">
             <h2 className="text-xl font-semibold mb-4">Bộ lọc</h2>
@@ -129,7 +173,7 @@ const Products = () => {
               }
             >
               <option value="">Chọn kích thước</option>
-              {sizes?.map((size: Size) => (
+              {sizesClient?.map((size: Size) => (
                 <option key={size.id} value={size.id}>
                   {size.name}
                 </option>
@@ -148,7 +192,7 @@ const Products = () => {
               }
             >
               <option value="">Chọn màu sắc</option>
-              {colors?.map((color: Color) => (
+              {colorsClient?.map((color: Color) => (
                 <option key={color.id} value={color.id}>
                   {color.name}
                 </option>

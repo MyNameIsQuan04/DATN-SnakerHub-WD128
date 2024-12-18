@@ -52,7 +52,6 @@ const Checkout = () => {
         const items = response.data.cart.cart__items.filter((item: CartItem) =>
           selectedItems.includes(item.id)
         );
-
         setCheckoutItems(items);
         setCartItems(items);
       }
@@ -72,6 +71,28 @@ const Checkout = () => {
   const [totalAfterDiscount, setTotalAfterDiscount] = useState<number>(0);
   const [codeDiscount, setCodeDiscount] = useState<string>("");
   const [discount, setDiscount] = useState<number>(0);
+  const [vouchers, setVouchers] = useState<
+    Array<{ codeDiscount: string; discount: number }>
+  >([]);
+
+  useEffect(() => {
+    const fetchVouchers = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/vouchers", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.data) {
+          setVouchers(response.data.vouchers); // Giả sử API trả về một mảng vouchers
+        }
+      } catch (error) {
+        toast.error("Không thể tải danh sách mã giảm giá!");
+      }
+    };
+
+    fetchVouchers();
+  }, []);
 
   const handleApplyVoucher = async () => {
     if (!codeDiscount) {
@@ -110,6 +131,14 @@ const Checkout = () => {
     }
   };
 
+  // Hàm xóa mã giảm giá
+  const handleRemoveVoucher = () => {
+    setDiscount(0);
+    setCodeDiscount("");
+    setTotalAfterDiscount(0);
+    toast.info("Mã giảm giá đã được xóa.");
+  };
+
   const totalPriceItem = (price: number, quantity: number) => price * quantity;
   const grandTotalPrice = checkoutItems.reduce(
     (total, item) => total + item.product_variant.price * item.quantity,
@@ -129,18 +158,22 @@ const Checkout = () => {
 
     const orderData = {
       ...data,
+
       province: selectedProvince?.name,
       district: selectedDistrict?.name,
       town: selectedWard?.name,
       items: cartItems.map((item) => ({
+        item_id: item.id,
         product__variant_id: item.product_variant.id,
         quantity: item.quantity,
         price: item.product_variant.price,
         total: totalPriceItem(item.product_variant.price, item.quantity),
       })),
-      total_price: grandTotalPrice - discount + shippingFee,
+      total_price: grandTotalPrice,
       codeDiscount,
       discount,
+      shippingFee,
+      paymentMethod,
     };
 
     // Xác định URL API dựa trên payment method
@@ -175,10 +208,10 @@ const Checkout = () => {
     <div className="mt-[100px] px-[150px]">
       <div className="flex items-center space-x-2 mb-4 ">
         <a
-          href="/"
+          href="/cart"
           className="text-xl font-medium text-gray-800 hover:text-blue-400 hover:underline"
         >
-          Trang chủ
+          Giỏ hàng
         </a>
         <GrNext className="text-xl text-gray-600" />
         <a href="">Thanh toán</a>
@@ -232,31 +265,88 @@ const Checkout = () => {
                 {formatCurrency(grandTotalPrice)}
               </span>
             </div>
-            {discount > 0 ? (
-              <div className="flex justify-between">
-                <p className="text-green-500">Mã giảm giá đã áp dụng:</p>
-                <p className="text-green-500">{discount}đ</p>
+            <div className="voucher-section">
+              {/* Dropdown chọn mã giảm giá */}
+              <div className="voucher-input flex flex-col md:flex-row justify-between items-center mt-4 space-y-3 md:space-y-0">
+                <label className="block text-gray-700 font-semibold text-sm md:mr-4">
+                  Chọn mã giảm giá:
+                </label>
+                <div className="relative flex-grow">
+                  <select
+                    value={codeDiscount}
+                    onChange={(e) => setCodeDiscount(e.target.value)}
+                    className="block w-full p-3 pr-10 text-gray-700 border border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:border-yellow-500 focus:ring focus:ring-yellow-200"
+                  >
+                    <option value="">Chọn mã giảm giá</option>
+                    {vouchers.map((voucher, index) => (
+                      <option key={index} value={voucher.codeDiscount}>
+                        {voucher.codeDiscount} - Giảm{" "}
+                        {Math.round(voucher.discount)}%
+                      </option>
+                    ))}
+                  </select>
+                  {/* Icon mũi tên */}
+                  <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                    <svg
+                      className="w-5 h-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                <button
+                  onClick={handleApplyVoucher}
+                  className="ml-0 md:ml-4 h-full p-3 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition duration-200"
+                >
+                  Áp dụng
+                </button>
               </div>
-            ) : (
-              <div className="flex justify-between">
-                {/* <p className="text-red-500">Chưa áp dụng mã giảm giá</p> */}
-              </div>
-            )}
 
-            <div className="flex justify-between items-center">
-              <input
-                type="text"
-                placeholder="Nhập mã giảm giá"
-                value={codeDiscount}
-                onChange={(e) => setCodeDiscount(e.target.value)}
-                className="flex-grow p-2 border rounded-md"
-              />
-              <button
-                onClick={handleApplyVoucher}
-                className="ml-4 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600"
-              >
-                Áp dụng
-              </button>
+              {/* Hiển thị mã giảm giá đã áp dụng */}
+              {discount > 0 && (
+                <div className="voucher-card flex justify-between items-center p-3 bg-yellow-100 border-l-4 border-yellow-500 rounded-lg shadow-md mt-4">
+                  <div>
+                    <p className="text-yellow-700 font-semibold text-sm">
+                      Mã giảm giá đã áp dụng:
+                    </p>
+                    <p className="text-yellow-800 font-bold text-lg">
+                      {codeDiscount}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <p className="text-yellow-800 font-semibold text-lg">
+                      Giảm {discount.toLocaleString()}đ
+                    </p>
+                    <button
+                      onClick={handleRemoveVoucher}
+                      className="text-red-500 hover:text-red-600 font-semibold hover:underline"
+                    >
+                      Xóa mã
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Hiển thị tổng giá trị sau giảm giá */}
+              {totalAfterDiscount > 0 && (
+                <div className="total-after-discount mt-4">
+                  <p className="text-gray-800 font-bold text-lg">
+                    Tổng sau giảm giá:{" "}
+                    <span className="text-yellow-600">
+                      {totalAfterDiscount.toLocaleString()}đ
+                    </span>
+                  </p>
+                </div>
+              )}
             </div>
 
             <hr className="my-4" />
@@ -315,9 +405,9 @@ const Checkout = () => {
                         );
                         setSelectedProvince(selectedProvince || null);
                         if (selectedProvince?.name === "Thành phố Hà Nội") {
-                          setShippingFee(20000);
-                        } else {
                           setShippingFee(30000);
+                        } else {
+                          setShippingFee(40000);
                         }
                       }}
                       className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -426,18 +516,20 @@ const Checkout = () => {
               <div className="flex justify-between">
                 <span>Phí vận chuyển</span>
                 <span className="text-red-500">
-                  {formatCurrency(shippingFee)}
+                  +{formatCurrency(shippingFee)}
                 </span>
               </div>
 
               <div className="flex justify-between">
                 <span>Voucher:</span>
-                <span className="text-red-500">{formatCurrency(discount)}</span>
+                <span className="text-red-500">
+                  -{formatCurrency(discount)}
+                </span>
               </div>
             </div>
             <hr className="my-4" />
             <div className="flex justify-end text-lg">
-              <span>Thành tiền: </span>
+              <span>Thành tiền: {""}</span>
               <span className="text-red-500">
                 {formatCurrency(grandTotalPrice - discount + shippingFee)}
               </span>
@@ -455,7 +547,7 @@ const Checkout = () => {
                   >
                     <option value={1}>Thanh toán khi nhận hàng</option>
                     <option value={2}>Thanh toán VNPay</option>
-                    <option value={3}>Thanh toán MoMo</option>
+                    {/* <option value={3}>Thanh toán MoMo</option> */}
                   </select>
                 </div>
               </div>

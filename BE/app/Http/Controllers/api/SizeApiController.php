@@ -71,19 +71,24 @@ class SizeApiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        $size = Size::find($id);
-
-        if (!$size) {
-            return response()->json(['message' => 'Size not found'], 404);
-        }
-
-        // Xóa tất cả các product_variants liên quan đến size này
-        $size->productVariants()->delete();
-        $size->delete();
-
-        return response()->json(['message' => 'Size deleted successfully']);
+    public function destroy(Size $size)
+{
+    // Kiểm tra nếu không tìm thấy size
+    if (!$size) {
+        return response()->json(['message' => 'Size not found'], 404);
     }
+
+    // Lấy size mặc định, nếu không có thì tạo mới
+    $defaultSize = Size::firstOrCreate(['name' => 'Mặc định']);
+
+    // Chuyển tất cả product_variants sang size mặc định
+    $size->productVariants()->update(['size_id' => $defaultSize->id]);
+
+    // Xóa size (hỗ trợ xóa mềm nếu có)
+    $size->delete();
+
+    return response()->json(['message' => 'Size deleted and product variants moved to default size'], 200);
+}
+
     
 }

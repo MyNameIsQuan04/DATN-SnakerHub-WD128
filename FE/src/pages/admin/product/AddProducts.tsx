@@ -9,7 +9,7 @@ import { ProductCT } from "../../../contexts/productContext";
 import { Category } from "../../../interfaces/Category";
 import { Color } from "../../../interfaces/Color";
 import { Size } from "../../../interfaces/Size";
-
+import * as Yup from "yup";
 const AddProducts = () => {
   const { categories } = useContext(CategoryCT);
   const { colors } = useContext(ColorCT);
@@ -30,11 +30,35 @@ const AddProducts = () => {
         size_id: "",
         color_id: "",
         stock: 0,
-        sku: "",
         image: null,
       },
     ],
   };
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Tên sản phẩm không được để trống"),
+    price: Yup.number()
+      .typeError("Giá sản phẩm phải là số")
+      .positive("Giá sản phẩm phải lớn hơn 0")
+      .required("Giá sản phẩm không được để trống"),
+    category_id: Yup.string().required("Danh mục sản phẩm không được để trống"),
+    variants: Yup.array()
+      .of(
+        Yup.object({
+          price: Yup.number()
+            .typeError("Giá biến thể phải là số")
+            .positive("Giá biến thể phải lớn hơn 0")
+            .required("Giá biến thể không được để trống"),
+          size_id: Yup.string().required("Kích cỡ không được để trống"),
+          color_id: Yup.string().required("Màu sắc không được để trống"),
+          stock: Yup.number()
+            .typeError("Số lượng phải là số")
+            .integer("Số lượng phải là số nguyên")
+            .min(0, "Số lượng không được âm")
+            .required("Số lượng không được để trống"),
+        })
+      )
+      .min(1, "Cần ít nhất một biến thể"),
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
@@ -74,8 +98,12 @@ const AddProducts = () => {
     <div className="container mx-auto p-8">
       <h1 className="text-3xl font-semibold mb-6">Thêm Sản Phẩm Mới</h1>
 
-      <Formik initialValues={initialValues} onSubmit={onSubmit}>
-        {({ values, setFieldValue }) => (
+      <Formik
+        initialValues={initialValues}
+        onSubmit={onSubmit}
+        validationSchema={validationSchema}
+      >
+        {({ values, setFieldValue, errors, touched }) => (
           <Form className="p-4">
             <div className="mb-8">
               <h2 className="text-2xl font-bold mb-4">Thông tin sản phẩm</h2>
@@ -91,6 +119,9 @@ const AddProducts = () => {
                   className="w-full px-3 py-2 border rounded-lg"
                   placeholder="Nhập tên sản phẩm"
                 />
+                {errors.name && touched.name && (
+                  <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                )}
               </div>
 
               {/* Giá sản phẩm */}
@@ -104,6 +135,9 @@ const AddProducts = () => {
                   className="w-full px-3 py-2 border rounded-lg"
                   placeholder="Nhập giá sản phẩm"
                 />
+                {errors.price && touched.price && (
+                  <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+                )}
               </div>
 
               {/* Danh mục sản phẩm */}
@@ -123,6 +157,11 @@ const AddProducts = () => {
                     </option>
                   ))}
                 </Field>
+                {errors.category_id && touched.category_id && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.category_id}
+                  </p>
+                )}
               </div>
 
               {/* Mô tả sản phẩm */}
@@ -201,6 +240,12 @@ const AddProducts = () => {
                             type="number"
                             className="w-full px-3 py-2 border rounded-lg"
                           />
+                          {errors.variants?.[index]?.price &&
+                            touched.variants?.[index]?.price && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors.variants[index].price}
+                              </p>
+                            )}
                         </div>
 
                         {/* Màu sắc */}
@@ -220,6 +265,12 @@ const AddProducts = () => {
                               </option>
                             ))}
                           </Field>
+                          {errors.variants?.[index]?.color_id &&
+                            touched.variants?.[index]?.color_id && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors.variants[index].color_id}
+                              </p>
+                            )}
                         </div>
 
                         {/* Kích cỡ */}
@@ -239,6 +290,12 @@ const AddProducts = () => {
                               </option>
                             ))}
                           </Field>
+                          {errors.variants?.[index]?.size_id &&
+                            touched.variants?.[index]?.size_id && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors.variants[index].size_id}
+                              </p>
+                            )}
                         </div>
 
                         {/* Số lượng */}
@@ -251,20 +308,15 @@ const AddProducts = () => {
                             type="number"
                             className="w-full px-3 py-2 border rounded-lg"
                           />
+                          {errors.variants?.[index]?.stock &&
+                            touched.variants?.[index]?.stock && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors.variants[index].stock}
+                              </p>
+                            )}
                         </div>
 
                         {/* SKU */}
-                        <div className="mb-4">
-                          <label className="block text-gray-700 font-bold mb-2">
-                            SKU
-                          </label>
-                          <Field
-                            name={`variants[${index}].sku`}
-                            type="text"
-                            className="w-full px-3 py-2 border rounded-lg"
-                            placeholder="Nhập SKU"
-                          />
-                        </div>
 
                         {/* Ảnh biến thể */}
                         <div className="mb-4">

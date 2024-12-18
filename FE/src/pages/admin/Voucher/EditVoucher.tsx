@@ -117,7 +117,7 @@ const EditVoucher: React.FC = () => {
         <div>
           <label className="block">Ngày hết hạn</label>
           <input
-            type="text"
+            type="date"
             value={expirationDate}
             onChange={(e) => setExpirationDate(e.target.value)}
             className="w-full border p-2"

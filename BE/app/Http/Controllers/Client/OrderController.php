@@ -56,6 +56,10 @@ class OrderController extends Controller
                 'district' => 'required|string',
                 'town' => 'required|string',
                 'total_price' => 'required|integer',
+                'discount' => 'nullable|integer',
+                'codeDiscount' => 'nullable|string|exists:vouchers,codeDiscount',
+                'shippingFee' => 'required|integer',
+                'paymentMethod' => 'required|integer',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -78,6 +82,11 @@ class OrderController extends Controller
                 'customer_id' => $customer->id,
                 'total_price' => $validatedData['total_price'],
                 'order_code' => $orderCode,
+                'discount' => $validatedData['discount'],
+                'codeDiscount' => $validatedData['codeDiscount'],
+                'shippingFee' => $validatedData['shippingFee'],
+                'paymentMethod' => $validatedData['paymentMethod'] == 1 ? "COD" : "VNPAY",
+                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0) + $validatedData['shippingFee'],
             ]);
 
             foreach ($validatedData['items'] as $item) {
@@ -98,11 +107,15 @@ class OrderController extends Controller
                 ];
 
                 $cart = Cart::where('user_id', $userId)->first();
-                if (isset($cart)) {
-                    foreach ($cart->cart_Items as $item) {
-                        Cart_Item::where('cart_id', $cart->id)
-                            ->where('product__variant_id', $item['product__variant_id'])
-                            ->forceDelete();
+
+                if ($cart) {
+                    foreach ($validatedData['items'] as $newItem) {
+                        $existingItem = $cart->cart_Items->firstWhere('product__variant_id', $newItem['product__variant_id']);
+                        if ($existingItem) {
+                            Cart_Item::where('cart_id', $cart->id)
+                                ->where('product__variant_id', $newItem['product__variant_id'])
+                                ->forceDelete();
+                        }
                     }
                 }
 
@@ -153,7 +166,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         try {
-            if ($order['status'] === 'Chờ xử lý') {
+            if ($order['status'] === 'Chờ xử lý' || $order['status'] === 'Đã xác nhận') {
                 $dataValidate = $request->validate([
                     'status' => 'required|in:Đã hủy',
                 ]);
@@ -183,6 +196,16 @@ class OrderController extends Controller
                 ]);
                 $order->update([
                     'status' => $dataValidate['status'],
+                ]);
+                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                return $order;
+            } else if ($order['status'] === 'Yêu cầu trả hàng') {
+                $dataValidate = $request->validate([
+                    'status' => 'required|in:Đã giao hàng',
+                ]);
+                $order->update([
+                    'status' => $dataValidate['status'],
+                    'note' => 'Không',
                 ]);
                 $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
                 return $order;
@@ -234,6 +257,10 @@ class OrderController extends Controller
                 'district' => 'required|string',
                 'town' => 'required|string',
                 'total_price' => 'required|integer',
+                'discount' => 'nullable|integer',
+                'codeDiscount' => 'nullable|string|exists:vouchers,codeDiscount',
+                'shippingFee' => 'required|integer',
+                'paymentMethod' => 'required|integer',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -256,12 +283,17 @@ class OrderController extends Controller
                 'customer_id' => $customer->id,
                 'total_price' => $validatedData['total_price'],
                 'order_code' => $orderCode,
+                'discount' => $validatedData['discount'],
+                'codeDiscount' => $validatedData['codeDiscount'],
+                'shippingFee' => $validatedData['shippingFee'],
+                'paymentMethod' => $validatedData['paymentMethod'] == 1 ? "COD" : "VNPAY",
+                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0) + $validatedData['shippingFee'],
             ]);
 
             foreach ($validatedData['items'] as $item) {
                 $productVariant = Product_Variant::find($item['product__variant_id']);
                 if ($productVariant['stock'] < $item['quantity']) {
-                    DB::rollBack(); // Rollback nếu không đủ hàng
+                    DB::rollBack();
                     return response()->json([
                         'success' => false,
                         'message' => 'Có lỗi xảy ra: Số lượng yêu cầu vượt quá tồn kho sản phẩm',
@@ -276,11 +308,14 @@ class OrderController extends Controller
                 ];
 
                 $cart = Cart::where('user_id', $userId)->first();
-                if (isset($cart)) {
-                    foreach ($cart->cart_Items as $item) {
-                        Cart_Item::where('cart_id', $cart->id)
-                            ->where('product__variant_id', $item['product__variant_id'])
-                            ->forceDelete();
+                if ($cart) {
+                    foreach ($validatedData['items'] as $newItem) {
+                        $existingItem = $cart->cart_Items->firstWhere('product__variant_id', $newItem['product__variant_id']);
+                        if ($existingItem) {
+                            Cart_Item::where('cart_id', $cart->id)
+                                ->where('product__variant_id', $newItem['product__variant_id'])
+                                ->forceDelete();
+                        }
                     }
                 }
 
@@ -308,7 +343,7 @@ class OrderController extends Controller
             $vnp_TxnRef = $order->order_code;
             $vnp_OrderInfo = "Thanh toán hóa đơn " . $order->order_code;
             $vnp_OrderType = "100002";
-            $vnp_Amount = $order->total_price * 100;
+            $vnp_Amount = $order->totalAfterDiscount * 100;
             $vnp_Locale = "VN";
             $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
             $inputData = [
@@ -343,6 +378,10 @@ class OrderController extends Controller
                 $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
                 $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
             }
+
+            $order->update([
+                'paymentURL' => $vnp_Url,
+            ]);
 
             DB::commit();
 
@@ -391,7 +430,7 @@ class OrderController extends Controller
                 // Giao dịch thành công, cập nhật trạng thái đơn hàng
                 $order = Order::where('order_code', $request['vnp_TxnRef'])->first();
                 if ($order) {
-                    $order->update(['status-payment' => 'Đã thanh toán']);
+                    $order->update(['status_payment' => 'Đã thanh toán']);
                 }
 
                 return response()->json([
