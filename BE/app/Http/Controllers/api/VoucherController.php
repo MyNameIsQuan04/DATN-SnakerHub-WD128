@@ -21,8 +21,9 @@ class VoucherController extends Controller
     {
         $request->validate([
             'codeDiscount' => 'required|unique:vouchers,codeDiscount|max:10',
-            'discount' => 'required|numeric|min:1|max:100',
+            'discount' => 'required|numeric|min:1|max:50',
             'type' => 'required|in:percent,amount',
+            'start_date' => 'required|date|after_or_equal:today',
             'expiration_date' => 'required|date',
             'usage_limit' => 'required|integer|min:1',
         ]);
@@ -45,10 +46,11 @@ class VoucherController extends Controller
 
         $request->validate([
             'codeDiscount' => 'required|max:10|unique:vouchers,codeDiscount,' . $voucher->id,
-            'discount' => 'required|numeric|min:1|max:100',
+            'discount' => 'required|numeric|min:1|max:50',
             'type' => 'required|in:percent,amount',
             'expiration_date' => 'required|date',
             'usage_limit' => 'required|integer|min:1',
+            'start_date' => 'required|date|after_or_equal:today',
         ]);
 
         $voucher->update([
