@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Jobs\SendNewOrderEmail;
 use App\Models\Order;
 use App\Models\Customer;
 use App\Models\Order_Item;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\Product_Variant;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendKhieuNaiOrderEmail;
 use App\Jobs\SendLinkPayment;
 use App\Models\Cart;
 use App\Models\Cart_Item;
@@ -137,6 +139,8 @@ class OrderController extends Controller
             }
             $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
 
+            SendNewOrderEmail::dispatch($order);
+
             return response()->json([
                 'success' => true,
                 'message' => 'thành công',
@@ -238,6 +242,9 @@ class OrderController extends Controller
             ]);
 
             $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+            
+            SendKhieuNaiOrderEmail::dispatch($order);
+
             return $order;
         }
     }
@@ -387,6 +394,7 @@ class OrderController extends Controller
 
             $user = Auth::user();
             SendLinkPayment::dispatch($vnp_Url, $user->email, $user->name);
+            SendNewOrderEmail::dispatch($order);
 
             return $vnp_Url;
         } catch (\Exception $e) {
