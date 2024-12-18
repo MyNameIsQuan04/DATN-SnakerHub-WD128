@@ -10,7 +10,7 @@ class Voucher extends Model
     use HasFactory;
 
     protected $fillable = [
-        'codeDiscount', 'discount','type', 'expiration_date', 'usage_limit'
+        'codeDiscount', 'discount','type', 'expiration_date', 'usage_limit', 'start_date'
     ];
 
      // Kiểm tra xem voucher còn hiệu lực không

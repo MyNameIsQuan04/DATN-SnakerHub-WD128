@@ -27,7 +27,7 @@ const ListSize = () => {
           </thead>
           <tbody>
             {sizes.map((size: Size, index: number) => (
-              <tr>
+              <tr key={size.id}>
                 <th className="py-2 px-4 border-b">{index + 1}</th>
                 <th className="py-2 px-4 border-b">{size.name}</th>
                 <th className="py-2 px-4 border-b flex justify-center gap-[10px]">
@@ -36,12 +36,14 @@ const ListSize = () => {
                       Cập nhật
                     </button>
                   </Link>
-                  <button
-                    className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
-                    onClick={() => onRemoveSize(size.id)}
-                  >
-                    Xóa
-                  </button>
+                  {size.name !== "Mặc định" && (
+                    <button
+                      className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
+                      onClick={() => onRemoveSize(size.id)}
+                    >
+                      Xóa
+                    </button>
+                  )}
                 </th>
               </tr>
             ))}

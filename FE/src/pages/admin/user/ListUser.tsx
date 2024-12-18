@@ -61,7 +61,8 @@ const ListUser = () => {
     try {
       const response = await axios.patch(
         `http://localhost:8000/api/users/${selectedUser.id}`,
-        updatedData,{
+        updatedData,
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -87,77 +88,84 @@ const ListUser = () => {
   const upgradeToAdmin = () =>
     handleUserUpdate({ type: "admin" }, "User has been upgraded to Admin!");
   const blockUser = async () => {
-  if (!selectedUser) return;
-  setIsUpdating(true);
-  try {
-    const response = await axios.post(
-      `http://localhost:8000/api/users/${selectedUser.id}/lock`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (response.status === 200) {
-      setListUser((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === selectedUser.id ? { ...user, isLocked: true } : user
-        )
+    if (!selectedUser) return;
+    setIsUpdating(true);
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/api/users/${selectedUser.id}/lock`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      toast.success("User has been blocked!");
-      closeModal();
-    }
-  } catch (error) {
-    toast.error("An error occurred while blocking the user.");
-    console.error(error);
-  } finally {
-    setIsUpdating(false);
-  }
-};
-
-const unBlockUser = async () => {
-  if (!selectedUser) return;
-  setIsUpdating(true);
-  try {
-    const response = await axios.post(
-      `http://localhost:8000/api/users/${selectedUser.id}/unlock`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      if (response.status === 200) {
+        setListUser((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === selectedUser.id
+              ? { ...user, deleted_at: new Date().toISOString() }
+              : user
+          )
+        );
+        toast.success("User has been blocked!");
+        closeModal();
       }
-    );
-    if (response.status === 200) {
-      setListUser((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === selectedUser.id ? { ...user, isLocked: false } : user
-        )
-      );
-      toast.success("User has been unblocked!");
-      closeModal();
+    } catch (error) {
+      toast.error("An error occurred while blocking the user.");
+      console.error(error);
+    } finally {
+      setIsUpdating(false);
     }
-  } catch (error) {
-    toast.error("An error occurred while unblocking the user.");
-    console.error(error);
-  } finally {
-    setIsUpdating(false);
-  }
-};
+  };
 
+  const unBlockUser = async () => {
+    if (!selectedUser) return;
+    if (selectedUser.deleted_at === null) {
+      toast.info("User is already unlocked.");
+      return;
+    }
+    setIsUpdating(true);
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/api/users/${selectedUser.id}/unlock`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setListUser((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === selectedUser.id
+              ? { ...user, delete_at: null }
+              : user
+          )
+        );
+        toast.success("User has been unlocked!");
+        closeModal();
+      }
+    } catch (error) {
+      toast.error("An error occurred while unblocking the user.");
+      console.error(error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <div className="p-6">
       {/* Header Section */}
       <div className="mb-4">
-        <h2 className="font-bold text-3xl">User List</h2>
+        <h2 className="font-bold text-3xl">Danh sách người dùng</h2>
         <div className="flex items-center gap-2 ml-2 text-gray-600">
           <div className="flex items-center gap-1">
             <IoHomeOutline />
             <GrFormNext />
           </div>
-          <h3 className="underline">User Management</h3>
+          <h3 className="underline">Danh sách</h3>
         </div>
       </div>
 
@@ -235,40 +243,42 @@ const unBlockUser = async () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-xl font-bold mb-4 text-gray-800">
-              Manage User: {selectedUser.name}
+              Quyền truy cập: {selectedUser.name}
             </h2>
             <div className="space-y-4">
-              {selectedUser.isLocked ? (
-                <button
-                  className="w-full py-2 text-white bg-green-500 hover:bg-green-600 rounded-md"
-                  onClick={unBlockUser}
-                  disabled={isUpdating}
-                >
-                  {isUpdating ? "Processing..." : "Unblock User"}
-                </button>
-              ) : (
+              {/* Kiểm tra nếu delete_at là null, người dùng chưa bị chặn */}
+              {selectedUser.deleted_at === null ? (
                 <>
                   <button
                     className="w-full py-2 text-white bg-yellow-500 hover:bg-yellow-600 rounded-md"
                     onClick={upgradeToAdmin}
                     disabled={isUpdating}
                   >
-                    {isUpdating ? "Processing..." : "Promote to Admin"}
+                    {isUpdating ? "Processing..." : "Cấp quyền Admin"}
                   </button>
                   <button
                     className="w-full py-2 text-white bg-red-500 hover:bg-red-600 rounded-md"
                     onClick={blockUser}
                     disabled={isUpdating}
                   >
-                    {isUpdating ? "Processing..." : "Block User"}
+                    {isUpdating ? "Processing..." : "Chặn người dùng"}
                   </button>
                 </>
+              ) : (
+                // Nếu delete_at có giá trị, người dùng bị chặn
+                <button
+                  className="w-full py-2 text-white bg-green-500 hover:bg-green-600 rounded-md"
+                  onClick={unBlockUser}
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? "Processing..." : "Mở chặn người dùng"}
+                </button>
               )}
               <button
                 className="w-full py-2 text-gray-700 border border-gray-400 hover:bg-gray-200 rounded-md"
                 onClick={closeModal}
               >
-                Cancel
+                Hủy
               </button>
             </div>
           </div>
