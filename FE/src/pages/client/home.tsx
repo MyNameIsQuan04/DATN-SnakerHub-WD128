@@ -87,7 +87,7 @@ const Home = () => {
   return (
     <div className="">
       <SimpleSlider />
-      <div className="flex gap-[50px] justify-center  items-center py-[40px] bg-[#f2f2f2]">
+      <div className="flex gap-[50px] justify-center items-center py-[40px] bg-[#f2f2f2]">
         <div className="text-center w-[400px]">
           <svg
             xmlns="http://www.w3.org/2000/svg"
