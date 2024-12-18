@@ -10,6 +10,7 @@ use App\Models\Product_Variant;
 use App\Jobs\SendOrderStatusEmail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendKhieuNaiOrderEmail;
 use App\Mail\OrderStatusUpdatedMail;
 use Illuminate\Support\Facades\Mail;
 

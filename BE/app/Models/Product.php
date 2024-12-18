@@ -23,18 +23,18 @@ class Product extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class)->withTrashed();
+        return $this->belongsTo(Category::class);
     }
     public function productVariants()
     {
-        return $this->hasMany(Product_Variant::class)->withTrashed();
+        return $this->hasMany(Product_Variant::class);
     }
     public function comments()
     {
-        return $this->hasMany(Comment::class)->withTrashed();
+        return $this->hasMany(Comment::class);
     }
     public function galleries()
     {
-        return $this->hasMany(Gallery::class)->withTrashed();
+        return $this->hasMany(Gallery::class);
     }
 }

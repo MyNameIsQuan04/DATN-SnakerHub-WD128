@@ -94,7 +94,7 @@ const ResetPasswordPage = () => {
                   Nhập lại mật khẩu
                 </label>
                 <input
-                  type="confirm-password"
+                  type="password"
                   id="confirm-password"
                   placeholder="••••••••"
                   {...register("confirmPassword")}
