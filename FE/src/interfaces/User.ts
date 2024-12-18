@@ -14,5 +14,5 @@ export interface IUser {
   created_at: string; 
   update_at:string;
   isLocked: boolean; 
-  delete_at?: null | string
+  deleted_at?: null | string
 }

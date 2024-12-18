@@ -104,7 +104,7 @@ const ListUser = () => {
         setListUser((prevUsers) =>
           prevUsers.map((user) =>
             user.id === selectedUser.id
-              ? { ...user, delete_at: new Date().toISOString() }
+              ? { ...user, deleted_at: new Date().toISOString() }
               : user
           )
         );
@@ -121,7 +121,7 @@ const ListUser = () => {
 
   const unBlockUser = async () => {
     if (!selectedUser) return;
-    if (selectedUser.delete_at === null) {
+    if (selectedUser.deleted_at === null) {
       toast.info("User is already unlocked.");
       return;
     }
@@ -247,7 +247,7 @@ const ListUser = () => {
             </h2>
             <div className="space-y-4">
               {/* Kiểm tra nếu delete_at là null, người dùng chưa bị chặn */}
-              {selectedUser.delete_at === null ? (
+              {selectedUser.deleted_at === null ? (
                 <>
                   <button
                     className="w-full py-2 text-white bg-yellow-500 hover:bg-yellow-600 rounded-md"
