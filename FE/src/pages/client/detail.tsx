@@ -37,7 +37,7 @@ const Detail = () => {
   const [loading, setLoading] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [averageRate, setAverageRate] = useState(0);
-
+  const [countRates, setCountRates] = useState(0);
   const handleIncrease = () => {
     setQuantity((prev) => prev + 1); // Tăng số lượng
   };
@@ -69,7 +69,9 @@ const Detail = () => {
         `http://localhost:8000/api/client/products/${productId}`
       );
       setProduct(response.data.product);
+      setCountRates(response.data.countRates);
       const product = response.data.product;
+
       fetchRelatedProducts(product.category.id as number, productId);
     } catch (error) {
       console.error("Lỗi khi lấy thông tin sản phẩm:", error);
@@ -263,6 +265,7 @@ const Detail = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (variant: any) => variant.stock === 0
   );
+
   return (
     <div className="mt-[100px]">
       {/* Thông tin sản phẩm */}
@@ -340,7 +343,7 @@ const Detail = () => {
                 <span>⭐</span>
               </div>
               <div className="flex gap-3 text-sm text-gray-500">
-                <span>1401 đánh giá</span>
+                <span>{countRates} đánh giá</span>
                 <span>890 lượt thích</span>
               </div>
             </div>
@@ -511,14 +514,6 @@ const Detail = () => {
             {/* Các dịch vụ liên quan */}
             <div className="grid grid-cols-3 mt-6 gap-4">
               <div className="flex flex-col items-center text-sm text-gray-600">
-                <MdOutlineLocalShipping className="w-[30px] h-auto" />
-                <p>Bảo hành keo vĩnh viễn</p>
-              </div>
-              <div className="flex flex-col items-center text-sm text-gray-600">
-                <MdOutlineLocalShipping className="w-[30px] h-auto" />
-                <p>Miễn phí vận chuyển toàn quốc cho đơn hàng từ 150k</p>
-              </div>
-              <div className="flex flex-col items-center text-sm text-gray-600">
                 <TbTruckReturn className="w-[30px] h-auto" />
                 <p>Đổi trả dễ dàng (trong vòng 7 ngày nếu lỗi nhà sản xuất)</p>
               </div>
@@ -530,12 +525,7 @@ const Detail = () => {
                 <AiOutlineBank className="w-[30px] h-auto" />
                 <p>Giao hàng tận nơi, nhận hàng xong thanh toán</p>
               </div>
-              <div className="flex flex-col items-center text-sm text-gray-600">
-                <GrAnnounce className="w-[30px] h-auto" />
-                <p>
-                  Ưu đãi tích điểm và hưởng quyền lợi thành viên từ SnakerHub
-                </p>
-              </div>
+
               {/* Thêm phần mô tả sản phẩm */}
               {/* <div className="mt-8 border-t-4 border-gray-300 pt-4">
                 <p className="text-lg font-semibold text-gray-800">
