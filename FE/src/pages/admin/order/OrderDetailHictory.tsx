@@ -6,6 +6,7 @@ import { Order, OrderItem } from "../../../interfaces/Order";
 import { FcPrevious } from "react-icons/fc";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaSpinner } from "react-icons/fa";
 
 const OrderDetailHictory = () => {
   const { id } = useParams<{ id: string }>();
@@ -57,19 +58,22 @@ const OrderDetailHictory = () => {
       toast.info("Trạng thái này đã được cập nhật.");
       return;
     }
-  
+
     // Kiểm tra nếu trạng thái hiện tại là "Đã giao hàng" và thời gian đã trôi qua ít hơn 5 ngày
     if (order?.status === "Đã giao hàng" && newStatus === "Hoàn thành") {
-      const timeElapsed = new Date().getTime() - new Date(order.updated_at).getTime();
+      const timeElapsed =
+        new Date().getTime() - new Date(order.updated_at).getTime();
       // 5 ngày tính bằng giây
-      const fiveDaysInMilliseconds = 3 * 24 * 60 * 60 * 1000; 
-  
+      const fiveDaysInMilliseconds = 3 * 24 * 60 * 60 * 1000;
+
       if (timeElapsed < fiveDaysInMilliseconds) {
-        toast.warn("Chỉ có thể cập nhật thành 'Hoàn thành' sau 3 ngày kể từ khi đã giao đơn hàng.");
+        toast.warn(
+          "Chỉ có thể cập nhật thành 'Hoàn thành' sau 3 ngày kể từ khi đã giao đơn hàng."
+        );
         return;
       }
     }
-  
+
     try {
       const updateData = {
         status: newStatus,
@@ -77,13 +81,13 @@ const OrderDetailHictory = () => {
           status_payment: "Đã thanh toán",
         }),
       };
-  
+
       const { status } = await axios.put(
         `http://localhost:8000/api/orders/${id}`,
         updateData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       if (status === 200) {
         setOrder((prev) => (prev ? { ...prev, ...updateData } : null));
         toast.success("Cập nhật trạng thái thành công!");
@@ -92,7 +96,7 @@ const OrderDetailHictory = () => {
       toast.error("Cập nhật trạng thái thất bại!");
     }
   };
-  
+
   const handleDeleteRequest = async (orderId: number) => {
     try {
       await axios.patch(
@@ -156,6 +160,20 @@ const OrderDetailHictory = () => {
       toast.error("Cập nhật trạng thái thất bại. Vui lòng thử lại.");
     }
   };
+  const statusOrder = [
+    "Chờ xử lý",
+    "Đã xác nhận",
+    "Đang vận chuyển",
+    "Đã giao hàng",
+    "Hoàn thành",
+    "Đã hủy",
+    "Trả hàng",
+  ];
+
+  // Hàm tính chỉ số trạng thái
+  const getStatusIndex = (currentStatus: string): number => {
+    return statusOrder.indexOf(currentStatus);
+  };
 
   useEffect(() => {
     fetchOrderDetail();
@@ -163,7 +181,12 @@ const OrderDetailHictory = () => {
 
   if (loading) {
     return (
-      <div className="text-center mt-4">Đang tải chi tiết đơn hàng...</div>
+      <div className="flex justify-center items-center h-[60vh]">
+        <FaSpinner className="animate-spin text-4xl text-blue-500" />
+        <span className="ml-2 text-lg font-medium text-gray-600">
+          Đang tải chi tiết đơn hàng ....
+        </span>
+      </div>
     );
   }
 
@@ -380,25 +403,30 @@ const OrderDetailHictory = () => {
                 <select
                   value={order.status}
                   onChange={(e) => handleUpdateStatus(e.target.value)}
-                  className={`border px-4 py-2 rounded-md transition duration-300 ${
-                    {
-                      "Chờ xử lý": "border-yellow-500 text-yellow-500",
-                      "Đã xác nhận": "border-yellow-500 text-yellow-500",
-                      "Đang vận chuyển": "border-yellow-500 text-yellow-500",
-                      "Hoàn thành": "border-green-500 text-green-500",
-                      "Đã giao hàng": "border-green-500 text-green-500",
-                      "Trả hàng": "border-orange-500 text-orange-500",
-                      "Đã hủy": "border-red-500 text-red-500",
-                    }[order.status] || "border-gray-500 text-gray-500"
-                  }`}
+                  className="border px-4 py-2 rounded-md transition duration-300 text-gray-600 border-gray-500"
                 >
-                  <option value="Chờ xử lý">Chờ xử lý</option>
-                  <option value="Đã xác nhận">Đã xác nhận</option>
-                  <option value="Đang vận chuyển">Đang vận chuyển</option>
-                  <option value="Đã giao hàng">Đã giao hàng</option>
-                  <option value="Hoàn thành">Hoàn thành</option>
-                  <option value="Đã hủy">Đã hủy</option>
-                  <option value="Trả hàng">Trả hàng</option>
+                  {[
+                    { value: "Chờ xử lý", label: "Chờ xử lý" },
+                    { value: "Đã xác nhận", label: "Đã xác nhận" },
+                    { value: "Đang vận chuyển", label: "Đang vận chuyển" },
+                    { value: "Đã giao hàng", label: "Đã giao hàng" },
+                    { value: "Hoàn thành", label: "Hoàn thành" },
+                    { value: "Đã hủy", label: "Đã hủy" },
+                    { value: "Trả hàng", label: "Trả hàng" },
+                  ].map((statusOption, index) => (
+                    <option
+                      key={index}
+                      value={statusOption.value}
+                      disabled={index < getStatusIndex(order.status)}
+                      className={
+                        index < getStatusIndex(order.status)
+                          ? "text-gray-300 bg-gray-100 cursor-not-allowed"
+                          : "text-gray-600"
+                      }
+                    >
+                      {statusOption.label}
+                    </option>
+                  ))}
                 </select>
               </div>
             )}

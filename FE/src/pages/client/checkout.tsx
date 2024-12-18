@@ -529,7 +529,7 @@ const Checkout = () => {
             </div>
             <hr className="my-4" />
             <div className="flex justify-end text-lg">
-              <span>Thành tiền: </span>
+              <span>Thành tiền: {""}</span>
               <span className="text-red-500">
                 {formatCurrency(grandTotalPrice - discount + shippingFee)}
               </span>
