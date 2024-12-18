@@ -71,10 +71,8 @@ const Detail = () => {
       );
       setProduct(response.data.product);
       setCountRates(response.data.countRates);
-      setCountSell(response.data.countRates);
-
+      setCountSell(response.data.countSell);
       const product = response.data.product;
-
       fetchRelatedProducts(product.category.id as number, productId);
     } catch (error) {
       console.error("Lỗi khi lấy thông tin sản phẩm:", error);
