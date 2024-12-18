@@ -92,7 +92,7 @@ const Header = () => {
   };
   return (
     <div>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white flex items-center justify-between px-14 py-3 border-b border-gray-200 mb-0">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white flex items-center justify-between px-14 py-3 border-b border-gray-200 mb-0 ">
         {/* Logo */}
         <div className="flex items-center w-[279px]">
           <a href="/">
@@ -104,19 +104,21 @@ const Header = () => {
           </a>
         </div>
         <nav className="flex justify-center space-x-6 text-base font-medium text-gray-800">
-          {categoriesClient.map((category: Category) => (
-            <ul key={category.id}>
-              <li className="relative group">
-                <Link
-                  to={`/products?categoryId=${category.id}`}
-                  className="hover:text-gray-900 uppercase"
-                >
-                  {category.name}
-                </Link>
-                <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              </li>
-            </ul>
-          ))}
+          {categoriesClient
+            .filter((category: Category) => category.name !== "Chưa phân loại") // Loại bỏ danh mục "Chưa phân loại"
+            .map((category: Category) => (
+              <ul key={category.id}>
+                <li className="relative group">
+                  <Link
+                    to={`/products?categoryId=${category.id}`}
+                    className="hover:text-gray-900 uppercase"
+                  >
+                    {category.name}
+                  </Link>
+                  <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
+                </li>
+              </ul>
+            ))}
 
           <ul>
             <li className="relative group">

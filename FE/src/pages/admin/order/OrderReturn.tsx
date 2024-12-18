@@ -1,8 +1,9 @@
 import axios from "axios";
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { Order } from "../../../interfaces/Order";
 import { Link } from "react-router-dom";
+import { FaSpinner } from "react-icons/fa";
 
 const OrderReturn = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -53,7 +54,9 @@ const OrderReturn = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="sticky top-0 bg-white shadow-lg z-10 p-4">
-        <h1 className="text-3xl font-bold mb-4 text-gray-800">Yêu cầu khiếu nại</h1>
+        <h1 className="text-3xl font-bold mb-4 text-gray-800">
+          Yêu cầu khiếu nại
+        </h1>
         <div className="flex flex-wrap items-center gap-4 mb-4">
           <input
             type="text"
@@ -71,8 +74,11 @@ const OrderReturn = () => {
       </div>
 
       {isLoading && (
-        <div className="mt-4 text-center text-blue-500 font-semibold">
-          Đang tải dữ liệu...
+        <div className="flex justify-center items-center h-[60vh]">
+          <FaSpinner className="animate-spin text-4xl text-blue-500" />
+          <span className="ml-2 text-lg font-medium text-gray-600">
+            Đang tải đơn hàng khiếu nại ....
+          </span>
         </div>
       )}
 
@@ -167,7 +173,6 @@ const OrderReturn = () => {
 };
 
 export default OrderReturn;
-
 
 // {item.status === "Yêu cầu trả hàng" && (
 //   <tr>

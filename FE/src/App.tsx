@@ -54,33 +54,36 @@ function App() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
-    // Tạo script cho Tawk.to
+    // Tạo script Tawk.to
     const script = document.createElement("script");
     script.async = true;
-    script.src = "https://embed.tawk.to/6758ff5549e2fd8dfef61749/1iepqaq7i";
+    script.src = "https://embed.tawk.to/675e50ff49e2fd8dfef7eda1/1if46opkf";
     script.charset = "UTF-8";
     script.setAttribute("crossorigin", "*");
     document.body.appendChild(script);
-    // Thiết lập thông tin người dùng
-    // script.onload = () => {
-    //   if (window.Tawk_API) {
-    //     // Kết thúc cuộc trò chuyện hiện tại
-    //     window.Tawk_API.endChat();
 
-    //     // Sau đó, gắn thông tin người dùng mới
-    //     if (user && user.name && user.email && user.id) {
-    //       window.Tawk_API.setAttributes({
-    //         name: user.name, // Tên khách hàng
-    //         email: user.email, // Email khách hàng
-    //         id: user.id, // ID khách hàng
-    //       });
+    // Cấu hình Tawk.to sau khi script tải xong
+    script.onload = () => {
+      if (window.Tawk_API) {
+        // Đặt thông tin người dùng nếu có
+        if (user && user.name && user.email && user.id) {
+          window.Tawk_API.setAttributes(
+            {
+              name: user.name, // Tên người dùng
+              email: user.email, // Email người dùng
+              id: user.id, // ID người dùng
+            },
+            (error) => {
+              if (error) {
+                console.error("Tawk.to setAttributes error:", error);
+              }
+            }
+          );
+        }
+      }
+    };
 
-    //       // Bắt đầu cuộc trò chuyện mới
-    //       window.Tawk_API.startChat();
-    //     }
-    //   }
-    // };
-
+    // Dọn dẹp script khi component bị hủy
     return () => {
       document.body.removeChild(script);
     };
@@ -91,10 +94,9 @@ function App() {
         <Route
           path="/"
           element={
-            
-                <OrderContext>
-                  <LayoutClient />
-                </OrderContext>
+            <OrderContext>
+              <LayoutClient />
+            </OrderContext>
           }
         >
           <Route index element={<Home />} />

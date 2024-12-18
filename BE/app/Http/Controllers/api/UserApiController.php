@@ -91,7 +91,7 @@ class UserApiController extends Controller
             'gender' => 'nullable|in:male,female,other',
             'birthday' => 'nullable|date',
             'avatar' => 'nullable|image',
-            'islocked' => 'sometimes|boolean'
+            'islocked' => 'boolean'
         ]);
         if (isset($request['avatar'])) {
             $validatedData['avatar'] = Storage::url($request['avatar']->store('avatars', 'public'));

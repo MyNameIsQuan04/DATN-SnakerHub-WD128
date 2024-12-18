@@ -26,7 +26,7 @@ const UserOrderhistorydetail = () => {
     const formattedDate = date.toLocaleDateString("vi-VN", optionsDate); // Chỉ ngày
     const formattedTime = date.toLocaleTimeString("vi-VN", optionsTime); // Chỉ giờ
 
-    return `${formattedDate} ${formattedTime}`; 
+    return `${formattedDate} ${formattedTime}`;
   };
 
   // Hàm gọi API để lấy chi tiết đơn hàng
@@ -88,7 +88,11 @@ const UserOrderhistorydetail = () => {
         </Link>
 
         <div className="flex gap-5 items-center mr-5">
-          <span>Mã #: <span className="text-blue-500">{orderDetail?.order_code}</span></span>|
+          <span>
+            Mã #:{" "}
+            <span className="text-blue-500">{orderDetail?.order_code}</span>
+          </span>
+          |
           <span
             className={`
               ${orderDetail?.status === "Chờ xử lý" ? "text-orange-500" : ""}
@@ -688,9 +692,9 @@ const UserOrderhistorydetail = () => {
               <div className="flex justify-between items-start border-t-2 pt-4">
                 {/* Phần thứ nhất: Khiếu nại, trạng thái đơn hàng, trạng thái thanh toán và phương thức thanh toán */}
                 <div className="w-1/2 pr-6">
-                  {orderDetail.status === "Trả hàng" ? (
+                  {orderDetail.status === "Trả hàng" || orderDetail.status === "Yêu cầu trả hàng" || orderDetail.status === "Xử lý yêu cầu trả hàng" ? (
                     <span className="block mb-2">
-                      <strong>Khiếu nại: </strong>
+                      <strong>Khiếu nại: {""}</strong>
                       {orderDetail.note}
                     </span>
                   ) : (
@@ -726,12 +730,12 @@ const UserOrderhistorydetail = () => {
                     <h1 className="font-medium">Trạng thái thanh toán:</h1>
                     {orderDetail.status_payment === "Đã thanh toán" ? (
                       <h1 className="text-green-400 font-semibold">
-                      {orderDetail.status_payment}
-                    </h1>
+                        {orderDetail.status_payment}
+                      </h1>
                     ) : (
                       <h1 className="text-orange-400 font-semibold">
-                      {orderDetail.status_payment}
-                    </h1>
+                        {orderDetail.status_payment}
+                      </h1>
                     )}
                   </div>
 

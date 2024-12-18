@@ -136,7 +136,7 @@ const Products = () => {
   }, [categoryId]);
   return (
     <div>
-      <div className="container mx-auto my-8 px-4 md:px-8 mt-[80px]">
+      <div className="container mx-auto my-8 px-4 md:px-8 mt-[100px]">
         <div className="flex flex-wrap -mx-4">
           <aside className="w-1/5 px-4 mb-6">
             <h2 className="text-xl font-semibold mb-4">Bộ lọc</h2>

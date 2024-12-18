@@ -16,7 +16,8 @@ class ProductController extends Controller
         $products = Product::orderByDesc('id')->get()
             ->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
 
-        $top10 = Product::orderByDesc('sell_count')->get();
+        $top10 = Product::orderByDesc('sell_count')->get()
+            ->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
 
         return response()->json([
             'success' => true,
@@ -32,7 +33,9 @@ class ProductController extends Controller
 
         $rates = Comment::where('product_id', $product['id'])->get()
             ->load('user', 'product.productVariants.size', 'product.productVariants.color');
-        
+
+
+
         $countRates = Comment::where('product_id', $product['id'])->count();
 
         $countSell = Product::where('id', $product['id'])->value('sell_count');
@@ -85,12 +88,6 @@ class ProductController extends Controller
             $products = $query->get();
             $products->load('category');
 
-            // // If no products are found, return a 404 response with a message
-            if ($products->isEmpty()) {
-                return response()->json([
-                    'message' => 'No products found for the given filters.'
-                ], 404);
-            }
 
             // Return the filtered products
             return response()->json($products, 200);

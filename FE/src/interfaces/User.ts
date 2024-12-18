@@ -1,18 +1,4 @@
-// export interface IUser {
-//   id?: string ;
-//   name?: string;
-//   email?: string;
-//   password?: string;
-//   address?: string;
-//   phone_number?: string;
-//   gender? : "male" | "female" | "other" | undefined;
-//   birthday? : string;
-//   avatar?: string;
-//   type?: "admin" | "user" | "guest";
-//   confirmPassword?: string;
-//   created_at: string;
-//   isLocked: boolean; // Thêm thuộc tính để quản lý trạng thái khóa
-// }
+
 export interface IUser {
   id?: string;
   name?: string;
