@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <div className="mx-auto w-full bg-white">
+    <div className="mx-auto w-[1440px] bg-white">
       {/* Phần đầu Footer */}
       <hr className="border-t-2 border-gray-400 my-4" />
       <div className="flex flex-col md:flex-row justify-between mx-4">
@@ -40,7 +40,8 @@ const Footer = () => {
                 thương mại điện tử
               </li>
               <li className="mb-[10px] hover:text-blue-600 transition-colors duration-300 hover:underline">
-                <i className="fa-solid fa-chevron-right" /> Giới thiệu về MWC
+                <i className="fa-solid fa-chevron-right" /> Giới thiệu về
+                SnakerHUB
               </li>
               <li className="mb-[10px] hover:text-blue-600 transition-colors duration-300 hover:underline">
                 <i className="fa-solid fa-chevron-right" /> Than Phiền Góp Ý
@@ -91,7 +92,7 @@ const Footer = () => {
       </div>
 
       {/* Phần 2 Footer */}
-      <footer className="bg-gray-800 text-white pt-10">
+      <footer className="bg-gray-800 text-white pt-10 mt-[60px]">
         <div className="container grid grid-cols-1 md:grid-cols-4 gap-8 mx-auto px-4 md:px-8">
           {/* Thông tin công ty */}
           <div>
@@ -99,7 +100,7 @@ const Footer = () => {
             <p>SneakerHub Việt Nam</p>
             <p>Địa chỉ: 123 Đường ABC, Hà Nội</p>
             <p>SĐT: 0123 456 789</p>
-            <p>Email: support@sneakerhub.vn</p>
+            <p>Email: support@snakerhub.vn</p>
           </div>
 
           {/* Liên kết hữu ích */}

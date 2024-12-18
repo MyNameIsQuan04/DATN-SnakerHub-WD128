@@ -40,7 +40,6 @@ const UserOrderHistory = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleStarClick = (star: any) => {
     setRating(star);
-    console.log(star);
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCommentChange = (e: any) => {
@@ -206,6 +205,13 @@ const UserOrderHistory = () => {
     product_variant_Id: number
     // orderId: number
   ) => {
+    if (!comment.trim()) {
+      alert("Hãy nhập đánh giá của bạn");
+      return;
+    } else if (rating === 0) {
+      alert("Hãy nhập sao đánh giá");
+      return;
+    }
     const reviewData = {
       order__item_id: orderItemId,
       user_id: userId,
@@ -213,8 +219,6 @@ const UserOrderHistory = () => {
       star: rating,
       content: comment,
     };
-
-    console.log("Dữ liệu đánh giá:", reviewData);
 
     try {
       const response = await axios.post(
@@ -227,11 +231,11 @@ const UserOrderHistory = () => {
         }
       );
 
-      console.log("Đánh giá đã được gửi thành công:", response.data);
-      console.log(response.data);
       handleCloseModalRating();
+      toast.success("Bạn đã đánh giá thành công");
     } catch (error) {
-      console.error("Lỗi khi gửi đánh giá:", error);
+      toast.error(error.response.data.message);
+      handleCloseModalRating();
     }
   };
 
@@ -447,7 +451,7 @@ const UserOrderHistory = () => {
                         alt="Product"
                         className="w-24 h-24 object-cover rounded-lg shadow-md"
                       />
-                      <div className="flex flex-col">
+                      <div className="flex flex-col w-[200px]">
                         <p className="text-lg font-semibold text-gray-700">
                           {item.product_variant?.product.name}
                         </p>

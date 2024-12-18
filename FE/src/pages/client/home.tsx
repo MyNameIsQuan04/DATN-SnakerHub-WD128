@@ -84,86 +84,26 @@ const Home = () => {
   return (
     <div className="">
       <SimpleSlider />
-      <div className="flex gap-[50px] justify-center  items-center py-[40px] bg-[#f2f2f2]">
-        <div className="text-center w-[400px]">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            className="size-12 mx-auto"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"
-            />
-          </svg>
 
-          <p className="font-bold text-[20px] text-[#f2611c]">
-            CAM KÊT CHÍNH HÃNG
-          </p>
-          <p className="font-bold">100% Authentic</p>
-          <p>Cam kết sản phẩm chính hàng tử Châu âu, Châu Mỹ...</p>
-        </div>
-        <div className="text-center w-[400px]">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            className="size-12 mx-auto"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"
-            />
-          </svg>
-
-          <p className="font-bold text-[20px] text-[#f2611c]">
-            GIAO HÀNG HỎA TỐC
-          </p>
-          <p className="font-bold">Express delivery</p>
-          <p>SHIP hỏa tốc 1h nhận hàng trong nội thành HN</p>
-        </div>
-        <div className="text-center w-[400px]">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            className="size-12 mx-auto"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"
-            />
-          </svg>
-
-          <p className="font-bold text-[20px] text-[#f2611c]">HỖ TRỢ 24/24</p>
-          <p className="font-bold">Supporting 24/24c</p>
-          <p>Gọi ngay 0123456789</p>
-        </div>
-      </div>
       <div className="mt-[50px]">
         <p className="text-[30px] text-center text-[#f2611c] px-[40px] font-semibold">
           DANH MỤC SẢN PHẨM
         </p>
         <div className="flex justify-center gap-[30px] mt-[30px]">
-          {categoriesClient.map((category: Category) => (
-            <div className="w-36 bg-transparent items-center justify-center flex border-2 border-orange-500 shadow-lg hover:bg-orange-500 text-orange-500 hover:text-white duration-300 cursor-pointer active:scale-[0.98]">
-              <button className="px-5 py-2">
-                <a className="" href="">
-                  {category.name}
-                </a>
-              </button>
-            </div>
-          ))}
+          {categoriesClient
+            .filter((category: Category) => category.name !== "Chưa phân loại") // Loại bỏ danh mục "Chưa phân loại"
+            .map((category: Category) => (
+              <div
+                key={category.id} // Nên thêm key để React quản lý danh sách tốt hơn
+                className="w-36 bg-transparent items-center justify-center flex border-2 border-orange-500 shadow-lg hover:bg-orange-500 text-orange-500 hover:text-white duration-300 cursor-pointer active:scale-[0.98]"
+              >
+                <button className="px-5 py-2">
+                  <a href={`/products?categoryId=${category.id}`}>
+                    {category.name}
+                  </a>
+                </button>
+              </div>
+            ))}
         </div>
         <div className="my-[50px] flex justify-between items-center">
           <div className="relative flex flex-col justify-center pl-[40px]">
