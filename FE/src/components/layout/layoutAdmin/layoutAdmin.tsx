@@ -14,19 +14,51 @@ import { RiDiscountPercentFill } from "react-icons/ri";
 import { useAuth } from "../../../contexts/AuthContext";
 
 const LayoutAdmin = () => {
-  const { user,logout } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation(); // Lấy đường dẫn hiện tại
 
   // Danh sách menu items
   const menuItems = [
-    { path: "/admin", icon: <FaTachometerAlt className="mr-2" />, label: "Bảng điều khiển" },
-    { path: "/admin/user", icon: <FaUser className="mr-2" />, label: "Người dùng" },
-    { path: "/admin/product", icon: <FaProductHunt className="mr-2" />, label: "Sản phẩm" },
-    { path: "/admin/category", icon: <FaList className="mr-2" />, label: "Danh mục" },
-    { path: "/admin/color", icon: <IoColorPaletteOutline className="mr-2" />, label: "Danh mục màu sắc" },
-    { path: "/admin/size", icon: <CgSize className="mr-2" />, label: "Danh mục kích cỡ" },
-    { path: "/admin/vouchers", icon: <RiDiscountPercentFill className="mr-2" />, label: "Vouchers" },
-    { path: "/admin/order", icon: <FaShoppingCart className="mr-2" />, label: "Đơn hàng" },
+    {
+      path: "/admin",
+      icon: <FaTachometerAlt className="mr-2" />,
+      label: "Bảng điều khiển",
+    },
+    {
+      path: "/admin/user",
+      icon: <FaUser className="mr-2" />,
+      label: "Người dùng",
+    },
+    {
+      path: "/admin/product",
+      icon: <FaProductHunt className="mr-2" />,
+      label: "Sản phẩm",
+    },
+    {
+      path: "/admin/category",
+      icon: <FaList className="mr-2" />,
+      label: "Danh mục",
+    },
+    {
+      path: "/admin/color",
+      icon: <IoColorPaletteOutline className="mr-2" />,
+      label: "Danh mục màu sắc",
+    },
+    {
+      path: "/admin/size",
+      icon: <CgSize className="mr-2" />,
+      label: "Danh mục kích cỡ",
+    },
+    {
+      path: "/admin/vouchers",
+      icon: <RiDiscountPercentFill className="mr-2" />,
+      label: "Vouchers",
+    },
+    {
+      path: "/admin/order",
+      icon: <FaShoppingCart className="mr-2" />,
+      label: "Đơn hàng",
+    },
     { path: "/", icon: <FaHome className="mr-2" />, label: "Client" },
   ];
 
@@ -61,33 +93,37 @@ const LayoutAdmin = () => {
               ))}
             </ul>
           </div>
-          <div className="p-6">
-            <button className="w-full px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition duration-200" onClick={logout}>
-              Logout
-            </button>
-          </div>
         </div>
 
         {/* Nội dung cuộn bên phải */}
         <div className="ml-[16.666%] w-5/6 p-6 overflow-auto h-screen">
           <div className="bg-white border border-gray-300 mb-4 rounded-lg shadow-md px-6 py-4 flex items-center justify-between">
             {/* Form tìm kiếm */}
-            <div className="flex items-center">
-
-            </div>
+            <div className="flex items-center"></div>
 
             {/* Thông tin admin */}
-            <div className="flex items-center">
-              <div className="ml-4 text-right">
-                <h2 className="text-xl font-semibold text-gray-800">
-                  Hi,{" "}
-                  <span className="font-semibold">{user?.name}</span>
+            <div className="flex items-center justify-between space-x-4">
+              <div className="flex flex-col text-right">
+                <h2 className="text-xl font-semibold text-gray-800 leading-tight">
+                  <div>
+                    <span>Hi,</span>
+                    <span className="font-semibold text-emerald-500">
+                      {user?.name}
+                    </span>
+                  </div>
+                  <button
+                    className="mt-2 px-6 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                    onClick={logout}
+                  >
+                    Logout
+                  </button>
                 </h2>
               </div>
+
               <img
                 src={user?.avatar || "https://via.placeholder.com/150"}
-                alt="Admin Avatar"
-                className="w-16 h-16 ml-4 rounded-full object-cover border border-gray-300"
+                alt="User Avatar"
+                className="w-16 h-16 rounded-full object-cover border-2 border-gray-300 shadow-md"
               />
             </div>
           </div>

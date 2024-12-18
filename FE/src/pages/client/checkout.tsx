@@ -136,7 +136,7 @@ const Checkout = () => {
     setDiscount(0);
     setCodeDiscount("");
     setTotalAfterDiscount(0);
-    toast.info("Mã giảm giá đã được xóa.");
+    toast.info(`Đã bỏ chọn mã giảm giá - ${codeDiscount}`);
   };
 
   const totalPriceItem = (price: number, quantity: number) => price * quantity;
