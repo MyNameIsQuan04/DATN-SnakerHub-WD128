@@ -38,6 +38,7 @@ const Detail = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [averageRate, setAverageRate] = useState(0);
   const [countRates, setCountRates] = useState(0);
+  const [countSell, setCountSell] = useState(0);
   const handleIncrease = () => {
     setQuantity((prev) => prev + 1); // Tăng số lượng
   };
@@ -70,6 +71,8 @@ const Detail = () => {
       );
       setProduct(response.data.product);
       setCountRates(response.data.countRates);
+      setCountSell(response.data.countRates);
+
       const product = response.data.product;
 
       fetchRelatedProducts(product.category.id as number, productId);
@@ -344,7 +347,7 @@ const Detail = () => {
               </div>
               <div className="flex gap-3 text-sm text-gray-500">
                 <span>{countRates} đánh giá</span>
-                <span>890 lượt thích</span>
+                <span>{countSell} lượt mua</span>
               </div>
             </div>
             <div className="flex items-center gap-3 mt-4">
