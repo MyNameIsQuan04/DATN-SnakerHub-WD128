@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { Product } from "../interfaces/Product";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import {
   addProduct,
   getProducts,
@@ -73,6 +73,7 @@ const ProductContext = ({ children }: Props) => {
   };
   return (
     <div>
+      <ToastContainer />
       <ProductCT.Provider
         value={{
           setProducts,
