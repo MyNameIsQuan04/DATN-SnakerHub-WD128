@@ -99,7 +99,7 @@ class OrderController extends Controller
                 $order->load('customer.user', 'orderItems.productVariant.product');
 
                 // Đẩy job vào hàng đợi thay vì gửi email trực tiếp
-                SendKhieuNaiOrderEmail::dispatch($order);
+                SendOrderStatusEmail::dispatch($order, $newStatus);
             });
 
             return response()->json([
