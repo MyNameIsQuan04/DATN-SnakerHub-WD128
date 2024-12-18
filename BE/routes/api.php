@@ -19,6 +19,7 @@ use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\CategoryControlller as ClientCategoryControlller;
+use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Client\ColorController;
 use App\Http\Controllers\Client\SizeController;
 
@@ -103,7 +104,7 @@ Route::group(['middleware' => ['auth:api']],  function () {
 
 Route::middleware('auth:api')->group(function () {
     // Hiển thị thông tin người dùng
-    Route::get('/client/user', [ClientController::class, 'show'])->middleware('auth:sanctum');
+    Route::get('/client/user/{user}', [ClientController::class, 'show']);
 
     // Hiển thị danh sách người dùng (Admin chỉ có thể truy cập)
     Route::get('/users', [UserApiController::class, 'index'])->middleware('type:admin');

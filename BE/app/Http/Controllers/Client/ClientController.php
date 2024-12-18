@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class ClientController extends Controller
 {
@@ -11,9 +13,9 @@ class ClientController extends Controller
         return view('client.index');
     }
 
-    public function show()
+    public function show(User $user)
     {
-        $user = Auth::user();
+
 
         if (!$user) {
             return response()->json([
@@ -22,18 +24,6 @@ class ClientController extends Controller
             ], 401);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'address' => $user->address,
-                'phone_number' => $user->phone_number,
-                'gioi_tinh' => $user->gioi_tinh,
-                'ngay_sinh' => $user->ngay_sinh,
-                'avatar' => $user->avatar,
-            ]
-        ], 200); 
+        return response()->json($user, 200);
     }
 }
