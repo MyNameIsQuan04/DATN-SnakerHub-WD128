@@ -14,7 +14,7 @@ const AdminOrder = () => {
   const token = localStorage.getItem("access_token");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
-  const [complaintCount, setComplaintCount] = useState<number>(0)
+  const [complaintCount, setComplaintCount] = useState<number>(0);
 
   useEffect(() => {
     fetchOrders();
@@ -174,6 +174,7 @@ const AdminOrder = () => {
                         "Tổng tiền",
                         "Phương thức thanh toán ",
                         "Trạng thái",
+                        "Trạng thái thanh toán",
                         "Chi tiết",
                       ][i]
                     }
@@ -228,6 +229,17 @@ const AdminOrder = () => {
                       }`}
                     >
                       {item.status}
+                    </td>
+                    <td
+                      className={`py-3 px-4 border-b text-center ${
+                        item.status_payment === "Đã thanh toán"
+                          ? "text-green-500"
+                          : item.status_payment === "Chưa thanh toán"
+                          ? "text-orange-500"
+                          : ""
+                      }`}
+                    >
+                      {item.status_payment}
                     </td>
 
                     <td className="border-b text-center">
