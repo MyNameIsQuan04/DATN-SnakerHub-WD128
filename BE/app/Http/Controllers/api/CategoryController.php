@@ -8,16 +8,13 @@ use App\Http\Controllers\Controller;
 
 class CategoryController extends Controller
 {
-    
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $categories = Category::orderByDesc('id')->get();
-        // dd($categories);
-        // return view('admin.category.index', compact('categories'));
-        // return response()->json($categories);
         return $categories;
     }
 
@@ -39,9 +36,14 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Category $category)
+    public function show($id)
     {
-        return $category;
+        try {
+            $category = Category::withTrashed()->findOrFail($id);
+            return response()->json($category, 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Category not found', 'error' => $e,], 404);
+        }
     }
 
     /**
@@ -64,23 +66,36 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    // public function destroy(Category $category)
+    // {
+    //     $category->load('products.productVariants.cartItems', 'products.comments');
+
+    //     foreach ($category->products as $product) {
+    //         foreach ($product->productVariants as $productVariant) {
+    //             $productVariant->cartItems()->delete();
+    //         }
+
+    //         $product->productVariants()->delete();
+    //         $product->comments()->delete();
+    //     }
+
+    //     $category->products()->delete();
+
+    //     $category->delete();
+
+    //     return $category;
+    // }
     public function destroy(Category $category)
     {
-        $category->load('products.productVariants.cartItems', 'products.comments');
-
-        foreach ($category->products as $product) {
-            foreach ($product->productVariants as $productVariant) {
-                $productVariant->cartItems()->delete();
-            }
-
-            $product->productVariants()->delete();
-            $product->comments()->delete();
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
         }
+        $defaultCategory = Category::firstOrCreate(['name' => 'Chưa phân loại']);
 
-        $category->products()->delete();
+        $category->products()->update(['category_id' => $defaultCategory->id]);
 
         $category->delete();
 
-        return $category;
+        return response()->json(['message' => 'Category deleted and products moved to default category'], 200);
     }
 }

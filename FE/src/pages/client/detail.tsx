@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { MdOutlineLocalShipping } from "react-icons/md";
@@ -6,42 +6,12 @@ import { FaPhoneVolume } from "react-icons/fa6";
 import { TbTruckReturn } from "react-icons/tb";
 import { GrAnnounce } from "react-icons/gr";
 import { AiOutlineBank } from "react-icons/ai";
-import { Product } from "../../interfaces/Product";
+import { Product, Rate } from "../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
-import { IoCartOutline } from "react-icons/io5";
 import { GrNext } from "react-icons/gr";
-import Slider from "react-slick";
-import { ProductCT } from "../../contexts/productContext";
 
 const Detail = () => {
-  const PrevArrow = (props: any) => {
-    const { className, onClick } = props;
-    return (
-      <button
-        className={`${className} z-10 left-[20px] text-white bg-black hover:bg-black transition-colors duration-200 rounded-full w-10 h-10 flex items-center justify-center`}
-        onClick={onClick}
-      >
-        &lt;
-      </button>
-    );
-  };
-
-  const NextArrow = (props: any) => {
-    const { className, onClick } = props;
-    return (
-      <button
-        className={`${className} z-10 right-[20px] text-white bg-black hover:bg-black transition-colors duration-200 rounded-full w-10 h-10 flex items-center justify-center`}
-        onClick={onClick}
-      >
-        &gt;
-      </button>
-    );
-  };
-  const { productsClient } = useContext(ProductCT);
-  const products = productsClient.products;
-  const fearturedProducts = products?.slice(0, 10) || [];
-
   const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
 
   const openSizeGuideModal = () => setIsSizeGuideModalOpen(true);
@@ -61,47 +31,45 @@ const Detail = () => {
   >(null);
   const token = localStorage.getItem("access_token");
   const [activeTab, setActiveTab] = useState(0);
+  const [quantity, setQuantity] = useState(1); // Bắt đầu với số lượng 1
+  const [ratings, setRatings] = useState<Rate[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [averageRate, setAverageRate] = useState(0);
 
+  const handleIncrease = () => {
+    setQuantity((prev) => prev + 1); // Tăng số lượng
+  };
+
+  const handleDecrease = () => {
+    if (quantity > 1) {
+      setQuantity((prev) => prev - 1); // Giảm số lượng, không cho về dưới 1
+    }
+  };
   const handleTabClick = (index: number) => {
     setActiveTab(index);
   };
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 4, // Số sản phẩm hiển thị trên một slide
-    slidesToScroll: 1,
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-    ],
+  const handleQuantityChange = (e) => {
+    const value = e.target.value;
+
+    if (/^\d*$/.test(value)) {
+      setQuantity(value === "" ? 1 : parseInt(value, 10));
+    }
+    if (value > stock) {
+      alert("Vượt quá số lượng sản phẩm");
+      setQuantity(stock);
+      return;
+    }
   };
   // Hàm lấy thông tin sản phẩm
   const fetchProduct = async (productId: string) => {
     try {
       const response = await axios.get<Product>(
-        `http://localhost:8000/api/products/${productId}`
+        `http://localhost:8000/api/client/products/${productId}`
       );
-      setProduct(response.data);
-      const product = response.data;
+      setProduct(response.data.product);
+      const product = response.data.product;
       fetchRelatedProducts(product.category.id as number, productId);
     } catch (error) {
       console.error("Lỗi khi lấy thông tin sản phẩm:", error);
@@ -120,7 +88,7 @@ const Detail = () => {
       const relatedProducts = products.filter(
         (product: Product) => product.id !== Number(currentProductId)
       );
-      setRelatedProducts(relatedProducts);
+      setRelatedProducts(relatedProducts.slice(0, 4));
       console.log(relatedProducts);
     } catch (error) {
       console.error("Lỗi khi lấy sản phẩm liên quan:", error);
@@ -129,6 +97,7 @@ const Detail = () => {
   useEffect(() => {
     if (id) {
       fetchProduct(id);
+      window.scrollTo(0, 0);
     }
   }, [id]);
 
@@ -201,7 +170,7 @@ const Detail = () => {
         id: product.id,
         color_id: selectedColor,
         size_id: selectedSize,
-        quantity: 1,
+        quantity: quantity,
       });
 
       console.log(response.data);
@@ -211,6 +180,28 @@ const Detail = () => {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
     }
   };
+
+  // đánh giá
+  useEffect(() => {
+    const fetchRatings = async (productID: string) => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/client/products/${productID}`
+        );
+        console.log(response.data);
+        setRatings(response.data.rates);
+        setAverageRate(response.data.averageRates);
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        console.error("Lỗi khi tải đánh giá:", err);
+      }
+    };
+
+    if (id) {
+      fetchRatings(id);
+    }
+  }, [id]);
 
   useEffect(() => {
     let slideshowInterval: NodeJS.Timeout;
@@ -262,11 +253,18 @@ const Detail = () => {
       product.product_variants.find((variant) => variant.size.id === sizeId)
         ?.size
   );
+  const selectedVariant = product.product_variants.find(
+    (variant) =>
+      variant.color_id === selectedColor && variant.size_id === selectedSize
+  );
+
+  const stock = selectedVariant ? selectedVariant.stock : 0;
   const isOutOfStock = product.product_variants.every(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (variant: any) => variant.stock === 0
   );
   return (
-    <div className="mt-[80px]">
+    <div className="mt-[100px]">
       {/* Thông tin sản phẩm */}
       <div className="container mx-auto mt-[20px] px-16">
         <div className="flex items-center space-x-2 mb-4">
@@ -346,7 +344,6 @@ const Detail = () => {
                 <span>890 lượt thích</span>
               </div>
             </div>
-
             <div className="flex items-center gap-3 mt-4">
               <span className="text-red-600 text-3xl font-semibold">
                 {selectedVariantPrice
@@ -410,17 +407,70 @@ const Detail = () => {
             >
               HƯỚNG DẪN TÌM SIZE
             </p>
-            <p className="mt-[20px] gap-[5px] cursor-pointer flex text-black text-sm font-semibold uppercase">
+            <p className="mt-[20px] gap-[15px] cursor-pointer flex text-black text-sm font-semibold uppercase">
               Số lượng còn lại:
-              {product.product_variants.map((variants) => (
-                <p>{variants.stock}</p>
-              ))}
+              {stock > 0 ? stock : " ..."}
             </p>
+
             {isOutOfStock && (
               <p className="mt-4 text-red-500 text-sm font-semibold">
                 Sản phẩm hiện đã hết hàng.
               </p>
             )}
+            {selectedSize && selectedColor ? (
+              <div className="flex items-center gap-2 mt-[]">
+                <button
+                  className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
+                  onClick={handleDecrease}
+                >
+                  <svg
+                    className="stroke-gray-900"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 18 19"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M4.5 9.5H13.5"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                <input
+                  type="text"
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                  className="border border-gray-200 rounded-full w-8 aspect-square text-gray-900 text-xs py-1 text-center"
+                />
+                <button
+                  className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
+                  onClick={handleIncrease}
+                  disabled={quantity >= stock}
+                >
+                  <svg
+                    className="stroke-gray-900"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 18 19"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M3.75 9.5H14.25M9 14.75V4.25"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <p>Vui lòng chọn kích thước và màu sắc.</p>
+            )}
+
             {isSizeGuideModalOpen && (
               <div
                 className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
@@ -445,44 +495,7 @@ const Detail = () => {
               </div>
             )}
 
-            <div className="border-2 mt-6 border-red-500 w-full h-12 flex justify-center items-center cursor-pointer">
-              <div className="flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="red"
-                  className="w-6 h-6 mr-2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-                  />
-                </svg>
-                <span className="text-red-600 text-sm">TÌM TẠI CỬA HÀNG</span>
-              </div>
-            </div>
-
             <div className="flex gap-4 mt-5">
-              <button
-                type="button"
-                className="bg-gray-100 text-center w-48 h-14 rounded-2xl relative text-red-500 text-lg font-medium border-4 border-white group flex items-center justify-center"
-              >
-                <div className="bg-orange-400 rounded-xl h-12 w-1/4 grid place-items-center absolute left-0 top-0 group-hover:w-full z-10 transition-all duration-500 ease-in-out">
-                  <IoCartOutline className="text-white text-xl" />
-                </div>
-                <p className="translate-x-4 group-hover:translate-x-0 transition-all duration-500 ease-in-out">
-                  Mua ngay
-                </p>
-              </button>
-
               <button
                 disabled={isOutOfStock}
                 onClick={() => addToCart(product, selectedColor, selectedSize)}
@@ -519,7 +532,9 @@ const Detail = () => {
               </div>
               <div className="flex flex-col items-center text-sm text-gray-600">
                 <GrAnnounce className="w-[30px] h-auto" />
-                <p>Ưu đãi tích điểm và hưởng quyền lợi thành viên từ MWC</p>
+                <p>
+                  Ưu đãi tích điểm và hưởng quyền lợi thành viên từ SnakerHub
+                </p>
               </div>
               {/* Thêm phần mô tả sản phẩm */}
               {/* <div className="mt-8 border-t-4 border-gray-300 pt-4">
@@ -536,7 +551,7 @@ const Detail = () => {
           </div>
         </div>
       </div>
-      <div className="max-w-[1400px] mx-auto mt-10 border-t-2 border-gray-400">
+      <div className=" mx-auto mt-10 border-t-2 border-gray-400">
         {/* Tab Buttons */}
         <div className="flex border-b bg-gray-200 border-gray-200 py-[10px] px-[80px] gap-[20px]">
           <button
@@ -553,7 +568,7 @@ const Detail = () => {
               activeTab === 1 ? "bg-white" : "text-gray-600"
             }`}
           >
-            Bình luận
+            Đánh giá
           </button>
         </div>
         <hr className="border-t-2 border-gray-400" />
@@ -597,17 +612,80 @@ const Detail = () => {
               </div>
             </div>
           )}
-          {activeTab === 1 && <div>Chưa có bình luận !</div>}
+          {activeTab === 1 && (
+            <div className="ratings-container">
+              {ratings.length > 0 ? (
+                <ul className="rating-list">
+                  {ratings.map((rating) => (
+                    <li key={rating.id} className="rating-item">
+                      <div className="user-info flex items-center gap-3">
+                        <img
+                          src={rating.user.avatar}
+                          alt={`${rating.user.name}'s avatar`}
+                          className="user-avatar w-14 h-14 rounded-full mb-4 object-cover"
+                        />
+                        <div>
+                          <strong>{rating.user.name}</strong>
+                          <p className="rating-date">
+                            {new Date(rating.created_at).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="rating-content mb-3">
+                        <div className="flex">
+                          <p>
+                            {rating.product.product_variants.map((item) => (
+                              <div className="">
+                                <div className="">
+                                  Màu sắc: {item.color.name || ""}
+                                </div>
+                                <div className="">
+                                  Kích thước: {item.size.name || ""}
+                                </div>
+                              </div>
+                            ))}
+                          </p>
+                        </div>
+                        <div className="rating-stars">
+                          {Array.from({ length: 5 }, (_, index) => (
+                            <span
+                              key={index}
+                              className={` ${
+                                index < rating.star
+                                  ? "star text-yellow-500 w-6 h-6 text-xl filled"
+                                  : "star text-gray-500 w-6 h-6 text-xl filled"
+                              }`}
+                            >
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                        <p>Nội dung đánh giá: {rating.content}</p>
+                      </div>
+                      <hr className="mb-3" />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Chưa có đánh giá nào .</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <div className="">
-        <p>Sản phẩm liên quan</p>
+        <p className="mt-5 mb-4 ml-[90px] font-semibold text-[30px]">
+          Sản phẩm liên quan
+        </p>
         <div className="px-[40px]">
-          <Slider {...settings} className="custom-slider">
+          <div className="grid grid-cols-4 gap-[20px]">
             {relatedProducts.map((product: Product) => (
-              <div key={product.id} className="gap-[10px]">
+              <div
+                key={product.id}
+                className="relative border border-gray-200 hover:border-gray-400 transition duration-300"
+              >
                 <Link to={`/detail/${product.id}`}>
-                  <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
+                  <div>
                     <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1">
                       HOT
                     </div>
@@ -639,7 +717,7 @@ const Detail = () => {
                 </Link>
               </div>
             ))}
-          </Slider>
+          </div>
         </div>
       </div>
       <ToastContainer className="mt-[80px]" />

@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify"; // Import toast
 import "react-toastify/dist/ReactToastify.css"; // Import CSS cho toast
 import { Link } from "react-router-dom";
+import "./VoucherCss.css";
 
 const ListVoucher = () => {
   const [vouchers, setVouchers] = useState<any[]>([]);
@@ -47,7 +48,7 @@ const ListVoucher = () => {
       <h2 className="text-3xl font-semibold text-gray-800 mb-4">
         Danh sách mã giảm giá
       </h2>
-      <div className="text-left">
+      <div className="text-left mb-6">
         <Link
           to="/admin/voucher-add"
           className="bg-blue-500 text-white p-3 rounded-lg text-xl hover:bg-blue-600 transition"
@@ -55,53 +56,50 @@ const ListVoucher = () => {
           Tạo mã giảm giá
         </Link>
       </div>
-      <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-        <thead>
-          <tr className="text-left bg-gray-100 text-gray-700">
-            <th className="py-3 px-6 border-b">Mã</th>
-            <th className="py-3 px-6 border-b">Tỉ lệ giảm giá</th>
-            <th className="py-3 px-6 border-b">Ngày hết hạn</th>
-            <th className="py-3 px-6 border-b">Số lần sử dụng</th>
-            <th className="py-3 px-6 border-b">Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {vouchers.map((voucher) => (
-            <tr key={voucher.id} className="hover:bg-gray-50">
-              <td className="py-4 px-6 border-b text-gray-600">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {vouchers.map((voucher) => (
+          <div
+            key={voucher.id}
+            className="voucher-card bg-white border border-gray-200 rounded-lg shadow-lg p-6 relative hover:transform hover:-translate-y-1 hover:border-orange-400 transition-all"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-blue-600">
                 {voucher.codeDiscount}
-              </td>
-              <td className="py-4 px-6 border-b text-gray-600">
-                {voucher.discount}%
-              </td>
-              <td className="py-4 px-6 border-b text-gray-600">
-                {voucher.expiration_date}
-              </td>
-              <td className="py-4 px-6 border-b text-gray-600">
-                {voucher.usage_limit}
-              </td>
-              <td className="py-4 px-6 border-b text-red-500">
-                <div className="flex space-x-2">
-                  {/* Button sửa */}
-                  <Link
-                    to={`/admin/voucher-edit/${voucher.id}`}
-                    className="bg-yellow-500 text-white font-semibold rounded py-1 px-3 text-base hover:bg-yellow-600 transition"
-                  >
-                    Sửa
-                  </Link>
-                  {/* Button xóa */}
-                  <button
-                    onClick={() => handleDelete(voucher.id)}
-                    className="bg-red-500 text-white font-semibold rounded py-1 px-3 text-base hover:bg-red-600 transition"
-                  >
-                    Xóa
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </h3>
+              <span className="text-red-500 text-sm font-medium bg-red-100 px-2 py-1 rounded">
+                Giảm {voucher.discount}%
+              </span>
+            </div>
+            <p className="text-gray-600">
+              Ngày hết hạn:{" "}
+              <span className="font-medium">{voucher.expiration_date}</span>
+            </p>
+            <p className="text-gray-600">
+              Số lần sử dụng:{" "}
+              <span className="font-medium">{voucher.usage_limit}</span>
+            </p>
+            <div className="absolute top-0 right-0 bg-gray-100 rounded-tl-lg py-1 px-3 text-sm font-bold text-gray-700">
+              ID: {voucher.id}
+            </div>
+            <div className="flex justify-end space-x-2 mt-4">
+              {/* Button sửa */}
+              <Link
+                to={`/admin/voucher-edit/${voucher.id}`}
+                className="bg-yellow-500 text-white font-semibold rounded py-1 px-3 text-base hover:bg-yellow-600 transition"
+              >
+                Sửa
+              </Link>
+              {/* Button xóa */}
+              <button
+                onClick={() => handleDelete(voucher.id)}
+                className="bg-red-500 text-white font-semibold rounded py-1 px-3 text-base hover:bg-red-600 transition"
+              >
+                Xóa
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* Toast container */}
       <ToastContainer />

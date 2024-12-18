@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\api;
+
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -17,7 +19,7 @@ class UserApiController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $users = User::all();
+        $users = User::withTrashed()->get();
         return response()->json($users);
     }
 
@@ -89,7 +91,7 @@ class UserApiController extends Controller
             'gender' => 'nullable|in:male,female,other',
             'birthday' => 'nullable|date',
             'avatar' => 'nullable|image',
-            'islocked' => 'sometimes|boolean'
+            'islocked' => 'boolean'
         ]);
         if (isset($request['avatar'])) {
             $validatedData['avatar'] = Storage::url($request['avatar']->store('avatars', 'public'));
@@ -121,18 +123,20 @@ class UserApiController extends Controller
      */
     public function lockAccount($id)
     {
+        // Kiểm tra quyền admin
         if (auth()->user()->type !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $user = User::findOrFail($id);
+        // Tìm người dùng và kiểm tra xem đã bị xóa hay chưa
+        $user = User::withTrashed()->findOrFail($id);
 
-        if ($user->is_locked) {
+        if ($user->trashed()) {
             return response()->json(['message' => 'User account is already locked'], 400);
         }
 
-        $user->is_locked = true;
-        $user->save();
+        // Xóa mềm tài khoản (soft delete)
+        $user->delete();
 
         return response()->json(['message' => 'User account has been locked successfully']);
     }
@@ -142,18 +146,20 @@ class UserApiController extends Controller
      */
     public function unlockAccount($id)
     {
+        // Kiểm tra quyền admin
         if (auth()->user()->type !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $user = User::findOrFail($id);
+        // Tìm người dùng kể cả khi đã bị xóa
+        $user = User::withTrashed()->findOrFail($id);
 
-        if (!$user->is_locked) {
+        if (!$user->trashed()) {
             return response()->json(['message' => 'User account is already unlocked'], 400);
         }
 
-        $user->is_locked = false;
-        $user->save();
+        // Khôi phục tài khoản (restore)
+        $user->restore();
 
         return response()->json(['message' => 'User account has been unlocked successfully']);
     }
@@ -187,13 +193,12 @@ class UserApiController extends Controller
 
         // Trả về thông tin người dùng đã cập nhật
         return response()->json($user);
-            // Tạo lại access_token mới
-    $newToken = JWTAuth::fromUser($user);
+        // Tạo lại access_token mới
+        $newToken = JWTAuth::fromUser($user);
 
-    return response()->json([
-        'user' => $user,
-        'access_token' => $newToken
-    ]);
-
+        return response()->json([
+            'user' => $user,
+            'access_token' => $newToken
+        ]);
     }
 }

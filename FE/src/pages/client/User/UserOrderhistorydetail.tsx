@@ -10,6 +10,25 @@ const UserOrderhistorydetail = () => {
   const [loading, setLoading] = useState<boolean>(true); // Trạng thái tải dữ liệu
   const [error, setError] = useState<string | null>(null); // Trạng thái lỗi
 
+  const formatDate = (dateString: string) => {
+    const optionsDate: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    const optionsTime: Intl.DateTimeFormatOptions = {
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    };
+
+    const date = new Date(dateString);
+    const formattedDate = date.toLocaleDateString("vi-VN", optionsDate); // Chỉ ngày
+    const formattedTime = date.toLocaleTimeString("vi-VN", optionsTime); // Chỉ giờ
+
+    return `${formattedDate} ${formattedTime}`;
+  };
+
   // Hàm gọi API để lấy chi tiết đơn hàng
   const fetchOrderDetail = async () => {
     try {
@@ -19,7 +38,7 @@ const UserOrderhistorydetail = () => {
       );
       setOrderDetail(response.data);
       setError(null);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message || "Lỗi khi tải dữ liệu");
     } finally {
@@ -69,7 +88,11 @@ const UserOrderhistorydetail = () => {
         </Link>
 
         <div className="flex gap-5 items-center mr-5">
-          <span>Mã #: {orderDetail?.order_code}</span>|
+          <span>
+            Mã #:{" "}
+            <span className="text-blue-500">{orderDetail?.order_code}</span>
+          </span>
+          |
           <span
             className={`
               ${orderDetail?.status === "Chờ xử lý" ? "text-orange-500" : ""}
@@ -155,7 +178,7 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
                         <span>{orderDetail.status}</span>
-                        <span>{orderDetail.updated_at}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -222,7 +245,7 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
                         <span>{orderDetail.status}</span>
-                        <span>{orderDetail.updated_at}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -309,7 +332,7 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
                         <span>{orderDetail.status}</span>
-                        <span>{orderDetail.updated_at}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -416,7 +439,7 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
                         <span>{orderDetail.status}</span>
-                        <span>{orderDetail.updated_at}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -442,7 +465,7 @@ const UserOrderhistorydetail = () => {
                         </svg>
                       </div>
                       <div className="timeline-end timeline-box min-w-96">
-                        Đang vận chuyển
+                        Đã giao hàng
                       </div>
                       <hr />
                     </li>
@@ -462,7 +485,7 @@ const UserOrderhistorydetail = () => {
                         </svg>
                       </div>
                       <div className="timeline-end timeline-box min-w-96">
-                        Đã giao hàng
+                        Yêu cầu trả hàng
                       </div>
                       <hr />
                     </li>
@@ -483,7 +506,7 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
                         <span>{orderDetail.status}</span>
-                        <span>{orderDetail.updated_at}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -510,7 +533,7 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
                         <span>{orderDetail.status}</span>
-                        <span>{orderDetail.updated_at}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -596,8 +619,8 @@ const UserOrderhistorydetail = () => {
                         </svg>
                       </div>
                       <div className="timeline-end timeline-box min-w-96">
-                      <span>{orderDetail.status}</span>
-                      <span>{orderDetail.updated_at}</span>
+                        <span>{orderDetail.status}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -618,6 +641,73 @@ const UserOrderhistorydetail = () => {
                       </div>
                       <div className="timeline-end timeline-box min-w-96">
                         Đang vận chuyển
+                      </div>
+                      <hr />
+                    </li>
+                  </ul>
+                </div>
+              )}
+              {orderDetail.status === "Xử lý yêu cầu trả hàng" && (
+                <div>
+                  <ul className="timeline timeline-vertical ml-[-330px]">
+                    <li>
+                      <div className="timeline-middle">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-5 w-5"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="timeline-end timeline-box min-w-96">
+                        Đã giao hàng
+                      </div>
+                      <hr />
+                    </li>
+                    <li>
+                      <div className="timeline-middle">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-5 w-5"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="timeline-end timeline-box min-w-96">
+                        Yêu cầu trả hàng
+                      </div>
+                      <hr />
+                    </li>
+                    <li>
+                      <div className="timeline-middle bg-gray-200 p-2 rounded-full">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-5 w-5"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
+                      <span>{orderDetail.status}</span>
+                      <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -666,26 +756,110 @@ const UserOrderhistorydetail = () => {
                   </div>
                 </div>
               ))}
-              <div className="flex justify-between items-center border-t-2">
-                {orderDetail.status === "Trả hàng" ? (
-                  <span className="flex justify-start">
-                    Khiếu nại: {orderDetail.note}
-                  </span>
-                ) : (
-                  <span className="flex justify-start">
-                    Ghi chú: Không có !
-                  </span>
-                )}
-                <p className="flex gap-2 py-5 px-5">
-                  {/* <strong>{formatCurrency()}</strong> */}
-                  <strong>Tổng tiền: </strong>
-                  <strong className="text-red-500">
-                    {" "}
-                    {formatCurrency(orderDetail.total_price)}
-                  </strong>
-                </p>
+              <div className="flex justify-between items-start border-t-2 pt-4">
+                {/* Phần thứ nhất: Khiếu nại, trạng thái đơn hàng, trạng thái thanh toán và phương thức thanh toán */}
+                <div className="w-1/2 pr-6">
+                  {orderDetail.status === "Trả hàng" ||
+                  orderDetail.status === "Yêu cầu trả hàng" ||
+                  orderDetail.status === "Xử lý yêu cầu trả hàng" ? (
+                    <span className="block mb-2">
+                      <strong>Khiếu nại: {""}</strong>
+                      {orderDetail.note}
+                    </span>
+                  ) : (
+                    <span className="block mb-2">
+                      <strong>Ghi chú: </strong>Không có !
+                    </span>
+                  )}
+
+                  <div className="flex gap-2 mb-2">
+                    <h1 className="font-semibold">Trạng thái đơn hàng:</h1>
+                    <h1 className="text-orange-400 font-semibold">
+                      {orderDetail.status}
+                    </h1>
+                  </div>
+                </div>
+
+                {/* Phần thứ hai: Các thông tin tổng tiền */}
+                <div className="w-1/2 pl-6">
+                  <div className="flex gap-2 mt-4 mb-2">
+                    <h1 className="font-medium">Thời gian tạo đơn:</h1>
+                    <h1 className="text-gray-500">
+                      {formatDate(orderDetail.created_at)}
+                    </h1>
+                  </div>
+
+                  <div className="flex gap-2 mb-2">
+                    <h1 className="font-medium">Cập nhật gần đây:</h1>
+                    <h1 className="text-gray-500">
+                      {formatDate(orderDetail.updated_at)}
+                    </h1>
+                  </div>
+                  <div className="flex gap-2 mb-2">
+                    <h1 className="font-medium">Trạng thái thanh toán:</h1>
+                    {orderDetail.status_payment === "Đã thanh toán" ? (
+                      <h1 className="text-green-400 font-semibold">
+                        {orderDetail.status_payment}
+                      </h1>
+                    ) : (
+                      <h1 className="text-orange-400 font-semibold">
+                        {orderDetail.status_payment}
+                      </h1>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2 mb-2 items-center mb-4">
+                    <h1 className="font-medium">Phương thức thanh toán:</h1>
+                    <h1 className="text-orange-400 font-semibold">
+                      {orderDetail.paymentMethod}
+                    </h1>
+                    {/* Hiển thị logo VNPAY nếu phương thức thanh toán là VNPAY */}
+                    {orderDetail.paymentMethod === "VNPAY" && (
+                      <img
+                        src="https://i.imgur.com/RAtc2Se.png"
+                        alt="VNPAY"
+                        className="w-8 h-8 ml-2"
+                      />
+                    )}
+                  </div>
+                  <p className="text-right flex justify-between mb-2 border-t-2 mt-3">
+                    <span>Tổng tiền: </span>
+                    <span className="font-medium text-lg text-red-600">
+                      {formatCurrency(orderDetail.total_price)} vnđ
+                    </span>
+                  </p>
+
+                  <p className="text-right flex justify-between mb-2">
+                    <span>Phí vận chuyển: </span>
+                    <span className="font-medium text-lg text-red-600">
+                      {formatCurrency(orderDetail.shippingFee)} đ
+                    </span>
+                  </p>
+
+                  <p className="text-right flex justify-between border-b-2 border-gray-200 mb-5">
+                    <span>Mã giảm giá: </span>
+                    <span className="font-medium text-lg text-red-600">
+                      -{formatCurrency(orderDetail.discount)} đ
+                    </span>
+                  </p>
+
+                  <p className="text-right flex justify-between">
+                    <span className="font-semibold">Tổng tiền sau cùng: </span>
+                    <span className="font-medium text-lg text-red-600">
+                      {formatCurrency(orderDetail.totalAfterDiscount)} vnđ
+                    </span>
+                  </p>
+                </div>
               </div>
             </div>
+          </div>
+          <div className="flex justify-end items-center h-full mt-5">
+            <Link
+              to="/profile/order-history"
+              className="w-80 h-12 inline-block text-center px-6 py-3 bg-gray-400 text-white font-medium rounded-md shadow-md transition-all duration-300 ease-in-out hover:bg-gray-700 hover:shadow-lg active:bg-gray-800 active:scale-95"
+            >
+              Quay lại
+            </Link>
           </div>
         </div>
       ) : (

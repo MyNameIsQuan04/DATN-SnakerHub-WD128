@@ -81,7 +81,6 @@ const AddVoucher: React.FC = () => {
             required
           >
             <option value="percent">Phần trăm</option>
-            <option value="amount">Số tiền</option>
           </select>
         </div>
         <div>

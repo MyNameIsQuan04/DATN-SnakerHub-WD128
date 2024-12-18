@@ -1,18 +1,33 @@
-import { useContext } from "react";
-import { ProductCT } from "../../contexts/ProductContext";
+import { useEffect, useState } from "react";
 import { Product } from "../../interfaces/Product";
 import { Link } from "react-router-dom";
-import { CategoryCT } from "../../contexts/CategoryContext";
-import { Category } from "../../interfaces/Category";
 import SimpleSlider from "../../components/Slider";
 import Slider from "react-slick";
+import { getProductsClients } from "../../services/client/product";
+import { GetCategoriesClient } from "../../services/client/category";
+import { Category } from "../../interfaces/Category";
 
 const Home = () => {
-  const { productsClient } = useContext(ProductCT);
-  const productsHome = productsClient.products;
-  const { categories } = useContext(CategoryCT);
-  const bestSellers = productsHome?.slice(0, 10) || [];
-  const favouriteProducts = productsHome?.slice(20, 30) || [];
+  const [productsClient, setProductsClient] = useState<Product[]>([]);
+  const [productsTop10, setProductsTop10] = useState<Product[]>([]);
+  const [categoriesClient, setCategoriesClient] = useState<Category[]>([]);
+  useEffect(() => {
+    (async () => {
+      const response = await getProductsClients();
+      const productsData = response.products || [];
+      const productsTop10Data = response.top10 || [];
+      setProductsClient(productsData.slice(0, 5));
+      setProductsTop10(productsTop10Data.slice(0.5));
+    })();
+  }, []);
+  useEffect(() => {
+    (async () => {
+      const response = await GetCategoriesClient();
+      const categoriesData = response || [];
+      setCategoriesClient(categoriesData);
+    })();
+  }, []);
+  useEffect(() => {}, []);
   const PrevArrow = (props: any) => {
     const { className, onClick } = props;
     return (
@@ -66,10 +81,12 @@ const Home = () => {
     ],
   };
 
+  // Get Categories
+
   return (
     <div className="">
       <SimpleSlider />
-      <div className="flex gap-[50px] justify-center  items-center py-[40px] bg-[#f2f2f2]">
+      <div className="flex gap-[50px] justify-center items-center py-[40px] bg-[#f2f2f2]">
         <div className="text-center w-[400px]">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -136,20 +153,6 @@ const Home = () => {
         </div>
       </div>
       <div className="mt-[50px]">
-        <p className="text-[30px] text-center text-[#f2611c] px-[40px] font-semibold">
-          DANH MỤC SẢN PHẨM
-        </p>
-        <div className="flex justify-center gap-[30px] mt-[30px]">
-          {categories.map((category: Category) => (
-            <div className="w-36 bg-transparent items-center justify-center flex border-2 border-orange-500 shadow-lg hover:bg-orange-500 text-orange-500 hover:text-white duration-300 cursor-pointer active:scale-[0.98]">
-              <button className="px-5 py-2">
-                <a className="" href="">
-                  {category.name}
-                </a>
-              </button>
-            </div>
-          ))}
-        </div>
         <div className="my-[50px] flex justify-between items-center">
           <div className="relative flex flex-col justify-center pl-[40px]">
             {/* Dòng chữ NEWS làm background */}
@@ -168,7 +171,7 @@ const Home = () => {
           </Link>
         </div>
         <div className="grid grid-cols-5 px-[40px] gap-[10px] mt-[30px]">
-          {bestSellers.map((product: Product) => (
+          {productsClient.map((product: Product) => (
             <Link to={`detail/${product.id}`} key={product.id}>
               <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
                 <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-2 py-1 ">
@@ -284,7 +287,7 @@ const Home = () => {
         </div>
         <div className="px-[40px]">
           <Slider {...settings} className="custom-slider">
-            {favouriteProducts.map((product: Product) => (
+            {productsTop10.map((product: Product) => (
               <div key={product.id} className="">
                 <Link to={`detail/${product.id}`}>
                   <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">
@@ -336,7 +339,7 @@ const Home = () => {
         </div>
         <div className="px-[40px]">
           <Slider {...settings} className="custom-slider">
-            {favouriteProducts.map((product: Product) => (
+            {productsClient.map((product: Product) => (
               <div key={product.id} className="gap-[10px]">
                 <Link to={`detail/${product.id}`}>
                   <div className="relative border border-gray-200 hover:border-gray-400 transition duration-300">

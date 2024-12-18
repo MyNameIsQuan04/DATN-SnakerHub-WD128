@@ -21,16 +21,20 @@ class Product extends Model
         'sell_count',
     ];
 
-    public function category(){
-        return $this->belongsTo(Category::class);
+    public function category()
+    {
+        return $this->belongsTo(Category::class)->withTrashed();
     }
-    public function productVariants(){
-        return $this->hasMany(Product_Variant::class);
+    public function productVariants()
+    {
+        return $this->hasMany(Product_Variant::class)->withTrashed();
     }
-    public function comments(){
-        return $this->hasMany(Comment::class);
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->withTrashed();
     }
-    public function galleries(){
-        return $this->hasMany(Gallery::class);
+    public function galleries()
+    {
+        return $this->hasMany(Gallery::class)->withTrashed();
     }
 }

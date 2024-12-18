@@ -30,7 +30,7 @@ import Products from "./pages/client/products";
 // import CartContext from "./contexts/CartContext";
 import OrderContext from "./contexts/OrderContext";
 import ThankYou from "./pages/client/Thankyou";
-import Contact from "./pages/client/contact";
+// import Contact from "./pages/client/contact";
 import PrivateAdmin from "./pages/PrivateAdmin";
 import ForgotPassword from "./pages/client/forgot-password";
 import Mail from "./pages/client/mail";
@@ -47,25 +47,56 @@ import UserAnnouncement from "./pages/client/User/UserAnnouncement";
 import UserOrderhistorydetail from "./pages/client/User/UserOrderhistorydetail";
 import OrderReturn from "./pages/admin/order/OrderReturn";
 import PaymentResult from "./pages/client/paymentResult";
+import OrderDetailHictory from "./pages/admin/order/OrderDetailHictory";
+import { useEffect } from "react";
 
 function App() {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  useEffect(() => {
+    // Tạo script Tawk.to
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://embed.tawk.to/675e50ff49e2fd8dfef7eda1/1if46opkf";
+    script.charset = "UTF-8";
+    script.setAttribute("crossorigin", "*");
+    document.body.appendChild(script);
+
+    // Cấu hình Tawk.to sau khi script tải xong
+    script.onload = () => {
+      if (window.Tawk_API) {
+        // Đặt thông tin người dùng nếu có
+        if (user && user.name && user.email && user.id) {
+          window.Tawk_API.setAttributes(
+            {
+              name: user.name, // Tên người dùng
+              email: user.email, // Email người dùng
+              id: user.id, // ID người dùng
+            },
+            (error) => {
+              if (error) {
+                console.error("Tawk.to setAttributes error:", error);
+              }
+            }
+          );
+        }
+      }
+    };
+
+    // Dọn dẹp script khi component bị hủy
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, [user]);
   return (
     <>
       <Routes>
         <Route
           path="/"
           element={
-            <ColorContext>
-              <SizeContext>
-                <OrderContext>
-                  <CategoryContext>
-                    <ProductContext>
-                      <LayoutClient />
-                    </ProductContext>
-                  </CategoryContext>
-                </OrderContext>
-              </SizeContext>
-            </ColorContext>
+            <OrderContext>
+              <LayoutClient />
+            </OrderContext>
           }
         >
           <Route index element={<Home />} />
@@ -73,7 +104,7 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/contact" element={<Contact />} />
+          {/* <Route path="/contact" element={<Contact />} /> */}
           <Route path="/login" element={<AuthForm isLogin />} />
           <Route path="/register" element={<AuthForm />} />
           <Route path="/paymentresult" element={<PaymentResult />} />
@@ -136,6 +167,10 @@ function App() {
           <Route path="/admin/size-edit/:id" element={<UpdateSize />} />
           <Route path="/admin/size-edit/:id" element={<UpdateColor />} />
           <Route path="/admin/order" element={<AdminOrder />} />
+          <Route
+            path="/admin/order-detail/:id"
+            element={<OrderDetailHictory />}
+          />
           <Route path="/admin/order-return" element={<OrderReturn />} />
           <Route path="/admin/user" element={<ListUser />} />
           <Route path="/admin/vouchers" element={<ListVoucher />} />

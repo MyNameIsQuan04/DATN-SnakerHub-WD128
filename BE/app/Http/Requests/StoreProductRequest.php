@@ -41,7 +41,7 @@ class StoreProductRequest extends FormRequest
             'variants.*.color_id' => 'required|exists:colors,id',
             'variants.*.price' => 'nullable|integer',
             'variants.*.stock' => 'required|integer|min:1',
-            'variants.*.sku' => 'required|string|max:50|unique:product__variants,sku',
+            // 'variants.*.sku' => 'required|string|max:50|unique:product__variants,sku',
             'variants.*.image' => 'nullable|image',
         ];
     }

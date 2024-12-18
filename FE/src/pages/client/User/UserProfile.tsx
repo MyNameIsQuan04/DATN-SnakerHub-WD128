@@ -30,13 +30,14 @@ const UserProfile = () => {
     setActiveDropdownItem(null);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDropdownItemClick = (itemName: string) => {
     setActiveDropdownItem(itemName);
     setActiveButton(null);
   };
 
   return (
-    <div className="container mx-auto p-6 sm:p-12 lg:p-24 min-h-screen flex flex-col md:flex-row gap-10">
+    <div className="container mx-auto p-6 sm:p-12 lg:p-24 min-h-screen flex flex-col md:flex-row gap-10 mt-5">
       {/* Sidebar */}
       <aside className="sidebar h-[600px] w-full md:w-1/3 lg:w-1/4 bg-white shadow-lg rounded-xl p-6">
         <div className="profile flex items-center gap-3 mb-8">
@@ -85,7 +86,7 @@ const UserProfile = () => {
           </Link>
 
           {/* Dropdown menu */}
-          {isProfileDropdownOpen && (
+          {/* {isProfileDropdownOpen && (
             <div className="ml-4 mt-2 space-y-2">
               <Link
                 to="/profile/userinfo"
@@ -121,7 +122,7 @@ const UserProfile = () => {
                 Đổi Mật Khẩu
               </Link>
             </div>
-          )}
+          )} */}
 
           {/* Đơn hàng */}
           <Link

@@ -29,7 +29,7 @@ const UserInfor = () => {
     if (user && token) {
       setLoading(true);
       axios
-        .get(`http://localhost:8000/api/users/${user.id}`, {
+        .get(`http://localhost:8000/api/client/user/${user.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
@@ -295,19 +295,18 @@ const UserInfor = () => {
       {/* Hiển thị loading spinner nếu đang tải dữ liệu */}
       {loading && (
         <div className="fixed inset-0  flex justify-center items-center z-50">
-        <button
-          type="button"
-          className="inline-flex items-center gap-3 rounded-lg bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 px-8 py-4 text-base font-semibold text-white shadow-xl transition-transform duration-300 ease-in-out hover:scale-105 hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 focus:outline-none focus:ring-4 focus:ring-orange-300 focus:ring-opacity-50 "
-          disabled={loading}
-        >
-          <div
-            className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-solid border-white border-r-transparent"
-            role="status"
-          />
-          <span>Loading...</span>
-        </button>
-      </div>
-      
+          <button
+            type="button"
+            className="inline-flex items-center gap-3 rounded-lg bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 px-8 py-4 text-base font-semibold text-white shadow-xl transition-transform duration-300 ease-in-out hover:scale-105 hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 focus:outline-none focus:ring-4 focus:ring-orange-300 focus:ring-opacity-50 "
+            disabled={loading}
+          >
+            <div
+              className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-solid border-white border-r-transparent"
+              role="status"
+            />
+            <span>Loading...</span>
+          </button>
+        </div>
       )}
 
       {/* Modal hiển thị ảnh avatar*/}

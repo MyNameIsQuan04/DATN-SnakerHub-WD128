@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Color;
+
 class ColorApiController extends Controller
 {
     /**
@@ -71,18 +72,22 @@ class ColorApiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Color $color)
     {
-        $color = Color::find($id);
-
+        // Kiểm tra nếu không tìm thấy color
         if (!$color) {
             return response()->json(['message' => 'Color not found'], 404);
         }
 
-        // Xóa tất cả các product_variants liên quan đến màu này
-        $color->productVariants()->delete();
+        // Lấy color mặc định, nếu không có thì tạo mới
+        $defaultColor = Color::firstOrCreate(['name' => 'Mặc định']);
+
+        // Chuyển tất cả product_variants sang color mặc định
+        $color->productVariants()->update(['color_id' => $defaultColor->id]);
+
+        // Xóa color (hỗ trợ xóa mềm nếu có)
         $color->delete();
 
-        return response()->json(['message' => 'Color deleted successfully']);
+        return response()->json(['message' => 'Color deleted and product variants moved to default color'], 200);
     }
 }

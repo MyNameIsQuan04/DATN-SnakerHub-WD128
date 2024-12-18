@@ -9,125 +9,125 @@ import {
 import { IoColorPaletteOutline } from "react-icons/io5";
 import { CgSize } from "react-icons/cg";
 
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { useAuth } from "../../../contexts/AuthContext";
 
 const LayoutAdmin = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const location = useLocation(); // Lấy đường dẫn hiện tại
+
+  // Danh sách menu items
+  const menuItems = [
+    {
+      path: "/admin",
+      icon: <FaTachometerAlt className="mr-2" />,
+      label: "Bảng điều khiển",
+    },
+    {
+      path: "/admin/user",
+      icon: <FaUser className="mr-2" />,
+      label: "Người dùng",
+    },
+    {
+      path: "/admin/product",
+      icon: <FaProductHunt className="mr-2" />,
+      label: "Sản phẩm",
+    },
+    {
+      path: "/admin/category",
+      icon: <FaList className="mr-2" />,
+      label: "Danh mục",
+    },
+    {
+      path: "/admin/color",
+      icon: <IoColorPaletteOutline className="mr-2" />,
+      label: "Danh mục màu sắc",
+    },
+    {
+      path: "/admin/size",
+      icon: <CgSize className="mr-2" />,
+      label: "Danh mục kích cỡ",
+    },
+    {
+      path: "/admin/vouchers",
+      icon: <RiDiscountPercentFill className="mr-2" />,
+      label: "Vouchers",
+    },
+    {
+      path: "/admin/order",
+      icon: <FaShoppingCart className="mr-2" />,
+      label: "Đơn hàng",
+    },
+    { path: "/", icon: <FaHome className="mr-2" />, label: "Client" },
+  ];
+
   return (
     <>
       <div className="flex min-h-screen bg-gray-100">
         {/* Sidebar cố định */}
-        <div className="fixed top-0 left-0 w-1/6 h-full bg-gray-500 text-white flex flex-col">
+        <div className="fixed top-0 left-0 w-1/6 h-full bg-gray-700 text-white flex flex-col justify-between">
           <div className="p-6 flex flex-col items-center">
             {/* Avatar Admin */}
             <img
-              src={user?.avatar || "https://via.placeholder.com/150"}
-              alt="Admin Avatar"
-              className="w-[120px] h-[120px] rounded-full mb-4 object-cover"
+              src="https://i.imgur.com/jInJnWw.png"
+              alt="SneakerHub Logo"
+              className="h-28 w-36 mx-auto p-2 rounded-md shadow-lg"
             />
-            <h2 className="text-2xl font-semibold mb-6">
-              Hi, <span className="font-medium underline">{user?.name}</span>
-            </h2>
-            <ul className="space-y-4 w-full">
-              {/* Các mục sidebar */}
-              <li>
-                <Link
-                  className="flex items-center text-white hover:text-gray-400"
-                  to="/admin"
-                >
-                  <FaTachometerAlt className="mr-2" />
-                  Bảng điều khiển
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex items-center text-white hover:text-gray-300"
-                  to="/admin/user"
-                >
-                  <FaUser className="mr-2" />
-                  Người dùng
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex items-center text-white hover:text-gray-300"
-                  to="/admin/product"
-                >
-                  <FaProductHunt className="mr-2" />
-                  Sản phẩm
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex items-center text-white hover:text-gray-300"
-                  to="/admin/category"
-                >
-                  <FaList className="mr-2" />
-                  Danh mục
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex items-center text-white hover:text-gray-300"
-                  to="/admin/color"
-                >
-                  <IoColorPaletteOutline className="mr-2" />
-                  Danh mục màu sắc
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex items-center text-white hover:text-gray-300"
-                  to="/admin/size"
-                >
-                  <CgSize className="mr-2" />
-                  Danh mục kích cỡ
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex items-center text-white hover:text-gray-300"
-                  to="/admin/vouchers"
-                >
-                  <RiDiscountPercentFill className="mr-2" />
-                  Vouchers
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex items-center text-white hover:text-gray-300"
-                  to="/admin/order"
-                >
-                  <FaShoppingCart className="mr-2" />
-                  Đơn hàng
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex items-center text-white hover:text-gray-300"
-                  to="/"
-                >
-                  <FaHome className="mr-2" />
-                  Client
-                </Link>
-              </li>
+            <ul className="mt-6 space-y-4 w-full">
+              {menuItems.map((item) => (
+                <li key={item.path}>
+                  <Link
+                    to={item.path}
+                    className={`flex items-center px-4 py-2 rounded-md transition-colors duration-200 
+                      ${
+                        location.pathname === item.path
+                          ? "bg-white text-black" // Active state
+                          : "text-white hover:bg-white hover:text-black" // Hover state
+                      }`}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
-
-          {/* Nút Logout */}
-          {/* <div className="mt-auto p-6">
-            <button className="text-xl w-32 h-12 rounded bg-emerald-500 text-white relative overflow-hidden group hover:text-white duration-1000">
-              <span className="absolute bg-emerald-600 w-36 h-36 rounded-full group-hover:scale-100 scale-0 -z-10 -left-2 -top-10 group-hover:duration-500 duration-700 origin-center transform transition-all"></span>
-              <span className="absolute bg-emerald-800 w-36 h-36 -left-2 -top-10 rounded-full group-hover:scale-100 scale-0 -z-10 group-hover:duration-700 duration-500 origin-center transform transition-all"></span>
-              Logout
-            </button>
-          </div> */}
         </div>
 
         {/* Nội dung cuộn bên phải */}
         <div className="ml-[16.666%] w-5/6 p-6 overflow-auto h-screen">
+          <div className="bg-white border border-gray-300 mb-4 rounded-lg shadow-md px-6 py-4 flex items-center justify-between">
+            {/* Form tìm kiếm */}
+            <div className="flex items-center"></div>
+
+            {/* Thông tin admin */}
+            <div className="flex items-center justify-between space-x-4">
+              <div className="flex flex-col text-right">
+                <h2 className="text-xl font-semibold text-gray-800 leading-tight">
+                  <div>
+                    <span>Hi,</span>
+                    <span className="font-semibold text-emerald-500">
+                      {user?.name}
+                    </span>
+                  </div>
+                  <button
+                    className="mt-2 px-6 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                    onClick={logout}
+                  >
+                    Logout
+                  </button>
+                </h2>
+              </div>
+
+              <img
+                src={user?.avatar || "https://via.placeholder.com/150"}
+                alt="User Avatar"
+                className="w-16 h-16 rounded-full object-cover border-2 border-gray-300 shadow-md"
+              />
+            </div>
+          </div>
+
           <Outlet />
         </div>
       </div>

@@ -1,14 +1,14 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Size } from "../interfaces/Size";
-import { getSizes } from "../services/size";
+
 import { Color } from "../interfaces/Color";
 import {
   addColor,
   getColors,
   removeColor,
   updateColor,
-} from "../services/color";
+} from "../services/admin/color";
+import { toast, ToastContainer } from "react-toastify";
 
 type Props = {
   children: React.ReactNode;
@@ -28,7 +28,7 @@ const ColorContext = ({ children }: Props) => {
     if (confirm) {
       try {
         await removeColor(id);
-        alert("Thanh cong");
+        toast.success("Xóa thành công");
         const newColorsAfterDelete = colors.filter((color) => color.id !== id);
         setColors(newColorsAfterDelete);
       } catch (error) {
@@ -37,10 +37,10 @@ const ColorContext = ({ children }: Props) => {
     }
   };
 
-  const onAddColor = async (data: Size) => {
+  const onAddColor = async (data: Color) => {
     try {
       const color = await addColor(data);
-      alert("Thanh cong");
+      toast.success("Thêm thành công");
       setColors([...colors, color]);
       router("/admin/color");
       window.location.reload();
@@ -49,11 +49,11 @@ const ColorContext = ({ children }: Props) => {
     }
   };
 
-  const onUpdateColor = async (data: Size, id: number) => {
+  const onUpdateColor = async (data: Color, id: number) => {
     try {
       console.log(data, id);
       const color = await updateColor(data, id);
-      alert("Thanh cong");
+      toast.success("Cập nhật thành công");
       const newColosAfterUpdate = colors.map((pro) =>
         pro.id == id ? color : pro
       );
@@ -66,6 +66,7 @@ const ColorContext = ({ children }: Props) => {
   };
   return (
     <div>
+      <ToastContainer />
       <ColorCT.Provider
         value={{ colors, onAddColor, onRemoveColor, onUpdateColor }}
       >

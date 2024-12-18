@@ -1,6 +1,7 @@
 const Footer = () => {
   return (
-    <div className="mx-auto w-full bg-white">
+    <div className=" bg-white">
+      {/* Phần đầu Footer */}
       <hr className="border-t-2 border-gray-400 my-4" />
       <div className="flex flex-col md:flex-row justify-around mx-4">
         {/* class 1 : */}
@@ -78,9 +79,10 @@ const Footer = () => {
           </div>
         </div>
       </div>
-      {/* Phần 2 */}
-      <footer className="bg-gray-800 text-white pt-10">
-        <div className="container  grid grid-cols-1 md:grid-cols-4 gap-8 mx-[50px]">
+
+      {/* Phần 2 Footer */}
+      <footer className="bg-gray-800 text-white pt-10 mt-[60px]">
+        <div className="container grid grid-cols-1 md:grid-cols-4 gap-8 mx-auto px-4 md:px-8">
           {/* Thông tin công ty */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Công ty</h3>
@@ -110,6 +112,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
+
           {/* Danh mục sản phẩm */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Danh mục sản phẩm</h3>
@@ -131,9 +134,10 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          <div className="">
-            <h3 className="text-lg font-semibold mb-4">Chứng nhận</h3>
 
+          {/* Chứng nhận */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Chứng nhận</h3>
             <img
               src="https://myshoes.vn/image/catalog/logo/logo-bct.png"
               alt=""

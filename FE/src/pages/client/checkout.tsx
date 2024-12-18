@@ -52,7 +52,6 @@ const Checkout = () => {
         const items = response.data.cart.cart__items.filter((item: CartItem) =>
           selectedItems.includes(item.id)
         );
-
         setCheckoutItems(items);
         setCartItems(items);
       }
@@ -72,6 +71,28 @@ const Checkout = () => {
   const [totalAfterDiscount, setTotalAfterDiscount] = useState<number>(0);
   const [codeDiscount, setCodeDiscount] = useState<string>("");
   const [discount, setDiscount] = useState<number>(0);
+  const [vouchers, setVouchers] = useState<
+    Array<{ codeDiscount: string; discount: number }>
+  >([]);
+
+  useEffect(() => {
+    const fetchVouchers = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/vouchers", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.data) {
+          setVouchers(response.data.vouchers); // Giả sử API trả về một mảng vouchers
+        }
+      } catch (error) {
+        toast.error("Không thể tải danh sách mã giảm giá!");
+      }
+    };
+
+    fetchVouchers();
+  }, []);
 
   const handleApplyVoucher = async () => {
     if (!codeDiscount) {
@@ -110,6 +131,14 @@ const Checkout = () => {
     }
   };
 
+  // Hàm xóa mã giảm giá
+  const handleRemoveVoucher = () => {
+    setDiscount(0);
+    setCodeDiscount("");
+    setTotalAfterDiscount(0);
+    toast.info(`Đã bỏ chọn mã giảm giá - ${codeDiscount}`);
+  };
+
   const totalPriceItem = (price: number, quantity: number) => price * quantity;
   const grandTotalPrice = checkoutItems.reduce(
     (total, item) => total + item.product_variant.price * item.quantity,
@@ -129,18 +158,22 @@ const Checkout = () => {
 
     const orderData = {
       ...data,
+
       province: selectedProvince?.name,
       district: selectedDistrict?.name,
       town: selectedWard?.name,
       items: cartItems.map((item) => ({
+        item_id: item.id,
         product__variant_id: item.product_variant.id,
         quantity: item.quantity,
         price: item.product_variant.price,
         total: totalPriceItem(item.product_variant.price, item.quantity),
       })),
-      total_price: grandTotalPrice - discount + shippingFee,
+      total_price: grandTotalPrice,
       codeDiscount,
       discount,
+      shippingFee,
+      paymentMethod,
     };
 
     // Xác định URL API dựa trên payment method
@@ -175,10 +208,10 @@ const Checkout = () => {
     <div className="mt-[100px] px-[150px]">
       <div className="flex items-center space-x-2 mb-4 ">
         <a
-          href="/"
+          href="/cart"
           className="text-xl font-medium text-gray-800 hover:text-blue-400 hover:underline"
         >
-          Trang chủ
+          Giỏ hàng
         </a>
         <GrNext className="text-xl text-gray-600" />
         <a href="">Thanh toán</a>
@@ -220,6 +253,158 @@ const Checkout = () => {
               );
             })}
           </div>
+
+          <div className="space-y-4 mt-4 bg-gray-100 p-5  border border-gray-300 rounded-md">
+            <h3 className="font-semibold text-lg">Thông tin nhận hàng</h3>
+            <div className="mt-[20px] flex gap-4">
+              {/* Họ tên */}
+              <div className="w-full sm:w-1/2">
+                <input
+                  type="text"
+                  {...register("name", { required: true })}
+                  placeholder="Họ tên"
+                  className="w-full h-[40px] border border-[#c9c9c9] pl-[20px] rounded-md"
+                />
+                {errors.name && (
+                  <span className="text-red-500 text-sm">
+                    Trường này là bắt buộc
+                  </span>
+                )}
+              </div>
+
+              {/* Số điện thoại */}
+              <div className="w-full sm:w-1/2">
+                <input
+                  type="text"
+                  {...register("phone", { required: true })}
+                  placeholder="Số điện thoại"
+                  className="w-full h-[40px] border border-[#c9c9c9] pl-[20px] rounded-md"
+                />
+                {errors.phone && (
+                  <span className="text-red-500 text-sm">
+                    Trường này là bắt buộc
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="space-y-6">
+              {/* Tỉnh/Thành phố */}
+              <div className="space-y-4">
+                {/* Tỉnh/Thành phố */}
+                <div className="w-full">
+                  <label
+                    htmlFor="province"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Tỉnh/Thành phố
+                  </label>
+                  <select
+                    id="province"
+                    value={selectedProvince?.code || ""}
+                    onChange={(e) => {
+                      const selectedProvince = provinces.find(
+                        (province) => province.code === +e.target.value
+                      );
+                      setSelectedProvince(selectedProvince || null);
+                      if (selectedProvince?.name === "Thành phố Hà Nội") {
+                        setShippingFee(30000);
+                      } else {
+                        setShippingFee(40000);
+                      }
+                    }}
+                    className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Tỉnh/thành phố</option>
+                    {provinces.map((province) => (
+                      <option key={province.code} value={province.code}>
+                        {province.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Huyện/Quận */}
+                <div className="w-full">
+                  <label
+                    htmlFor="district"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Huyện/Quận
+                  </label>
+                  <select
+                    id="district"
+                    value={selectedDistrict?.code || ""}
+                    onChange={(e) => {
+                      const selectedDistrict = districts.find(
+                        (district) => district.code === +e.target.value
+                      );
+                      setSelectedDistrict(selectedDistrict || null);
+                    }}
+                    className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Huyện/quận</option>
+                    {districts.map((district) => (
+                      <option key={district.code} value={district.code}>
+                        {district.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Xã/Phường */}
+                <div className="w-full">
+                  <label
+                    htmlFor="ward"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Xã/Phường
+                  </label>
+                  <select
+                    id="ward"
+                    value={selectedWard?.code || ""}
+                    onChange={(e) => {
+                      const selectedWard = wards.find(
+                        (ward) => ward.code === +e.target.value
+                      );
+                      setSelectedWard(selectedWard || null);
+                    }}
+                    className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Xã/phường</option>
+                    {wards.map((ward) => (
+                      <option key={ward.code} value={ward.code}>
+                        {ward.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Địa chỉ cụ thể */}
+              <div className="space-y-2 mt-4">
+                <label
+                  htmlFor="address"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Địa chỉ cụ thể
+                </label>
+                <textarea
+                  id="address"
+                  placeholder="Nhập địa chỉ cụ thể"
+                  className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  rows={3}
+                  {...register("address", {
+                    required: "Địa chỉ không được để trống",
+                  })}
+                />
+                {errors.address && (
+                  <span className="text-red-500 text-sm">
+                    Không được để trống
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Phần bên phải: Tổng kết đơn hàng và thông tin địa chỉ */}
@@ -232,186 +417,105 @@ const Checkout = () => {
                 {formatCurrency(grandTotalPrice)}
               </span>
             </div>
-            {discount > 0 ? (
-              <div className="flex justify-between">
-                <p className="text-green-500">Mã giảm giá đã áp dụng:</p>
-                <p className="text-green-500">{discount}đ</p>
-              </div>
-            ) : (
-              <div className="flex justify-between">
-                {/* <p className="text-red-500">Chưa áp dụng mã giảm giá</p> */}
-              </div>
-            )}
-
-            <div className="flex justify-between items-center">
-              <input
-                type="text"
-                placeholder="Nhập mã giảm giá"
-                value={codeDiscount}
-                onChange={(e) => setCodeDiscount(e.target.value)}
-                className="flex-grow p-2 border rounded-md"
-              />
-              <button
-                onClick={handleApplyVoucher}
-                className="ml-4 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600"
-              >
-                Áp dụng
-              </button>
-            </div>
-
-            <hr className="my-4" />
-
-            {/* Thông tin địa chỉ */}
-            <div className="space-y-4 mt-4">
-              <h3 className="font-semibold text-lg">Thông tin nhận hàng</h3>
-              <div className="mt-[20px] flex gap-4">
-                {/* Họ tên */}
-                <div className="w-full sm:w-1/2">
-                  <input
-                    type="text"
-                    {...register("name", { required: true })}
-                    placeholder="Họ tên"
-                    className="w-full h-[40px] border border-[#c9c9c9] pl-[20px] rounded-md"
-                  />
-                  {errors.name && (
-                    <span className="text-red-500 text-sm">
-                      Trường này là bắt buộc
-                    </span>
-                  )}
-                </div>
-
-                {/* Số điện thoại */}
-                <div className="w-full sm:w-1/2">
-                  <input
-                    type="text"
-                    {...register("phone", { required: true })}
-                    placeholder="Số điện thoại"
-                    className="w-full h-[40px] border border-[#c9c9c9] pl-[20px] rounded-md"
-                  />
-                  {errors.phone && (
-                    <span className="text-red-500 text-sm">
-                      Trường này là bắt buộc
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="space-y-6">
-                {/* Tỉnh/Thành phố */}
-                <div className="space-y-4">
-                  {/* Tỉnh/Thành phố */}
-                  <div className="w-full">
-                    <label
-                      htmlFor="province"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Tỉnh/Thành phố
-                    </label>
-                    <select
-                      id="province"
-                      value={selectedProvince?.code || ""}
-                      onChange={(e) => {
-                        const selectedProvince = provinces.find(
-                          (province) => province.code === +e.target.value
-                        );
-                        setSelectedProvince(selectedProvince || null);
-                        if (selectedProvince?.name === "Thành phố Hà Nội") {
-                          setShippingFee(20000);
-                        } else {
-                          setShippingFee(30000);
-                        }
-                      }}
-                      className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Tỉnh/thành phố</option>
-                      {provinces.map((province) => (
-                        <option key={province.code} value={province.code}>
-                          {province.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Huyện/Quận */}
-                  <div className="w-full">
-                    <label
-                      htmlFor="district"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Huyện/Quận
-                    </label>
-                    <select
-                      id="district"
-                      value={selectedDistrict?.code || ""}
-                      onChange={(e) => {
-                        const selectedDistrict = districts.find(
-                          (district) => district.code === +e.target.value
-                        );
-                        setSelectedDistrict(selectedDistrict || null);
-                      }}
-                      className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Huyện/quận</option>
-                      {districts.map((district) => (
-                        <option key={district.code} value={district.code}>
-                          {district.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Xã/Phường */}
-                  <div className="w-full">
-                    <label
-                      htmlFor="ward"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Xã/Phường
-                    </label>
-                    <select
-                      id="ward"
-                      value={selectedWard?.code || ""}
-                      onChange={(e) => {
-                        const selectedWard = wards.find(
-                          (ward) => ward.code === +e.target.value
-                        );
-                        setSelectedWard(selectedWard || null);
-                      }}
-                      className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Xã/phường</option>
-                      {wards.map((ward) => (
-                        <option key={ward.code} value={ward.code}>
-                          {ward.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Địa chỉ cụ thể */}
-                <div className="space-y-2 mt-4">
-                  <label
-                    htmlFor="address"
-                    className="block text-sm font-medium text-gray-700"
+            <div className="voucher-section">
+              {/* Dropdown chọn mã giảm giá */}
+              <div className="voucher-input flex flex-col md:flex-row justify-between items-center mt-4 space-y-3 md:space-y-0">
+                <label className="block text-gray-700 font-medium">
+                  Chọn mã giảm:
+                </label>
+                <div className="relative flex-grow">
+                  <select
+                    value={codeDiscount}
+                    onChange={(e) => setCodeDiscount(e.target.value)}
+                    className="block w-full p-3 pr-10 text-gray-700 border border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:border-yellow-500 focus:ring focus:ring-yellow-200"
                   >
-                    Địa chỉ cụ thể
-                  </label>
-                  <textarea
-                    id="address"
-                    placeholder="Nhập địa chỉ cụ thể"
-                    className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                    rows={3}
-                    {...register("address", {
-                      required: "Địa chỉ không được để trống",
-                    })}
-                  />
-                  {errors.address && (
-                    <span className="text-red-500 text-sm">
-                      Không được để trống
-                    </span>
-                  )}
+                    <option value="">Chọn mã giảm giá</option>
+                    {vouchers.map((voucher, index) => (
+                      <option key={index} value={voucher.codeDiscount}>
+                        {voucher.codeDiscount} - Giảm{" "}
+                        {Math.round(voucher.discount)}%
+                      </option>
+                    ))}
+                  </select>
+                  {/* Icon mũi tên */}
+                  <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                    <svg
+                      className="w-5 h-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                <button
+                  onClick={handleApplyVoucher}
+                  className="ml-2 h-full p-3 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition duration-200 whitespace-nowrap"
+                >
+                  Áp dụng
+                </button>
+              </div>
+
+              {/* Hiển thị mã giảm giá đã áp dụng */}
+              {discount > 0 && (
+                <div className="voucher-card flex justify-between items-center p-3 bg-yellow-100 border-l-4 border-yellow-500 rounded-lg shadow-md mt-4">
+                  <div>
+                    <p className="text-yellow-700 font-semibold text-sm">
+                      Mã giảm giá đã áp dụng:
+                    </p>
+                    <p className="text-yellow-800 font-bold text-lg">
+                      {codeDiscount}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <p className="text-yellow-800 font-semibold text-lg">
+                      Giảm {discount.toLocaleString()}đ
+                    </p>
+                    <button
+                      onClick={handleRemoveVoucher}
+                      className="text-red-500 hover:text-red-600 font-semibold hover:underline"
+                    >
+                      Xóa mã
+                    </button>
+                  </div>
+                </div>
+              )}
+              <div className="">
+                <div className="w-full max-w-md mx-auto mt-4">
+                  <p className="text-lg font-semibold mb-2">
+                    Phương thức thanh toán
+                  </p>
+                  <div className="relative">
+                    <select
+                      value={paymentMethod}
+                      onChange={handlePaymentChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+                    >
+                      <option value={1}>Thanh toán khi nhận hàng</option>
+                      <option value={2}>Thanh toán VNPay</option>
+                    </select>
+                  </div>
                 </div>
               </div>
+
+              {/* Hiển thị tổng giá trị sau giảm giá */}
+              {totalAfterDiscount > 0 && (
+                <div className="total-after-discount mt-4">
+                  <p className="text-gray-800 font-bold text-lg">
+                    Tổng sau giảm giá:{" "}
+                    <span className="text-yellow-600">
+                      {totalAfterDiscount.toLocaleString()}đ
+                    </span>
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Hiển thị tổng tiền */}
@@ -426,39 +530,23 @@ const Checkout = () => {
               <div className="flex justify-between">
                 <span>Phí vận chuyển</span>
                 <span className="text-red-500">
-                  {formatCurrency(shippingFee)}
+                  +{formatCurrency(shippingFee)}
                 </span>
               </div>
 
               <div className="flex justify-between">
                 <span>Voucher:</span>
-                <span className="text-red-500">{formatCurrency(discount)}</span>
+                <span className="text-red-500">
+                  -{formatCurrency(discount)}
+                </span>
               </div>
             </div>
             <hr className="my-4" />
-            <div className="flex justify-end text-lg">
-              <span>Thành tiền: </span>
+            <div className="flex justify-end text-lg gap-3">
+              <span className="font-semibold">Thành tiền: {""}</span>
               <span className="text-red-500">
                 {formatCurrency(grandTotalPrice - discount + shippingFee)}
               </span>
-            </div>
-            <div className="">
-              <div className="w-full max-w-md mx-auto mt-4">
-                <p className="text-lg font-semibold mb-2">
-                  Phương thức thanh toán
-                </p>
-                <div className="relative">
-                  <select
-                    value={paymentMethod}
-                    onChange={handlePaymentChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-                  >
-                    <option value={1}>Thanh toán khi nhận hàng</option>
-                    <option value={2}>Thanh toán VNPay</option>
-                    <option value={3}>Thanh toán MoMo</option>
-                  </select>
-                </div>
-              </div>
             </div>
             {/* Nút thanh toán */}
             <button

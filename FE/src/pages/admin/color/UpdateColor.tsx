@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import { Link, useParams } from "react-router-dom";
 import { ColorCT } from "../../../contexts/ColorContext";
 import { Color } from "../../../interfaces/Color";
-import { getColorById } from "../../../services/color";
+import { getColorById } from "../../../services/admin/color";
+import { ToastContainer } from "react-toastify";
 
 const UpdateColor = () => {
   const {
@@ -67,6 +68,7 @@ const UpdateColor = () => {
           </Link>
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 };
