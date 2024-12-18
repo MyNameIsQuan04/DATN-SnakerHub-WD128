@@ -44,10 +44,6 @@ const AddProducts = () => {
     variants: Yup.array()
       .of(
         Yup.object({
-          price: Yup.number()
-            .typeError("Giá biến thể phải là số")
-            .positive("Giá biến thể phải lớn hơn 0")
-            .required("Giá biến thể không được để trống"),
           size_id: Yup.string().required("Kích cỡ không được để trống"),
           color_id: Yup.string().required("Màu sắc không được để trống"),
           stock: Yup.number()
@@ -240,12 +236,6 @@ const AddProducts = () => {
                             type="number"
                             className="w-full px-3 py-2 border rounded-lg"
                           />
-                          {errors.variants?.[index]?.price &&
-                            touched.variants?.[index]?.price && (
-                              <p className="text-red-500 text-sm mt-1">
-                                {errors.variants[index].price}
-                              </p>
-                            )}
                         </div>
 
                         {/* Màu sắc */}

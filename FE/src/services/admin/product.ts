@@ -1,6 +1,5 @@
 import api from "../../configs/axios";
 import { Product } from "../../interfaces/Product";
-
 const token = localStorage.getItem("access_token");
 
 export const getProducts = async () => {
@@ -39,8 +38,11 @@ export const addProduct = async (product: Product) => {
     });
     alert("Thành công");
     return data;
-  } catch (error) {
-    alert("Không thành công");
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      const errorMessage = error.response.data.message || "Có lỗi xảy ra!";
+      alert(`${errorMessage}`);
+    }
     console.log(error);
   }
 };
@@ -54,9 +56,12 @@ export const updateProduct = async (formData: any, id: number) => {
     });
     alert("Thành công");
     return data;
-  } catch (error) {
-    console.log("FormData contents:", formData);
-    alert("Không thành công");
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      const errorMessage = error.response.data.message || "Có lỗi xảy ra!";
+      alert(`${errorMessage}`);
+    }
+    console.log(error);
   }
 };
 

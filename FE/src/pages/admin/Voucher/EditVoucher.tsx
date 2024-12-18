@@ -9,11 +9,15 @@ const EditVoucher: React.FC = () => {
   const [codeDiscount, setCodeDiscount] = useState<string>("");
   const [discount, setDiscount] = useState<number>(0);
   const [type, setType] = useState<"percent" | "amount">("percent");
+  const [startDate, setStartDate] = useState<string>(""); // Thêm state cho start_date
   const [expirationDate, setExpirationDate] = useState<string>("");
   const [usageLimit, setUsageLimit] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // Lấy ngày hôm nay theo định dạng yyyy-MM-dd
+  const today = new Date().toISOString().split("T")[0];
 
   // Hàm lấy voucher từ API
   useEffect(() => {
@@ -26,6 +30,7 @@ const EditVoucher: React.FC = () => {
         setCodeDiscount(voucher.codeDiscount);
         setDiscount(voucher.discount);
         setType(voucher.type);
+        setStartDate(voucher.start_date); // Lấy start_date từ API
         setExpirationDate(voucher.expiration_date);
         setUsageLimit(voucher.usage_limit);
       } catch (err: any) {
@@ -43,10 +48,23 @@ const EditVoucher: React.FC = () => {
     e.preventDefault();
     setError(null);
 
+    // Kiểm tra giá trị giảm giá không vượt quá 50%
+    if (type === "percent" && discount > 50) {
+      toast.error("Giảm giá không được vượt quá 50%");
+      return;
+    }
+
+    // Kiểm tra ngày bắt đầu và ngày hết hạn
+    if (startDate > expirationDate) {
+      toast.error("Ngày bắt đầu không được sau ngày hết hạn");
+      return;
+    }
+
     const voucherData = {
       codeDiscount,
       discount,
       type,
+      start_date: startDate, // Gửi start_date khi cập nhật
       expiration_date: expirationDate,
       usage_limit: usageLimit,
     };
@@ -111,8 +129,18 @@ const EditVoucher: React.FC = () => {
             required
           >
             <option value="percent">Phần trăm</option>
-            <option value="amount">Số tiền</option>
           </select>
+        </div>
+        <div>
+          <label className="block">Ngày bắt đầu</label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="w-full border p-2"
+            min={today} // Disable các ngày trước ngày hôm nay
+            required
+          />
         </div>
         <div>
           <label className="block">Ngày hết hạn</label>
@@ -121,7 +149,7 @@ const EditVoucher: React.FC = () => {
             value={expirationDate}
             onChange={(e) => setExpirationDate(e.target.value)}
             className="w-full border p-2"
-            placeholder="yyyy-mm-dd"
+            min={today} // Disable các ngày trước ngày hôm nay
             required
           />
         </div>

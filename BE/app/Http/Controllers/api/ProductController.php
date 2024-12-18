@@ -22,15 +22,18 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['category','productVariants','productVariants.size','productVariants.color','galleries',])->orderByDesc('id')->get();
+        $products = Product::with(['category', 'productVariants', 'productVariants.size', 'productVariants.color', 'galleries',])->orderByDesc('id')->get();
         return $products;
     }
 
 
     public function store(StoreProductRequest $request)
     {
+        DB::beginTransaction();
+
         try {
             $validatedData = $request->validated();
+
             $dataProduct = [
                 'category_id' => $validatedData['category_id'],
                 'name' => $validatedData['name'],
@@ -38,6 +41,7 @@ class ProductController extends Controller
                 'short_description' => $validatedData['short_description'],
                 'price' => $validatedData['price'],
             ];
+
             if (isset($validatedData['thumbnail'])) {
                 $thumbnailPath = $validatedData['thumbnail']->store('images', 'public');
                 $dataProduct['thumbnail'] = Storage::url($thumbnailPath);
@@ -54,20 +58,16 @@ class ProductController extends Controller
 
             foreach ($validatedData['variants'] as $variant) {
                 $maSKU = "SKU-" . $product->id . '-' . $variant['color_id'] . '-' . $variant['size_id'];
-                
-                $exists = Product_Variant::where('sku', $maSKU)->exists();
 
+                $exists = Product_Variant::where('sku', $maSKU)->exists();
                 if ($exists) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Đã tồn tại biến thể',
-                    ], 404);
+                    throw new \Exception('Đã tồn tại biến thể hoặc có thêm biến thể trùng lặp');
                 }
 
                 $dataVariant = [
                     'color_id' => $variant['color_id'],
                     'size_id' => $variant['size_id'],
-                    'price' => isset($variant['price']) ? $variant['price'] : $product->price,
+                    'price' => (isset($variant['price']) || $variant['price'] === 0) ? $variant['price'] : $product->price,
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
                 ];
@@ -78,7 +78,10 @@ class ProductController extends Controller
 
                 $product->productVariants()->create($dataVariant);
             }
+
             $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
+
+            DB::commit(); // Commit transaction nếu không có lỗi
 
             $categories = Category::query()->pluck('name', 'id')->all();
             $sizes = Size::all()->pluck('name', 'id');
@@ -93,13 +96,15 @@ class ProductController extends Controller
                 'colors' => $colors,
             ], 201);
         } catch (\Exception $e) {
-            DB::rollBack();
+            DB::rollBack(); // Rollback transaction khi có lỗi
+
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra: ' . $e->getMessage(),
             ], 500);
         }
     }
+
 
     // public function show(Product $product)
     // {
@@ -161,15 +166,6 @@ class ProductController extends Controller
             foreach ($validatedData['variants'] as $variant) {
                 $maSKU = "SKU-" . $product->id . '-' . $variant['color_id'] . '-' . $variant['size_id'];
 
-                $exists = Product_Variant::where('sku', $maSKU)->exists();
-
-                if ($exists) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Đã tồn tại biến thể',
-                    ], 404);
-                }
-
                 $dataVariant = [
                     'color_id' => $variant['color_id'],
                     'size_id' => $variant['size_id'],
@@ -177,7 +173,7 @@ class ProductController extends Controller
                     'sku' => $maSKU,
                 ];
 
-                if (isset($variant['price'])) {
+                if (isset($variant['price']) || $variant['price'] === 0) {
                     $dataVariant['price'] = $variant['price'];
                 };
 
@@ -197,6 +193,14 @@ class ProductController extends Controller
                     if (isset($variant['image'])) {
                         $variantImagePath = $variant['image']->store('images', 'public');
                         $dataVariant['image'] = Storage::url($variantImagePath);
+                    }
+                    $exists = Product_Variant::where('sku', $maSKU)->exists();
+
+                    if ($exists) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Đã tồn tại biến thể',
+                        ], 404);
                     }
                     $newVariant = $product->productVariants()->create($dataVariant);
                     $variantIds[] = $newVariant->id;

@@ -551,7 +551,7 @@ const Detail = () => {
           </div>
         </div>
       </div>
-      <div className="max-w-[1400px] mx-auto mt-10 border-t-2 border-gray-400">
+      <div className=" mx-auto mt-10 border-t-2 border-gray-400">
         {/* Tab Buttons */}
         <div className="flex border-b bg-gray-200 border-gray-200 py-[10px] px-[80px] gap-[20px]">
           <button

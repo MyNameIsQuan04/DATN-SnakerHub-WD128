@@ -7,6 +7,7 @@ import {
   removeSize,
   updateSize,
 } from "../services/admin/size";
+import { toast, ToastContainer } from "react-toastify";
 
 type Props = {
   children: React.ReactNode;
@@ -22,11 +23,11 @@ const SizeContext = ({ children }: Props) => {
     })();
   }, []);
   const onRemoveSize = async (id: number) => {
-    const confirm = window.confirm("Xoa ?");
+    const confirm = window.confirm("Bạn có chắc chắn muốn xóa ?");
     if (confirm) {
       try {
         await removeSize(id);
-        alert("Thanh cong");
+        toast.success("Xóa thành công");
         const newSizesAfterDelete = sizes.filter((size) => size.id !== id);
         setSizes(newSizesAfterDelete);
       } catch (error) {
@@ -38,7 +39,7 @@ const SizeContext = ({ children }: Props) => {
   const onAddSize = async (data: Size) => {
     try {
       const size = await addSize(data);
-      alert("Thanh cong");
+      toast.success("Thêm thành công!");
       setSizes([...sizes, size]);
       router("/admin/size");
       window.location.reload();
@@ -51,7 +52,7 @@ const SizeContext = ({ children }: Props) => {
     try {
       console.log(data, id);
       const size = await updateSize(data, id);
-      alert("Thanh cong");
+      toast.success("Cập nhật thành công");
       const newSizesAfterUpdate = sizes.map((pro) =>
         pro.id == id ? size : pro
       );
@@ -64,6 +65,7 @@ const SizeContext = ({ children }: Props) => {
   };
   return (
     <div>
+      <ToastContainer />
       <SizeCT.Provider value={{ sizes, onUpdateSize, onAddSize, onRemoveSize }}>
         {children}
       </SizeCT.Provider>

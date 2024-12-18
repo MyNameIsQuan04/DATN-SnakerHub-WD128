@@ -239,6 +239,19 @@ const UserOrderHistory = () => {
     }
   };
 
+  const statusMapping = {
+    "Xử lý yêu cầu trả hàng": "Đang xử lý trả hàng", // Ánh xạ trạng thái
+    all: "Tất cả",
+    "Chờ xử lý": "Chờ xử lý",
+    "Đã xác nhận": "Đã xác nhận",
+    "Đang vận chuyển": "Đang vận chuyển",
+    "Đã giao hàng": "Đã giao hàng",
+    "Hoàn thành": "Hoàn thành",
+    "Yêu cầu trả hàng": "Yêu cầu trả hàng",
+    "Trả hàng": "Trả hàng",
+    "Đã hủy": "Đã hủy",
+  };
+
   const filteredOrders =
     selectedStatus === "all"
       ? orders
@@ -257,6 +270,7 @@ const UserOrderHistory = () => {
             "Đã giao hàng",
             "Hoàn thành",
             "Yêu cầu trả hàng",
+            "Xử lý yêu cầu trả hàng", // Giữ tên gốc trong mảng
             "Trả hàng",
             "Đã hủy",
           ].map((status) => (
@@ -276,7 +290,11 @@ const UserOrderHistory = () => {
                     : "bg-gray-200 text-gray-800 hover:bg-gray-300 hover:text-white"
                 }`}
               >
-                {status === "all" ? "Tất cả" : status}
+                {status === "all"
+                  ? statusMapping["all"]
+                  : status === "Xử lý yêu cầu trả hàng"
+                  ? statusMapping["Xử lý yêu cầu trả hàng"]
+                  : status}
               </button>
             </div>
           ))}
@@ -318,15 +336,28 @@ const UserOrderHistory = () => {
                     <span className="text-blue-500">
                       {"# "} {order.order_code}
                     </span>
-                    {order.status_payment === "Đã thanh toán" ? (
-                      <span className="text-green-400">
-                        {order.status_payment}
-                      </span>
-                    ) : (
-                      <span className="text-orange-400">
-                        {order.status_payment}
-                      </span>
-                    )}
+                    <div className="flex gap-2">
+                      {order.status_payment === "Đã thanh toán" ? (
+                        <span className="text-green-400">
+                          {order.status_payment}
+                        </span>
+                      ) : (
+                        <span className="text-orange-400">
+                          {order.status_payment}
+                        </span>
+                      )}
+                      {order.paymentMethod === "COD" ? (
+                        <span className="text-orange-400">
+                          {order.paymentMethod}
+                        </span>
+                      ) : (
+                        <img
+                          src="https://i.imgur.com/RAtc2Se.png"
+                          alt="VNPAY"
+                          className="w-8 h-8 ml-2"
+                        />
+                      )}
+                    </div>
                   </div>
                   <div className="mr-9 flex flex-col">
                     <span className="font-semibold">Ngày đặt</span>
@@ -581,7 +612,7 @@ const UserOrderHistory = () => {
                 </div>
               </div>
               <hr />
-              <div className="flex mt-2">
+              <div className="flex justify-between mt-4">
                 {order.status === "Đang vận chuyển" && (
                   <div className="w-1/2 flex items-center gap-2 ">
                     <div className="bg-green-400 border rounded-full">
@@ -662,7 +693,25 @@ const UserOrderHistory = () => {
                     </h1>
                   </div>
                 )}
-                <div className="w-1/2 "></div>
+                <div className="flex justify-end">
+                  {order.paymentMethod === "VNPAY" &&
+                    order.status_payment === "Chưa thanh toán" &&
+                    order.paymentURL && ( // Kiểm tra paymentURL có giá trị
+                      <div className="flex justify-end">
+                        <a
+                          href={order.paymentURL} // Gắn link vào nút
+                          target="_blank" // Mở liên kết trong tab mới
+                          rel="noopener noreferrer" // Bảo mật liên kết
+                          className="px-4 py-2 bg-blue-500 text-white rounded-lg transition-all duration-200 ease-in-out 
+                                    hover:bg-blue-600 hover:scale-105 
+                                    active:bg-blue-700 active:scale-95 
+                                    focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        >
+                          Thanh toán
+                        </a>
+                      </div>
+                    )}
+                </div>
               </div>
             </div>
           ))

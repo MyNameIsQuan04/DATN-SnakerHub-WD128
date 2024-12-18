@@ -40,6 +40,13 @@ const ListVoucher = () => {
     }
   };
 
+  // Kiểm tra xem voucher có hết hạn không
+  const isExpired = (expirationDate: string) => {
+    const today = new Date();
+    const expiration = new Date(expirationDate);
+    return expiration < today;
+  };
+
   if (loading) return <p className="text-center py-4">Loading...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
@@ -60,16 +67,28 @@ const ListVoucher = () => {
         {vouchers.map((voucher) => (
           <div
             key={voucher.id}
-            className="voucher-card bg-white border border-gray-200 rounded-lg shadow-lg p-6 relative hover:transform hover:-translate-y-1 hover:border-orange-400 transition-all"
+            className={`voucher-card bg-white border border-gray-200 rounded-lg shadow-lg p-6 relative hover:transform hover:-translate-y-1 hover:border-orange-400 transition-all ${
+              isExpired(voucher.expiration_date) ? "bg-red-100" : ""
+            }`}
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-semibold text-blue-600">
                 {voucher.codeDiscount}
               </h3>
-              <span className="text-red-500 text-sm font-medium bg-red-100 px-2 py-1 rounded">
+              <span
+                className={`text-sm font-medium px-2 py-1 rounded ${
+                  isExpired(voucher.expiration_date)
+                    ? "bg-gray-500 text-white"
+                    : "bg-red-100 text-red-500"
+                }`}
+              >
                 Giảm {voucher.discount}%
               </span>
             </div>
+            <p className="text-gray-600">
+              Ngày bắt đầu:{" "}
+              <span className="font-medium">{voucher.start_date}</span>
+            </p>
             <p className="text-gray-600">
               Ngày hết hạn:{" "}
               <span className="font-medium">{voucher.expiration_date}</span>

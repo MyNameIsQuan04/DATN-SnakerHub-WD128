@@ -30,6 +30,7 @@ const UserProfile = () => {
     setActiveDropdownItem(null);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDropdownItemClick = (itemName: string) => {
     setActiveDropdownItem(itemName);
     setActiveButton(null);
@@ -85,7 +86,7 @@ const UserProfile = () => {
           </Link>
 
           {/* Dropdown menu */}
-          {isProfileDropdownOpen && (
+          {/* {isProfileDropdownOpen && (
             <div className="ml-4 mt-2 space-y-2">
               <Link
                 to="/profile/userinfo"
@@ -121,7 +122,7 @@ const UserProfile = () => {
                 Đổi Mật Khẩu
               </Link>
             </div>
-          )}
+          )} */}
 
           {/* Đơn hàng */}
           <Link
