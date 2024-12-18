@@ -88,7 +88,7 @@ const Detail = () => {
       const relatedProducts = products.filter(
         (product: Product) => product.id !== Number(currentProductId)
       );
-      setRelatedProducts(relatedProducts);
+      setRelatedProducts(relatedProducts.slice(0, 4));
       console.log(relatedProducts);
     } catch (error) {
       console.error("Lỗi khi lấy sản phẩm liên quan:", error);
@@ -97,6 +97,7 @@ const Detail = () => {
   useEffect(() => {
     if (id) {
       fetchProduct(id);
+      window.scrollTo(0, 0);
     }
   }, [id]);
 
@@ -531,7 +532,9 @@ const Detail = () => {
               </div>
               <div className="flex flex-col items-center text-sm text-gray-600">
                 <GrAnnounce className="w-[30px] h-auto" />
-                <p>Ưu đãi tích điểm và hưởng quyền lợi thành viên từ MWC</p>
+                <p>
+                  Ưu đãi tích điểm và hưởng quyền lợi thành viên từ SnakerHub
+                </p>
               </div>
               {/* Thêm phần mô tả sản phẩm */}
               {/* <div className="mt-8 border-t-4 border-gray-300 pt-4">
@@ -630,8 +633,18 @@ const Detail = () => {
                       </div>
                       <div className="rating-content mb-3">
                         <div className="flex">
-                          <h2 className="font-semibold">Sản phẩm :{""} </h2>
-                          <p>{rating.product.name}</p>
+                          <p>
+                            {rating.product.product_variants.map((item) => (
+                              <div className="">
+                                <div className="">
+                                  Màu sắc: {item.color.name || ""}
+                                </div>
+                                <div className="">
+                                  Kích thước: {item.size.name || ""}
+                                </div>
+                              </div>
+                            ))}
+                          </p>
                         </div>
                         <div className="rating-stars">
                           {Array.from({ length: 5 }, (_, index) => (

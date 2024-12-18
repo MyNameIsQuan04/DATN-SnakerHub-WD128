@@ -10,7 +10,7 @@ class CategoryControlller extends Controller
 {
     public function index()
     {
-        $categories = Category::withTrashed()->orderByDesc('id')->get();
+        $categories = Category::orderByDesc('id')->get();
         return $categories;
     }
 }

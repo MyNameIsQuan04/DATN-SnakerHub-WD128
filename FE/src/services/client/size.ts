@@ -1,8 +1,8 @@
 import api from "../../configs/axios";
 
-export const getSizes = async () => {
+export const getSizesClient = async () => {
   try {
-    const { data } = await api.get("sizes");
+    const { data } = await api.get("client/sizes");
     return data;
   } catch (error) {
     console.log(error);

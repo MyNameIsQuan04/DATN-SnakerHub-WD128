@@ -3,14 +3,14 @@ import { ProductCT } from "../../contexts/productContext";
 import { Product } from "../../interfaces/Product";
 import { Link, useSearchParams } from "react-router-dom";
 import api from "../../configs/axios";
-import { SizeCT } from "../../contexts/SizeContext";
-import { ColorCT } from "../../contexts/ColorContext";
 import { Size } from "../../interfaces/Size";
 import { Color } from "../../interfaces/Color";
 import { Category } from "../../interfaces/Category";
 import axios from "axios";
 import { getProductsClients } from "../../services/client/product";
 import { GetCategoriesClient } from "../../services/client/category";
+import { getColorsClient } from "../../services/client/color";
+import { getSizesClient } from "../../services/client/size";
 
 interface Filters {
   category: string | number | null;
@@ -25,7 +25,8 @@ const Products = () => {
   const itemsPerPage = 20;
   const [productsClient, setProductsClient] = useState<Product[]>([]);
   const [categoriesClient, setCategoriesClient] = useState<Category[]>([]);
-
+  const [colorsClient, setColorsClient] = useState<Color[]>([]);
+  const [sizesClient, setSizesClient] = useState<Size[]>([]);
   useEffect(() => {
     (async () => {
       const response = await getProductsClients();
@@ -41,9 +42,21 @@ const Products = () => {
       setCategoriesClient(categoriesData);
     })();
   }, []);
+  useEffect(() => {
+    (async () => {
+      const response = await getColorsClient();
+      const categoriesData = response || [];
+      setColorsClient(categoriesData);
+    })();
+  }, []);
+  useEffect(() => {
+    (async () => {
+      const response = await getSizesClient();
+      const categoriesData = response || [];
+      setSizesClient(categoriesData);
+    })();
+  }, []);
 
-  const { sizes } = useContext(SizeCT);
-  const { colors } = useContext(ColorCT);
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get("keyword") || "";
   const categoryId = searchParams.get("categoryId");
@@ -123,7 +136,7 @@ const Products = () => {
   }, [categoryId]);
   return (
     <div>
-      <div className="container mx-auto my-8 px-4 md:px-8 mt-[80px]">
+      <div className="container mx-auto my-8 px-4 md:px-8 mt-[100px]">
         <div className="flex flex-wrap -mx-4">
           <aside className="w-1/5 px-4 mb-6">
             <h2 className="text-xl font-semibold mb-4">Bộ lọc</h2>
@@ -160,7 +173,7 @@ const Products = () => {
               }
             >
               <option value="">Chọn kích thước</option>
-              {sizes?.map((size: Size) => (
+              {sizesClient?.map((size: Size) => (
                 <option key={size.id} value={size.id}>
                   {size.name}
                 </option>
@@ -179,7 +192,7 @@ const Products = () => {
               }
             >
               <option value="">Chọn màu sắc</option>
-              {colors?.map((color: Color) => (
+              {colorsClient?.map((color: Color) => (
                 <option key={color.id} value={color.id}>
                   {color.name}
                 </option>

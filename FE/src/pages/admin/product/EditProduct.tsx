@@ -10,6 +10,7 @@ import { Color } from "../../../interfaces/Color";
 import { Size } from "../../../interfaces/Size";
 import { Gallery } from "../../../interfaces/Gallery";
 import { getProductById } from "../../../services/admin/product";
+import * as Yup from "yup";
 
 const EditProduct = () => {
   const { categories } = useContext(CategoryCT);
@@ -94,7 +95,31 @@ const EditProduct = () => {
       }
     }
   };
-
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Tên sản phẩm không được để trống"),
+    price: Yup.number()
+      .typeError("Giá sản phẩm phải là số")
+      .positive("Giá sản phẩm phải lớn hơn 0")
+      .required("Giá sản phẩm không được để trống"),
+    category_id: Yup.string().required("Danh mục sản phẩm không được để trống"),
+    variants: Yup.array()
+      .of(
+        Yup.object({
+          price: Yup.number()
+            .typeError("Giá biến thể phải là số")
+            .positive("Giá biến thể phải lớn hơn 0")
+            .required("Giá biến thể không được để trống"),
+          size_id: Yup.string().required("Kích cỡ không được để trống"),
+          color_id: Yup.string().required("Màu sắc không được để trống"),
+          stock: Yup.number()
+            .typeError("Số lượng phải là số")
+            .integer("Số lượng phải là số nguyên")
+            .min(0, "Số lượng không được âm")
+            .required("Số lượng không được để trống"),
+        })
+      )
+      .min(1, "Cần ít nhất một biến thể"),
+  });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
     console.log(values);
@@ -147,10 +172,11 @@ const EditProduct = () => {
 
       <Formik
         initialValues={initialValues}
-        enableReinitialize
         onSubmit={onSubmit}
+        validationSchema={validationSchema}
+        enableReinitialize
       >
-        {({ values, setFieldValue }) => (
+        {({ values, setFieldValue, errors, touched }) => (
           <Form className="p-4">
             <div className="mb-8">
               <h2 className="text-2xl font-bold mb-4">Thông tin sản phẩm</h2>
@@ -166,6 +192,9 @@ const EditProduct = () => {
                   className="w-full px-3 py-2 border rounded-lg"
                   placeholder="Nhập tên sản phẩm"
                 />
+                {errors.name && touched.name && (
+                  <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                )}
               </div>
 
               {/* Giá sản phẩm */}
@@ -179,6 +208,9 @@ const EditProduct = () => {
                   className="w-full px-3 py-2 border rounded-lg"
                   placeholder="Nhập giá sản phẩm"
                 />
+                {errors.price && touched.price && (
+                  <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+                )}
               </div>
 
               {/* Danh mục sản phẩm */}
@@ -198,6 +230,11 @@ const EditProduct = () => {
                     </option>
                   ))}
                 </Field>
+                {errors.category_id && touched.category_id && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.category_id}
+                  </p>
+                )}
               </div>
 
               {/* Mô tả sản phẩm */}
@@ -223,7 +260,6 @@ const EditProduct = () => {
                   placeholder="Nhập mô tả sản phẩm"
                 />
               </div>
-
               {/* Ảnh sản phẩm */}
               <div className="mb-4">
                 <label className="block text-gray-700 font-bold mb-2">
@@ -239,187 +275,146 @@ const EditProduct = () => {
               </div>
 
               {/* Thư viện ảnh sản phẩm */}
-              {values.galleries.map((gallery, index) => (
-                <div className="mb-4" key={index}>
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Thư viện ảnh sản phẩm
-                  </label>
-
-                  {/* Hiển thị ảnh cũ nếu có */}
-                  {gallery.image_path && (
-                    <div className="mb-2">
-                      <img
-                        src={gallery.image_path} // Sử dụng URL ảnh từ DB
-                        alt={`Gallery Image ${index}`}
-                        className="w-32 h-32 object-cover rounded-lg"
-                      />
-                    </div>
-                  )}
-
-                  {/* Input để chọn ảnh mới */}
-                  <input
-                    type="file"
-                    className="w-full px-3 py-2 border rounded-lg"
-                    onChange={(e) => {
-                      const file = e.target.files ? e.target.files[0] : null;
-                      if (file) {
-                        const newGalleries = [...values.galleries];
-                        newGalleries[index] = {
-                          ...newGalleries[index],
-                          image_path: file, // Ghi đè bằng tệp tin
-                        };
-                        setFieldValue("galleries", newGalleries);
-                      }
-                    }}
-                  />
-                </div>
-              ))}
-              <button
-                type="button"
-                className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded mt-4"
-                onClick={() => {
-                  const newGalleries = [
-                    ...values.galleries,
-                    { id: "", image_path: null }, // Thêm ảnh trống
-                  ];
-                  setFieldValue("galleries", newGalleries);
-                }}
-              >
-                Thêm ảnh mới
-              </button>
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2">
+                  Thư viện ảnh sản phẩm
+                </label>
+                <input
+                  type="file"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  multiple
+                  onChange={(e) =>
+                    setFieldValue("galleries", Array.from(e.target.files || []))
+                  }
+                />
+              </div>
             </div>
 
             {/* Biến thể sản phẩm */}
-            <div className="mb-8 bg-gray-100">
+            <div className="mb-8">
               <h2 className="text-2xl font-bold mb-4">Biến thể sản phẩm</h2>
 
               <FieldArray name="variants">
                 {({ push, remove }) => (
                   <>
                     {values.variants.map((variant, index) => (
-                      <div
-                        key={variant.id}
-                        className="mb-4 border p-4 rounded-lg"
-                      >
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg mb-2">Biến thể {index + 1}</h3>
-                          {/* Hiển thị hình ảnh biến thể */}
-                          {variant.image && (
-                            <img
-                              src={
-                                typeof variant.image === "string"
-                                  ? variant.image
-                                  : URL.createObjectURL(variant.image)
-                              }
-                              alt={`Variant ${index + 1}`}
-                              className="w-16 h-16 object-cover rounded"
-                            />
-                          )}
-                        </div>
+                      <div key={index} className="mb-4 border p-4 rounded-lg">
+                        <h3 className="text-lg font-semibold mb-2">
+                          Biến thể {index + 1}
+                        </h3>
 
-                        {/* Luôn hiển thị form chỉnh sửa thông tin cho biến thể */}
-                        <div className="mt-4">
-                          {/* Giá biến thể */}
-                          <div className="mb-4">
-                            <label className="block text-gray-700 font-bold mb-2">
-                              Giá biến thể
-                            </label>
-                            <Field
-                              name={`variants[${index}].price`}
-                              type="number"
-                              className="w-full px-3 py-2 border rounded-lg"
-                            />
-                          </div>
-
-                          {/* Màu sắc */}
-                          <div className="mb-4">
-                            <label className="block text-gray-700 font-bold mb-2">
-                              Màu sắc
-                            </label>
-                            <Field
-                              as="select"
-                              name={`variants[${index}].color_id`}
-                              className="w-full px-3 py-2 border rounded-lg"
-                            >
-                              <option value="">Chọn màu sắc</option>
-                              {colors.map((color: Color) => (
-                                <option key={color.id} value={color.id}>
-                                  {color.name}
-                                </option>
-                              ))}
-                            </Field>
-                          </div>
-
-                          {/* Kích cỡ */}
-                          <div className="mb-4">
-                            <label className="block text-gray-700 font-bold mb-2">
-                              Kích cỡ
-                            </label>
-                            <Field
-                              as="select"
-                              name={`variants[${index}].size_id`}
-                              className="w-full px-3 py-2 border rounded-lg"
-                            >
-                              <option value="">Chọn kích cỡ</option>
-                              {sizes.map((size: Size) => (
-                                <option key={size.id} value={size.id}>
-                                  {size.name}
-                                </option>
-                              ))}
-                            </Field>
-                          </div>
-
-                          {/* Số lượng */}
-                          <div className="mb-4">
-                            <label className="block text-gray-700 font-bold mb-2">
-                              Số lượng
-                            </label>
-                            <Field
-                              name={`variants[${index}].stock`}
-                              type="number"
-                              className="w-full px-3 py-2 border rounded-lg"
-                            />
-                          </div>
-
-                          {/* Ảnh biến thể */}
-                          <div className="mb-4">
-                            <label className="block text-gray-700 font-bold mb-2">
-                              Ảnh biến thể
-                            </label>
-                            <input
-                              type="file"
-                              className="w-full px-3 py-2 border rounded-lg"
-                              accept="image/*"
-                              onChange={(e) =>
-                                setFieldValue(
-                                  `variants[${index}].image`,
-                                  e.target.files?.[0]
-                                )
-                              }
-                            />
-                            {variant.image && (
-                              <div className="mt-2">
-                                <img
-                                  src={
-                                    typeof variant.image === "string"
-                                      ? variant.image
-                                      : URL.createObjectURL(variant.image)
-                                  }
-                                  alt="Ảnh đã lưu"
-                                  className="w-20 h-20 object-cover rounded"
-                                />
-                              </div>
+                        {/* Giá biến thể */}
+                        <div className="mb-4">
+                          <label className="block text-gray-700 font-bold mb-2">
+                            Giá biến thể
+                          </label>
+                          <Field
+                            name={`variants[${index}].price`}
+                            type="number"
+                            className="w-full px-3 py-2 border rounded-lg"
+                          />
+                          {errors.variants?.[index]?.price &&
+                            touched.variants?.[index]?.price && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors.variants[index].price}
+                              </p>
                             )}
-                          </div>
-
-                          <button
-                            type="button"
-                            className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
-                            onClick={() => remove(index)}
-                          >
-                            Xóa biến thể
-                          </button>
                         </div>
+
+                        {/* Màu sắc */}
+                        <div className="mb-4">
+                          <label className="block text-gray-700 font-bold mb-2">
+                            Màu sắc
+                          </label>
+                          <Field
+                            as="select"
+                            name={`variants[${index}].color_id`}
+                            className="w-full px-3 py-2 border rounded-lg"
+                          >
+                            <option value="">Chọn màu sắc</option>
+                            {colors.map((color: Color) => (
+                              <option key={color.id} value={color.id}>
+                                {color.name}
+                              </option>
+                            ))}
+                          </Field>
+                          {errors.variants?.[index]?.color_id &&
+                            touched.variants?.[index]?.color_id && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors.variants[index].color_id}
+                              </p>
+                            )}
+                        </div>
+
+                        {/* Kích cỡ */}
+                        <div className="mb-4">
+                          <label className="block text-gray-700 font-bold mb-2">
+                            Kích cỡ
+                          </label>
+                          <Field
+                            as="select"
+                            name={`variants[${index}].size_id`}
+                            className="w-full px-3 py-2 border rounded-lg"
+                          >
+                            <option value="">Chọn kích cỡ</option>
+                            {sizes.map((size: Size) => (
+                              <option key={size.id} value={size.id}>
+                                {size.name}
+                              </option>
+                            ))}
+                          </Field>
+                          {errors.variants?.[index]?.size_id &&
+                            touched.variants?.[index]?.size_id && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors.variants[index].size_id}
+                              </p>
+                            )}
+                        </div>
+
+                        {/* Số lượng */}
+                        <div className="mb-4">
+                          <label className="block text-gray-700 font-bold mb-2">
+                            Số lượng
+                          </label>
+                          <Field
+                            name={`variants[${index}].stock`}
+                            type="number"
+                            className="w-full px-3 py-2 border rounded-lg"
+                          />
+                          {errors.variants?.[index]?.stock &&
+                            touched.variants?.[index]?.stock && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors.variants[index].stock}
+                              </p>
+                            )}
+                        </div>
+
+                        {/* SKU */}
+
+                        {/* Ảnh biến thể */}
+                        <div className="mb-4">
+                          <label className="block text-gray-700 font-bold mb-2">
+                            Ảnh biến thể
+                          </label>
+                          <input
+                            type="file"
+                            className="w-full px-3 py-2 border rounded-lg"
+                            onChange={(e) =>
+                              setFieldValue(
+                                `variants[${index}].image`,
+                                e.target.files?.[0]
+                              )
+                            }
+                          />
+                        </div>
+
+                        <button
+                          type="button"
+                          className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
+                          onClick={() => remove(index)}
+                        >
+                          Xóa biến thể
+                        </button>
                       </div>
                     ))}
                     <button
@@ -427,11 +422,11 @@ const EditProduct = () => {
                       className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded"
                       onClick={() =>
                         push({
-                          id: 0,
                           price: 0,
                           size_id: "",
                           color_id: "",
                           stock: 0,
+                          sku: "",
                           image: null,
                         })
                       }
@@ -448,7 +443,7 @@ const EditProduct = () => {
                 type="submit"
                 className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
               >
-                Sửa sản phẩm
+                Thêm sản phẩm
               </button>
               <Link
                 to="/admin/product"
