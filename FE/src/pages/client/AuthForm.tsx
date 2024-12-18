@@ -26,6 +26,14 @@ const AuthForm = ({ isLogin }: Props) => {
     try {
       if (isLogin) {
         const res = await instance.post(`/auth/login`, data);
+
+        // Check if the account is locked
+        if (res.data.user.deleted_at) {
+          toast.error("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ hỗ trợ!");
+          return;
+        }
+
+        // Save the token and user info
         contextLogin(res.data.access_token, res.data.user);
         toast.success("Đăng nhập thành công!");
         nav("/");
@@ -41,10 +49,9 @@ const AuthForm = ({ isLogin }: Props) => {
         toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
         nav("/login");
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.log(error.response?.data);
-      toast.error(error.response?.data?.message || "Đã xảy ra lỗi!");
+      toast.error(error.response?.data?.message || "Không thể đăng nhập!");
     }
   };
 
