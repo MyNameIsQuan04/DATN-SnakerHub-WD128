@@ -54,7 +54,7 @@ class ProductController extends Controller
 
             foreach ($validatedData['variants'] as $variant) {
                 $maSKU = "SKU-" . $product->id . '-' . $variant['color_id'] . '-' . $variant['size_id'];
-                
+
                 $exists = Product_Variant::where('sku', $maSKU)->exists();
 
                 if ($exists) {
@@ -67,7 +67,7 @@ class ProductController extends Controller
                 $dataVariant = [
                     'color_id' => $variant['color_id'],
                     'size_id' => $variant['size_id'],
-                    'price' => isset($variant['price']) ? $variant['price'] : $product->price,
+                    'price' => (isset($variant['price']) || $variant['price'] === 0) ? $variant['price'] : $product->price,
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
                 ];
@@ -177,7 +177,7 @@ class ProductController extends Controller
                     'sku' => $maSKU,
                 ];
 
-                if (isset($variant['price'])) {
+                if (isset($variant['price']) || $variant['price'] === 0) {
                     $dataVariant['price'] = $variant['price'];
                 };
 
