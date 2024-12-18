@@ -19,7 +19,7 @@ class UserApiController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $users = User::withTrashed()->all();
+        $users = User::withTrashed()->get();
         return response()->json($users);
     }
 
