@@ -166,8 +166,8 @@ const OrderDetailHictory = () => {
     "Đang vận chuyển",
     "Đã giao hàng",
     "Hoàn thành",
-    "Đã hủy",
     "Trả hàng",
+    "Đã hủy",
   ];
 
   // Hàm tính chỉ số trạng thái
@@ -389,6 +389,7 @@ const OrderDetailHictory = () => {
                       Xử lý yêu cầu trả hàng
                     </option>
                     <option value="Trả hàng">Trả hàng</option>
+                    <option value="Đã hủy">Đã hủy</option>
                   </select>
                 </div>
               </div>

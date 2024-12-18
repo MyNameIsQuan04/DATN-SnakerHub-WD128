@@ -87,65 +87,65 @@ const ListUser = () => {
   const upgradeToAdmin = () =>
     handleUserUpdate({ type: "admin" }, "User has been upgraded to Admin!");
   const blockUser = async () => {
-    if (!selectedUser) return;
-    setIsUpdating(true);
-    try {
-      const response = await axios.post(
-        `http://localhost:8000/api/users/${selectedUser.id}/lock`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (response.status === 200) {
-        setListUser((prevUsers) =>
-          prevUsers.map((user) =>
-            user.id === selectedUser.id ? { ...user, isLocked: true } : user
-          )
-        );
-        toast.success("User has been blocked!");
-        closeModal();
+  if (!selectedUser) return;
+  setIsUpdating(true);
+  try {
+    const response = await axios.post(
+      `http://localhost:8000/api/users/${selectedUser.id}/lock`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } catch (error) {
-      toast.error("An error occurred while blocking the user.");
-      console.error(error);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-  
-  const unBlockUser = async () => {
-    if (!selectedUser) return;
-    setIsUpdating(true);
-    try {
-      const response = await axios.post(
-        `http://localhost:8000/api/users/${selectedUser.id}/unlock`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+    );
+    if (response.status === 200) {
+      setListUser((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === selectedUser.id ? { ...user, isLocked: true } : user
+        )
       );
-      if (response.status === 200) {
-        setListUser((prevUsers) =>
-          prevUsers.map((user) =>
-            user.id === selectedUser.id ? { ...user, isLocked: false } : user
-          )
-        );
-        toast.success("User has been unblocked!");
-        closeModal();
-      }
-    } catch (error) {
-      toast.error("An error occurred while unblocking the user.");
-      console.error(error);
-    } finally {
-      setIsUpdating(false);
+      toast.success("User has been blocked!");
+      closeModal();
     }
-  };
-  
+  } catch (error) {
+    toast.error("An error occurred while blocking the user.");
+    console.error(error);
+  } finally {
+    setIsUpdating(false);
+  }
+};
+
+const unBlockUser = async () => {
+  if (!selectedUser) return;
+  setIsUpdating(true);
+  try {
+    const response = await axios.post(
+      `http://localhost:8000/api/users/${selectedUser.id}/unlock`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (response.status === 200) {
+      setListUser((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === selectedUser.id ? { ...user, isLocked: false } : user
+        )
+      );
+      toast.success("User has been unblocked!");
+      closeModal();
+    }
+  } catch (error) {
+    toast.error("An error occurred while unblocking the user.");
+    console.error(error);
+  } finally {
+    setIsUpdating(false);
+  }
+};
+
 
   return (
     <div className="p-6">
