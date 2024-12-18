@@ -14,6 +14,7 @@ const AdminOrder = () => {
   const token = localStorage.getItem("access_token");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [complaintCount, setComplaintCount] = useState<number>(0)
 
   useEffect(() => {
     fetchOrders();
@@ -28,11 +29,20 @@ const AdminOrder = () => {
       setLoading(true);
       const { data } = await axios.get("http://localhost:8000/api/orders", {
         headers: {
-          Authorization: `Bearer ${token}`, // Thêm token vào header Authorization
+          Authorization: `Bearer ${token}`,
         },
       });
       setOrders(data);
       setFilteredOrders(data);
+
+      // Đếm số lượng đơn hàng khiếu nại
+      const complaintOrders = data.filter(
+        (order: Order) =>
+          order.status === "Yêu cầu trả hàng" ||
+          order.status === "Xử lý yêu cầu trả hàng"
+      );
+      setComplaintCount(complaintOrders.length);
+
       setError(""); // Reset error
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -97,8 +107,13 @@ const AdminOrder = () => {
             className="border border-gray-300 rounded-lg py-2 px-4 w-full md:w-1/2 lg:w-1/3 transition duration-300 focus:ring-2 focus:ring-yellow-500"
           />
           <Link to={`/admin/order-return`}>
-            <button className="mt-4 md:mt-0 px-4 py-2 rounded-md border text-sm bg-gray-500 text-white border-gray-500 hover:bg-gray-600 transition duration-200">
+            <button className="mt-4 md:mt-0 px-4 py-2 rounded-md border text-sm bg-gray-500 text-white border-gray-500 hover:bg-gray-600 transition duration-200 relative">
               Yêu cầu / Khiếu nại
+              {complaintCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {complaintCount}
+                </span>
+              )}
             </button>
           </Link>
         </div>
