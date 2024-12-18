@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { IoMdSearch } from "react-icons/io";
 import React, { useContext, useState } from "react";
-import { Product, product_variants } from "../../../interfaces/Product";
+import { Product } from "../../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { ProductCT } from "../../../contexts/productContext";
+import { IoHomeOutline } from "react-icons/io5";
+import { GrFormNext } from "react-icons/gr";
 
 const ListProduct = () => {
   const [expandedProduct, setExpandedProduct] = useState<number | null>(null);
@@ -15,22 +17,38 @@ const ListProduct = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-semibold mb-6">Quản lý sản phẩm</h1>
-      <Link
-        to="/admin/product-add"
-        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mb-6 inline-block"
-      >
-        Thêm Sản Phẩm Mới
-      </Link>
+      <div className="">
+        <h2 className="font-bold text-[30px]">Quản lý sản phẩm</h2>
+        <div className="flex items-center gap-2 ml-2">
+          <div className="flex gap-1">
+            <IoHomeOutline />
+            <GrFormNext />
+          </div>
+          <h3 className="underline">Quản lý sản phẩm</h3>
+        </div>
+      </div>
 
       {/* Tìm kiếm */}
-      <div className="mb-6 flex items-center gap-[10px]">
-        <input
-          type="text"
-          placeholder="Tìm kiếm sản phẩm..."
-          className="border border-gray-300 rounded-lg py-2 px-4 w-full md:w-1/2 lg:w-1/3"
-        />
-        <IoMdSearch className="w-[30px] h-auto ml-[-50px]" />
+      <div className="mb-6 flex items-center gap-5 flex-wrap mt-3">
+        {/* Search Input Section */}
+        <div className="relative flex items-center w-full md:w-[calc(50%-10px)] lg:w-[calc(33.33%-10px)]">
+          <input
+            type="text"
+            placeholder="Tìm kiếm sản phẩm..."
+            className="border border-gray-300 rounded-lg py-2 pl-4 pr-10 w-full focus:outline-blue-500"
+          />
+          <IoMdSearch className="absolute right-3 text-gray-500 w-5 h-5" />
+        </div>
+
+        {/* Add Product Button */}
+        <div>
+          <Link
+            to="/admin/product-add"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+          >
+            Thêm Sản Phẩm Mới
+          </Link>
+        </div>
       </div>
 
       {/* Bảng sản phẩm */}

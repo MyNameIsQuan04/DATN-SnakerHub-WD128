@@ -106,10 +106,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/users', [UserApiController::class, 'index'])->middleware('type:admin');
 
     // Hiển thị thông tin người dùng (cho cả Admin và User)
-    Route::get('/users/{id}', [UserApiController::class, 'show'])->middleware('type:admin,user');
+    Route::get('/users/{id}', [UserApiController::class, 'show']);
 
     // Cập nhật thông tin người dùng (cho cả Admin và User)
-    Route::post('/users/{id}', [UserApiController::class, 'update'])->middleware('type:admin,user');
+    Route::post('/users/{id}', [UserApiController::class, 'update']);
 
     // Xóa người dùng (Admin)
     Route::delete('/users/{id}', [UserApiController::class, 'destroy'])->middleware('type:admin');

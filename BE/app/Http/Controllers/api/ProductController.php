@@ -54,6 +54,16 @@ class ProductController extends Controller
 
             foreach ($validatedData['variants'] as $variant) {
                 $maSKU = "SKU-" . $product->id . '-' . $variant['color_id'] . '-' . $variant['size_id'];
+                
+                $exists = Product_Variant::where('sku', $maSKU)->exists();
+
+                if ($exists) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Đã tồn tại biến thể',
+                    ], 404);
+                }
+
                 $dataVariant = [
                     'color_id' => $variant['color_id'],
                     'size_id' => $variant['size_id'],
@@ -150,6 +160,16 @@ class ProductController extends Controller
             $variantIds = [];
             foreach ($validatedData['variants'] as $variant) {
                 $maSKU = "SKU-" . $product->id . '-' . $variant['color_id'] . '-' . $variant['size_id'];
+
+                $exists = Product_Variant::where('sku', $maSKU)->exists();
+
+                if ($exists) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Đã tồn tại biến thể',
+                    ], 404);
+                }
+
                 $dataVariant = [
                     'color_id' => $variant['color_id'],
                     'size_id' => $variant['size_id'],

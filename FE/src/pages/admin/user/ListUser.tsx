@@ -3,15 +3,24 @@ import axios from "axios";
 import { IUser } from "../../../interfaces/User";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { IoHomeOutline } from "react-icons/io5";
+import { GrFormNext } from "react-icons/gr";
+import { FaSpinner } from "react-icons/fa";
+import { format } from "date-fns"; // Import date-fns
 
 const ListUser = () => {
   const [listUser, setListUser] = useState<IUser[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Loading state for fetching users
+  const [isUpdating, setIsUpdating] = useState(false); // Loading state for modal actions
 
+  const token = localStorage.getItem("access_token");
+
+  // Fetch user list
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const response = await axios.get(`http://localhost:8000/api/users`, {
           headers: {
@@ -20,8 +29,10 @@ const ListUser = () => {
         });
         setListUser(response.data);
       } catch (error) {
-        console.error("Lỗi khi lấy thông tin người dùng:", error);
-        toast.error("Không thể tải danh sách người dùng.");
+        console.error("Error fetching user data:", error);
+        toast.error("Unable to fetch the user list. Please try again later.");
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -32,7 +43,7 @@ const ListUser = () => {
       setSelectedUser(user);
       setIsModalOpen(true);
     } else {
-      toast.info("Người dùng đã là Admin.");
+      toast.info("This user is already an Admin.");
     }
   };
 
@@ -46,11 +57,15 @@ const ListUser = () => {
     successMessage: string
   ) => {
     if (!selectedUser) return;
-    setIsLoading(true);
+    setIsUpdating(true);
     try {
       const response = await axios.patch(
         `http://localhost:8000/api/users/${selectedUser.id}`,
-        updatedData
+        updatedData,{
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (response.status === 200) {
         setListUser((prevUsers) =>
@@ -62,146 +77,200 @@ const ListUser = () => {
         closeModal();
       }
     } catch (error) {
-      toast.error("Có lỗi xảy ra khi cập nhật người dùng.");
+      toast.error("An error occurred while updating the user.");
       console.error(error);
     } finally {
-      setIsLoading(false);
+      setIsUpdating(false);
     }
   };
 
   const upgradeToAdmin = () =>
-    handleUserUpdate({ type: "admin" }, "Cấp quyền Admin thành công!");
-  const blockUser = () =>
-    handleUserUpdate({ isLocked: true }, "Chặn người dùng thành công!");
-  const unBlockUser = () =>
-    handleUserUpdate({ isLocked: false }, "Mở chặn người dùng thành công!");
+    handleUserUpdate({ type: "admin" }, "User has been upgraded to Admin!");
+  const blockUser = async () => {
+    if (!selectedUser) return;
+    setIsUpdating(true);
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/api/users/${selectedUser.id}/lock`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setListUser((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === selectedUser.id ? { ...user, isLocked: true } : user
+          )
+        );
+        toast.success("User has been blocked!");
+        closeModal();
+      }
+    } catch (error) {
+      toast.error("An error occurred while blocking the user.");
+      console.error(error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+  
+  const unBlockUser = async () => {
+    if (!selectedUser) return;
+    setIsUpdating(true);
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/api/users/${selectedUser.id}/unlock`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setListUser((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === selectedUser.id ? { ...user, isLocked: false } : user
+          )
+        );
+        toast.success("User has been unblocked!");
+        closeModal();
+      }
+    } catch (error) {
+      toast.error("An error occurred while unblocking the user.");
+      console.error(error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+  
 
   return (
-    <div className="">
-      <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
-        Danh sách người dùng
-      </h1>
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse bg-white shadow-md rounded-lg">
-          <thead>
-            <tr className="bg-gray-800 text-white">
-              <th className="p-4 border-b border-gray-300">
-                <label>
-                  <input type="checkbox" className="checkbox" />
-                </label>
-              </th>
-              <th className="p-4 border-b border-gray-300">Thông tin</th>
-              <th className="p-4 border-b border-gray-300">Email</th>
-              <th className="p-4 border-b border-gray-300">Quyền truy cập</th>
-              <th className="p-4 border-b border-gray-300">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {listUser.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-100">
-                <td className="p-4 border-b border-gray-200">
-                  <label>
-                    <input type="checkbox" className="checkbox" />
-                  </label>
-                </td>
-                <td className="p-4 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
-                    <div className="avatar">
-                      <div className="mask mask-squircle w-20 h-20 overflow-hidden">
-                        <img
-                          src={user.avatar || "https://via.placeholder.com/150"}
-                          alt=""
-                          className="w-full h-full object-cover rounded-md"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="font-bold text-gray-800">{user.name}</div>
-                      <div className="text-sm text-gray-500">
-                        {user.address}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td className="p-4 border-b border-gray-200">
-                  <span className="text-red-500 font-medium">{user.email}</span>
-                  {/*<br />
-                   <span className="badge badge-ghost badge-sm">
-                    Desktop Support Technician
-                  </span> */}
-                  <br />
-                  <span className="badge badge-ghost badge-sm">
-                    {user.created_at}
-                  </span>
-                </td>
-                <td>
-                  <button
-                    onClick={() => openModal(user)}
-                    className={`w-[100px] px-1 py-1 text-center text-sm font-semibold rounded-md transition-shadow duration-200 ${
-                      user.type === "admin"
-                        ? "text-green-600 bg-white border border-green-600 hover:shadow-lg"
-                        : "text-orange-600 bg-white border border-orange-600 hover:shadow-lg"
-                    }`}
-                  >
-                    {user.type === "admin" ? "Admin" : "User"}
-                  </button>
-                </td>
-
-                <td className="p-4 border-b border-gray-200">
-                  <button className="btn btn-ghost btn-xs text-blue-500 hover:text-blue-700">
-                    Details
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="p-6">
+      {/* Header Section */}
+      <div className="mb-4">
+        <h2 className="font-bold text-3xl">User List</h2>
+        <div className="flex items-center gap-2 ml-2 text-gray-600">
+          <div className="flex items-center gap-1">
+            <IoHomeOutline />
+            <GrFormNext />
+          </div>
+          <h3 className="underline">User Management</h3>
+        </div>
       </div>
 
-      {/* Modal quản lí người dùng */}
+      {/* Loading Spinner */}
+      {isLoading ? (
+        <div className="flex justify-center items-center h-[60vh]">
+          <FaSpinner className="animate-spin text-4xl text-blue-500" />
+          <span className="ml-2 text-lg font-medium text-gray-600">
+            Loading users...
+          </span>
+        </div>
+      ) : (
+        <>
+          {/* User Table */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white shadow-lg rounded-lg">
+              <thead>
+                <tr className="bg-gray-500 text-white">
+                  <th className="p-4 text-left">Tên người dùng</th>
+                  <th className="p-4 text-left">Số điện thoại</th>
+                  <th className="p-4 text-left">Địa chỉ</th>
+                  <th className="p-4 text-left">Email</th>
+                  <th className="p-4 text-left">Ngày tạo</th>
+                  <th className="p-4 text-left">Quyền truy cập</th>
+                </tr>
+              </thead>
+              <tbody>
+                {listUser.map((user) => (
+                  <tr
+                    key={user.id}
+                    className="hover:bg-gray-100 transition-all duration-200"
+                  >
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={user.avatar || "https://via.placeholder.com/150"}
+                          alt="Avatar"
+                          className="w-16 h-16 object-cover rounded-md border"
+                        />
+                        <div className="font-semibold text-gray-800">
+                          {user.name}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4">{user.phone_number}</td>
+                    <td className="p-4">{user.address || "N/A"}</td>
+                    <td className="p-4 text-red-500">{user.email}</td>
+                    <td className="p-4">
+                      {user.created_at
+                        ? format(new Date(user.created_at), "dd/MM/yyyy HH:mm")
+                        : "N/A"}
+                    </td>
+                    <td className="p-4">
+                      <button
+                        onClick={() => openModal(user)}
+                        className={`px-2 py-1 rounded-md font-semibold ${
+                          user.type === "admin"
+                            ? "text-green-600 border border-green-600"
+                            : "text-orange-600 border border-orange-600"
+                        }`}
+                      >
+                        {user.type === "admin" ? "Admin" : "User"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      {/* Modal */}
       {isModalOpen && selectedUser && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-xl font-bold mb-4 text-gray-800">
-              Quản lý người dùng
+              Manage User: {selectedUser.name}
             </h2>
-            <p className="mb-4 text-gray-600">
-              Người dùng: {selectedUser.name}
-            </p>
-            <div className="space-y-2">
+            <div className="space-y-4">
               {selectedUser.isLocked ? (
                 <button
-                  className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 w-full transition duration-200"
+                  className="w-full py-2 text-white bg-green-500 hover:bg-green-600 rounded-md"
                   onClick={unBlockUser}
-                  disabled={isLoading}
+                  disabled={isUpdating}
                 >
-                  {isLoading ? "Đang xử lý..." : "Mở chặn người dùng"}
+                  {isUpdating ? "Processing..." : "Unblock User"}
                 </button>
               ) : (
                 <>
                   <button
-                    className="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 w-full transition duration-200"
+                    className="w-full py-2 text-white bg-yellow-500 hover:bg-yellow-600 rounded-md"
                     onClick={upgradeToAdmin}
-                    disabled={isLoading}
+                    disabled={isUpdating}
                   >
-                    {isLoading ? "Đang xử lý..." : "Cấp quyền Admin"}
+                    {isUpdating ? "Processing..." : "Promote to Admin"}
                   </button>
                   <button
-                    className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 w-full transition duration-200"
+                    className="w-full py-2 text-white bg-red-500 hover:bg-red-600 rounded-md"
                     onClick={blockUser}
-                    disabled={isLoading}
+                    disabled={isUpdating}
                   >
-                    {isLoading ? "Đang xử lý..." : "Chặn người dùng"}
+                    {isUpdating ? "Processing..." : "Block User"}
                   </button>
                 </>
               )}
+              <button
+                className="w-full py-2 text-gray-700 border border-gray-400 hover:bg-gray-200 rounded-md"
+                onClick={closeModal}
+              >
+                Cancel
+              </button>
             </div>
-            <button
-              className="mt-4 text-gray-700 py-1 px-4 border-[2px] rounded hover:bg-gray-200 transition-colors w-full"
-              onClick={closeModal}
-            >
-              Hủy
-            </button>
           </div>
         </div>
       )}

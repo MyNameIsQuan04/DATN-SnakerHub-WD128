@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Order } from "../../../interfaces/Order";
 import { Link } from "react-router-dom";
+import { FaSpinner } from "react-icons/fa";
 
 const AdminOrder = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -60,11 +61,12 @@ const AdminOrder = () => {
       filtered = filtered.filter(
         (order) =>
           order.order_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          String(order.customer.phone_number).includes(searchTerm) 
+          order.customer.name
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          String(order.customer.phone_number).includes(searchTerm)
       );
     }
-    
 
     setFilteredOrders(filtered);
   };
@@ -120,8 +122,11 @@ const AdminOrder = () => {
       </div>
 
       {loading && (
-        <div className="mt-4 text-center text-blue-500 font-semibold">
-          Đang tải đơn hàng ...
+        <div className="flex justify-center items-center h-[60vh]">
+          <FaSpinner className="animate-spin text-4xl text-blue-500" />
+          <span className="ml-2 text-lg font-medium text-gray-600">
+            Đang tải lịch sử đơn hàng ....
+          </span>
         </div>
       )}
 
@@ -212,9 +217,7 @@ const AdminOrder = () => {
 
                     <td className="border-b text-center">
                       <Link to={`/admin/order-detail/${item.id}`}>
-                        <button
-                          className="text-white bg-gray-400 px-4 py-2 rounded-md transition duration-200 ease-in-out hover:bg-gray-500 focus:outline-none whitespace-nowrap underline"
-                        >
+                        <button className="text-white bg-gray-400 px-4 py-2 rounded-md transition duration-200 ease-in-out hover:bg-gray-500 focus:outline-none whitespace-nowrap underline">
                           Chi tiết
                         </button>
                       </Link>
