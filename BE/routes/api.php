@@ -102,6 +102,9 @@ Route::group(['middleware' => ['auth:api']],  function () {
 });
 
 Route::middleware('auth:api')->group(function () {
+    // Hiển thị thông tin người dùng
+    Route::get('/client/user', [ClientController::class, 'show'])->middleware('auth:sanctum');
+
     // Hiển thị danh sách người dùng (Admin chỉ có thể truy cập)
     Route::get('/users', [UserApiController::class, 'index'])->middleware('type:admin');
 
