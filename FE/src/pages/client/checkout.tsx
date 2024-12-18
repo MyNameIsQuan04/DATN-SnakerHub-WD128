@@ -253,6 +253,158 @@ const Checkout = () => {
               );
             })}
           </div>
+
+          <div className="space-y-4 mt-4 bg-gray-100 p-5  border border-gray-300 rounded-md">
+            <h3 className="font-semibold text-lg">Thông tin nhận hàng</h3>
+            <div className="mt-[20px] flex gap-4">
+              {/* Họ tên */}
+              <div className="w-full sm:w-1/2">
+                <input
+                  type="text"
+                  {...register("name", { required: true })}
+                  placeholder="Họ tên"
+                  className="w-full h-[40px] border border-[#c9c9c9] pl-[20px] rounded-md"
+                />
+                {errors.name && (
+                  <span className="text-red-500 text-sm">
+                    Trường này là bắt buộc
+                  </span>
+                )}
+              </div>
+
+              {/* Số điện thoại */}
+              <div className="w-full sm:w-1/2">
+                <input
+                  type="text"
+                  {...register("phone", { required: true })}
+                  placeholder="Số điện thoại"
+                  className="w-full h-[40px] border border-[#c9c9c9] pl-[20px] rounded-md"
+                />
+                {errors.phone && (
+                  <span className="text-red-500 text-sm">
+                    Trường này là bắt buộc
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="space-y-6">
+              {/* Tỉnh/Thành phố */}
+              <div className="space-y-4">
+                {/* Tỉnh/Thành phố */}
+                <div className="w-full">
+                  <label
+                    htmlFor="province"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Tỉnh/Thành phố
+                  </label>
+                  <select
+                    id="province"
+                    value={selectedProvince?.code || ""}
+                    onChange={(e) => {
+                      const selectedProvince = provinces.find(
+                        (province) => province.code === +e.target.value
+                      );
+                      setSelectedProvince(selectedProvince || null);
+                      if (selectedProvince?.name === "Thành phố Hà Nội") {
+                        setShippingFee(30000);
+                      } else {
+                        setShippingFee(40000);
+                      }
+                    }}
+                    className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Tỉnh/thành phố</option>
+                    {provinces.map((province) => (
+                      <option key={province.code} value={province.code}>
+                        {province.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Huyện/Quận */}
+                <div className="w-full">
+                  <label
+                    htmlFor="district"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Huyện/Quận
+                  </label>
+                  <select
+                    id="district"
+                    value={selectedDistrict?.code || ""}
+                    onChange={(e) => {
+                      const selectedDistrict = districts.find(
+                        (district) => district.code === +e.target.value
+                      );
+                      setSelectedDistrict(selectedDistrict || null);
+                    }}
+                    className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Huyện/quận</option>
+                    {districts.map((district) => (
+                      <option key={district.code} value={district.code}>
+                        {district.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Xã/Phường */}
+                <div className="w-full">
+                  <label
+                    htmlFor="ward"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Xã/Phường
+                  </label>
+                  <select
+                    id="ward"
+                    value={selectedWard?.code || ""}
+                    onChange={(e) => {
+                      const selectedWard = wards.find(
+                        (ward) => ward.code === +e.target.value
+                      );
+                      setSelectedWard(selectedWard || null);
+                    }}
+                    className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Xã/phường</option>
+                    {wards.map((ward) => (
+                      <option key={ward.code} value={ward.code}>
+                        {ward.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Địa chỉ cụ thể */}
+              <div className="space-y-2 mt-4">
+                <label
+                  htmlFor="address"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Địa chỉ cụ thể
+                </label>
+                <textarea
+                  id="address"
+                  placeholder="Nhập địa chỉ cụ thể"
+                  className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  rows={3}
+                  {...register("address", {
+                    required: "Địa chỉ không được để trống",
+                  })}
+                />
+                {errors.address && (
+                  <span className="text-red-500 text-sm">
+                    Không được để trống
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Phần bên phải: Tổng kết đơn hàng và thông tin địa chỉ */}
@@ -268,8 +420,8 @@ const Checkout = () => {
             <div className="voucher-section">
               {/* Dropdown chọn mã giảm giá */}
               <div className="voucher-input flex flex-col md:flex-row justify-between items-center mt-4 space-y-3 md:space-y-0">
-                <label className="block text-gray-700 font-semibold text-sm md:mr-4">
-                  Chọn mã giảm giá:
+                <label className="block text-gray-700 font-medium">
+                  Chọn mã giảm:
                 </label>
                 <div className="relative flex-grow">
                   <select
@@ -305,7 +457,7 @@ const Checkout = () => {
                 </div>
                 <button
                   onClick={handleApplyVoucher}
-                  className="ml-0 md:ml-4 h-full p-3 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition duration-200"
+                  className="ml-2 h-full p-3 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition duration-200 whitespace-nowrap"
                 >
                   Áp dụng
                 </button>
@@ -335,6 +487,23 @@ const Checkout = () => {
                   </div>
                 </div>
               )}
+              <div className="">
+                <div className="w-full max-w-md mx-auto mt-4">
+                  <p className="text-lg font-semibold mb-2">
+                    Phương thức thanh toán
+                  </p>
+                  <div className="relative">
+                    <select
+                      value={paymentMethod}
+                      onChange={handlePaymentChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+                    >
+                      <option value={1}>Thanh toán khi nhận hàng</option>
+                      <option value={2}>Thanh toán VNPay</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
 
               {/* Hiển thị tổng giá trị sau giảm giá */}
               {totalAfterDiscount > 0 && (
@@ -347,161 +516,6 @@ const Checkout = () => {
                   </p>
                 </div>
               )}
-            </div>
-
-            <hr className="my-4" />
-
-            {/* Thông tin địa chỉ */}
-            <div className="space-y-4 mt-4">
-              <h3 className="font-semibold text-lg">Thông tin nhận hàng</h3>
-              <div className="mt-[20px] flex gap-4">
-                {/* Họ tên */}
-                <div className="w-full sm:w-1/2">
-                  <input
-                    type="text"
-                    {...register("name", { required: true })}
-                    placeholder="Họ tên"
-                    className="w-full h-[40px] border border-[#c9c9c9] pl-[20px] rounded-md"
-                  />
-                  {errors.name && (
-                    <span className="text-red-500 text-sm">
-                      Trường này là bắt buộc
-                    </span>
-                  )}
-                </div>
-
-                {/* Số điện thoại */}
-                <div className="w-full sm:w-1/2">
-                  <input
-                    type="text"
-                    {...register("phone", { required: true })}
-                    placeholder="Số điện thoại"
-                    className="w-full h-[40px] border border-[#c9c9c9] pl-[20px] rounded-md"
-                  />
-                  {errors.phone && (
-                    <span className="text-red-500 text-sm">
-                      Trường này là bắt buộc
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="space-y-6">
-                {/* Tỉnh/Thành phố */}
-                <div className="space-y-4">
-                  {/* Tỉnh/Thành phố */}
-                  <div className="w-full">
-                    <label
-                      htmlFor="province"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Tỉnh/Thành phố
-                    </label>
-                    <select
-                      id="province"
-                      value={selectedProvince?.code || ""}
-                      onChange={(e) => {
-                        const selectedProvince = provinces.find(
-                          (province) => province.code === +e.target.value
-                        );
-                        setSelectedProvince(selectedProvince || null);
-                        if (selectedProvince?.name === "Thành phố Hà Nội") {
-                          setShippingFee(30000);
-                        } else {
-                          setShippingFee(40000);
-                        }
-                      }}
-                      className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Tỉnh/thành phố</option>
-                      {provinces.map((province) => (
-                        <option key={province.code} value={province.code}>
-                          {province.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Huyện/Quận */}
-                  <div className="w-full">
-                    <label
-                      htmlFor="district"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Huyện/Quận
-                    </label>
-                    <select
-                      id="district"
-                      value={selectedDistrict?.code || ""}
-                      onChange={(e) => {
-                        const selectedDistrict = districts.find(
-                          (district) => district.code === +e.target.value
-                        );
-                        setSelectedDistrict(selectedDistrict || null);
-                      }}
-                      className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Huyện/quận</option>
-                      {districts.map((district) => (
-                        <option key={district.code} value={district.code}>
-                          {district.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Xã/Phường */}
-                  <div className="w-full">
-                    <label
-                      htmlFor="ward"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Xã/Phường
-                    </label>
-                    <select
-                      id="ward"
-                      value={selectedWard?.code || ""}
-                      onChange={(e) => {
-                        const selectedWard = wards.find(
-                          (ward) => ward.code === +e.target.value
-                        );
-                        setSelectedWard(selectedWard || null);
-                      }}
-                      className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Xã/phường</option>
-                      {wards.map((ward) => (
-                        <option key={ward.code} value={ward.code}>
-                          {ward.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Địa chỉ cụ thể */}
-                <div className="space-y-2 mt-4">
-                  <label
-                    htmlFor="address"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Địa chỉ cụ thể
-                  </label>
-                  <textarea
-                    id="address"
-                    placeholder="Nhập địa chỉ cụ thể"
-                    className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                    rows={3}
-                    {...register("address", {
-                      required: "Địa chỉ không được để trống",
-                    })}
-                  />
-                  {errors.address && (
-                    <span className="text-red-500 text-sm">
-                      Không được để trống
-                    </span>
-                  )}
-                </div>
-              </div>
             </div>
 
             {/* Hiển thị tổng tiền */}
@@ -528,29 +542,11 @@ const Checkout = () => {
               </div>
             </div>
             <hr className="my-4" />
-            <div className="flex justify-end text-lg">
-              <span>Thành tiền: {""}</span>
+            <div className="flex justify-end text-lg gap-3">
+              <span className="font-semibold">Thành tiền: {""}</span>
               <span className="text-red-500">
                 {formatCurrency(grandTotalPrice - discount + shippingFee)}
               </span>
-            </div>
-            <div className="">
-              <div className="w-full max-w-md mx-auto mt-4">
-                <p className="text-lg font-semibold mb-2">
-                  Phương thức thanh toán
-                </p>
-                <div className="relative">
-                  <select
-                    value={paymentMethod}
-                    onChange={handlePaymentChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-                  >
-                    <option value={1}>Thanh toán khi nhận hàng</option>
-                    <option value={2}>Thanh toán VNPay</option>
-                    {/* <option value={3}>Thanh toán MoMo</option> */}
-                  </select>
-                </div>
-              </div>
             </div>
             {/* Nút thanh toán */}
             <button

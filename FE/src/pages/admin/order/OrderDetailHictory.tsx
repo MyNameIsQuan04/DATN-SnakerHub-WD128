@@ -63,8 +63,8 @@ const OrderDetailHictory = () => {
     if (order?.status === "Đã giao hàng" && newStatus === "Hoàn thành") {
       const timeElapsed =
         new Date().getTime() - new Date(order.updated_at).getTime();
-      // 5 ngày tính bằng giây
-      const fiveDaysInMilliseconds = 3 * 24 * 60 * 60 * 1000;
+      // 1 ngày tính bằng giây
+      const fiveDaysInMilliseconds = 1 * 24 * 60 * 60 * 1000;
 
       if (timeElapsed < fiveDaysInMilliseconds) {
         toast.warn(
@@ -420,7 +420,7 @@ const OrderDetailHictory = () => {
                       disabled={index < getStatusIndex(order.status)}
                       className={
                         index < getStatusIndex(order.status)
-                          ? "text-gray-300 bg-gray-100 cursor-not-allowed"
+                          ? "text-gray-400 bg-gray-100 cursor-not-allowed"
                           : "text-gray-600"
                       }
                     >

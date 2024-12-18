@@ -19,6 +19,7 @@ use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\CategoryControlller as ClientCategoryControlller;
+use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Client\ColorController;
 use App\Http\Controllers\Client\SizeController;
 
@@ -102,14 +103,17 @@ Route::group(['middleware' => ['auth:api']],  function () {
 });
 
 Route::middleware('auth:api')->group(function () {
+    // Hiển thị thông tin người dùng
+    Route::get('/client/user/{user}', [ClientController::class, 'show']);
+
     // Hiển thị danh sách người dùng (Admin chỉ có thể truy cập)
     Route::get('/users', [UserApiController::class, 'index'])->middleware('type:admin');
 
     // Hiển thị thông tin người dùng (cho cả Admin và User)
-    Route::get('/users/{id}', [UserApiController::class, 'show'])->middleware('type:admin,user');
+    Route::get('/users/{id}', [UserApiController::class, 'show']);
 
     // Cập nhật thông tin người dùng (cho cả Admin và User)
-    Route::post('/users/{id}', [UserApiController::class, 'update'])->middleware('type:admin,user');
+    Route::post('/users/{id}', [UserApiController::class, 'update']);
 
     // Xóa người dùng (Admin)
     Route::delete('/users/{id}', [UserApiController::class, 'destroy'])->middleware('type:admin');
