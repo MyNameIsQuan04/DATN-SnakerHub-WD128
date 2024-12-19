@@ -68,7 +68,7 @@ const OrderDetailHictory = () => {
 
       if (timeElapsed < fiveDaysInMilliseconds) {
         toast.warn(
-          "Chỉ có thể cập nhật thành 'Hoàn thành' sau 3 ngày kể từ khi đã giao đơn hàng."
+          "Chỉ có thể cập nhật thành 'Hoàn thành' sau 1 ngày kể từ khi đã giao đơn hàng."
         );
         return;
       }
