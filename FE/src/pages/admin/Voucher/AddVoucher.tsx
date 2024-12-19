@@ -50,7 +50,7 @@ const AddVoucher: React.FC = () => {
       });
 
       toast.success("Tạo voucher mới thành công");
-      // navigate("/admin/vouchers");
+      navigate("/admin/vouchers");
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Có lỗi xảy ra");
     }
