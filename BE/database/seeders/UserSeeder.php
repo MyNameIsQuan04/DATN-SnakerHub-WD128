@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
@@ -14,17 +15,19 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $faker = Faker::create();
+        $list = ['Admin','Saler','User'];
+        foreach ($list as $name) {
+            Role::firstOrCreate(['name' => $name]);
+        }
+        $role = Role::where('name', 'User')->pluck('id');
         for ($i = 0; $i < 10; $i++) {
             User::create([
+                'role_id'=> $role, // mặc định là User
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,
                 'password' => bcrypt('password'), 
                 'phone_number' => $faker->phoneNumber,
                 'address' => $faker->address,
-                'type'=>$faker->randomElement(['user','admin']),
-                // 'gender'=>$faker->gender,
-                // 'birthday'=>$faker->birthday,
-                // 'avatar'=>$faker->avatar
             ]);
         }
     }

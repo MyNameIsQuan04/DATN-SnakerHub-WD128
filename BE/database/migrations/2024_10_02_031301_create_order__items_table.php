@@ -15,9 +15,11 @@ return new class extends Migration
     {
         Schema::create('order__items', function (Blueprint $table) {
             $table->foreignIdFor(Order::class)->constrained();
-            $table->foreignIdFor(Product_Variant::class)->constrained();
 
             $table->id();
+            $table->string('nameProduct');
+            $table->string('color');
+            $table->string('size');
             $table->integer('quantity');
             $table->integer('price');
             

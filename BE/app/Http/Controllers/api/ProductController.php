@@ -86,7 +86,7 @@ class ProductController extends Controller
             $categories = Category::query()->pluck('name', 'id')->all();
             $sizes = Size::all()->pluck('name', 'id');
             $colors = Color::all()->pluck('name', 'id');
-
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Sản phẩm và các biến thể đã được tạo thành công!',
