@@ -32,7 +32,7 @@ class Product_Variant extends Model
     public function cartItems(){
         return $this->hasMany(Cart_Item::class);
     }
-    public function orderItems(){
-        return $this->hasMany(Order_Item::class)->withTrashed();
-    }
+    // public function orderItems(){
+    //     return $this->hasMany(Order_Item::class)->withTrashed();
+    // }
 }

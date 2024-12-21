@@ -28,7 +28,7 @@ const ListColor = () => {
           </thead>
           <tbody>
             {colors.map((color: Color, index: number) => (
-              <tr>
+              <tr key={color.id}>
                 <th className="py-2 px-4 border-b">{index + 1}</th>
                 <th className="py-2 px-4 border-b">{color.name}</th>
                 <th className="py-2 px-4 border-b flex justify-center gap-[10px]">
@@ -37,12 +37,14 @@ const ListColor = () => {
                       Cập nhật
                     </button>
                   </Link>
-                  <button
-                    className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
-                    onClick={() => onRemoveColor(color.id)}
-                  >
-                    Xóa
-                  </button>
+                  {color.name !== "Mặc định" && (
+                    <button
+                      className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
+                      onClick={() => onRemoveColor(color.id)}
+                    >
+                      Xóa
+                    </button>
+                  )}
                 </th>
               </tr>
             ))}

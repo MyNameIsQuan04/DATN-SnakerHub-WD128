@@ -23,6 +23,7 @@ class VoucherController extends Controller
             'codeDiscount' => 'required|unique:vouchers,codeDiscount|max:10',
             'discount' => 'required|numeric|min:1|max:50',
             'type' => 'required|in:percent,amount',
+            'start_date' => 'required|date|after_or_equal:today',
             'expiration_date' => 'required|date',
             'usage_limit' => 'required|integer|min:1',
         ]);
@@ -33,6 +34,7 @@ class VoucherController extends Controller
             'type' => $request->type,
             'expiration_date' => Carbon::parse($request->expiration_date),
             'usage_limit' => $request->usage_limit,
+            'start_date' => Carbon::parse($request->start_date),
         ]);
 
         return response()->json(['message' => 'Voucher created successfully', 'voucher' => $voucher], 201);
@@ -49,6 +51,7 @@ class VoucherController extends Controller
             'type' => 'required|in:percent,amount',
             'expiration_date' => 'required|date',
             'usage_limit' => 'required|integer|min:1',
+            'start_date' => 'required|date|after_or_equal:today',
         ]);
 
         $voucher->update([
@@ -57,6 +60,7 @@ class VoucherController extends Controller
             'type' => $request->type,
             'expiration_date' => Carbon::parse($request->expiration_date),
             'usage_limit' => $request->usage_limit,
+            'start_date' => Carbon::parse($request->start_date),
         ]);
 
         return response()->json(['message' => 'Voucher updated successfully', 'voucher' => $voucher]);
