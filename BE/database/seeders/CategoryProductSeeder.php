@@ -57,7 +57,7 @@ class CategoryProductSeeder extends Seeder
                 ]);
 
                 // Tạo 2 biến thể sản phẩm cho mỗi sản phẩm
-                for ($i = 0; $i < 2; $i++) {
+                for ($k = 0; $k < 2; $k++) {
                     $randomSizeId = $faker->randomElement($sizeIds);
                     $randomColorId = $faker->randomElement($colorIds);
                     Product_Variant::create([

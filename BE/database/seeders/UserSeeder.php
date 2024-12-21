@@ -17,9 +17,9 @@ class UserSeeder extends Seeder
         $faker = Faker::create();
         $list = ['Admin','Saler','User'];
         foreach ($list as $name) {
-            Role::firstOrCreate(['name' => $name]);
+            Role::create(['role' => $name]);
         }
-        $role = Role::where('name', 'User')->pluck('id');
+        $role = Role::where('role', 'User')->value('id');
         for ($i = 0; $i < 10; $i++) {
             User::create([
                 'role_id'=> $role, // mặc định là User
