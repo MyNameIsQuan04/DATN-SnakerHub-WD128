@@ -28,7 +28,7 @@ const ListCategory = () => {
           </thead>
           <tbody>
             {categories.map((category: Category, index: number) => (
-              <tr>
+              <tr key={category.id}>
                 <th className="py-2 px-4 border-b">{index + 1}</th>
                 <th className="py-2 px-4 border-b">{category.name}</th>
                 <th className="py-2 px-4 border-b flex justify-center gap-[10px]">
@@ -37,12 +37,14 @@ const ListCategory = () => {
                       Cập nhật
                     </button>
                   </Link>
-                  <button
-                    className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
-                    onClick={() => onRemoveCategory(category.id)}
-                  >
-                    Xóa
-                  </button>
+                  {category.name !== "Mặc định" && (
+                    <button
+                      className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
+                      onClick={() => onRemoveCategory(category.id)}
+                    >
+                      Xóa
+                    </button>
+                  )}
                 </th>
               </tr>
             ))}

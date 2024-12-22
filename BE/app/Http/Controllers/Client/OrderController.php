@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Jobs\SendNewOrderEmail;
 use App\Models\Order;
 use App\Models\Customer;
 use App\Models\Order_Item;
@@ -9,14 +10,14 @@ use Illuminate\Http\Request;
 use App\Models\Product_Variant;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendKhieuNaiOrderEmail;
 use App\Jobs\SendLinkPayment;
 use App\Models\Cart;
 use App\Models\Cart_Item;
-use App\Models\Comment;
+use App\Models\Color;
 use App\Models\Product;
-use App\Models\Voucher;
+use App\Models\Size;
 use Illuminate\Support\Facades\Auth;
-use Str;
 
 class OrderController extends Controller
 {
@@ -101,7 +102,9 @@ class OrderController extends Controller
 
                 $dataItem = [
                     'order_id' => $order->id,
-                    'product__variant_id' => $item['product__variant_id'],
+                    'nameProduct' => Product::where('id', $productVariant['product_id'])->value('name'),
+                    'color' => Color::where('id',$productVariant['color_id'])->value('name'),
+                    'size' => Size::where('id',$productVariant['size_id'])->value('name'),
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                 ];
@@ -137,6 +140,8 @@ class OrderController extends Controller
             }
             $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
 
+            SendNewOrderEmail::dispatch($order);
+
             return response()->json([
                 'success' => true,
                 'message' => 'thành công',
@@ -171,14 +176,17 @@ class OrderController extends Controller
                     'status' => 'required|in:Đã hủy',
                 ]);
                 foreach ($order->orderItems as $orderItem) {
-                    $productVariant = Product_Variant::find($orderItem['product__variant_id']);
+                    $product_id = Product::where('name',$orderItem['nameProduct'])->value('id');
+                    
+                    $productVariant = Product_Variant::where('color',$orderItem['color'])->where('size',$orderItem['size'])
+                    ->where('product_id',$product_id)->first();
 
                     $stock = $productVariant['stock'] + $orderItem['quantity'];
                     $productVariant->update([
                         'stock' => $stock,
                     ]);
 
-                    $product = Product::find($productVariant['product_id']);
+                    $product = Product::find($product_id);
 
                     $newSellCount = $product['sell_count'] - $orderItem['quantity'];
                     $product->update([
@@ -238,6 +246,9 @@ class OrderController extends Controller
             ]);
 
             $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+            
+            SendKhieuNaiOrderEmail::dispatch($order);
+
             return $order;
         }
     }
@@ -302,7 +313,9 @@ class OrderController extends Controller
 
                 $dataItem = [
                     'order_id' => $order->id,
-                    'product__variant_id' => $item['product__variant_id'],
+                    'nameProduct' => Product::where('id', $productVariant['product_id'])->value('name'),
+                    'color' => Color::where('id',$productVariant['color_id'])->value('name'),
+                    'size' => Size::where('id',$productVariant['size_id'])->value('name'),
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                 ];
@@ -387,6 +400,7 @@ class OrderController extends Controller
 
             $user = Auth::user();
             SendLinkPayment::dispatch($vnp_Url, $user->email, $user->name);
+            SendNewOrderEmail::dispatch($order);
 
             return $vnp_Url;
         } catch (\Exception $e) {

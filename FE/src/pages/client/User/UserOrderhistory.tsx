@@ -239,6 +239,19 @@ const UserOrderHistory = () => {
     }
   };
 
+  const statusMapping = {
+    "Xử lý yêu cầu trả hàng": "Đang xử lý trả hàng", // Ánh xạ trạng thái
+    all: "Tất cả",
+    "Chờ xử lý": "Chờ xử lý",
+    "Đã xác nhận": "Đã xác nhận",
+    "Đang vận chuyển": "Đang vận chuyển",
+    "Đã giao hàng": "Đã giao hàng",
+    "Hoàn thành": "Hoàn thành",
+    "Yêu cầu trả hàng": "Yêu cầu trả hàng",
+    "Trả hàng": "Trả hàng",
+    "Đã hủy": "Đã hủy",
+  };
+
   const filteredOrders =
     selectedStatus === "all"
       ? orders
@@ -257,6 +270,7 @@ const UserOrderHistory = () => {
             "Đã giao hàng",
             "Hoàn thành",
             "Yêu cầu trả hàng",
+            "Xử lý yêu cầu trả hàng", // Giữ tên gốc trong mảng
             "Trả hàng",
             "Đã hủy",
           ].map((status) => (
@@ -276,7 +290,11 @@ const UserOrderHistory = () => {
                     : "bg-gray-200 text-gray-800 hover:bg-gray-300 hover:text-white"
                 }`}
               >
-                {status === "all" ? "Tất cả" : status}
+                {status === "all"
+                  ? statusMapping["all"]
+                  : status === "Xử lý yêu cầu trả hàng"
+                  ? statusMapping["Xử lý yêu cầu trả hàng"]
+                  : status}
               </button>
             </div>
           ))}

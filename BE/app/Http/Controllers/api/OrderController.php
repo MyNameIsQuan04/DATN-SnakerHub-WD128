@@ -10,6 +10,7 @@ use App\Models\Product_Variant;
 use App\Jobs\SendOrderStatusEmail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendKhieuNaiOrderEmail;
 use App\Mail\OrderStatusUpdatedMail;
 use Illuminate\Support\Facades\Mail;
 
@@ -66,14 +67,17 @@ class OrderController extends Controller
 
                 if ($newStatus === 'Đã hủy') {
                     foreach ($order->orderItems as $orderItem) {
-                        $productVariant = Product_Variant::find($orderItem['product__variant_id']);
+                        $product_id = Product::where('name',$orderItem['nameProduct'])->value('id');
+                        
+                        $productVariant = Product_Variant::where('color',$orderItem['color'])->where('size',$orderItem['size'])
+                        ->where('product_id',$product_id)->first();
 
                         $stock = $productVariant['stock'] + $orderItem['quantity'];
                         $productVariant->update([
                             'stock' => $stock,
                         ]);
 
-                        $product = Product::find($productVariant['product_id']);
+                        $product = Product::find($product_id);
 
                         $newSellCount = $product['sell_count'] - $orderItem['quantity'];
                         $product->update([

@@ -31,7 +31,8 @@ const Footer = () => {
                 thương mại điện tử
               </li>
               <li className="mb-[10px] hover:text-blue-600 transition-colors duration-300 hover:underline">
-                <i className="fa-solid fa-chevron-right" /> Giới thiệu về MWC
+                <i className="fa-solid fa-chevron-right" /> Giới thiệu về
+                SnakerHUB
               </li>
               <li className="mb-[10px] hover:text-blue-600 transition-colors duration-300 hover:underline">
                 <i className="fa-solid fa-chevron-right" /> Than Phiền Góp Ý
