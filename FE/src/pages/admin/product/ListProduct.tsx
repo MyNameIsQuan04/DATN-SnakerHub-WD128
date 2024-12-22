@@ -17,7 +17,7 @@ const ListProduct = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="">
+      <div>
         <h2 className="font-bold text-[30px]">Quản lý sản phẩm</h2>
         <div className="flex items-center gap-2 ml-2">
           <div className="flex gap-1">
@@ -30,16 +30,6 @@ const ListProduct = () => {
 
       {/* Tìm kiếm */}
       <div className="mb-6 flex items-center gap-5 flex-wrap mt-3">
-        {/* Search Input Section */}
-        {/* <div className="relative flex items-center w-full md:w-[calc(50%-10px)] lg:w-[calc(33.33%-10px)]">
-          <input
-            type="text"
-            placeholder="Tìm kiếm sản phẩm..."
-            className="border border-gray-300 rounded-lg py-2 pl-4 pr-10 w-full focus:outline-blue-500"
-          />
-          <IoMdSearch className="absolute right-3 text-gray-500 w-5 h-5" />
-        </div> */}
-
         {/* Add Product Button */}
         <div>
           <Link
@@ -52,100 +42,116 @@ const ListProduct = () => {
       </div>
 
       {/* Bảng sản phẩm */}
-      <table className="min-w-full bg-white border border-gray-200">
-        <thead>
-          <tr>
-            <th className="py-3 px-4 border-b text-left">STT</th>
-            <th className="py-3 px-4 border-b text-left">Hình Ảnh</th>
-            <th className="py-3 px-4 border-b text-left">Tên Sản Phẩm</th>
-            <th className="py-3 px-4 border-b text-left">Mô Tả</th>
-            <th className="py-3 px-4 border-b text-left">Mô Tả Đầy đủ</th>
-            <th className="py-3 px-4 border-b text-left">Giá</th>
-            <th className="py-3 px-4 border-b text-left">Biến Thể</th>
-            <th className="py-3 px-4 border-b text-left">Danh Mục</th>
-            <th className="py-3 px-4 border-b text-left">Quản lý</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product: Product, index: number) => (
-            <React.Fragment key={product.id}>
-              <tr className="hover:bg-gray-50">
-                <td className="py-3 px-4 border-b text-left">{index + 1}</td>
-                <td className="py-3 px-4 border-b text-left">
-                  <img
-                    src={product.thumbnail || "https://via.placeholder.com/150"}
-                    alt={product.name}
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                </td>
-                <td className="py-3 px-4 border-b text-left">{product.name}</td>
-                <td className="py-3 px-4 border-b text-left">
-                  {product.description}
-                </td>
-                <td className="py-3 px-4 border-b text-left">
-                  {product.short_description}
-                </td>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-200 table-auto">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="py-3 px-4 border-b text-center">STT</th>
+              <th className="py-3 px-4 border-b text-center">Hình Ảnh</th>
+              <th className="py-3 px-4 border-b text-center">Tên Sản Phẩm</th>
+              <th className="py-3 px-4 border-b text-center">Mô Tả</th>
+              <th className="py-3 px-4 border-b text-center">Mô Tả Đầy Đủ</th>
+              <th className="py-3 px-4 border-b text-center">Giá Nhập</th>
+              <th className="py-3 px-4 border-b text-center">Giá</th>
+              <th className="py-3 px-4 border-b text-center">Biến Thể</th>
+              <th className="py-3 px-4 border-b text-center">Danh Mục</th>
+              <th className="py-3 px-4 border-b text-center">Quản Lý</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product: Product, index: number) => (
+              <React.Fragment key={product.id}>
+                <tr className="hover:bg-gray-50 ">
+                  <td className="py-3 px-4 border-b text-center">
+                    {index + 1}
+                  </td>
+                  <td className="py-3 px-4 border-b text-center">
+                    <img
+                      src={
+                        product.thumbnail || "https://via.placeholder.com/150"
+                      }
+                      alt={product.name}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                  </td>
+                  <td className="py-3 px-4 border-b text-center">
+                    {product.name}
+                  </td>
+                  <td className="py-3 px-4 border-b text-center max-w-[150px] overflow-hidden whitespace-nowrap text-ellipsis">
+                    {product.description}
+                  </td>
+                  <td className="py-3 px-4 border-b text-center max-w-[150px] overflow-hidden whitespace-nowrap text-ellipsis">
+                    {product.short_description}
+                  </td>
 
-                {/* Hiển thị giá sản phẩm hoặc thông báo phụ thuộc biến thể */}
-                <td className="py-3 px-4 border-b text-left">
-                  {product.price > 0 ? (
-                    <span>{product.price.toLocaleString()} VND</span>
-                  ) : (
-                    <span>Tùy theo biến thể</span>
-                  )}
-                </td>
+                  <td className="py-3 px-4 border-b text-center">
+                    {product.entry_price > 0 ? (
+                      <span>{product.entry_price.toLocaleString()} VND</span>
+                    ) : (
+                      <span>Tùy theo biến thể</span>
+                    )}
+                  </td>
+                  <td className="py-3 px-4 border-b">
+                    {product.price > 0 ? (
+                      <span>{product.price.toLocaleString()} VND</span>
+                    ) : (
+                      <span>Tùy theo biến thể</span>
+                    )}
+                  </td>
+                  {/* Nút xem biến thể */}
+                  <td className="py-3 px-4 border-b text-center">
+                    <button
+                      className={`${
+                        expandedProduct === product.id
+                          ? "bg-red-600 hover:bg-red-700"
+                          : "bg-blue-600 hover:bg-blue-700"
+                      } text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
+                      onClick={() => toggleVariations(product.id)}
+                    >
+                      {expandedProduct === product.id
+                        ? "Ẩn biến thể"
+                        : "Xem biến thể"}
+                    </button>
+                  </td>
 
-                {/* Nút xem biến thể */}
-                <td className="py-3 px-4 border-b text-left">
-                  <button
-                    className="text-blue-500 hover:underline"
-                    onClick={() => toggleVariations(product.id as number)}
-                  >
-                    {expandedProduct === product.id
-                      ? "Ẩn biến thể"
-                      : "Xem biến thể"}
-                  </button>
-                </td>
+                  <td className="py-3 px-4 border-b text-center">
+                    {product.category?.name}
+                  </td>
 
-                <td className="py-3 px-4 border-b text-left">
-                  {product.category?.name}
-                </td>
+                  {/* Nút quản lý */}
+                  <td className="py-3 px-4 border-b">
+                    <Link
+                      to={`/admin/product-edit/${product.id}`}
+                      className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500"
+                    >
+                      Chỉnh sửa
+                    </Link>
+                    <button
+                      onClick={() => onRemoveProduct(product.id)}
+                      className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
+                    >
+                      Xóa
+                    </button>
+                  </td>
+                </tr>
 
-                {/* Nút quản lý */}
-                <td className="py-3 px-4 border-b text-left">
-                  <Link
-                    to={`/admin/product-edit/${product.id}`}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded"
-                  >
-                    Chỉnh sửa
-                  </Link>
-                  <button
-                    onClick={() => onRemoveProduct(product.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded ml-2"
-                  >
-                    Xóa
-                  </button>
-                </td>
-              </tr>
-
-              {/* Hiển thị biến thể nếu nút được nhấn */}
-              {expandedProduct === product.id && (
-                <tr>
-                  <td colSpan={8} className="py-2 px-4 border-b">
-                    <table className="min-w-full bg-gray-100 border border-gray-200">
-                      <thead>
-                        <tr>
-                          <th className="py-2 px-3 text-left">Hình ảnh</th>
-                          <th className="py-2 px-3 text-left">Màu</th>
-                          <th className="py-2 px-3 text-left">Kích cỡ</th>
-                          <th className="py-2 px-3 text-left">Giá</th>
-                          <th className="py-2 px-3 text-left">Số lượng</th>
-                          <th className="py-2 px-3 text-left">SKU</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {product.product_variants.map(
-                          (variant, vIndex: number) => (
+                {/* Hiển thị biến thể nếu nút được nhấn */}
+                {expandedProduct === product.id && (
+                  <tr>
+                    <td colSpan={10} className="py-2 px-4 border-b">
+                      <table className="min-w-full bg-gray-100 border border-gray-200">
+                        <thead>
+                          <tr className="bg-gray-200">
+                            <th className="py-2 px-3 text-left">Hình ảnh</th>
+                            <th className="py-2 px-3 text-left">Màu</th>
+                            <th className="py-2 px-3 text-left">Kích cỡ</th>
+                            <th className="py-2 px-3 text-left">Giá</th>
+                            <th className="py-2 px-3 text-left">Số lượng</th>
+                            <th className="py-2 px-3 text-left">SKU</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {product.product_variants.map((variant, vIndex) => (
                             <tr key={vIndex}>
                               <td className="py-1 px-3 border-b">
                                 <img
@@ -170,34 +176,34 @@ const ListProduct = () => {
                                 {variant.sku}
                               </td>
                             </tr>
-                          )
-                        )}
-                      </tbody>
-                    </table>
-
-                    {/* Hiển thị gallery */}
-                    {product.galleries && product.galleries.length > 0 && (
-                      <div className="mt-4">
-                        <h3 className="font-semibold mb-2">Thư viện ảnh:</h3>
-                        <div className="flex gap-2">
-                          {product.galleries.map((image) => (
-                            <img
-                              key={image.id}
-                              src={image.image_path}
-                              alt="Hình ảnh sản phẩm"
-                              className="w-24 h-24 object-cover rounded"
-                            />
                           ))}
+                        </tbody>
+                      </table>
+
+                      {/* Hiển thị gallery */}
+                      {product.galleries && product.galleries.length > 0 && (
+                        <div className="mt-4">
+                          <h3 className="font-semibold mb-2">Thư viện ảnh:</h3>
+                          <div className="flex gap-2">
+                            {product.galleries.map((image) => (
+                              <img
+                                key={image.id}
+                                src={image.image_path}
+                                alt="Hình ảnh sản phẩm"
+                                className="w-24 h-24 object-cover rounded"
+                              />
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              )}
-            </React.Fragment>
-          ))}
-        </tbody>
-      </table>
+                      )}
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <ToastContainer />
     </div>
   );

@@ -13,6 +13,7 @@ export interface Product {
   name: string;
   description: string;
   short_description: string;
+  entry_price: number;
   price: number;
   thumbnail: string;
   sales_count: number;
@@ -54,4 +55,3 @@ export interface product_variants {
   deleted_at: string | null;
   product: Product;
 }
-

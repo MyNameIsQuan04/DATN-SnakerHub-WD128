@@ -21,6 +21,7 @@ const AddProducts = () => {
     price: null,
     category_id: null,
     description: "",
+    entry_price: null,
     short_description: "",
     thumbnail: null,
     galleries: [],
@@ -130,14 +131,17 @@ const AddProducts = () => {
                 </label>
                 <Field
                   name="entry_price"
-                  type="number"
+                  type="text"
                   className="w-full px-3 py-2 border rounded-lg"
                   placeholder="Nhập giá sản phẩm"
                 />
-                {errors.price && touched.price && (
-                  <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+                {errors.entry_price && touched.entry_price && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.entry_price}
+                  </p>
                 )}
               </div>
+
               {/* Giá sản phẩm */}
               <div className="mb-4">
                 <label className="block text-gray-700 font-bold mb-2">
@@ -145,7 +149,7 @@ const AddProducts = () => {
                 </label>
                 <Field
                   name="price"
-                  type="number"
+                  type="text"
                   className="w-full px-3 py-2 border rounded-lg"
                   placeholder="Nhập giá sản phẩm"
                 />
@@ -313,7 +317,7 @@ const AddProducts = () => {
                           </label>
                           <Field
                             name={`variants[${index}].stock`}
-                            type="number"
+                            type="text"
                             className="w-full px-3 py-2 border rounded-lg"
                           />
                           {errors.variants?.[index]?.stock &&
