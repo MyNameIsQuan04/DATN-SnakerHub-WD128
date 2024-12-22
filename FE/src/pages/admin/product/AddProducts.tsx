@@ -18,18 +18,18 @@ const AddProducts = () => {
 
   const initialValues = {
     name: "",
-    price: 0,
-    category_id: 0,
+    price: null,
+    category_id: null,
     description: "",
     short_description: "",
     thumbnail: null,
     galleries: [],
     variants: [
       {
-        price: 0,
+        price: null,
         size_id: "",
         color_id: "",
-        stock: 0,
+        stock: null,
         image: null,
       },
     ],
@@ -37,6 +37,10 @@ const AddProducts = () => {
   const validationSchema = Yup.object({
     name: Yup.string().required("Tên sản phẩm không được để trống"),
     price: Yup.number()
+      .typeError("Giá sản phẩm phải là số")
+      .positive("Giá sản phẩm phải lớn hơn 0")
+      .required("Giá sản phẩm không được để trống"),
+    entry_price: Yup.number()
       .typeError("Giá sản phẩm phải là số")
       .positive("Giá sản phẩm phải lớn hơn 0")
       .required("Giá sản phẩm không được để trống"),
@@ -61,6 +65,7 @@ const AddProducts = () => {
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("price", values.price.toString());
+    formData.append("entry_price", values.entry_price.toString());
     formData.append("category_id", values.category_id);
     formData.append("description", values.description);
     formData.append("short_description", values.short_description);
@@ -119,7 +124,20 @@ const AddProducts = () => {
                   <p className="text-red-500 text-sm mt-1">{errors.name}</p>
                 )}
               </div>
-
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2">
+                  Giá nhập sản phẩm
+                </label>
+                <Field
+                  name="entry_price"
+                  type="number"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Nhập giá sản phẩm"
+                />
+                {errors.price && touched.price && (
+                  <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+                )}
+              </div>
               {/* Giá sản phẩm */}
               <div className="mb-4">
                 <label className="block text-gray-700 font-bold mb-2">
