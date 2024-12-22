@@ -8,13 +8,11 @@ import {
 import { IUser } from "../interfaces/User";
 import userReducer from "../reducers/userReducer";
 import { useNavigate } from "react-router-dom";
-import instance from "../apis/api";
 
 export interface AuthContextType {
   user: IUser | null;
   login: (token: string, user: IUser) => void;
   logout: () => void;
-  handleUser: (data: IUser) => void;
   dispatch: React.Dispatch<any>;
   isAdmin: boolean;
   isLoggedIn: boolean;
@@ -42,7 +40,7 @@ export const isTokenExpired = (): boolean => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state, dispatch] = useReducer(userReducer, { users: [] });
+  const [, dispatch] = useReducer(userReducer, { users: [] });
   const [user, setUser] = useState<IUser | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const nav = useNavigate();

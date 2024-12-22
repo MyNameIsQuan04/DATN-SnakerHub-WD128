@@ -6,7 +6,6 @@ import { IoLogOutOutline } from "react-icons/io5";
 import api from "../../configs/axios";
 import { Category } from "../../interfaces/Category";
 import { GetCategoriesClient } from "../../services/client/category";
-import axios from "axios";
 import { CartItem } from "../../interfaces/Cart";
 import { IoCartOutline } from "react-icons/io5";
 const Header = () => {
@@ -57,18 +56,6 @@ const Header = () => {
     (total, item) => total + item.quantity,
     0
   );
-
-  // Get Categories
-  const [categories, setCategories] = useState<Category[]>([]);
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const res = await axios.get(
-        "http://localhost:8000/api/client/categories"
-      );
-      setCategories(res.data);
-    };
-    fetchCategories();
-  }, []);
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
