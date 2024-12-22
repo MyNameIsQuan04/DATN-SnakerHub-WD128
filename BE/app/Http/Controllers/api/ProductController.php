@@ -39,6 +39,7 @@ class ProductController extends Controller
                 'name' => $validatedData['name'],
                 'description' => $validatedData['description'],
                 'short_description' => $validatedData['short_description'],
+                'entry_price' => $validatedData['entry_price'],
                 'price' => $validatedData['price'],
             ];
 
