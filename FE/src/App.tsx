@@ -49,6 +49,18 @@ import OrderReturn from "./pages/admin/order/OrderReturn";
 import PaymentResult from "./pages/client/paymentResult";
 import OrderDetailHictory from "./pages/admin/order/OrderDetailHictory";
 import { useEffect } from "react";
+import SliderManager from "./components/SliderManager";
+
+declare global {
+  interface Window {
+    Tawk_API?: {
+      setAttributes: (
+        attributes: { name: string; email: string; id: string },
+        callback: (error: Error) => void
+      ) => void;
+    };
+  }
+}
 
 function App() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -176,6 +188,7 @@ function App() {
           <Route path="/admin/vouchers" element={<ListVoucher />} />
           <Route path="/admin/voucher-add" element={<AddVoucher />} />
           <Route path="/admin/voucher-edit/:id" element={<EditVoucher />} />
+          <Route path="/admin/slides" element={<SliderManager />} />
           <Route path="" element />
         </Route>
         <Route path="*" element={<NotFound />} />
