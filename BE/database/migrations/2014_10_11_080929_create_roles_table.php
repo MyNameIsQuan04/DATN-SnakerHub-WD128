@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('vouchers', function (Blueprint $table) {
-            $table->date('start_date')->nullable()->after('type');
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('role');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('vouchers', function (Blueprint $table) {
-            $table->dropColumn('start_date'); // Xóa cột start_date nếu rollback
-        });
+        Schema::dropIfExists('roles');
     }
 };
