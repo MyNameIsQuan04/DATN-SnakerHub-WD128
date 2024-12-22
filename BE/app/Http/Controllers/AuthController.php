@@ -24,6 +24,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
             'address' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
+            'role_id' => 'required|exists:roles,id', 
         ]);
 
         if ($validator->fails()) {
@@ -36,6 +37,7 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
             'address' => $request->address,
             'phone_number' => $request->phone_number,
+            'role_id' => $request->role_id, 
         ]);
 
         Cart::create([
