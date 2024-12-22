@@ -41,9 +41,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::apiResource('sizes', SizeApiController::class)->middleware('auth:api')->middleware('type:admin');
-Route::apiResource('colors', ColorApiController::class)->middleware('auth:api')->middleware('type:admin');
-Route::apiResource('users', UserApiController::class)->middleware('auth:api')->middleware('type:admin');
+Route::apiResource('sizes', SizeApiController::class);
+Route::apiResource('colors', ColorApiController::class);
+Route::apiResource('users', UserApiController::class);
+
 
 $crud = [
     'categories' => CategoryController::class,
@@ -52,8 +53,9 @@ $crud = [
 ];
 
 foreach ($crud as $key => $controller) {
-    Route::apiResource($key, $controller)->middleware('auth:api')->middleware('type:admin');
+    Route::apiResource($key, $controller);
 }
+
 Route::get('client/categories', [ClientCategoryControlller::class, 'index']);
 
 Route::get('dashboard/daily', [DashboardController::class, 'daily']);
@@ -107,7 +109,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/client/user/{user}', [ClientController::class, 'show']);
 
     // Hiển thị danh sách người dùng (Admin chỉ có thể truy cập)
-    Route::get('/users', [UserApiController::class, 'index'])->middleware('type:admin');
+    Route::get('/users', [UserApiController::class, 'index'])->middleware('role:admin');
 
     // Hiển thị thông tin người dùng (cho cả Admin và User)
     Route::get('/users/{id}', [UserApiController::class, 'show']);
@@ -116,13 +118,13 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/users/{id}', [UserApiController::class, 'update']);
 
     // Xóa người dùng (Admin)
-    Route::delete('/users/{id}', [UserApiController::class, 'destroy'])->middleware('type:admin');
+    Route::delete('/users/{id}', [UserApiController::class, 'destroy'])->middleware('role:admin');
 
     // Khóa tài khoản người dùng (Admin)
-    Route::post('/users/{id}/lock', [UserApiController::class, 'lockAccount'])->middleware('type:admin');
+    Route::post('/users/{id}/lock', [UserApiController::class, 'lockAccount'])->middleware('role:admin');
 
     // Mở khóa tài khoản người dùng (Admin)
-    Route::post('/users/{id}/unlock', [UserApiController::class, 'unlockAccount'])->middleware('type:admin');
+    Route::post('/users/{id}/unlock', [UserApiController::class, 'unlockAccount'])->middleware('role:admin');
 
     // Hiển thị thông tin của chính người dùng đã đăng nhập
     // Route::get('/profile', [UserApiController::class, 'profile']);
