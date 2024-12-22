@@ -25,27 +25,39 @@ class AuthController extends Controller
             'address' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-
+    
+        $defaultRoleId = $defaultRole->id ?? 3;
+    
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'address' => $request->address,
             'phone_number' => $request->phone_number,
-            'role_id' => $defaultRole->id ?? 3, 
+            'role_id' => $defaultRoleId,
         ]);
-
+    
         Cart::create([
             'user_id' => $user->id,
         ]);
-
+    
         $token = auth()->login($user);
-
-        return $this->respondWithToken($token);
+    
+        return response()->json([
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role_id, 
+                'address' => $user->address,
+                'phone_number' => $user->phone_number,
+            ],
+        ]);
     }
     public function showLoginForm()
     {
