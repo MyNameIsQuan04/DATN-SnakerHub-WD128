@@ -36,6 +36,7 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
             'address' => $request->address,
             'phone_number' => $request->phone_number,
+            'role_id' => $defaultRole->id ?? 3, 
         ]);
 
         Cart::create([
