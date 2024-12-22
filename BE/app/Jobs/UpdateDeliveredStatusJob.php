@@ -26,7 +26,7 @@ class UpdateDeliveredStatusJob implements ShouldQueue
     public function handle()
     {
         $orders = Order::where('status', 'Đã giao hàng')
-            ->where('updated_at', '<=', Carbon::now()->subHours(24))
+            ->where('updated_at', '<=', Carbon::now()->subMinutes(2))
             ->get();
 
         foreach ($orders as $order) {

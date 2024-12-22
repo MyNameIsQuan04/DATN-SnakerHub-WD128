@@ -572,7 +572,7 @@ const Detail = () => {
                 <p className="text-[15px]">{product.name}</p>
               </div>
               <div className="flex gap-[10px]">
-                <p className="text-[15px] font-bold">Màu sắc:</p>
+                <p className="text-[15px] font-bold">Kích cỡ:</p>
                 {sizes.map((size) => (
                   <p
                     className="text-[15px]"
@@ -586,7 +586,7 @@ const Detail = () => {
                     {size?.name}
                   </p>
                 ))}
-                <p className="text-[15px] font-bold">Kích thước: </p>
+                <p className="text-[15px] font-bold">Màu sắc: </p>
                 {colors.map((color) => (
                   <p
                     className="text-[15px]"
@@ -624,7 +624,7 @@ const Detail = () => {
                       </div>
                       <div className="rating-content mb-3">
                         <div className="flex">
-                          <p>
+                          {/* <p>
                             {rating.product.product_variants.map((item) => (
                               <div className="">
                                 <div className="">
@@ -635,7 +635,7 @@ const Detail = () => {
                                 </div>
                               </div>
                             ))}
-                          </p>
+                          </p> */}
                         </div>
                         <div className="rating-stars">
                           {Array.from({ length: 5 }, (_, index) => (

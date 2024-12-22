@@ -1,4 +1,3 @@
-
 export interface IUser {
   id?: string;
   name?: string;
@@ -10,9 +9,9 @@ export interface IUser {
   gender?: "male" | "female" | "other"; // Tùy chọn giới tính với các giá trị cố định
   birthday?: string; // Định dạng ngày sinh, có thể là 'YYYY-MM-DD' hoặc định dạng tùy ý
   avatar?: string; // Đường dẫn URL đến ảnh đại diện
-  type?: "admin" | "user" | "guest"; // Kiểu người dùng
-  created_at: string; 
-  update_at:string;
-  isLocked: boolean; 
-  deleted_at?: null | string
+  role_id?: number;
+  created_at: string;
+  update_at: string;
+  isLocked: boolean;
+  deleted_at?: null | string;
 }

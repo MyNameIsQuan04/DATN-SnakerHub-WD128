@@ -6,7 +6,6 @@ type State = {
 
 type Action =
   | { type: "GET_USERS"; payload: IUser[] }
-  | { type: "UPDATE_USER"; payload: IUser }
   | { type: "REMOVE_USER"; payload: string };
 
 const userReducer = (state: State, action: Action) => {
@@ -15,14 +14,6 @@ const userReducer = (state: State, action: Action) => {
       return {
         ...state,
         users: action.payload,
-      };
-
-    case "UPDATE_USER":
-      return {
-        ...state,
-        users: state.users.map((user) =>
-          user.id === action.payload.id ? action.payload : user
-        ),
       };
 
     case "REMOVE_USER":

@@ -31,14 +31,14 @@ const ListProduct = () => {
       {/* Tìm kiếm */}
       <div className="mb-6 flex items-center gap-5 flex-wrap mt-3">
         {/* Search Input Section */}
-        <div className="relative flex items-center w-full md:w-[calc(50%-10px)] lg:w-[calc(33.33%-10px)]">
+        {/* <div className="relative flex items-center w-full md:w-[calc(50%-10px)] lg:w-[calc(33.33%-10px)]">
           <input
             type="text"
             placeholder="Tìm kiếm sản phẩm..."
             className="border border-gray-300 rounded-lg py-2 pl-4 pr-10 w-full focus:outline-blue-500"
           />
           <IoMdSearch className="absolute right-3 text-gray-500 w-5 h-5" />
-        </div>
+        </div> */}
 
         {/* Add Product Button */}
         <div>

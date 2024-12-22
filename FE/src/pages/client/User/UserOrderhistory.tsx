@@ -541,7 +541,7 @@ const UserOrderHistory = () => {
                                 <div className="flex flex-col">
                                   <div className="flex gap-[5px] items-center w-[500px]">
                                     <p className="text-lg text-gray-700">
-                                      Tên sản phẩm:
+                                      Tên :
                                     </p>
                                     <p className="text-lg text-gray-700 uppercase font-bold">
                                       {selectedItem.product_variant?.product

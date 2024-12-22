@@ -5,6 +5,8 @@ namespace App\Http\Controllers\api;
 use App\Models\Slide;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
 class SlideController extends Controller
 {
