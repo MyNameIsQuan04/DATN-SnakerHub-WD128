@@ -235,7 +235,7 @@ const Header = () => {
                             Hồ sơ của tôi
                           </Link>
                         </li>
-                        {user?.type === "admin" && (
+                        {(user?.role_id === 1 || user?.role_id === 2) && (
                           <li>
                             <Link
                               to="/admin"
@@ -245,6 +245,7 @@ const Header = () => {
                             </Link>
                           </li>
                         )}
+
                         <li>
                           <button
                             onClick={logout}

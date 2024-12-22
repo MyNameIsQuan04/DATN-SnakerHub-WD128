@@ -17,7 +17,7 @@ export interface AuthContextType {
   handleUser: (data: IUser) => void;
   dispatch: React.Dispatch<any>;
   isAdmin: boolean;
-  isLoggedIn: any;
+  isLoggedIn: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -64,20 +64,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const login = (token: string, user: IUser) => {
-    // Set thời gian tồn tại cho Token
-    const expiryTime = new Date().getTime() + 60 * 60 * 1000;
+    if (!token || !user || !user.role_id) {
+      console.error("Invalid login data");
+      return;
+    }
 
-    // Lưu token và thời gian hết hạn vào localStorage
-    localStorage.setItem("access_token", token);
-    localStorage.setItem("token_expiry", expiryTime.toString());
+    try {
+      // Set thời gian tồn tại cho Token
+      const expiryTime = Date.now() + 60 * 60 * 1000; // 1 giờ
 
-    // Lưu thông tin người dùng
-    localStorage.setItem("user", JSON.stringify(user));
+      // Lưu token và thời gian hết hạn vào localStorage
+      localStorage.setItem("access_token", token);
+      localStorage.setItem("token_expiry", expiryTime.toString());
 
-    // Cập nhật state và điều hướng
-    setUser(user);
-    0;
-    nav(user.type === "admin" ? "/admin" : "/");
+      // Lưu thông tin người dùng
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Cập nhật state
+      setUser(user);
+
+      // Điều hướng dựa trên role_id
+      const targetRoute =
+        user.role_id === 1 || user.role_id === 2 ? "/admin" : "/";
+      nav(targetRoute);
+    } catch (error) {
+      console.error("Error during login process:", error);
+    }
   };
 
   const logout = () => {
@@ -87,17 +99,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
     setIsLoggedIn(false);
     nav("/login");
-  };
-
-  const handleUser = async (user: IUser) => {
-    try {
-      const { data } = await instance.put(`/users/updateme/${user.id}`, user);
-      dispatch({ type: "UPDATE_USER", payload: data });
-      alert(data.message);
-      nav("/admin/users");
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   // Lấy token & user và set dữ liệu
@@ -127,10 +128,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         user,
         login,
         logout,
-        handleUser,
         dispatch,
         isLoggedIn,
-        isAdmin: user?.type === "admin",
+        isAdmin: user?.role_id === 1 || user?.role_id === 2,
       }}
     >
       {children}
