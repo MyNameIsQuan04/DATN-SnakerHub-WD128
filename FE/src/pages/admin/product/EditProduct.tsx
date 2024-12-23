@@ -125,50 +125,157 @@ const EditProduct = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
     console.log(values);
-    const formData = new FormData();
+    if (values.entry_price >= values.price) {
+      const comfirm = window.confirm(
+        "Bạn có xác nhận giá bán nhỏ hơn giá nhập không?"
+      );
+      if (comfirm) {
+        const formData = new FormData();
 
-    formData.append("name", values.name);
-    formData.append("price", values.price.toString());
-    formData.append("category_id", values.category_id);
-    formData.append("entry_price", values.entry_price.toString());
-    formData.append("description", values.description);
-    formData.append("short_description", values.short_description);
+        formData.append("name", values.name);
+        formData.append("price", values.price.toString());
+        formData.append("category_id", values.category_id);
+        formData.append("entry_price", values.entry_price.toString());
+        formData.append("description", values.description);
+        formData.append("short_description", values.short_description);
 
-    if (values.thumbnail instanceof File) {
-      formData.append("thumbnail", values.thumbnail);
+        if (values.thumbnail instanceof File) {
+          formData.append("thumbnail", values.thumbnail);
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        values.galleries.forEach((gallery: any, index: number) => {
+          if (gallery.image_path instanceof File) {
+            formData.append(`galleries[${index}][id]`, gallery.id.toString());
+            formData.append(`galleries[${index}][image]`, gallery.image_path);
+          }
+        });
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        values.variants.forEach((variant: any, index: number) => {
+          if (variant.id) {
+            formData.append(`variants[${index}][id]`, variant.id);
+          }
+          if (variant.price <= values.entry_price) {
+            const confirm = window.confirm(
+              `Biến thể ở vị trí ${index + 1} (Mã SKU: ${
+                variant.sku
+              }) có giá nhỏ hơn giá nhập. Bạn có chắc chắn không?`
+            );
+            if (confirm) {
+              formData.append(
+                `variants[${index}][price]`,
+                variant.price.toString()
+              );
+              formData.append(`variants[${index}][size_id]`, variant.size_id);
+              formData.append(`variants[${index}][color_id]`, variant.color_id);
+              formData.append(
+                `variants[${index}][stock]`,
+                variant.stock.toString()
+              );
+
+              if (variant.image instanceof File) {
+                formData.append(`variants[${index}][image]`, variant.image);
+              }
+            }
+          } else {
+            formData.append(
+              `variants[${index}][price]`,
+              variant.price.toString()
+            );
+            formData.append(`variants[${index}][size_id]`, variant.size_id);
+            formData.append(`variants[${index}][color_id]`, variant.color_id);
+            formData.append(
+              `variants[${index}][stock]`,
+              variant.stock.toString()
+            );
+
+            if (variant.image instanceof File) {
+              formData.append(`variants[${index}][image]`, variant.image);
+            }
+          }
+        });
+
+        // Kiểm tra FormData trước khi gửi
+        checkFormData(formData);
+
+        // Gửi dữ liệu lên server
+        onUpdateProduct(formData, id);
+      }
+    } else {
+      const formData = new FormData();
+
+      formData.append("name", values.name);
+      formData.append("price", values.price.toString());
+      formData.append("category_id", values.category_id);
+      formData.append("entry_price", values.entry_price.toString());
+      formData.append("description", values.description);
+      formData.append("short_description", values.short_description);
+
+      if (values.thumbnail instanceof File) {
+        formData.append("thumbnail", values.thumbnail);
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      values.galleries.forEach((gallery: any, index: number) => {
+        if (gallery.image_path instanceof File) {
+          formData.append(`galleries[${index}][id]`, gallery.id.toString());
+          formData.append(`galleries[${index}][image]`, gallery.image_path);
+        }
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      values.variants.forEach((variant: any, index: number) => {
+        if (variant.id) {
+          formData.append(`variants[${index}][id]`, variant.id);
+        }
+        if (variant.price <= values.entry_price) {
+          const confirm = window.confirm(
+            `Biến thể ở vị trí ${index + 1} (Mã SKU: ${
+              variant.sku
+            }) có giá nhỏ hơn giá nhập. Bạn có chắc chắn không?`
+          );
+          if (confirm) {
+            formData.append(
+              `variants[${index}][price]`,
+              variant.price.toString()
+            );
+            formData.append(`variants[${index}][size_id]`, variant.size_id);
+            formData.append(`variants[${index}][color_id]`, variant.color_id);
+            formData.append(
+              `variants[${index}][stock]`,
+              variant.stock.toString()
+            );
+
+            if (variant.image instanceof File) {
+              formData.append(`variants[${index}][image]`, variant.image);
+            }
+          }
+        } else {
+          formData.append(
+            `variants[${index}][price]`,
+            variant.price.toString()
+          );
+          formData.append(`variants[${index}][size_id]`, variant.size_id);
+          formData.append(`variants[${index}][color_id]`, variant.color_id);
+          formData.append(
+            `variants[${index}][stock]`,
+            variant.stock.toString()
+          );
+
+          if (variant.image instanceof File) {
+            formData.append(`variants[${index}][image]`, variant.image);
+          }
+        }
+      });
+
+      // Kiểm tra FormData trước khi gửi
+      checkFormData(formData);
+
+      // Gửi dữ liệu lên server
+      onUpdateProduct(formData, id);
     }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    values.galleries.forEach((gallery: any, index: number) => {
-      if (gallery.image_path instanceof File) {
-        formData.append(`galleries[${index}][id]`, gallery.id.toString());
-        formData.append(`galleries[${index}][image]`, gallery.image_path);
-      }
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    values.variants.forEach((variant: any, index: number) => {
-      if (variant.id) {
-        formData.append(`variants[${index}][id]`, variant.id);
-      }
-      console.log(variant.id);
-      formData.append(`variants[${index}][price]`, variant.price.toString());
-      formData.append(`variants[${index}][size_id]`, variant.size_id);
-      formData.append(`variants[${index}][color_id]`, variant.color_id);
-      formData.append(`variants[${index}][stock]`, variant.stock.toString());
-
-      if (variant.image instanceof File) {
-        formData.append(`variants[${index}][image]`, variant.image);
-      }
-    });
-
-    // Kiểm tra FormData trước khi gửi
-    checkFormData(formData);
-
-    // Gửi dữ liệu lên server
-    onUpdateProduct(formData, id);
   };
-
   return (
     <div className="container mx-auto p-8">
       <h1 className="text-3xl font-semibold mb-6">Sửa Sản Phẩm</h1>

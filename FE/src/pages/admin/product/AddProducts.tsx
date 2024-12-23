@@ -64,9 +64,10 @@ const AddProducts = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
-    console.log(values);
     if (values.entry_price >= values.price) {
-      const comfirm = window.confirm("Bạn có chắc chắn không");
+      const comfirm = window.confirm(
+        "Bạn có xác nhận giá bán nhỏ hơn giá nhập không?"
+      );
       if (comfirm) {
         const formData = new FormData();
         formData.append("name", values.name);
@@ -87,7 +88,11 @@ const AddProducts = () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         values.variants.forEach((variant: any, index: number) => {
           if (variant.price <= values.entry_price) {
-            const confirm = window.confirm("Bạn có chắc chắn không biến thể");
+            const confirm = window.confirm(
+              `Biến thể ở vị trí ${index + 1} (Mã SKU: ${
+                variant.sku
+              }) có giá nhỏ hơn giá nhập. Bạn có chắc chắn không?`
+            );
             if (confirm) {
               formData.append(
                 `variants[${index}][price]`,
@@ -146,7 +151,11 @@ const AddProducts = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       values.variants.forEach((variant: any, index: number) => {
         if (variant.price <= values.entry_price) {
-          const confirm = window.confirm("Bạn có chắc chắn không biến thể");
+          const confirm = window.confirm(
+            `Biến thể ở vị trí ${index + 1} (Mã SKU: ${
+              variant.sku
+            }) có giá nhỏ hơn giá nhập. Bạn có chắc chắn không?`
+          );
           if (confirm) {
             formData.append(
               `variants[${index}][price]`,
