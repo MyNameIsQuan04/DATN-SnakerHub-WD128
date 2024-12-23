@@ -45,6 +45,7 @@ const AddProducts = () => {
       .typeError("Giá sản phẩm phải là số")
       .positive("Giá sản phẩm phải lớn hơn 0")
       .required("Giá sản phẩm không được để trống"),
+
     category_id: Yup.string().required("Danh mục sản phẩm không được để trống"),
     variants: Yup.array()
       .of(
@@ -63,37 +64,128 @@ const AddProducts = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
-    const formData = new FormData();
-    formData.append("name", values.name);
-    formData.append("price", values.price.toString());
-    formData.append("entry_price", values.entry_price.toString());
-    formData.append("category_id", values.category_id);
-    formData.append("description", values.description);
-    formData.append("short_description", values.short_description);
-
-    if (values.thumbnail) {
-      formData.append("thumbnail", values.thumbnail);
-    }
-
-    values.galleries.forEach((image: File, index: number) => {
-      formData.append(`galleries[${index}]`, image);
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    values.variants.forEach((variant: any, index: number) => {
-      formData.append(`variants[${index}][price]`, variant.price.toString());
-      formData.append(`variants[${index}][size_id]`, variant.size_id);
-      formData.append(`variants[${index}][color_id]`, variant.color_id);
-      formData.append(`variants[${index}][stock]`, variant.stock.toString());
-      formData.append(`variants[${index}][sku]`, variant.sku);
-
-      if (variant.image) {
-        formData.append(`variants[${index}][image]`, variant.image);
-      }
-    });
-
     console.log(values);
-    onAddProduct(formData);
+    if (values.entry_price >= values.price) {
+      const comfirm = window.confirm("Bạn có chắc chắn không");
+      if (comfirm) {
+        const formData = new FormData();
+        formData.append("name", values.name);
+        formData.append("price", values.price.toString());
+        formData.append("entry_price", values.entry_price.toString());
+        formData.append("category_id", values.category_id);
+        formData.append("description", values.description);
+        formData.append("short_description", values.short_description);
+
+        if (values.thumbnail) {
+          formData.append("thumbnail", values.thumbnail);
+        }
+
+        values.galleries.forEach((image: File, index: number) => {
+          formData.append(`galleries[${index}]`, image);
+        });
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        values.variants.forEach((variant: any, index: number) => {
+          if (variant.price <= values.entry_price) {
+            const confirm = window.confirm("Bạn có chắc chắn không biến thể");
+            if (confirm) {
+              formData.append(
+                `variants[${index}][price]`,
+                variant.price.toString()
+              );
+              formData.append(`variants[${index}][size_id]`, variant.size_id);
+              formData.append(`variants[${index}][color_id]`, variant.color_id);
+              formData.append(
+                `variants[${index}][stock]`,
+                variant.stock.toString()
+              );
+              formData.append(`variants[${index}][sku]`, variant.sku);
+
+              if (variant.image) {
+                formData.append(`variants[${index}][image]`, variant.image);
+              }
+            }
+          } else {
+            formData.append(
+              `variants[${index}][price]`,
+              variant.price.toString()
+            );
+            formData.append(`variants[${index}][size_id]`, variant.size_id);
+            formData.append(`variants[${index}][color_id]`, variant.color_id);
+            formData.append(
+              `variants[${index}][stock]`,
+              variant.stock.toString()
+            );
+            formData.append(`variants[${index}][sku]`, variant.sku);
+
+            if (variant.image) {
+              formData.append(`variants[${index}][image]`, variant.image);
+            }
+          }
+        });
+
+        onAddProduct(formData);
+      }
+    } else {
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("price", values.price.toString());
+      formData.append("entry_price", values.entry_price.toString());
+      formData.append("category_id", values.category_id);
+      formData.append("description", values.description);
+      formData.append("short_description", values.short_description);
+
+      if (values.thumbnail) {
+        formData.append("thumbnail", values.thumbnail);
+      }
+
+      values.galleries.forEach((image: File, index: number) => {
+        formData.append(`galleries[${index}]`, image);
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      values.variants.forEach((variant: any, index: number) => {
+        if (variant.price <= values.entry_price) {
+          const confirm = window.confirm("Bạn có chắc chắn không biến thể");
+          if (confirm) {
+            formData.append(
+              `variants[${index}][price]`,
+              variant.price.toString()
+            );
+            formData.append(`variants[${index}][size_id]`, variant.size_id);
+            formData.append(`variants[${index}][color_id]`, variant.color_id);
+            formData.append(
+              `variants[${index}][stock]`,
+              variant.stock.toString()
+            );
+            formData.append(`variants[${index}][sku]`, variant.sku);
+
+            if (variant.image) {
+              formData.append(`variants[${index}][image]`, variant.image);
+            }
+          }
+        } else {
+          formData.append(
+            `variants[${index}][price]`,
+            variant.price.toString()
+          );
+          formData.append(`variants[${index}][size_id]`, variant.size_id);
+          formData.append(`variants[${index}][color_id]`, variant.color_id);
+          formData.append(
+            `variants[${index}][stock]`,
+            variant.stock.toString()
+          );
+          formData.append(`variants[${index}][sku]`, variant.sku);
+
+          if (variant.image) {
+            formData.append(`variants[${index}][image]`, variant.image);
+          }
+        }
+      });
+
+      console.log(values);
+      onAddProduct(formData);
+    }
   };
 
   return (
