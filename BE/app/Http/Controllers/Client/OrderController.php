@@ -38,7 +38,7 @@ class OrderController extends Controller
         $orders = Order::whereHas('customer', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })->orderByDesc('id')->get();
-        $orders->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+        $orders->load('orderItems', 'customer');
         return $orders;
     }
 
@@ -199,7 +199,7 @@ class OrderController extends Controller
                 $order->update([
                     'status' => $dataValidate['status'],
                 ]);
-                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                $order->load('orderItems', 'customer');
                 return $order;
             } else if ($order['status'] === 'Đã giao hàng') {
                 $dataValidate = $request->validate([
@@ -208,7 +208,7 @@ class OrderController extends Controller
                 $order->update([
                     'status' => $dataValidate['status'],
                 ]);
-                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                $order->load('orderItems', 'customer');
                 return $order;
             } else if ($order['status'] === 'Yêu cầu trả hàng') {
                 $dataValidate = $request->validate([
@@ -218,7 +218,7 @@ class OrderController extends Controller
                     'status' => $dataValidate['status'],
                     'note' => 'Không',
                 ]);
-                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                $order->load('orderItems', 'customer');
                 return $order;
             } else {
                 return response()->json([
