@@ -28,7 +28,7 @@ return new class extends Migration
             $table->integer('totalAfterDiscount');
             $table->enum('paymentMethod', ['COD','VNPAY']);
             $table->text('paymentURL')->nullable();
-            $table->string('note');//ghi chú đơn hàng lúc đặt
+            $table->string('note')->nullable();//ghi chú đơn hàng lúc đặt
             $table->timestamps();
         });
     }
