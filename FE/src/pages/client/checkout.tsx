@@ -487,9 +487,12 @@ const Checkout = () => {
                   </div>
                 </div>
               )}
-              <div className="">
-                <p className="text-lg font-semibold mb-2">Ghi chú</p>
-                <textarea name="" id=""></textarea>
+              <div className="mt-[20px]">
+                <p className="text-lg font-semibold mb-2 ">Ghi chú</p>
+                <textarea
+                  {...register("note")}
+                  className="w-full h-[100px]"
+                ></textarea>
               </div>
               <div className="">
                 <div className="w-full max-w-md mx-auto mt-4">
