@@ -141,7 +141,7 @@ class OrderController extends Controller
                     'sell_count' => $newSellCount
                 ]);
             }
-            $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+            $order->load('orderItems', 'customer');
 
             SendNewOrderEmail::dispatch($order);
 
