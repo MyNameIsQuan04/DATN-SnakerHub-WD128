@@ -2,8 +2,10 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { CategoryCT } from "../../../contexts/CategoryContext";
 import { Category } from "../../../interfaces/Category";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const ListCategory = () => {
+  const { user, logout } = useAuth();
   const { categories, onRemoveCategory } = useContext(CategoryCT);
 
   return (
@@ -34,16 +36,20 @@ const ListCategory = () => {
                 <th className="py-2 px-4 border-b flex justify-center gap-[10px]">
                   <Link to={`/admin/category-edit/${category.id}`}>
                     <button className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500">
-                      Cập nhật
+                      Chỉnh sửa
                     </button>
                   </Link>
-                  {category.name !== "Mặc định" && (
-                    <button
-                      className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
-                      onClick={() => onRemoveCategory(category.id)}
-                    >
-                      Xóa
-                    </button>
+                  {user?.role_id === 1 && (
+                    <div className="">
+                      {category.name !== "Mặc định" && (
+                        <button
+                          className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
+                          onClick={() => onRemoveCategory(category.id)}
+                        >
+                          Xóa
+                        </button>
+                      )}
+                    </div>
                   )}
                 </th>
               </tr>

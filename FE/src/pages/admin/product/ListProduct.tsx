@@ -6,8 +6,11 @@ import { ToastContainer } from "react-toastify";
 import { ProductCT } from "../../../contexts/productContext";
 import { IoHomeOutline } from "react-icons/io5";
 import { GrFormNext } from "react-icons/gr";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const ListProduct = () => {
+  const { user, logout } = useAuth();
+
   const [expandedProduct, setExpandedProduct] = useState<number | null>(null);
 
   const { products, onRemoveProduct } = useContext(ProductCT);
@@ -126,12 +129,14 @@ const ListProduct = () => {
                     >
                       Chỉnh sửa
                     </Link>
-                    <button
-                      onClick={() => onRemoveProduct(product.id)}
-                      className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
-                    >
-                      Xóa
-                    </button>
+                    {user?.role_id === 1 && (
+                      <button
+                        onClick={() => onRemoveProduct(product.id)}
+                        className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
+                      >
+                        Xóa
+                      </button>
+                    )}
                   </td>
                 </tr>
 

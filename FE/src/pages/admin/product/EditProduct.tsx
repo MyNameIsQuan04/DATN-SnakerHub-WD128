@@ -124,7 +124,6 @@ const EditProduct = () => {
   });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
-    console.log(values);
     if (values.entry_price >= values.price) {
       const comfirm = window.confirm(
         "Bạn có xác nhận giá bán nhỏ hơn giá nhập không?"

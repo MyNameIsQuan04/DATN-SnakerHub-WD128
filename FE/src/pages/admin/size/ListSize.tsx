@@ -2,8 +2,11 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { SizeCT } from "../../../contexts/SizeContext";
 import { Size } from "../../../interfaces/Size";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const ListSize = () => {
+  const { user, logout } = useAuth();
+
   const { sizes, onRemoveSize } = useContext(SizeCT);
   return (
     <div>
@@ -33,16 +36,20 @@ const ListSize = () => {
                 <th className="py-2 px-4 border-b flex justify-center gap-[10px]">
                   <Link to={`/admin/size-edit/${size.id}`}>
                     <button className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500">
-                      Cập nhật
+                      Chỉnh sửa
                     </button>
                   </Link>
-                  {size.name !== "Mặc định" && (
-                    <button
-                      className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
-                      onClick={() => onRemoveSize(size.id)}
-                    >
-                      Xóa
-                    </button>
+                  {user?.role_id === 1 && (
+                    <div className="">
+                      {size.name !== "Mặc định" && (
+                        <button
+                          className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
+                          onClick={() => onRemoveSize(size.id)}
+                        >
+                          Xóa
+                        </button>
+                      )}
+                    </div>
                   )}
                 </th>
               </tr>
