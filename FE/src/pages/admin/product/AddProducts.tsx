@@ -361,10 +361,10 @@ const AddProducts = () => {
                       className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded"
                       onClick={() =>
                         push({
-                          price: 0,
+                          price: null,
                           size_id: "",
                           color_id: "",
-                          stock: 0,
+                          stock: null,
                           sku: "",
                           image: null,
                         })
