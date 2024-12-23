@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -30,7 +31,7 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 400);
         }
     
-        $defaultRoleId = $defaultRole->id ?? 3;
+        $defaultRoleId = Role::where('name', 'user')->first()->id;
     
         $user = User::create([
             'name' => $request->name,

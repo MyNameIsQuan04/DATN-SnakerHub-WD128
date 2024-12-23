@@ -48,6 +48,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         try {
+            DB::beginTransaction();
             $userId = Auth::id();
             $validatedData = $request->validate([
                 'name' => 'required|string',
@@ -61,6 +62,7 @@ class OrderController extends Controller
                 'codeDiscount' => 'nullable|string|exists:vouchers,codeDiscount',
                 'shippingFee' => 'required|integer',
                 'paymentMethod' => 'required|integer',
+                'note' => 'nullable|string',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -87,6 +89,7 @@ class OrderController extends Controller
                 'codeDiscount' => $validatedData['codeDiscount'],
                 'shippingFee' => $validatedData['shippingFee'],
                 'paymentMethod' => $validatedData['paymentMethod'] == 1 ? "COD" : "VNPAY",
+                'note' => $validatedData['note'],
                 'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0) + $validatedData['shippingFee'],
             ]);
 
