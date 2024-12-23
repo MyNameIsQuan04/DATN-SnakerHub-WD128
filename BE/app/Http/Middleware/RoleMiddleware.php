@@ -24,10 +24,10 @@ class RoleMiddleware
             if (!auth()->check() || auth()->user()->role->role !== $role) {
                 return response()->json([
                     'error' => 'Unauthorized',
-                    'auth' => auth()->user(),
+                    'auth' => auth()->user()->role,
                 ], 403);
             }
-    
+
             return $next($request);
         }
     }
