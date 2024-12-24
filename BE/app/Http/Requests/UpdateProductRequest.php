@@ -29,7 +29,6 @@ class UpdateProductRequest extends FormRequest
             'name' => 'required|string|max:255|unique:products,name,' . $id,
             'description' => 'nullable|string',
             'short_description' => 'nullable|string',
-            'entry_price' => 'required|integer',
             'price' => 'required|integer',
             'thumbnail' => 'nullable',
             'galleries' => 'nullable|array',
@@ -40,6 +39,7 @@ class UpdateProductRequest extends FormRequest
             'variants.*.id' => 'nullable|integer', // tương tự
             'variants.*.size_id' => 'required|exists:sizes,id',
             'variants.*.color_id' => 'required|exists:colors,id',
+            'variants.*.entry_price' => 'required|integer',
             'variants.*.price' => 'nullable|integer',
             'variants.*.stock' => 'required|integer|min:1',
             // 'variants.*.sku' => 'required|string|max:255',

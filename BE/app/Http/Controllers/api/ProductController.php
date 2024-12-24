@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use app\Services\HistoryService;
 
 class ProductController extends Controller
 {
@@ -48,12 +49,16 @@ class ProductController extends Controller
             }
 
             $product = Product::create($dataProduct);
+            
+            HistoryService::log('products', $product->id, 'create', null, $dataProduct);
 
             foreach ($validatedData['galleries'] ?? [] as $image) {
                 $image_path = Storage::url($image->store('images', 'public'));
-                $product->galleries()->create([
+                $gallery = $product->galleries()->create([
                     'image_path' => $image_path,
                 ]);
+
+                HistoryService::log('product_galleries', $gallery->id, 'create', null, ['image_path' => $image_path]);
             }
 
             foreach ($validatedData['variants'] as $variant) {
@@ -77,12 +82,14 @@ class ProductController extends Controller
                     $dataVariant['image'] = Storage::url($variant['image']->store('images', 'public'));
                 }
 
-                $product->productVariants()->create($dataVariant);
+                $product_variant = $product->productVariants()->create($dataVariant);
+
+                HistoryService::log('product_variants', $product_variant->id, 'create', null, $dataVariant);
             }
 
             $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
 
-            DB::commit(); // Commit transaction nếu không có lỗi
+            DB::commit();
 
             $categories = Category::query()->pluck('name', 'id')->all();
             $sizes = Size::all()->pluck('name', 'id');
@@ -173,7 +180,6 @@ class ProductController extends Controller
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
                     'entry_price' => $validatedData['entry_price'],
-
                 ];
 
                 if (isset($variant['price'])) {

@@ -178,7 +178,7 @@ class OrderController extends Controller
             'message' => 'Áp dụng mã giảm giá thành công',
             'discount' => min($discount, $total_price), // Giảm giá tối đa chỉ bằng tổng tiền
             'original_total_price' => $total_price,
-            'discount' => $discount,
+            // 'discount' => $discount,
             'total_price_after_discount' => $total_price_after_discount,
         ]);
     }
