@@ -12,6 +12,7 @@ import { CgSize } from "react-icons/cg";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { useAuth } from "../../../contexts/AuthContext";
+import { AiFillSetting } from "react-icons/ai";
 
 const LayoutAdmin = () => {
   const { user, logout } = useAuth();
@@ -58,6 +59,11 @@ const LayoutAdmin = () => {
       path: "/admin/order",
       icon: <FaShoppingCart className="mr-2" />,
       label: "Đơn hàng",
+    },
+    {
+      path: "/admin/slides",
+      icon: <AiFillSetting className="mr-2" />,
+      label: "Cài đặt",
     },
     { path: "/", icon: <FaHome className="mr-2" />, label: "Client" },
   ];
