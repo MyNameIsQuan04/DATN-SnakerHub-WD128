@@ -475,25 +475,22 @@ const UserOrderHistory = () => {
                   {order.order_items.map((item: OrderItem) => (
                     <div key={item.id} className="flex items-center gap-4 mb-4">
                       <img
-                        src={
-                          item.product_variant?.image ||
-                          "https://via.placeholder.com/150"
-                        }
+                        src={item.image || "https://via.placeholder.com/150"}
                         alt="Product"
                         className="w-24 h-24 object-cover rounded-lg shadow-md"
                       />
                       <div className="flex flex-col w-[200px]">
                         <p className="text-lg font-semibold text-gray-700">
-                          {item.product_variant?.product.name}
+                          {item.nameProduct}
                         </p>
                         <div className="flex items-center gap-1">
                           <span>Loại hàng: </span>
                           <p className="text-lg text-gray-700">
-                            {item.product_variant?.color.name || "Không có"}
+                            {item.color || "Không có"}
                           </p>
                           <p className="text-lg text-gray-700">
                             {", "}
-                            {item.product_variant?.size.name || "Không có"}
+                            {item.size || "Không có"}
                           </p>
                         </div>
                         <div className="flex items-center gap-1">
@@ -506,7 +503,7 @@ const UserOrderHistory = () => {
 
                       <div className="ml-[470px] flex items-center gap-1">
                         <p className="text-lg font-medium text-red-600">
-                          {formatCurrency(item.product_variant?.price || 0)} vnđ
+                          {formatCurrency(item.price || 0)} vnđ
                         </p>
                       </div>
 
