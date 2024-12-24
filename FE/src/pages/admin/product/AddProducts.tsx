@@ -18,18 +18,19 @@ const AddProducts = () => {
 
   const initialValues = {
     name: "",
-    price: 0,
-    category_id: 0,
+    price: null,
+    category_id: null,
     description: "",
+    entry_price: null,
     short_description: "",
     thumbnail: null,
     galleries: [],
     variants: [
       {
-        price: 0,
+        price: null,
         size_id: "",
         color_id: "",
-        stock: 0,
+        stock: null,
         image: null,
       },
     ],
@@ -40,6 +41,11 @@ const AddProducts = () => {
       .typeError("Giá sản phẩm phải là số")
       .positive("Giá sản phẩm phải lớn hơn 0")
       .required("Giá sản phẩm không được để trống"),
+    entry_price: Yup.number()
+      .typeError("Giá sản phẩm phải là số")
+      .positive("Giá sản phẩm phải lớn hơn 0")
+      .required("Giá sản phẩm không được để trống"),
+
     category_id: Yup.string().required("Danh mục sản phẩm không được để trống"),
     variants: Yup.array()
       .of(
@@ -58,36 +64,137 @@ const AddProducts = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
-    const formData = new FormData();
-    formData.append("name", values.name);
-    formData.append("price", values.price.toString());
-    formData.append("category_id", values.category_id);
-    formData.append("description", values.description);
-    formData.append("short_description", values.short_description);
+    if (values.entry_price >= values.price) {
+      const comfirm = window.confirm(
+        "Bạn có xác nhận giá bán nhỏ hơn giá nhập không?"
+      );
+      if (comfirm) {
+        const formData = new FormData();
+        formData.append("name", values.name);
+        formData.append("price", values.price.toString());
+        formData.append("entry_price", values.entry_price.toString());
+        formData.append("category_id", values.category_id);
+        formData.append("description", values.description);
+        formData.append("short_description", values.short_description);
 
-    if (values.thumbnail) {
-      formData.append("thumbnail", values.thumbnail);
-    }
+        if (values.thumbnail) {
+          formData.append("thumbnail", values.thumbnail);
+        }
 
-    values.galleries.forEach((image: File, index: number) => {
-      formData.append(`galleries[${index}]`, image);
-    });
+        values.galleries.forEach((image: File, index: number) => {
+          formData.append(`galleries[${index}]`, image);
+        });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    values.variants.forEach((variant: any, index: number) => {
-      formData.append(`variants[${index}][price]`, variant.price.toString());
-      formData.append(`variants[${index}][size_id]`, variant.size_id);
-      formData.append(`variants[${index}][color_id]`, variant.color_id);
-      formData.append(`variants[${index}][stock]`, variant.stock.toString());
-      formData.append(`variants[${index}][sku]`, variant.sku);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        values.variants.forEach((variant: any, index: number) => {
+          if (variant.price <= values.entry_price) {
+            const confirm = window.confirm(
+              `Biến thể ở vị trí ${index + 1} (Mã SKU: ${
+                variant.sku
+              }) có giá nhỏ hơn giá nhập. Bạn có chắc chắn không?`
+            );
+            if (confirm) {
+              formData.append(
+                `variants[${index}][price]`,
+                variant.price.toString()
+              );
+              formData.append(`variants[${index}][size_id]`, variant.size_id);
+              formData.append(`variants[${index}][color_id]`, variant.color_id);
+              formData.append(
+                `variants[${index}][stock]`,
+                variant.stock.toString()
+              );
+              formData.append(`variants[${index}][sku]`, variant.sku);
 
-      if (variant.image) {
-        formData.append(`variants[${index}][image]`, variant.image);
+              if (variant.image) {
+                formData.append(`variants[${index}][image]`, variant.image);
+              }
+            }
+          } else {
+            formData.append(
+              `variants[${index}][price]`,
+              variant.price.toString()
+            );
+            formData.append(`variants[${index}][size_id]`, variant.size_id);
+            formData.append(`variants[${index}][color_id]`, variant.color_id);
+            formData.append(
+              `variants[${index}][stock]`,
+              variant.stock.toString()
+            );
+            formData.append(`variants[${index}][sku]`, variant.sku);
+
+            if (variant.image) {
+              formData.append(`variants[${index}][image]`, variant.image);
+            }
+          }
+        });
+
+        onAddProduct(formData);
       }
-    });
+    } else {
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("price", values.price.toString());
+      formData.append("entry_price", values.entry_price.toString());
+      formData.append("category_id", values.category_id);
+      formData.append("description", values.description);
+      formData.append("short_description", values.short_description);
 
-    console.log(values);
-    onAddProduct(formData);
+      if (values.thumbnail) {
+        formData.append("thumbnail", values.thumbnail);
+      }
+
+      values.galleries.forEach((image: File, index: number) => {
+        formData.append(`galleries[${index}]`, image);
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      values.variants.forEach((variant: any, index: number) => {
+        if (variant.price <= values.entry_price) {
+          const confirm = window.confirm(
+            `Biến thể ở vị trí ${index + 1} (Mã SKU: ${
+              variant.sku
+            }) có giá nhỏ hơn giá nhập. Bạn có chắc chắn không?`
+          );
+          if (confirm) {
+            formData.append(
+              `variants[${index}][price]`,
+              variant.price.toString()
+            );
+            formData.append(`variants[${index}][size_id]`, variant.size_id);
+            formData.append(`variants[${index}][color_id]`, variant.color_id);
+            formData.append(
+              `variants[${index}][stock]`,
+              variant.stock.toString()
+            );
+            formData.append(`variants[${index}][sku]`, variant.sku);
+
+            if (variant.image) {
+              formData.append(`variants[${index}][image]`, variant.image);
+            }
+          }
+        } else {
+          formData.append(
+            `variants[${index}][price]`,
+            variant.price.toString()
+          );
+          formData.append(`variants[${index}][size_id]`, variant.size_id);
+          formData.append(`variants[${index}][color_id]`, variant.color_id);
+          formData.append(
+            `variants[${index}][stock]`,
+            variant.stock.toString()
+          );
+          formData.append(`variants[${index}][sku]`, variant.sku);
+
+          if (variant.image) {
+            formData.append(`variants[${index}][image]`, variant.image);
+          }
+        }
+      });
+
+      console.log(values);
+      onAddProduct(formData);
+    }
   };
 
   return (
@@ -119,6 +226,22 @@ const AddProducts = () => {
                   <p className="text-red-500 text-sm mt-1">{errors.name}</p>
                 )}
               </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 font-bold mb-2">
+                  Giá nhập sản phẩm
+                </label>
+                <Field
+                  name="entry_price"
+                  type="text"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="Nhập giá sản phẩm"
+                />
+                {errors.entry_price && touched.entry_price && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.entry_price}
+                  </p>
+                )}
+              </div>
 
               {/* Giá sản phẩm */}
               <div className="mb-4">
@@ -127,7 +250,7 @@ const AddProducts = () => {
                 </label>
                 <Field
                   name="price"
-                  type="number"
+                  type="text"
                   className="w-full px-3 py-2 border rounded-lg"
                   placeholder="Nhập giá sản phẩm"
                 />
@@ -295,7 +418,7 @@ const AddProducts = () => {
                           </label>
                           <Field
                             name={`variants[${index}].stock`}
-                            type="number"
+                            type="text"
                             className="w-full px-3 py-2 border rounded-lg"
                           />
                           {errors.variants?.[index]?.stock &&
@@ -339,10 +462,10 @@ const AddProducts = () => {
                       className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded"
                       onClick={() =>
                         push({
-                          price: 0,
+                          price: null,
                           size_id: "",
                           color_id: "",
-                          stock: 0,
+                          stock: null,
                           sku: "",
                           image: null,
                         })

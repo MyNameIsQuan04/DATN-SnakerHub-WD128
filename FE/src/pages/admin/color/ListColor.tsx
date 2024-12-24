@@ -2,8 +2,11 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { ColorCT } from "../../../contexts/ColorContext";
 import { Color } from "../../../interfaces/Color";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const ListColor = () => {
+  const { user, logout } = useAuth();
+
   const { colors, onRemoveColor } = useContext(ColorCT);
   console.log(colors);
   return (
@@ -34,16 +37,20 @@ const ListColor = () => {
                 <th className="py-2 px-4 border-b flex justify-center gap-[10px]">
                   <Link to={`/admin/color-edit/${color.id}`}>
                     <button className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500">
-                      Cập nhật
+                      Chỉnh sửa
                     </button>
                   </Link>
-                  {color.name !== "Mặc định" && (
-                    <button
-                      className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
-                      onClick={() => onRemoveColor(color.id)}
-                    >
-                      Xóa
-                    </button>
+                  {user?.role_id === 1 && (
+                    <div className="">
+                      {color.name !== "Mặc định" && (
+                        <button
+                          className="btn btn-danger p-[10px] rounded-lg text-white bg-red-500"
+                          onClick={() => onRemoveColor(color.id)}
+                        >
+                          Xóa
+                        </button>
+                      )}
+                    </div>
                   )}
                 </th>
               </tr>

@@ -107,8 +107,17 @@ const LayoutAdmin = () => {
                 <h2 className="text-xl font-semibold text-gray-800 leading-tight">
                   <div>
                     <span>Hi,</span>
-                    <span className="font-semibold text-emerald-500">
-                      {user?.name}
+                    <span className="">
+                      {user?.role_id === 1 && (
+                        <p className="font-semibold text-emerald-500">
+                          Quản trị {user?.name}
+                        </p>
+                      )}
+                      {user?.role_id === 2 && (
+                        <p className="font-semibold text-emerald-500">
+                          Nhân viên {user?.name}
+                        </p>
+                      )}
                     </span>
                   </div>
                   <button

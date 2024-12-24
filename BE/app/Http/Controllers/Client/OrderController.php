@@ -106,8 +106,8 @@ class OrderController extends Controller
                 $dataItem = [
                     'order_id' => $order->id,
                     'nameProduct' => Product::where('id', $productVariant['product_id'])->value('name'),
-                    'color' => Color::where('id',$productVariant['color_id'])->value('name'),
-                    'size' => Size::where('id',$productVariant['size_id'])->value('name'),
+                    'color' => Color::where('id', $productVariant['color_id'])->value('name'),
+                    'size' => Size::where('id', $productVariant['size_id'])->value('name'),
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                 ];
@@ -143,8 +143,8 @@ class OrderController extends Controller
             }
             $order->load('orderItems', 'customer');
 
-            SendNewOrderEmail::dispatch($order);
-
+            // SendNewOrderEmail::dispatch($order);
+            DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'thành công',
@@ -179,10 +179,10 @@ class OrderController extends Controller
                     'status' => 'required|in:Đã hủy',
                 ]);
                 foreach ($order->orderItems as $orderItem) {
-                    $product_id = Product::where('name',$orderItem['nameProduct'])->value('id');
-                    
-                    $productVariant = Product_Variant::where('color',$orderItem['color'])->where('size',$orderItem['size'])
-                    ->where('product_id',$product_id)->first();
+                    $product_id = Product::where('name', $orderItem['nameProduct'])->value('id');
+
+                    $productVariant = Product_Variant::where('color', $orderItem['color'])->where('size', $orderItem['size'])
+                        ->where('product_id', $product_id)->first();
 
                     $stock = $productVariant['stock'] + $orderItem['quantity'];
                     $productVariant->update([
@@ -248,8 +248,9 @@ class OrderController extends Controller
                 'reason' => $dataReturn['reason'],
             ]);
 
-            $order->load('orderItems', 'customer');
-            
+
+            $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+
             SendKhieuNaiOrderEmail::dispatch($order);
 
             return $order;
@@ -322,8 +323,8 @@ class OrderController extends Controller
                 $dataItem = [
                     'order_id' => $order->id,
                     'nameProduct' => Product::where('id', $productVariant['product_id'])->value('name'),
-                    'color' => Color::where('id',$productVariant['color_id'])->value('name'),
-                    'size' => Size::where('id',$productVariant['size_id'])->value('name'),
+                    'color' => Color::where('id', $productVariant['color_id'])->value('name'),
+                    'size' => Size::where('id', $productVariant['size_id'])->value('name'),
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                 ];

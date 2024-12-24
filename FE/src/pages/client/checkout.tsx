@@ -34,6 +34,7 @@ const Checkout = () => {
   const wards = useWards(selectedDistrict?.code);
   const token = localStorage.getItem("access_token");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [note, setNote] = useState<string>("");
   const {
     register,
     handleSubmit,
@@ -158,7 +159,6 @@ const Checkout = () => {
 
     const orderData = {
       ...data,
-
       province: selectedProvince?.name,
       district: selectedDistrict?.name,
       town: selectedWard?.name,
@@ -487,6 +487,13 @@ const Checkout = () => {
                   </div>
                 </div>
               )}
+              <div className="mt-[20px]">
+                <p className="text-lg font-semibold mb-2 ">Ghi chú</p>
+                <textarea
+                  {...register("note")}
+                  className="w-full h-[100px]"
+                ></textarea>
+              </div>
               <div className="">
                 <div className="w-full max-w-md mx-auto mt-4">
                   <p className="text-lg font-semibold mb-2">

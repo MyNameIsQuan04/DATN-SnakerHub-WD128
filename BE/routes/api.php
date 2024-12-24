@@ -41,9 +41,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::apiResource('sizes', SizeApiController::class)->middleware(['auth:api', 'role:Admin,Saler']);
-Route::apiResource('colors', ColorApiController::class)->middleware(['auth:api', 'role:Admin,Saler']);
-Route::apiResource('users', UserApiController::class)->middleware(['auth:api', 'role:Admin,Saler']);
+
+Route::apiResource('sizes', SizeApiController::class);
+Route::apiResource('colors', ColorApiController::class);
+Route::apiResource('users', UserApiController::class);
+
 
                                                                                                                             
 $crud = [
@@ -53,8 +55,10 @@ $crud = [
 ];
 
 foreach ($crud as $key => $controller) {
-    Route::apiResource($key, $controller)->middleware('auth:api')->middleware('role:Admin,Saler');
+
+    Route::apiResource($key, $controller)->middleware(['auth:api', 'role:Admin']);
 }
+
 Route::get('client/categories', [ClientCategoryControlller::class, 'index']);
 
 Route::get('dashboard/daily', [DashboardController::class, 'daily']);

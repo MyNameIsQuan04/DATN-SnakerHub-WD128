@@ -18,15 +18,16 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
+
         // Kiểm tra người dùng đã đăng nhập và vai trò của họ
         {
             if (!auth()->check() || auth()->user()->role->role !== $role) {
                 return response()->json([
                     'error' => 'Unauthorized',
-                    'auth' => auth()->user(),
+                    'auth' => auth()->user()->role,
                 ], 403);
             }
-    
+
             return $next($request);
         }
     }
