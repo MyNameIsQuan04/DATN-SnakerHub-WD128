@@ -14,7 +14,7 @@ use App\Http\Controllers\Client\VoucherController as ClientVoucherController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ColorApiController;
 use App\Http\Controllers\api\DashboardController;
-use App\Http\Controllers\Client\CommentController;
+use App\Http\Controllers\Client\CommentController as ClientCommentController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
@@ -22,7 +22,7 @@ use App\Http\Controllers\Client\CategoryControlller as ClientCategoryControlller
 use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Client\ColorController;
 use App\Http\Controllers\Client\SizeController;
-
+use App\Http\Controllers\api\CommentController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -154,7 +154,7 @@ Route::prefix('slides')->group(function () {
 
 Route::get('/search', [ClientProductController::class, 'search']);
 
-Route::post('/rate', [CommentController::class, 'store']);
+Route::post('/rate', [ClientCommentController::class, 'store']);
 
 Route::post('/vnpay-payment', [ApiMemberOrderController::class, 'vnpayPayment'])->name('api.vnpay.payment');
 Route::get('/vnpay-return', [ApiMemberOrderController::class, 'vnpayReturn']);
@@ -166,4 +166,10 @@ Route::prefix('client')->group(function () {
     Route::get('sizes/{id}', [SizeController::class, 'show']);
     Route::get('vouchers', [ClientVoucherController::class, 'index']);
     Route::get('vouchers/{id}', [ClientVoucherController::class, 'show']);
+});
+
+Route::prefix('comments')->group(function () {
+    Route::get('/', [CommentController::class, 'index']); 
+    Route::post('/{id}/reply', [CommentController::class, 'reply']); 
+    Route::delete('/{id}', [CommentController::class, 'destroy']); 
 });
