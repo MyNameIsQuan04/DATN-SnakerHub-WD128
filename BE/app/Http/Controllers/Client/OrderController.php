@@ -164,7 +164,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+        $order->load('orderItems', 'customer');
         return $order;
     }
 
@@ -216,7 +216,7 @@ class OrderController extends Controller
                 ]);
                 $order->update([
                     'status' => $dataValidate['status'],
-                    'note' => 'Không',
+                    'reason' => null,
                 ]);
                 $order->load('orderItems', 'customer');
                 return $order;
@@ -240,19 +240,24 @@ class OrderController extends Controller
         if ($order['status'] === 'Đã giao hàng') {
             $dataReturn = $request->validate([
                 'status' => 'required|in:Yêu cầu trả hàng',
-                'note' => 'required|in:Giao hàng không đúng yêu cầu,Sản phẩm có lỗi từ nhà cung cấp,Lý do khác',
+                'reason' => 'required|string',
             ]);
 
             $order->update([
                 'status' => $dataReturn['status'],
-                'note' => $dataReturn['note'],
+                'reason' => $dataReturn['reason'],
             ]);
 
-            $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+            $order->load('orderItems', 'customer');
 
             SendKhieuNaiOrderEmail::dispatch($order);
 
             return $order;
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: không thể thay đổi',
+            ], 403);
         }
     }
 

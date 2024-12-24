@@ -25,6 +25,7 @@ class Order extends Model
         'paymentMethod',
         'totalAfterDiscount',
         'paymentURL',
+        'reason',
     ];
 
     public function customer()
