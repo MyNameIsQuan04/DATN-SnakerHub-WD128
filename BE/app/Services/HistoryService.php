@@ -1,10 +1,10 @@
 <?php
-namespace app\Services;
+namespace App\Services;
 
 use App\Models\History;
 use Illuminate\Support\Facades\Auth;
 
-class HistoryService 
+class HistoryService
 {
     public static function log($table_name, $record_id, $action, $old_data = null, $new_data = null)
     {

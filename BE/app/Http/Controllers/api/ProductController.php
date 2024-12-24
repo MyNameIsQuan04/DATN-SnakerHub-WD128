@@ -7,14 +7,13 @@ use App\Models\Color;
 use App\Models\Gallery;
 use App\Models\Product;
 use App\Models\Category;
-use Illuminate\Http\Request;
 use App\Models\Product_Variant;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
-use app\Services\HistoryService;
+use App\Services\HistoryService;
 
 class ProductController extends Controller
 {
@@ -50,7 +49,7 @@ class ProductController extends Controller
 
             $product = Product::create($dataProduct);
             
-            HistoryService::log('products', $product->id, 'create', null, $dataProduct);
+            HistoryService::log('products', $product->id, 'create', null, json_encode($dataProduct));
 
             foreach ($validatedData['galleries'] ?? [] as $image) {
                 $image_path = Storage::url($image->store('images', 'public'));
@@ -72,7 +71,7 @@ class ProductController extends Controller
                 $dataVariant = [
                     'color_id' => $variant['color_id'],
                     'size_id' => $variant['size_id'],
-                    'entry_price' => $validatedData['entry_price'],
+                    'entry_price' => $variant['entry_price'],
                     'price' => isset($variant['price']) ? $variant['price'] : $product->price,
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
@@ -84,7 +83,7 @@ class ProductController extends Controller
 
                 $product_variant = $product->productVariants()->create($dataVariant);
 
-                HistoryService::log('product_variants', $product_variant->id, 'create', null, $dataVariant);
+                HistoryService::log('product_variants', $product_variant->id, 'create', null, json_encode($dataVariant));
             }
 
             $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
@@ -179,7 +178,7 @@ class ProductController extends Controller
                     'size_id' => $variant['size_id'],
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
-                    'entry_price' => $validatedData['entry_price'],
+                    'entry_price' => $variant['entry_price'],
                 ];
 
                 if (isset($variant['price'])) {
