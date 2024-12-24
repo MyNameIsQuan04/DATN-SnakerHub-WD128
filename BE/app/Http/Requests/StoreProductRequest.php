@@ -26,7 +26,7 @@ class StoreProductRequest extends FormRequest
             'name' => 'required|string|max:255|unique:products',
             'description' => 'nullable|string',
             'short_description' => 'nullable|string',
-            'entry_price' => 'required|integer',
+            
             'price' => 'required|integer',
             'thumbnail' => 'required|image',
             'galleries' => 'nullable|array',
@@ -40,6 +40,7 @@ class StoreProductRequest extends FormRequest
             'variants' => 'required|array',
             'variants.*.size_id' => 'required|exists:sizes,id',
             'variants.*.color_id' => 'required|exists:colors,id',
+            'variants.*.entry_price' => 'required|integer',
             'variants.*.price' => 'nullable|integer',
             'variants.*.stock' => 'required|integer|min:1',
             // 'variants.*.sku' => 'required|string|max:50|unique:product__variants,sku',
