@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css"; // Import CSS cho toast
 const EditVoucher: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Lấy ID từ URL
   const [codeDiscount, setCodeDiscount] = useState<string>("");
-  const [discount, setDiscount] = useState<number>(0);
+  const [discount, setDiscount] = useState<number>();
   const [type, setType] = useState<"percent" | "amount">("percent");
   const [startDate, setStartDate] = useState<string>(""); // Thêm state cho start_date
   const [expirationDate, setExpirationDate] = useState<string>("");
@@ -33,8 +33,14 @@ const EditVoucher: React.FC = () => {
         setStartDate(voucher.start_date); // Lấy start_date từ API
         setExpirationDate(voucher.expiration_date);
         setUsageLimit(voucher.usage_limit);
-      } catch (err: any) {
-        setError("Không thể tải dữ liệu voucher");
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          setError(
+            err.response?.data.message || "Không thể tải dữ liệu voucher"
+          );
+        } else {
+          setError("Không thể tải dữ liệu voucher");
+        }
       } finally {
         setLoading(false);
       }
@@ -49,7 +55,7 @@ const EditVoucher: React.FC = () => {
     setError(null);
 
     // Kiểm tra giá trị giảm giá không vượt quá 50%
-    if (type === "percent" && discount > 50) {
+    if (type === "percent" && (discount ?? 0) > 50) {
       toast.error("Giảm giá không được vượt quá 50%");
       return;
     }
@@ -80,11 +86,15 @@ const EditVoucher: React.FC = () => {
       // Hiển thị thông báo thành công bằng toast
       toast.success("Voucher đã được cập nhật thành công");
       navigate("/admin/vouchers"); // Chuyển hướng về trang danh sách voucher
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Hiển thị thông báo lỗi bằng toast
-      toast.error(
-        error.response?.data?.message || "Có lỗi xảy ra khi cập nhật voucher"
-      );
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(
+          error.response.data.message || "Có lỗi xảy ra khi cập nhật voucher"
+        );
+      } else {
+        toast.error("Có lỗi xảy ra khi cập nhật voucher");
+      }
     }
   };
 
