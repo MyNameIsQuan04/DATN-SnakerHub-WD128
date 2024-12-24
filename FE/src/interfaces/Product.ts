@@ -47,6 +47,7 @@ export interface product_variants {
   color_id: number;
   size_id: number;
   sku: string;
+  entry_price: number;
   price: number;
   stock: number;
   image: string;

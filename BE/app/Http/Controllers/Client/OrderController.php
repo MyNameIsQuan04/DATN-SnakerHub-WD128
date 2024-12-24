@@ -251,6 +251,7 @@ class OrderController extends Controller
 
             $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
 
+
             SendKhieuNaiOrderEmail::dispatch($order);
 
             return $order;

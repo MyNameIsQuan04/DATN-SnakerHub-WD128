@@ -47,7 +47,6 @@ Route::apiResource('colors', ColorApiController::class);
 Route::apiResource('users', UserApiController::class);
 
 
-                                                                                                                            
 $crud = [
     'categories' => CategoryController::class,
     'products' => ProductController::class,
@@ -56,7 +55,7 @@ $crud = [
 
 foreach ($crud as $key => $controller) {
 
-    Route::apiResource($key, $controller)->middleware(['auth:api', 'role:Admin']);
+    Route::apiResource($key, $controller);
 }
 
 Route::get('client/categories', [ClientCategoryControlller::class, 'index']);
