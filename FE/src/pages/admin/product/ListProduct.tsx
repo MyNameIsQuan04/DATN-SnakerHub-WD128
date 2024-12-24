@@ -33,15 +33,16 @@ const ListProduct = () => {
 
       {/* Tìm kiếm */}
       <div className="mb-6 flex items-center gap-5 flex-wrap mt-3">
-        {/* Add Product Button */}
-        <div>
-          <Link
-            to="/admin/product-add"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
-          >
-            Thêm Sản Phẩm Mới
-          </Link>
-        </div>
+        {user?.role_id === 1 && (
+          <div>
+            <Link
+              to="/admin/product-add"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+            >
+              Thêm Sản Phẩm Mới
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Bảng sản phẩm */}
@@ -116,12 +117,17 @@ const ListProduct = () => {
 
                   {/* Nút quản lý */}
                   <td className="py-3 px-4 border-b">
-                    <Link
-                      to={`/admin/product-edit/${product.id}`}
-                      className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500"
-                    >
-                      Chỉnh sửa
-                    </Link>
+                    {user?.role_id !== 1 && (
+                      <div className="text-red-500">Bạn không đủ quyền hạn</div>
+                    )}
+                    {user?.role_id === 1 && (
+                      <Link
+                        to={`/admin/product-edit/${product.id}`}
+                        className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500"
+                      >
+                        Chỉnh sửa
+                      </Link>
+                    )}
                     {user?.role_id === 1 && (
                       <button
                         onClick={() => onRemoveProduct(product.id)}

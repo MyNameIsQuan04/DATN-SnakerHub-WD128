@@ -12,12 +12,14 @@ const ListCategory = () => {
     <div>
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-semibold mb-6">Quản lý danh mục</h1>
-        <Link
-          to="/admin/category-add"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mb-6 inline-block"
-        >
-          Thêm Danh Mục Mới
-        </Link>
+        {user?.role_id === 1 && (
+          <Link
+            to="/admin/category-add"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mb-6 inline-block"
+          >
+            Thêm Danh Mục Mới
+          </Link>
+        )}
 
         {/* Table */}
         <table className="min-w-full bg-white border border-gray-200">
@@ -34,11 +36,16 @@ const ListCategory = () => {
                 <th className="py-2 px-4 border-b">{index + 1}</th>
                 <th className="py-2 px-4 border-b">{category.name}</th>
                 <th className="py-2 px-4 border-b flex justify-center gap-[10px]">
-                  <Link to={`/admin/category-edit/${category.id}`}>
-                    <button className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500">
-                      Chỉnh sửa
-                    </button>
-                  </Link>
+                  {user?.role_id !== 1 && (
+                    <div className="text-red-500">Bạn không đủ quyền hạn</div>
+                  )}
+                  {user?.role_id === 1 && (
+                    <Link to={`/admin/category-edit/${category.id}`}>
+                      <button className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500">
+                        Chỉnh sửa
+                      </button>
+                    </Link>
+                  )}
                   {user?.role_id === 1 && (
                     <div className="">
                       {category.name !== "Mặc định" && (
