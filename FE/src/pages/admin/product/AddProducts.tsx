@@ -64,6 +64,7 @@ const AddProducts = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
+    console.log(values);
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("price", values.price.toString());
@@ -83,7 +84,9 @@ const AddProducts = () => {
     values.variants.forEach((variant: any, index: number) => {
       if (variant.entry_price >= variant.price) {
         const confirm = window.confirm(
-          `Giá biến thể ${index} đang nhỏ hơn giá nhập bạn có chắc chắn không`
+          `Giá biến thể ${
+            index + 1
+          } đang nhỏ hơn giá nhập bạn có chắc chắn không`
         );
         if (confirm) {
           formData.append(
@@ -100,7 +103,6 @@ const AddProducts = () => {
             `variants[${index}][stock]`,
             variant.stock.toString()
           );
-          formData.append(`variants[${index}][sku]`, variant.sku);
 
           if (variant.image) {
             formData.append(`variants[${index}][image]`, variant.image);

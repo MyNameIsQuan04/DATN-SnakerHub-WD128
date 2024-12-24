@@ -53,7 +53,7 @@ $crud = [
 ];
 
 foreach ($crud as $key => $controller) {
-    Route::apiResource($key, $controller);
+    Route::apiResource($key, $controller)->middleware('auth:api')->middleware('role:Admin,Saler');
 }
 
 Route::get('client/categories', [ClientCategoryControlller::class, 'index']);

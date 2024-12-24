@@ -20,7 +20,7 @@ class RoleMiddleware
     {
 
         // Kiểm tra người dùng đã đăng nhập và vai trò của họ
-        if (auth()->check() && in_array(auth()->user()->role, $roles)) {
+        if (auth()->check() && in_array(auth()->user()->role->role, $roles)) {
             return $next($request);
         }
     }

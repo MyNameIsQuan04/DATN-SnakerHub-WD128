@@ -54,7 +54,7 @@ const ListProduct = () => {
               <th className="py-3 px-4 border-b text-center">Tên Sản Phẩm</th>
               <th className="py-3 px-4 border-b text-center">Mô Tả</th>
               <th className="py-3 px-4 border-b text-center">Mô Tả Đầy Đủ</th>
-              <th className="py-3 px-4 border-b text-center">Giá Nhập</th>
+
               <th className="py-3 px-4 border-b text-center">Giá</th>
               <th className="py-3 px-4 border-b text-center">Biến Thể</th>
               <th className="py-3 px-4 border-b text-center">Danh Mục</th>
@@ -87,13 +87,6 @@ const ListProduct = () => {
                     {product.short_description}
                   </td>
 
-                  <td className="py-3 px-4 border-b text-center">
-                    {product.entry_price > 0 ? (
-                      <span>{product.entry_price.toLocaleString()} VND</span>
-                    ) : (
-                      <span>Tùy theo biến thể</span>
-                    )}
-                  </td>
                   <td className="py-3 px-4 border-b">
                     {product.price > 0 ? (
                       <span>{product.price.toLocaleString()} VND</span>
@@ -150,6 +143,7 @@ const ListProduct = () => {
                             <th className="py-2 px-3 text-left">Hình ảnh</th>
                             <th className="py-2 px-3 text-left">Màu</th>
                             <th className="py-2 px-3 text-left">Kích cỡ</th>
+                            <th className="py-2 px-3 text-left">Giá nhập</th>
                             <th className="py-2 px-3 text-left">Giá</th>
                             <th className="py-2 px-3 text-left">Số lượng</th>
                             <th className="py-2 px-3 text-left">SKU</th>
@@ -170,6 +164,9 @@ const ListProduct = () => {
                               </td>
                               <td className="py-1 px-3 border-b">
                                 {variant.size.name}
+                              </td>
+                              <td className="py-1 px-3 border-b">
+                                {variant.entry_price.toLocaleString()} VND
                               </td>
                               <td className="py-1 px-3 border-b">
                                 {variant.price.toLocaleString()} VND
