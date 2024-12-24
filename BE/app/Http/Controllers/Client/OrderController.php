@@ -38,7 +38,7 @@ class OrderController extends Controller
         $orders = Order::whereHas('customer', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })->orderByDesc('id')->get();
-        $orders->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+        $orders->load('orderItems', 'customer');
         return $orders;
     }
 
@@ -48,6 +48,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         try {
+            DB::beginTransaction();
             $userId = Auth::id();
             $validatedData = $request->validate([
                 'name' => 'required|string',
@@ -61,6 +62,7 @@ class OrderController extends Controller
                 'codeDiscount' => 'nullable|string|exists:vouchers,codeDiscount',
                 'shippingFee' => 'required|integer',
                 'paymentMethod' => 'required|integer',
+                'note' => 'nullable|string',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -87,6 +89,7 @@ class OrderController extends Controller
                 'codeDiscount' => $validatedData['codeDiscount'],
                 'shippingFee' => $validatedData['shippingFee'],
                 'paymentMethod' => $validatedData['paymentMethod'] == 1 ? "COD" : "VNPAY",
+                'note' => $validatedData['note'],
                 'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0) + $validatedData['shippingFee'],
             ]);
 
@@ -138,7 +141,7 @@ class OrderController extends Controller
                     'sell_count' => $newSellCount
                 ]);
             }
-            $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+            $order->load('orderItems', 'customer');
 
             SendNewOrderEmail::dispatch($order);
 
@@ -161,7 +164,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+        $order->load('orderItems', 'customer');
         return $order;
     }
 
@@ -196,7 +199,7 @@ class OrderController extends Controller
                 $order->update([
                     'status' => $dataValidate['status'],
                 ]);
-                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                $order->load('orderItems', 'customer');
                 return $order;
             } else if ($order['status'] === 'Đã giao hàng') {
                 $dataValidate = $request->validate([
@@ -205,7 +208,7 @@ class OrderController extends Controller
                 $order->update([
                     'status' => $dataValidate['status'],
                 ]);
-                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                $order->load('orderItems', 'customer');
                 return $order;
             } else if ($order['status'] === 'Yêu cầu trả hàng') {
                 $dataValidate = $request->validate([
@@ -213,9 +216,9 @@ class OrderController extends Controller
                 ]);
                 $order->update([
                     'status' => $dataValidate['status'],
-                    'note' => 'Không',
+                    'reason' => null,
                 ]);
-                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                $order->load('orderItems', 'customer');
                 return $order;
             } else {
                 return response()->json([
@@ -237,19 +240,24 @@ class OrderController extends Controller
         if ($order['status'] === 'Đã giao hàng') {
             $dataReturn = $request->validate([
                 'status' => 'required|in:Yêu cầu trả hàng',
-                'note' => 'required|in:Giao hàng không đúng yêu cầu,Sản phẩm có lỗi từ nhà cung cấp,Lý do khác',
+                'reason' => 'required|string',
             ]);
 
             $order->update([
                 'status' => $dataReturn['status'],
-                'note' => $dataReturn['note'],
+                'reason' => $dataReturn['reason'],
             ]);
 
-            $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+            $order->load('orderItems', 'customer');
             
             SendKhieuNaiOrderEmail::dispatch($order);
 
             return $order;
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: không thể thay đổi',
+            ], 403);
         }
     }
 

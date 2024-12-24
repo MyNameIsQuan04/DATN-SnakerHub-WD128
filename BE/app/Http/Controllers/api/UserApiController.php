@@ -15,7 +15,7 @@ class UserApiController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->type !== 'admin') {
+        if (auth()->user()->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -34,7 +34,7 @@ class UserApiController extends Controller
             'password' => 'required|string|min:6',
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string',
-            'type' => 'required|in:customer,admin',
+            'role_id' => 'required|in:customer,admin',
             'gender' => 'nullable|in:male,female,other',
             'birthday' => 'nullable|date',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -62,7 +62,7 @@ class UserApiController extends Controller
         $user = User::findOrFail($id);
 
         // Admin có thể xem bất kỳ thông tin người dùng nào
-        if (auth()->user()->type === 'admin') {
+        if (auth()->user()->role === 'admin') {
             return response()->json($user);
         }
 
@@ -87,7 +87,7 @@ class UserApiController extends Controller
             'password' => 'sometimes|nullable|string|min:6',
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string',
-            'type' => 'sometimes|required|in:user,admin',
+            'role_id' => 'sometimes|required|in:user,admin',
             'gender' => 'nullable|in:male,female,other',
             'birthday' => 'nullable|date',
             'avatar' => 'nullable|image',
@@ -124,7 +124,7 @@ class UserApiController extends Controller
     public function lockAccount($id)
     {
         // Kiểm tra quyền admin
-        if (auth()->user()->type !== 'admin') {
+        if (auth()->user()->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -147,7 +147,7 @@ class UserApiController extends Controller
     public function unlockAccount($id)
     {
         // Kiểm tra quyền admin
-        if (auth()->user()->type !== 'admin') {
+        if (auth()->user()->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

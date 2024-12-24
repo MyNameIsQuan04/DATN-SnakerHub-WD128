@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use app\Services\HistoryService;
 
 class ProductController extends Controller
 {
@@ -48,12 +49,16 @@ class ProductController extends Controller
             }
 
             $product = Product::create($dataProduct);
+            
+            HistoryService::log('products', $product->id, 'create', null, $dataProduct);
 
             foreach ($validatedData['galleries'] ?? [] as $image) {
                 $image_path = Storage::url($image->store('images', 'public'));
-                $product->galleries()->create([
+                $gallery = $product->galleries()->create([
                     'image_path' => $image_path,
                 ]);
+
+                HistoryService::log('product_galleries', $gallery->id, 'create', null, ['image_path' => $image_path]);
             }
 
             foreach ($validatedData['variants'] as $variant) {
@@ -67,7 +72,8 @@ class ProductController extends Controller
                 $dataVariant = [
                     'color_id' => $variant['color_id'],
                     'size_id' => $variant['size_id'],
-                    'price' => (isset($variant['price']) || $variant['price'] === 0) ? $variant['price'] : $product->price,
+                    'entry_price' => $validatedData['entry_price'],
+                    'price' => isset($variant['price']) ? $variant['price'] : $product->price,
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
                 ];
@@ -76,12 +82,14 @@ class ProductController extends Controller
                     $dataVariant['image'] = Storage::url($variant['image']->store('images', 'public'));
                 }
 
-                $product->productVariants()->create($dataVariant);
+                $product_variant = $product->productVariants()->create($dataVariant);
+
+                HistoryService::log('product_variants', $product_variant->id, 'create', null, $dataVariant);
             }
 
             $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
 
-            DB::commit(); // Commit transaction nếu không có lỗi
+            DB::commit();
 
             $categories = Category::query()->pluck('name', 'id')->all();
             $sizes = Size::all()->pluck('name', 'id');
@@ -171,9 +179,10 @@ class ProductController extends Controller
                     'size_id' => $variant['size_id'],
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
+                    'entry_price' => $validatedData['entry_price'],
                 ];
 
-                if (isset($variant['price']) || $variant['price'] === 0) {
+                if (isset($variant['price'])) {
                     $dataVariant['price'] = $variant['price'];
                 };
 

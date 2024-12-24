@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignIdFor(Size::class)->constrained();
             
             $table->id();
+            $table->integer('entry_price');//giá nhập vào
             $table->integer('price')->nullable();
             $table->integer('stock');
             $table->string('sku',50);

@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->text('description')->nullable();
             $table->text('short_description')->nullable();
-            $table->integer('entry_price');//giá nhập vào
             $table->integer('price');// giá bán ra
             $table->string('thumbnail');
             $table->integer('sell_count')->default(0);
