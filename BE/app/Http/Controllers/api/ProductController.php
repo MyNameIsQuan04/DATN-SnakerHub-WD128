@@ -39,7 +39,6 @@ class ProductController extends Controller
                 'name' => $validatedData['name'],
                 'description' => $validatedData['description'],
                 'short_description' => $validatedData['short_description'],
-                'entry_price' => $validatedData['entry_price'],
                 'price' => $validatedData['price'],
             ];
 
@@ -68,6 +67,7 @@ class ProductController extends Controller
                 $dataVariant = [
                     'color_id' => $variant['color_id'],
                     'size_id' => $variant['size_id'],
+                    'entry_price' => $validatedData['entry_price'],
                     'price' => isset($variant['price']) ? $variant['price'] : $product->price,
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
@@ -137,7 +137,6 @@ class ProductController extends Controller
                 'name' => $validatedData['name'],
                 'description' => $validatedData['description'],
                 'short_description' => $validatedData['short_description'],
-                'entry_price' => $validatedData['entry_price'],
                 'price' => $validatedData['price'],
             ];
 
@@ -173,6 +172,8 @@ class ProductController extends Controller
                     'size_id' => $variant['size_id'],
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
+                    'entry_price' => $validatedData['entry_price'],
+
                 ];
 
                 if (isset($variant['price'])) {
