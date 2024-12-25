@@ -50,6 +50,7 @@ import PaymentResult from "./pages/client/paymentResult";
 import OrderDetailHictory from "./pages/admin/order/OrderDetailHictory";
 import { useEffect } from "react";
 import SliderManager from "./components/SliderManager";
+import AdminCommentManagement from "./pages/admin/Comment/AdminCommentManagerment";
 
 declare global {
   interface Window {
@@ -189,7 +190,7 @@ function App() {
           <Route path="/admin/voucher-add" element={<AddVoucher />} />
           <Route path="/admin/voucher-edit/:id" element={<EditVoucher />} />
           <Route path="/admin/slides" element={<SliderManager />} />
-          <Route path="" element />
+          <Route path="/admin/comments" element={<AdminCommentManagement />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

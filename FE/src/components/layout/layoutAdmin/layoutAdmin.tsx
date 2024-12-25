@@ -13,6 +13,7 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { useAuth } from "../../../contexts/AuthContext";
 import { AiFillSetting } from "react-icons/ai";
+import { BiSolidCommentDetail } from "react-icons/bi";
 
 const LayoutAdmin = () => {
   const { user, logout } = useAuth();
@@ -61,6 +62,11 @@ const LayoutAdmin = () => {
       label: "Đơn hàng",
     },
     {
+      path: "/admin/comments",
+      icon: <BiSolidCommentDetail className="mr-2" />,
+      label: "Bình luận - Đánh giá",
+    },
+    {
       path: "/admin/slides",
       icon: <AiFillSetting className="mr-2" />,
       label: "Cài đặt",
@@ -72,7 +78,7 @@ const LayoutAdmin = () => {
     <>
       <div className="flex min-h-screen bg-gray-100">
         {/* Sidebar cố định */}
-        <div className="fixed top-0 left-0 w-1/6 h-full bg-gray-700 text-white flex flex-col justify-between">
+        <div className="fixed top-0 left-0 w-1/6 h-full bg-gray-700 text-white flex flex-col justify-between overflow-y-auto">
           <div className="p-6 flex flex-col items-center">
             {/* Avatar Admin */}
             <img

@@ -541,19 +541,15 @@ const UserOrderHistory = () => {
                                       Tên :
                                     </p>
                                     <p className="text-lg text-gray-700 uppercase font-bold">
-                                      {selectedItem.product_variant?.product
-                                        .name || "Không có"}
+                                      {selectedItem.nameProduct || "Không có"}
                                     </p>
                                   </div>
                                   <p className="text-lg text-gray-700">
-                                    Màu sắc:{" "}
-                                    {selectedItem.product_variant?.color.name ||
-                                      "Không có"}
+                                    Màu sắc: {selectedItem.color || "Không có"}
                                   </p>
                                   <p className="text-lg text-gray-700">
                                     Kích thước:{" "}
-                                    {selectedItem.product_variant?.size.name ||
-                                      "Không có"}
+                                    {selectedItem.size || "Không có"}
                                   </p>
                                 </div>
                               </div>
@@ -593,7 +589,7 @@ const UserOrderHistory = () => {
                                     handleSubmitRating(
                                       selectedItem.id,
                                       order.customer.user_id,
-                                      selectedItem.product_variant.id
+                                      selectedItem.id
                                     )
                                   }
                                   className="px-4 py-2 bg-red-500 text-white rounded-lg"

@@ -651,7 +651,10 @@ const Detail = () => {
                             </span>
                           ))}
                         </div>
-                        <p>Nội dung đánh giá: {rating.content}</p>
+                        <p>Nội dung đánh giá:</p>
+                        <div
+                          dangerouslySetInnerHTML={{ __html: rating.content }}
+                        />
                       </div>
                       <hr className="mb-3" />
                     </li>
