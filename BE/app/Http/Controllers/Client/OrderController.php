@@ -51,6 +51,7 @@ class OrderController extends Controller
             DB::beginTransaction();
             $userId = Auth::id();
             $validatedData = $request->validate([
+                'idCustomer' => 'nullable|integer|exists:customers,id',
                 'name' => 'required|string',
                 'phone' => 'required|string',
                 'address' => 'nullable|string',
@@ -71,13 +72,17 @@ class OrderController extends Controller
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
-            $dataCustomer = [
-                'user_id' => $userId,
-                'name' => $validatedData['name'],
-                'phone_number' => $validatedData['phone'],
-                'address' => $address,
-            ];
-            $customer = Customer::create($dataCustomer);
+            if ($validatedData['idCustomer']) {
+                $customer = Customer::find($validatedData['idCustomer']);
+            } else {
+                $dataCustomer = [
+                    'user_id' => $userId,
+                    'name' => $validatedData['name'],
+                    'phone_number' => $validatedData['phone'],
+                    'address' => $address,
+                ];
+                $customer = Customer::create($dataCustomer);
+            }
 
             $orderCode = $this->generateOrderCode();
 
@@ -269,6 +274,7 @@ class OrderController extends Controller
         try {
             $userId = Auth::id();
             $validatedData = $request->validate([
+                'idCustomer' => 'nullable|integer|exists:customers,id',
                 'name' => 'required|string',
                 'phone' => 'required|string',
                 'address' => 'nullable|string',
@@ -280,6 +286,7 @@ class OrderController extends Controller
                 'codeDiscount' => 'nullable|string|exists:vouchers,codeDiscount',
                 'shippingFee' => 'required|integer',
                 'paymentMethod' => 'required|integer',
+                'note' => 'nullable|string',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -288,13 +295,17 @@ class OrderController extends Controller
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
-            $dataCustomer = [
-                'user_id' => $userId,
-                'name' => $validatedData['name'],
-                'phone_number' => $validatedData['phone'],
-                'address' => $address,
-            ];
-            $customer = Customer::create($dataCustomer);
+            if ($validatedData['idCustomer']) {
+                $customer = Customer::find($validatedData['idCustomer']);
+            } else {
+                $dataCustomer = [
+                    'user_id' => $userId,
+                    'name' => $validatedData['name'],
+                    'phone_number' => $validatedData['phone'],
+                    'address' => $address,
+                ];
+                $customer = Customer::create($dataCustomer);
+            }
 
             $orderCode = $this->generateOrderCode();
 
@@ -306,6 +317,7 @@ class OrderController extends Controller
                 'codeDiscount' => $validatedData['codeDiscount'],
                 'shippingFee' => $validatedData['shippingFee'],
                 'paymentMethod' => $validatedData['paymentMethod'] == 1 ? "COD" : "VNPAY",
+                'note' => $validatedData['note'],
                 'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0) + $validatedData['shippingFee'],
             ]);
 
