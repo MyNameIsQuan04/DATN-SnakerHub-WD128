@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css"; // Import CSS cho toast
 const EditVoucher: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Lấy ID từ URL
   const [codeDiscount, setCodeDiscount] = useState<string>("");
-  const [discount, setDiscount] = useState<number>(0);
+  const [discount, setDiscount] = useState<number>();
   const [type, setType] = useState<"percent" | "amount">("percent");
   const [startDate, setStartDate] = useState<string>(""); // Thêm state cho start_date
   const [expirationDate, setExpirationDate] = useState<string>("");

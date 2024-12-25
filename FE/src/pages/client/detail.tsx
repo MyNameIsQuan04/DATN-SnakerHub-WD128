@@ -10,8 +10,10 @@ import { Product, Rate } from "../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { GrNext } from "react-icons/gr";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Detail = () => {
+  const { user, logout } = useAuth();
   const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
 
   const openSizeGuideModal = () => setIsSizeGuideModalOpen(true);
@@ -652,6 +654,7 @@ const Detail = () => {
                           ))}
                         </div>
                         <p>Nội dung đánh giá: {rating.content}</p>
+                        {user?.role_id !== 3 && <p>Trả lời</p>}
                       </div>
                       <hr className="mb-3" />
                     </li>

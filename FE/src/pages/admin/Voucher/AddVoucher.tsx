@@ -3,10 +3,11 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import { number } from "yup";
 
 const AddVoucher: React.FC = () => {
   const [codeDiscount, setCodeDiscount] = useState<string>("");
-  const [discount, setDiscount] = useState<number>(0);
+  const [discount, setDiscount] = useState<number>();
   const [type, setType] = useState<"percent" | "amount">("percent");
   const [startDate, setStartDate] = useState<string>(""); // Thêm state cho start_date
   const [expirationDate, setExpirationDate] = useState<string>("");
