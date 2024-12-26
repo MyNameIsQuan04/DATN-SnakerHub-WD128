@@ -51,7 +51,7 @@ class OrderController extends Controller
             DB::beginTransaction();
             $userId = Auth::id();
             $validatedData = $request->validate([
-                'idCustomer' => 'nullable|integer|exists:customers,id',
+                'idCustomer' => 'nullable|integer',
                 'name' => 'required|string',
                 'phone' => 'required|string',
                 'address' => 'nullable|string',
@@ -60,7 +60,7 @@ class OrderController extends Controller
                 'town' => 'required|string',
                 'total_price' => 'required|integer',
                 'discount' => 'nullable|integer',
-                'codeDiscount' => 'nullable|string|exists:vouchers,codeDiscount',
+                'codeDiscount' => 'nullable|string',
                 'shippingFee' => 'required|integer',
                 'paymentMethod' => 'required|integer',
                 'note' => 'nullable|string',
@@ -72,9 +72,9 @@ class OrderController extends Controller
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
-            if ($validatedData['idCustomer']) {
-                $customer = Customer::find($validatedData['idCustomer']);
-            } else {
+            $customer = Customer::find($validatedData['idCustomer']);
+
+            if (!$customer) {
                 $dataCustomer = [
                     'user_id' => $userId,
                     'name' => $validatedData['name'],
@@ -95,7 +95,7 @@ class OrderController extends Controller
                 'shippingFee' => $validatedData['shippingFee'],
                 'paymentMethod' => $validatedData['paymentMethod'] == 1 ? "COD" : "VNPAY",
                 'note' => $validatedData['note'],
-                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0) + $validatedData['shippingFee'],
+                'totalAfterDiscount' => max($validatedData['total_price'] - ($validatedData['discount'] ?? 0), 0) + $validatedData['shippingFee'],
             ]);
 
             foreach ($validatedData['items'] as $item) {
@@ -295,9 +295,9 @@ class OrderController extends Controller
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
-            if ($validatedData['idCustomer']) {
-                $customer = Customer::find($validatedData['idCustomer']);
-            } else {
+            $customer = Customer::find($validatedData['idCustomer']);
+
+            if (!$customer) {
                 $dataCustomer = [
                     'user_id' => $userId,
                     'name' => $validatedData['name'],
@@ -318,7 +318,8 @@ class OrderController extends Controller
                 'shippingFee' => $validatedData['shippingFee'],
                 'paymentMethod' => $validatedData['paymentMethod'] == 1 ? "COD" : "VNPAY",
                 'note' => $validatedData['note'],
-                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0) + $validatedData['shippingFee'],
+                'totalAfterDiscount' => max($validatedData['total_price'] - ($validatedData['discount'] ?? 0), 0) + $validatedData['shippingFee'],
+
             ]);
 
             foreach ($validatedData['items'] as $item) {
