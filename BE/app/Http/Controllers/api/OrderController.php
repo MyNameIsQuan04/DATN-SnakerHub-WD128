@@ -22,7 +22,7 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::orderByDesc('id')->get();
-        $orders->load('customer', 'orderItems.productVariant.product');
+        $orders->load('customer', 'orderItems');
         return $orders;
     }
 
@@ -34,7 +34,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load('customer.user', 'orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color');
+        $order->load('customer.user', 'orderItems');
         return $order;
     }
 

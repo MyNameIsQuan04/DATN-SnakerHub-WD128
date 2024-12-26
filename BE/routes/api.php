@@ -21,6 +21,7 @@ use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\CategoryControlller as ClientCategoryControlller;
 use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Client\ColorController;
+use App\Http\Controllers\Client\CustomerController;
 use App\Http\Controllers\Client\SizeController;
 use App\Http\Controllers\api\CommentController;
 /*
@@ -45,6 +46,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::apiResource('sizes', SizeApiController::class);
 Route::apiResource('colors', ColorApiController::class);
 Route::apiResource('users', UserApiController::class);
+
+Route::get('client/customers', [CustomerController::class, 'index']);
+Route::get('client/customers/{customer}', [CustomerController::class, 'show']);
 
 
 $crud = [
