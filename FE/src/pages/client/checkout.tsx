@@ -35,6 +35,7 @@ const Checkout = () => {
   const token = localStorage.getItem("access_token");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [note, setNote] = useState<string>("");
+  const [customers, setCustomers] = useState<any[]>([]);
   const {
     register,
     handleSubmit,
@@ -75,7 +76,26 @@ const Checkout = () => {
   const [vouchers, setVouchers] = useState<
     Array<{ codeDiscount: string; discount: number }>
   >([]);
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("/client/customers", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setCustomers(response.data);
+        console.log(response.data);
+      } catch (err) {
+        console.log("Failed to fetch customers");
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchCustomers();
+  }, []);
   useEffect(() => {
     const fetchVouchers = async () => {
       try {
@@ -159,6 +179,7 @@ const Checkout = () => {
 
     const orderData = {
       ...data,
+
       province: selectedProvince?.name,
       district: selectedDistrict?.name,
       town: selectedWard?.name,
