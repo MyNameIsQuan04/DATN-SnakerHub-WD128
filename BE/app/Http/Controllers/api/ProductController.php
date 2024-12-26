@@ -48,8 +48,8 @@ class ProductController extends Controller
             }
 
             $product = Product::create($dataProduct);
-            
-            HistoryService::log('products', $product->id, 'create', null, json_encode($dataProduct));
+
+            // HistoryService::log('products', $product->id, 'create', null, json_encode($dataProduct));
 
             foreach ($validatedData['galleries'] ?? [] as $image) {
                 $image_path = Storage::url($image->store('images', 'public'));
@@ -57,7 +57,7 @@ class ProductController extends Controller
                     'image_path' => $image_path,
                 ]);
 
-                HistoryService::log('product_galleries', $gallery->id, 'create', null, ['image_path' => $image_path]);
+                // HistoryService::log('product_galleries', $gallery->id, 'create', null, ['image_path' => $image_path]);
             }
 
             foreach ($validatedData['variants'] as $variant) {
@@ -83,7 +83,7 @@ class ProductController extends Controller
 
                 $product_variant = $product->productVariants()->create($dataVariant);
 
-                HistoryService::log('product_variants', $product_variant->id, 'create', null, json_encode($dataVariant));
+                // HistoryService::log('product_variants', $product_variant->id, 'create', null, json_encode($dataVariant));
             }
 
             $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
@@ -93,7 +93,7 @@ class ProductController extends Controller
             $categories = Category::query()->pluck('name', 'id')->all();
             $sizes = Size::all()->pluck('name', 'id');
             $colors = Color::all()->pluck('name', 'id');
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Sản phẩm và các biến thể đã được tạo thành công!',

@@ -46,6 +46,10 @@ const AddProducts = () => {
     variants: Yup.array()
       .of(
         Yup.object({
+          price: Yup.number()
+            .typeError("Giá sản phẩm phải là số")
+            .positive("Giá sản phẩm phải lớn hơn 0")
+            .required("Giá sản phẩm không được để trống"),
           entry_price: Yup.number()
             .typeError("Giá sản phẩm phải là số")
             .positive("Giá sản phẩm phải lớn hơn 0")
@@ -276,9 +280,15 @@ const AddProducts = () => {
                           </label>
                           <Field
                             name={`variants[${index}].entry_price`}
-                            type="number"
+                            type="text"
                             className="w-full px-3 py-2 border rounded-lg"
                           />
+                          {errors.variants?.[index]?.entry_price &&
+                            touched.variants?.[index]?.entry_price && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors.variants[index].entry_price}
+                              </p>
+                            )}
                         </div>
                         {/* Giá biến thể */}
                         <div className="mb-4">
@@ -287,9 +297,15 @@ const AddProducts = () => {
                           </label>
                           <Field
                             name={`variants[${index}].price`}
-                            type="number"
+                            type="text"
                             className="w-full px-3 py-2 border rounded-lg"
                           />
+                          {errors.variants?.[index]?.price &&
+                            touched.variants?.[index]?.price && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors.variants[index].price}
+                              </p>
+                            )}
                         </div>
 
                         {/* Màu sắc */}
