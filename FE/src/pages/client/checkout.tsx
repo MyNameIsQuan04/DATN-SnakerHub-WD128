@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 import { GrNext } from "react-icons/gr";
+import api from "../../configs/axios.ts";
 
 const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,13 +81,13 @@ const Checkout = () => {
     const fetchCustomers = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("/client/customers", {
+        const response = await api.get("/client/customers", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         setCustomers(response.data);
-        console.log(response.data);
+        console.log(response);
       } catch (err) {
         console.log("Failed to fetch customers");
       } finally {
