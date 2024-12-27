@@ -78,7 +78,7 @@ class OrderController extends Controller
                 $customer = Customer::create([
                     'user_id' => $userId,
                     'name' => $validatedData['name'],
-                    'phone' => $validatedData['phone'],
+                    'phone_number' => $validatedData['phone'],
                     'address' => $address,
                 ]);
             }
@@ -300,7 +300,7 @@ class OrderController extends Controller
                 $customer = Customer::create([
                     'user_id' => $userId,
                     'name' => $validatedData['name'],
-                    'phone' => $validatedData['phone'],
+                    'phone_number' => $validatedData['phone'],
                     'address' => $address,
                 ]);
             }
