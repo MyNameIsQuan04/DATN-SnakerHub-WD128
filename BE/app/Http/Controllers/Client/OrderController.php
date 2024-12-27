@@ -54,7 +54,7 @@ class OrderController extends Controller
                 'idCustomer' => 'nullable|integer',
                 'name' => 'required|string',
                 'phone' => 'required|string',
-                'address' => 'nullable|string',
+                'address' => 'required|string',
                 'province' => 'required|string',
                 'district' => 'required|string',
                 'town' => 'required|string',
@@ -72,16 +72,15 @@ class OrderController extends Controller
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
-            $customer = Customer::find($validatedData['idCustomer']);
-
-            if (!$customer) {
-                $dataCustomer = [
+            if (isset($validatedData['idCustomer'])) {
+                $customer = Customer::find($validatedData['idCustomer']);
+            } else {
+                $customer = Customer::create([
                     'user_id' => $userId,
                     'name' => $validatedData['name'],
-                    'phone_number' => $validatedData['phone'],
+                    'phone' => $validatedData['phone'],
                     'address' => $address,
-                ];
-                $customer = Customer::create($dataCustomer);
+                ]);
             }
 
             $orderCode = $this->generateOrderCode();
@@ -277,7 +276,7 @@ class OrderController extends Controller
                 'idCustomer' => 'nullable|integer|exists:customers,id',
                 'name' => 'required|string',
                 'phone' => 'required|string',
-                'address' => 'nullable|string',
+                'address' => 'required|string',
                 'province' => 'required|string',
                 'district' => 'required|string',
                 'town' => 'required|string',
@@ -295,16 +294,15 @@ class OrderController extends Controller
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
-            $customer = Customer::find($validatedData['idCustomer']);
-
-            if (!$customer) {
-                $dataCustomer = [
+            if (isset($validatedData['idCustomer'])) {
+                $customer = Customer::find($validatedData['idCustomer']);
+            } else {
+                $customer = Customer::create([
                     'user_id' => $userId,
                     'name' => $validatedData['name'],
-                    'phone_number' => $validatedData['phone'],
+                    'phone' => $validatedData['phone'],
                     'address' => $address,
-                ];
-                $customer = Customer::create($dataCustomer);
+                ]);
             }
 
             $orderCode = $this->generateOrderCode();
