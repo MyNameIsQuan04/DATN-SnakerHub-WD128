@@ -5,6 +5,8 @@ namespace App\Http\Controllers\api;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\History;
+use App\Services\HistoryService;
 
 class CategoryController extends Controller
 {
@@ -27,7 +29,10 @@ class CategoryController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255|unique:categories,name'
             ]);
-            return Category::create($request->all());
+            $category = Category::create($request->all());
+
+            HistoryService::log('categories', $category->id, 'create', [], $category);
+            return $category;
         } catch (\Throwable $th) {
             return back()->with('error', $th->getMessage());
         }
@@ -56,7 +61,11 @@ class CategoryController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255|unique:categories,name'
             ]);
+            $oldData = $category;
             $category->update($request->all());
+
+            HistoryService::log('categories', $category->id, 'update', $oldData, $category);
+
             return $category;
         } catch (\Throwable $th) {
             return back()->with('error', $th->getMessage());
@@ -93,6 +102,8 @@ class CategoryController extends Controller
         $defaultCategory = Category::firstOrCreate(['name' => 'Chưa phân loại']);
 
         $category->products()->update(['category_id' => $defaultCategory->id]);
+
+        HistoryService::log('categories', $category->id, 'delete', $category, []);
 
         $category->delete();
 

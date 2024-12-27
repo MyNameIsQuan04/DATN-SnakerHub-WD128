@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Color;
+use Illuminate\Http\Request;
+use App\Services\HistoryService;
+use App\Http\Controllers\Controller;
 
 class ColorApiController extends Controller
 {
@@ -30,6 +31,8 @@ class ColorApiController extends Controller
             'name' => $request->name,
         ]);
 
+        HistoryService::log('colors', $color->id, 'create', [], $color);
+
         return response()->json(['message' => 'Color created successfully', 'color' => $color], 201);
     }
 
@@ -53,6 +56,7 @@ class ColorApiController extends Controller
     public function update(Request $request, string $id)
     {
         $color = Color::find($id);
+        $oldData = $color;
 
         if (!$color) {
             return response()->json(['message' => 'Color not found'], 404);
@@ -65,6 +69,8 @@ class ColorApiController extends Controller
         $color->update([
             'name' => $request->name,
         ]);
+
+        HistoryService::log('colors', $color->id, 'update', $oldData, $color);
 
         return response()->json(['message' => 'Color updated successfully', 'color' => $color]);
     }
@@ -84,6 +90,8 @@ class ColorApiController extends Controller
 
         // Chuyển tất cả product_variants sang color mặc định
         $color->productVariants()->update(['color_id' => $defaultColor->id]);
+
+        HistoryService::log('colors', $color->id, 'delete', $color, []);
 
         // Xóa color (hỗ trợ xóa mềm nếu có)
         $color->delete();

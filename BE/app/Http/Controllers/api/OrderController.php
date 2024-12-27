@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Jobs\SendKhieuNaiOrderEmail;
 use App\Mail\OrderStatusUpdatedMail;
+use App\Models\History;
+use App\Services\HistoryService;
 use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
@@ -103,6 +105,9 @@ class OrderController extends Controller
 
                 // Đẩy job vào hàng đợi thay vì gửi email trực tiếp
                 SendOrderStatusEmail::dispatch($order, $newStatus);
+
+                HistoryService::log('orders', $order->id, 'update', $currentStatus, $newStatus);
+
             });
 
             return response()->json([
