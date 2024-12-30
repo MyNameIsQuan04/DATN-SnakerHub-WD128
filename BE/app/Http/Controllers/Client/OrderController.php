@@ -54,7 +54,7 @@ class OrderController extends Controller
                 'idCustomer' => 'nullable|integer',
                 'name' => 'required|string',
                 'phone' => 'required|string',
-                'address' => 'nullable|string',
+                'address' => 'required|string',
                 'province' => 'required|string',
                 'district' => 'required|string',
                 'town' => 'required|string',
@@ -72,16 +72,18 @@ class OrderController extends Controller
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
-            $customer = Customer::find($validatedData['idCustomer']);
-
-            if (!$customer) {
-                $dataCustomer = [
+            if (isset($validatedData['idCustomer'])) {
+                $customer = Customer::find($validatedData['idCustomer']);
+            } else {
+                $customer = Customer::create([
                     'user_id' => $userId,
                     'name' => $validatedData['name'],
                     'phone_number' => $validatedData['phone'],
-                    'address' => $address,
-                ];
-                $customer = Customer::create($dataCustomer);
+                    'address' => $validatedData['address'],
+                    'province' => $validatedData['province'],
+                    'district' => $validatedData['district'],
+                    'town' => $validatedData['town'],
+                ]);
             }
 
             $orderCode = $this->generateOrderCode();
@@ -279,7 +281,7 @@ class OrderController extends Controller
                 'idCustomer' => 'nullable|integer|exists:customers,id',
                 'name' => 'required|string',
                 'phone' => 'required|string',
-                'address' => 'nullable|string',
+                'address' => 'required|string',
                 'province' => 'required|string',
                 'district' => 'required|string',
                 'town' => 'required|string',
@@ -297,16 +299,18 @@ class OrderController extends Controller
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
-            $customer = Customer::find($validatedData['idCustomer']);
-
-            if (!$customer) {
-                $dataCustomer = [
+            if (isset($validatedData['idCustomer'])) {
+                $customer = Customer::find($validatedData['idCustomer']);
+            } else {
+                $customer = Customer::create([
                     'user_id' => $userId,
                     'name' => $validatedData['name'],
                     'phone_number' => $validatedData['phone'],
-                    'address' => $address,
-                ];
-                $customer = Customer::create($dataCustomer);
+                    'address' => $validatedData['address'],
+                    'province' => $validatedData['province'],
+                    'district' => $validatedData['district'],
+                    'town' => $validatedData['town'],
+                ]);
             }
 
             $orderCode = $this->generateOrderCode();
@@ -423,7 +427,7 @@ class OrderController extends Controller
 
             $user = Auth::user();
             SendLinkPayment::dispatch($vnp_Url, $user->email, $user->name);
-            SendNewOrderEmail::dispatch($order);
+            // SendNewOrderEmail::dispatch($order);
 
             return $vnp_Url;
         } catch (\Exception $e) {

@@ -69,9 +69,22 @@ class CommentController extends Controller
 
         $comment = Comment::findOrFail($id);
 
+         // Check if the comment already has a reply
+        $existingReply = Comment::where('parent_id', $comment->id)->first();
+        if ($existingReply) {
+             return response()->json([
+                 'message' => 'Bình luận này đã được trả lời'
+             ], 403);
+            }
+
         // Reply logic
-        $reply = $comment->replicate();
-        $reply->content = $request->reply;
+        $reply = new Comment();
+        $reply->user_id = auth()->id(); // Lấy ID của admin (hoặc người dùng hiện tại)
+        $reply->product_id = $comment->product_id; // Gắn cùng sản phẩm
+        $reply->order_item_id = $comment->order_item_id; // Gắn cùng order item nếu cần
+        $reply->content = $request->reply; // Nội dung trả lời
+        $reply->star = null; // Không gắn số sao cho trả lời
+        $reply->parent_id = $comment->id; // Gắn ID của bình luận được trả lời
         $reply->save();
 
         return response()->json(['message' => 'Reply added successfully.', 'reply' => $reply], 201);

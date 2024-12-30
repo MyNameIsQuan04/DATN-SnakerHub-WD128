@@ -105,14 +105,6 @@ const Header = () => {
             </ul>
           ))}
 
-          <ul>
-            <li className="relative group">
-              <a href="#" className="hover:text-gray-900">
-                Khuyến mãi
-              </a>
-              <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-            </li>
-          </ul>
           {/* Sản phẩm mới */}
           <ul>
             <li className="relative group">
@@ -125,16 +117,7 @@ const Header = () => {
             </li>
           </ul>
           {/* Sản phẩm bán chạy */}
-          <ul>
-            <li className="relative group">
-              <a href="#" className="hover:text-gray-900">
-                Về chúng tôi
-              </a>
-              <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-            </li>
-          </ul>
         </nav>
-
         {/* Search and Icons Section (Right) */}
         <div className="flex items-center space-x-4">
           {/* Search Bar */}

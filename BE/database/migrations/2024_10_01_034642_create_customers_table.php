@@ -20,6 +20,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone_number');
             $table->text('address');
+            $table->string('province');
+            $table->string('district');
+            $table->string('town');
             $table->timestamps();
         });
     }

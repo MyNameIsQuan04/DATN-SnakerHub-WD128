@@ -67,7 +67,8 @@ Route::get('client/categories', [ClientCategoryControlller::class, 'index']);
 Route::get('dashboard/daily', [DashboardController::class, 'daily']);
 Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
 Route::get('dashboard', [DashboardController::class, 'index']);
-
+Route::get('client/customers', [CustomerController::class, 'index']);
+Route::get('client/customers/{customer}', [CustomerController::class, 'show']);
 // Route::get('dashboard/daily', [DashboardController::class, 'daily'])->middleware('auth:api')->middleware('type:admin');
 // Route::get('dashboard/monthly', [DashboardController::class, 'monthly'])->middleware('auth:api')->middleware('type:admin');
 // Route::get('dashboard', [DashboardController::class, 'index'])->middleware('auth:api')->middleware('type:admin');
@@ -173,7 +174,7 @@ Route::prefix('client')->group(function () {
 });
 
 Route::prefix('comments')->group(function () {
-    Route::get('/', [CommentController::class, 'index']); 
-    Route::post('/{id}/reply', [CommentController::class, 'reply']); 
-    Route::delete('/{id}', [CommentController::class, 'destroy']); 
+    Route::get('/', [CommentController::class, 'index']);
+    Route::post('/{id}/reply', [CommentController::class, 'reply']);
+    Route::delete('/{id}', [CommentController::class, 'destroy']);
 });

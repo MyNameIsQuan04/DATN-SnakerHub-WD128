@@ -120,12 +120,9 @@ const LayoutAdmin = () => {
                     <span>Hi,</span>
                     <span className="">
                       {user?.role_id === 1 && (
-                        <div className="flex gap-2 items-center">
-                          <p className="font-semibold">Quản trị</p>
-                          <p className="font-semibold text-green-400">
-                            {user?.name}
-                          </p>
-                        </div>
+                        <p className="font-semibold text-red-500">
+                          Quản trị {user?.name}
+                        </p>
                       )}
                       {user?.role_id === 2 && (
                         <p className="font-semibold text-emerald-500">
@@ -134,8 +131,13 @@ const LayoutAdmin = () => {
                       )}
                     </span>
                   </div>
+
                   <button
-                    className="mt-2 px-6 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                    className={`mt-2 px-6 py-2 rounded-lg text-white transition duration-200 ease-in-out focus:outline-none focus:ring-2 ${
+                      user?.role_id === 1
+                        ? "bg-red-500 hover:bg-red-600 focus:ring-red-400"
+                        : "bg-emerald-500 hover:bg-emerald-600 focus:ring-emerald-400"
+                    }`}
                     onClick={logout}
                   >
                     Logout
