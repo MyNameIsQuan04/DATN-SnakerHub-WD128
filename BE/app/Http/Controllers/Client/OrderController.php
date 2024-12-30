@@ -79,7 +79,10 @@ class OrderController extends Controller
                     'user_id' => $userId,
                     'name' => $validatedData['name'],
                     'phone_number' => $validatedData['phone'],
-                    'address' => $address,
+                    'address' => $validatedData['address'],
+                    'province' => $validatedData['province'],
+                    'district' => $validatedData['district'],
+                    'town' => $validatedData['town'],
                 ]);
             }
 
@@ -301,7 +304,10 @@ class OrderController extends Controller
                     'user_id' => $userId,
                     'name' => $validatedData['name'],
                     'phone_number' => $validatedData['phone'],
-                    'address' => $address,
+                    'address' => $validatedData['address'],
+                    'province' => $validatedData['province'],
+                    'district' => $validatedData['district'],
+                    'town' => $validatedData['town'],
                 ]);
             }
 

@@ -35,7 +35,6 @@ class VoucherController extends Controller
             'start_date' => Carbon::parse($request->start_date),
             'expiration_date' => Carbon::parse($request->expiration_date),
             'usage_limit' => $request->usage_limit,
-            'start_date' => Carbon::parse($request->start_date),
         ]);
 
         return response()->json(['message' => 'Voucher created successfully', 'voucher' => $voucher], 201);
@@ -62,7 +61,6 @@ class VoucherController extends Controller
             'start_date' => Carbon::parse($request->start_date),
             'expiration_date' => Carbon::parse($request->expiration_date),
             'usage_limit' => $request->usage_limit,
-            'start_date' => Carbon::parse($request->start_date),
         ]);
 
         return response()->json(['message' => 'Voucher updated successfully', 'voucher' => $voucher]);
