@@ -16,6 +16,9 @@ class Customer extends Model
         'name',
         'phone_number',
         'address',
+        'province',
+        'district',
+        'town',
     ];
 
     public function order(){
