@@ -51,13 +51,59 @@ const Checkout = () => {
   const name = watch("name");
   const address = watch("address");
   const phone = watch("phone");
-  const handleSelectAddress = (address: any) => {
+  const handleSelectAddress = async (address: any) => {
     setIdCustomer(address.id);
     setValue("name", address.name);
     setValue("phone", address.phone_number);
     setValue("address", address.address);
+
+    const province = provinces.find((p) => p.name === address.province);
+    if (province) {
+      setSelectedProvince(province);
+      setShippingFee(province.name === "Thành phố Hà Nội" ? 30000 : 40000);
+    }
+
+    const fetchDistrict = async () => {
+      if (province) {
+        try {
+          const response = await axios.get(
+            `https://provinces.open-api.vn/api/p/${province.code}?depth=2`
+          );
+          return response.data.districts.find(
+            (d: any) => d.name === address.district
+          );
+        } catch (error) {
+          console.error("Error fetching districts:", error);
+        }
+      }
+    };
+
+    const fetchWard = async () => {
+      const district = await fetchDistrict();
+      if (district) {
+        try {
+          const response = await axios.get(
+            `https://provinces.open-api.vn/api/d/${district.code}?depth=2`
+          );
+          return response.data.wards.find((w: any) => w.name === address.town);
+        } catch (error) {
+          console.error("Error fetching wards:", error);
+        }
+      }
+    };
+
+    const [district, ward] = await Promise.all([fetchDistrict(), fetchWard()]);
+
+    if (district) {
+      setSelectedDistrict(district);
+    }
+    if (ward) {
+      setSelectedWard(ward);
+    }
+
     setIsModalOpen(false); // Đóng modal sau khi chọn
   };
+
   const fetchCheckoutItems = async () => {
     try {
       const response = await axios.get("http://localhost:8000/api/list", {
@@ -327,7 +373,10 @@ const Checkout = () => {
                           <div>
                             <p className="font-semibold">{item.name}</p>
                             <p className="text-gray-600">{item.phone_number}</p>
-                            <p className="text-gray-600">{item.address}</p>
+                            <p className="text-gray-600">
+                              {item.address},{item.town},{item.district},
+                              {item.province}
+                            </p>
                           </div>
                           <button
                             className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700"
