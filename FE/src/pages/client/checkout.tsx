@@ -37,12 +37,27 @@ const Checkout = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [note, setNote] = useState<string>("");
   const [customers, setCustomers] = useState<any[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [noDataMessage, setNoDataMessage] = useState("");
+  const [idCustomer, setIdCustomer] = useState("");
+
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm();
-
+  const name = watch("name");
+  const address = watch("address");
+  const phone = watch("phone");
+  const handleSelectAddress = (address: any) => {
+    setIdCustomer(address.id);
+    setValue("name", address.name);
+    setValue("phone", address.phone_number);
+    setValue("address", address.address);
+    setIsModalOpen(false); // Đóng modal sau khi chọn
+  };
   const fetchCheckoutItems = async () => {
     try {
       const response = await axios.get("http://localhost:8000/api/list", {
@@ -68,7 +83,12 @@ const Checkout = () => {
   useEffect(() => {
     fetchCheckoutItems();
   }, [selectedItems, token]);
-
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
   // Mã giảm giá
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [totalAfterDiscount, setTotalAfterDiscount] = useState<number>(0);
@@ -86,8 +106,12 @@ const Checkout = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setCustomers(response.data);
-        console.log(response);
+
+        if (response.data && response.data.length > 0) {
+          setCustomers(response.data);
+        } else {
+          setNoDataMessage("Không tìm thấy địa chỉ nào.");
+        }
       } catch (err) {
         console.log("Failed to fetch customers");
       } finally {
@@ -180,7 +204,7 @@ const Checkout = () => {
 
     const orderData = {
       ...data,
-
+      idCustomer: idCustomer,
       province: selectedProvince?.name,
       district: selectedDistrict?.name,
       town: selectedWard?.name,
@@ -278,6 +302,54 @@ const Checkout = () => {
 
           <div className="space-y-4 mt-4 bg-gray-100 p-5  border border-gray-300 rounded-md">
             <h3 className="font-semibold text-lg">Thông tin nhận hàng</h3>
+            <button
+              onClick={openModal}
+              className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+            >
+              Chọn địa chỉ đã nhập
+            </button>
+            {isModalOpen && (
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+                style={{ zIndex: 9999 }}
+              >
+                <div className="bg-white p-6 rounded-md shadow-md w-1/2 relative">
+                  <h2 className="text-xl font-bold mb-4">Danh sách địa chỉ</h2>
+                  {loading && <p>Đang tải...</p>}
+                  {noDataMessage && <p>{noDataMessage}</p>}
+                  {!loading && customers.length > 0 && (
+                    <ul>
+                      {customers.map((item) => (
+                        <li
+                          key={item.id}
+                          className="border-b py-2 flex justify-between items-center"
+                        >
+                          <div>
+                            <p className="font-semibold">{item.name}</p>
+                            <p className="text-gray-600">{item.phone_number}</p>
+                            <p className="text-gray-600">{item.address}</p>
+                          </div>
+                          <button
+                            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700"
+                            onClick={() => handleSelectAddress(item)}
+                          >
+                            Chọn
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {/* Nút đóng modal */}
+                  <button
+                    onClick={closeModal}
+                    className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700"
+                  >
+                    Đóng
+                  </button>
+                </div>
+              </div>
+            )}
             <div className="mt-[20px] flex gap-4">
               {/* Họ tên */}
               <div className="w-full sm:w-1/2">
@@ -516,6 +588,34 @@ const Checkout = () => {
                   className="w-full h-[100px]"
                 ></textarea>
               </div>
+              <div className="mt-[20px]">
+                <p className="text-lg font-semibold mb-2">Địa chỉ nhận hàng</p>
+
+                <div className=" p-4 bg-white rounded-lg ">
+                  <p className="text-gray-600 mb-2">
+                    <span className="font-medium text-gray-800">
+                      Tên người nhận:
+                    </span>{" "}
+                    {name || "Chưa cung cấp"}
+                  </p>
+
+                  <p className="text-gray-600 mb-2">
+                    <span className="font-medium text-gray-800">
+                      Số điện thoại:
+                    </span>{" "}
+                    {phone || "Chưa cung cấp"}
+                  </p>
+
+                  <p className="text-gray-600">
+                    <span className="font-medium text-gray-800">Địa chỉ:</span>{" "}
+                    {address || "Chưa cung cấp"}
+                    {selectedWard?.name ? `, ${selectedWard.name}` : ""}
+                    {selectedDistrict?.name ? `, ${selectedDistrict.name}` : ""}
+                    {selectedProvince?.name ? `, ${selectedProvince.name}` : ""}
+                  </p>
+                </div>
+              </div>
+
               <div className="">
                 <div className="w-full max-w-md mx-auto mt-4">
                   <p className="text-lg font-semibold mb-2">

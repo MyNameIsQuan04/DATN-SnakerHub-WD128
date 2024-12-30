@@ -419,7 +419,7 @@ class OrderController extends Controller
 
             $user = Auth::user();
             SendLinkPayment::dispatch($vnp_Url, $user->email, $user->name);
-            SendNewOrderEmail::dispatch($order);
+            // SendNewOrderEmail::dispatch($order);
 
             return $vnp_Url;
         } catch (\Exception $e) {
