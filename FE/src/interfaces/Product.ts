@@ -6,7 +6,7 @@ import { IUser } from "./User";
 
 // Product Interface
 export interface Product {
-  product(product: any): unknown;
+  product(product: Product): unknown;
   id?: number;
   category: Category;
   category_id: number;
