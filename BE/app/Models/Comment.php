@@ -18,18 +18,20 @@ class Comment extends Model
         'content',
         'star',
     ];
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
-    public function product(){
+    public function product()
+    {
         return $this->belongsTo(Product::class);
     }
-     // Quan hệ để lấy bình luận cha
+    // Quan hệ để lấy bình luận cha
     public function parent()
     {
         return $this->belongsTo(Comment::class, 'parent_id');
     }
-     // Quan hệ để lấy bình luận con
+    // Quan hệ để lấy bình luận con
     public function children()
     {
         return $this->hasMany(Comment::class, 'parent_id');

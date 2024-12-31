@@ -173,7 +173,7 @@ Route::prefix('client')->group(function () {
     Route::get('vouchers/{id}', [ClientVoucherController::class, 'show']);
 });
 
-Route::prefix('comments')->group(function () {
+Route::prefix('comments')->middleware('auth:api')->group(function () {
     Route::get('/', [CommentController::class, 'index']);
     Route::post('/{id}/reply', [CommentController::class, 'reply']);
     Route::delete('/{id}', [CommentController::class, 'destroy']);
