@@ -88,9 +88,9 @@ const AddProducts = () => {
     values.variants.forEach((variant: any, index: number) => {
       if (variant.entry_price >= variant.price) {
         const confirm = window.confirm(
-          `Giá biến thể ${
+          `Biến thể ở vị trí ${
             index + 1
-          } đang nhỏ hơn giá nhập bạn có chắc chắn không`
+          } có giá nhỏ hơn giá nhập. Bạn có chắc chắn không?`
         );
         if (confirm) {
           formData.append(
