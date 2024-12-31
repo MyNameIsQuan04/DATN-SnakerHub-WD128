@@ -7,7 +7,16 @@ import "./VoucherCss.css";
 import { useAuth } from "../../../contexts/AuthContext";
 
 const ListVoucher = () => {
-  const [vouchers, setVouchers] = useState<any[]>([]);
+  interface Voucher {
+    id: number;
+    codeDiscount: string;
+    discount: number;
+    start_date: string;
+    expiration_date: string;
+    usage_limit: number;
+  }
+
+  const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const { user, logout } = useAuth();

@@ -42,6 +42,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+
 Route::apiResource('sizes', SizeApiController::class);
 Route::apiResource('colors', ColorApiController::class);
 Route::apiResource('users', UserApiController::class);
@@ -57,6 +58,7 @@ $crud = [
 ];
 
 foreach ($crud as $key => $controller) {
+
     Route::apiResource($key, $controller);
 }
 

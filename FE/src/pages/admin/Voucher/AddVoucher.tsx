@@ -22,7 +22,7 @@ const AddVoucher: React.FC = () => {
     e.preventDefault();
 
     // Kiểm tra giá trị giảm giá không vượt quá 50%
-    if (type === "percent" && discount > 50) {
+    if (type === "percent" && (discount ?? 0) > 50) {
       toast.error("Giảm giá không được vượt quá 50%");
       return;
     }
@@ -52,8 +52,12 @@ const AddVoucher: React.FC = () => {
 
       toast.success("Tạo voucher mới thành công");
       navigate("/admin/vouchers");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Có lỗi xảy ra");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Có lỗi xảy ra");
+      } else {
+        toast.error("Có lỗi xảy ra");
+      }
     }
   };
 
