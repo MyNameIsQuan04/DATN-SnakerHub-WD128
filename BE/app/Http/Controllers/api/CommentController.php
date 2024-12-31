@@ -81,7 +81,7 @@ class CommentController extends Controller
         $reply = new Comment();
         $reply->user_id = auth()->id(); // Lấy ID của admin (hoặc người dùng hiện tại)
         $reply->product_id = $comment->product_id; // Gắn cùng sản phẩm
-        $reply->order_item_id = $comment->order_item_id; // Gắn cùng order item nếu cần
+        $reply->order__item_id = $comment->order_item_id; // Gắn cùng order item nếu cần
         $reply->content = $request->reply; // Nội dung trả lời
         $reply->star = null; // Không gắn số sao cho trả lời
         $reply->parent_id = $comment->id; // Gắn ID của bình luận được trả lời

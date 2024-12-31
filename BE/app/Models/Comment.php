@@ -17,6 +17,7 @@ class Comment extends Model
         'product_id',
         'content',
         'star',
+        'parent_id',
     ];
     public function user(){
         return $this->belongsTo(User::class);
