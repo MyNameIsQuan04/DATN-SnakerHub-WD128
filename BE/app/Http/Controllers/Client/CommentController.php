@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Client;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Color;
+use App\Models\Product;
 use App\Models\Product_Variant;
 
 class CommentController extends Controller
@@ -16,12 +18,12 @@ class CommentController extends Controller
         $dataRate = $request->validate([
             'order__item_id' => 'required|exists:order__items,id',
             'user_id' => 'required|exists:users,id',
-            'product__variant_id' => 'required|exists:product__variants,id',
-            'star' => 'integer|min:1|max:5',
+            'nameProduct' => 'required|string',
+            'star' => 'required|integer|min:1|max:5',
             'content' => 'nullable|string',
         ]);
 
-        $product_id = Product_Variant::where('id', $dataRate['product__variant_id'])->first()->product_id;
+        $product_id = Product::where('name', $dataRate['nameProduct'])->value('id');
 
         $existingRate = Comment::where('order__item_id', $dataRate['order__item_id'])
             ->where('user_id', $dataRate['user_id'])
