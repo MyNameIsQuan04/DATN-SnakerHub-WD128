@@ -27,7 +27,6 @@ const Home = () => {
       setCategoriesClient(categoriesData);
     })();
   }, []);
-  useEffect(() => {}, []);
   const PrevArrow = (props: any) => {
     const { className, onClick } = props;
     return (

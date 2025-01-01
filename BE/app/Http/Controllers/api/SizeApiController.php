@@ -5,6 +5,8 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Size;
+use App\Services\HistoryService;
+
 class SizeApiController extends Controller
 {
     /**
@@ -29,6 +31,7 @@ class SizeApiController extends Controller
             'name' => $request->name,
         ]);
 
+        HistoryService::log('sizes', $size->id, 'create', [], $size);
         return response()->json(['message' => 'Size created successfully', 'size' => $size], 201);
     }
 
@@ -53,6 +56,8 @@ class SizeApiController extends Controller
     {
         $size = Size::find($id);
 
+        $oldData = $size;
+
         if (!$size) {
             return response()->json(['message' => 'Size not found'], 404);
         }
@@ -64,6 +69,8 @@ class SizeApiController extends Controller
         $size->update([
             'name' => $request->name,
         ]);
+
+        HistoryService::log('sizes', $size->id, 'update', $oldData, $size);
 
         return response()->json(['message' => 'Size updated successfully', 'size' => $size]);
     }

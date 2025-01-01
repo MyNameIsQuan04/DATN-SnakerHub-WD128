@@ -24,4 +24,14 @@ class Comment extends Model
     public function product(){
         return $this->belongsTo(Product::class);
     }
+     // Quan hệ để lấy bình luận cha
+    public function parent()
+    {
+        return $this->belongsTo(Comment::class, 'parent_id');
+    }
+     // Quan hệ để lấy bình luận con
+    public function children()
+    {
+        return $this->hasMany(Comment::class, 'parent_id');
+    }
 }
