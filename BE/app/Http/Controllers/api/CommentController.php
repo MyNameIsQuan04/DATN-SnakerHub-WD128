@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Validator;
+
 class CommentController extends Controller
 {
     /**
@@ -69,19 +70,19 @@ class CommentController extends Controller
 
         $comment = Comment::findOrFail($id);
 
-         // Check if the comment already has a reply
+        // Check if the comment already has a reply
         $existingReply = Comment::where('parent_id', $comment->id)->first();
         if ($existingReply) {
-             return response()->json([
-                 'message' => 'Bình luận này đã được trả lời'
-             ], 403);
-            }
+            return response()->json([
+                'message' => 'Bình luận này đã được trả lời'
+            ], 403);
+        }
 
-        // Reply logic
+
         $reply = new Comment();
-        $reply->user_id = auth()->id(); // Lấy ID của admin (hoặc người dùng hiện tại)
+        $reply->user_id = auth()->id();
         $reply->product_id = $comment->product_id; // Gắn cùng sản phẩm
-        $reply->order_item_id = $comment->order_item_id; // Gắn cùng order item nếu cần
+        $reply->order__item_id = $comment->order__item_id; // Gắn cùng order item nếu cần
         $reply->content = $request->reply; // Nội dung trả lời
         $reply->star = null; // Không gắn số sao cho trả lời
         $reply->parent_id = $comment->id; // Gắn ID của bình luận được trả lời

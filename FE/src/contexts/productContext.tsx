@@ -51,7 +51,7 @@ const ProductContext = ({ children }: Props) => {
       const product = await addProduct(data);
       setProducts([...products, product]);
       router("/admin/product");
-      // window.location.reload();
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }

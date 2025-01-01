@@ -51,6 +51,7 @@ import OrderDetailHictory from "./pages/admin/order/OrderDetailHictory";
 import { useEffect } from "react";
 import SliderManager from "./components/SliderManager";
 import AdminCommentManagement from "./pages/admin/Comment/AdminCommentManagerment";
+import ListNotification from "./pages/admin/notification/ListNotification";
 
 declare global {
   interface Window {
@@ -164,6 +165,11 @@ function App() {
           }
         >
           <Route path="/admin" index element={<Dashboard />} />
+          <Route
+            path="/admin/notification"
+            index
+            element={<ListNotification />}
+          />
           <Route path="/admin/product" element={<ListProduct />} />
           <Route path="/admin/product-add" element={<AddProducts />} />
           <Route path="/admin/product-edit/:id" element={<EditProduct />} />
