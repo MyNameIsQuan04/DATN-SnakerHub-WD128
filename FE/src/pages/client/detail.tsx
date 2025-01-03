@@ -65,7 +65,7 @@ const Detail = () => {
       return;
     }
   };
-  // Hàm lấy thông tin sản phẩm
+
   const fetchProduct = async (productId: number) => {
     try {
       const response = await axios.get<any>(
@@ -106,7 +106,6 @@ const Detail = () => {
     }
   }, [id]);
 
-  // Chọn màu sắc
   const handleSelectColor = (colorId: number) => {
     setSelectedColor(colorId);
     filterSizesByColor(colorId);
@@ -114,7 +113,6 @@ const Detail = () => {
     setSelectedVariantPrice(null);
   };
 
-  // Chọn kích thước
   const handleSelectSize = (sizeId: number) => {
     setSelectedSize(sizeId);
     if (selectedColor !== null && product) {
@@ -140,7 +138,6 @@ const Detail = () => {
     }
   };
 
-  // Thêm vào giỏ hàng
   const addToCart = async (
     product: Product,
     selectedColor: unknown,
@@ -148,6 +145,10 @@ const Detail = () => {
   ) => {
     if (!token) {
       toast.error("Hãy đăng nhập để sử dụng chức năng!");
+    }
+    if (stock <= 0) {
+      toast.error("Sản phẩm đã hết hàng");
+      return;
     }
     if (!selectedColor || !selectedSize) {
       alert("Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!");
@@ -186,7 +187,6 @@ const Detail = () => {
     }
   };
 
-  // đánh giá
   useEffect(() => {
     const fetchRatings = async (productID: string) => {
       try {
@@ -262,12 +262,10 @@ const Detail = () => {
     (variant) =>
       variant.color_id === selectedColor && variant.size_id === selectedSize
   );
-
+  const isSelectedVariantOutOfStock = selectedVariant
+    ? selectedVariant.stock === 0
+    : false;
   const stock = selectedVariant ? selectedVariant.stock : 0;
-  const isOutOfStock = product.product_variants.every(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (variant: any) => variant.stock === 0
-  );
 
   return (
     <div className="mt-[100px]">
@@ -415,10 +413,10 @@ const Detail = () => {
             </p>
             <p className="mt-[20px] gap-[15px] cursor-pointer flex text-black text-sm font-semibold uppercase">
               Số lượng còn lại:
-              {stock > 0 ? stock : " ..."}
+              {stock > 0 ? stock : "..."}
             </p>
 
-            {isOutOfStock && (
+            {isSelectedVariantOutOfStock && (
               <p className="mt-4 text-red-500 text-sm font-semibold">
                 Sản phẩm hiện đã hết hàng.
               </p>
@@ -503,10 +501,10 @@ const Detail = () => {
 
             <div className="flex gap-4 mt-5">
               <button
-                disabled={isOutOfStock}
+                disabled={isSelectedVariantOutOfStock}
                 onClick={() => addToCart(product, selectedColor, selectedSize)}
                 className={`border border-orange-500 text-orange-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out transform ${
-                  isOutOfStock
+                  isSelectedVariantOutOfStock
                     ? "cursor-not-allowed text-black border-orange-500"
                     : ""
                 }`}

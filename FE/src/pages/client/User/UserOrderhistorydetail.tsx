@@ -805,7 +805,9 @@ const UserOrderhistorydetail = () => {
                   <div className="flex gap-2 mb-2 items-center mb-4">
                     <h1 className="font-medium">Phương thức thanh toán:</h1>
                     <h1 className="text-orange-400 font-semibold">
-                      {orderDetail.paymentMethod}
+                      {orderDetail.paymentMethod === "COD" && (
+                        <div className="">Thanh toán khi nhận hàng</div>
+                      )}
                     </h1>
                     {/* Hiển thị logo VNPAY nếu phương thức thanh toán là VNPAY */}
                     {orderDetail.paymentMethod === "VNPAY" && (

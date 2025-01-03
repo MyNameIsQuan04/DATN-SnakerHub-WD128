@@ -92,7 +92,7 @@ const Cart = () => {
     if (isNaN(newQuantity) || newQuantity <= 0) {
       setErrorMessages((prev) => ({
         ...prev,
-        [index]: "Số lượng phải là số nguyên dương.",
+        [index]: "Số lượng phải lớn hơn 1.",
       }));
       return;
     }

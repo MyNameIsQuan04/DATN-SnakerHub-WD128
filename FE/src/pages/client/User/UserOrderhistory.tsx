@@ -346,7 +346,7 @@ const UserOrderHistory = () => {
                           {order.status_payment}
                         </span>
                       )}
-                      {order.paymentMethod === "COD" ? (
+                      {/* {order.paymentMethod === "COD" ? (
                         <span className="text-orange-400">
                           {order.paymentMethod}
                         </span>
@@ -356,7 +356,7 @@ const UserOrderHistory = () => {
                           alt="VNPAY"
                           className="w-8 h-8 ml-2"
                         />
-                      )}
+                      )} */}
                     </div>
                   </div>
                   <div className="mr-9 flex flex-col">
@@ -529,7 +529,7 @@ const UserOrderHistory = () => {
                               <div className="flex gap-[10px]">
                                 <img
                                   src={
-                                    selectedItem.product_variant?.image ||
+                                    selectedItem.image ||
                                     "https://via.placeholder.com/150"
                                   }
                                   alt="Product"
@@ -689,12 +689,12 @@ const UserOrderHistory = () => {
                 <div className="flex justify-end">
                   {order.paymentMethod === "VNPAY" &&
                     order.status_payment === "Chưa thanh toán" &&
-                    order.paymentURL && ( // Kiểm tra paymentURL có giá trị
+                    order.paymentURL && (
                       <div className="flex justify-end">
                         <a
-                          href={order.paymentURL} // Gắn link vào nút
-                          target="_blank" // Mở liên kết trong tab mới
-                          rel="noopener noreferrer" // Bảo mật liên kết
+                          href={order.paymentURL}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="px-4 py-2 bg-blue-500 text-white rounded-lg transition-all duration-200 ease-in-out 
                                     hover:bg-blue-600 hover:scale-105 
                                     active:bg-blue-700 active:scale-95 
