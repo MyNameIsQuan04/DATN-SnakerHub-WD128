@@ -125,12 +125,10 @@ const LayoutAdmin = () => {
                     <span>Hi,</span>
                     <span className="">
                       {user?.role_id === 1 && (
-                        <div className="flex gap-2 items-center">
-                          <p className="font-semibold">Quản trị</p>
-                          <p className="font-semibold text-green-400">
-                            {user?.name}
-                          </p>
-                        </div>
+
+                        <p className="font-semibold text-red-500">
+                          Quản trị {user?.name}
+                        </p>
                       )}
                       {user?.role_id === 2 && (
                         <p className="font-semibold text-emerald-500">
