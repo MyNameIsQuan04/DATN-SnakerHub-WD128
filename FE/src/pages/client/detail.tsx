@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import { MdOutlineLocalShipping } from "react-icons/md";
 import { FaPhoneVolume } from "react-icons/fa6";
 import { TbTruckReturn } from "react-icons/tb";
-import { GrAnnounce } from "react-icons/gr";
 import { AiOutlineBank } from "react-icons/ai";
 import { Product, Rate } from "../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { GrNext } from "react-icons/gr";
-import { useAuth } from "../../contexts/AuthContext";
 
 const Detail = () => {
-  const { user, logout } = useAuth();
   const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
 
   const openSizeGuideModal = () => setIsSizeGuideModalOpen(true);
@@ -566,7 +562,7 @@ const Detail = () => {
 
         <div className="px-[80px] py-[10px]">
           {activeTab === 0 && (
-            <div className="">
+            <div>
               <div className="flex gap-[5px]">
                 <p className="text-[15px] font-bold">Tên sản phẩm:</p>
                 <p className="text-[15px]">{product.name}</p>

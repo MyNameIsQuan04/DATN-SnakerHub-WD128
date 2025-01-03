@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class CommentController extends Controller
 {
@@ -24,30 +25,6 @@ class CommentController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
@@ -58,6 +35,9 @@ class CommentController extends Controller
         return response()->json(['message' => 'Comment deleted successfully.'], 200);
     }
 
+    /**
+     * Reply to a comment.
+     */
     public function reply(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -70,24 +50,46 @@ class CommentController extends Controller
 
         $comment = Comment::findOrFail($id);
 
-        // Check if the comment already has a reply
-        $existingReply = Comment::where('parent_id', $comment->id)->first();
+        // Check if the comment already has a reply from admin
+        $existingReply = Comment::where('parent_id', $comment->id)
+            ->where('is_admin_reply', true)
+            ->first();
+
         if ($existingReply) {
             return response()->json([
-                'message' => 'Bình luận này đã được trả lời'
+                'message' => 'Bình luận này đã được trả lời bởi admin.'
             ], 403);
         }
 
+        DB::beginTransaction();
 
-        $reply = new Comment();
-        $reply->user_id = auth()->id();
-        $reply->product_id = $comment->product_id; // Gắn cùng sản phẩm
-        $reply->order__item_id = $comment->order__item_id; // Gắn cùng order item nếu cần
-        $reply->content = $request->reply; // Nội dung trả lời
-        $reply->star = null; // Không gắn số sao cho trả lời
-        $reply->parent_id = $comment->id; // Gắn ID của bình luận được trả lời
-        $reply->save();
+        try {
+            $reply = new Comment();
+            $reply->user_id = auth()->id();
+            $reply->product_id = $comment->product_id;
+            $reply->order__item_id = $comment->order__item_id;
+            $reply->content = $request->reply;
+            $reply->star = 0; // Không tính số sao
+            $reply->parent_id = $comment->id;
+            $reply->is_admin_reply = true; // Đánh dấu là phản hồi của admin
+            $reply->save();
 
-        return response()->json(['message' => 'Reply added successfully.', 'reply' => $reply], 201);
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Reply added successfully.',
+                'reply' => [
+                    'id' => $reply->id,
+                    'content' => $reply->content,
+                    'created_at' => $reply->created_at,
+                ],
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'An error occurred.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
