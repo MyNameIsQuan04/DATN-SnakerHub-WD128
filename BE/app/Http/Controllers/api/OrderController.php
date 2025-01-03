@@ -101,7 +101,7 @@ class OrderController extends Controller
                     $order->update($request->only('status'));
                 }
 
-                $order->load('customer.user', 'orderItems.productVariant.product');
+                $order->load('customer.user', 'orderItems');
 
                 // Đẩy job vào hàng đợi thay vì gửi email trực tiếp
                 SendOrderStatusEmail::dispatch($order, $newStatus);
