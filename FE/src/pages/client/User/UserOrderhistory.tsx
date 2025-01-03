@@ -212,7 +212,9 @@ const UserOrderHistory = () => {
       alert("Hãy nhập sao đánh giá");
       return;
     }
+    const nameProduct = selectedItem?.nameProduct || "Unknown Product";
     const reviewData = {
+      nameProduct,
       order__item_id: orderItemId,
       user_id: userId,
       product__variant_id: product_variant_Id,

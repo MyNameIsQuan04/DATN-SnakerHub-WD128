@@ -1,10 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { DeleteOutlined, CommentOutlined } from "@ant-design/icons";
 import "tailwindcss/tailwind.css";
-import { message, Button, Table, Modal, Input } from "antd";
+import { message, Button, Table, Modal } from "antd";
 import axios from "axios";
 import moment from "moment";
 import { Editor } from "@tinymce/tinymce-react";
+
+// Cấu hình interceptor cho Axios
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 interface Comment {
   id: number;
@@ -17,6 +31,7 @@ interface Comment {
   content: string;
   star: number;
   created_at: string;
+  is_admin_reply?: boolean;
 }
 
 const AdminCommentManagement: React.FC = () => {
@@ -54,18 +69,24 @@ const AdminCommentManagement: React.FC = () => {
   const handleReply = async () => {
     if (!selectedComment) return;
     try {
-      await axios.post(
+      const response = await axios.post(
         `http://localhost:8000/api/comments/${selectedComment.id}/reply`,
         {
           reply: replyContent,
         }
       );
-      message.success("Trả lời thành công.");
+      message.success(response.data.message || "Trả lời thành công.");
       setReplyContent("");
       setSelectedComment(null);
       fetchComments();
-    } catch (error) {
-      message.error("Trả lời thất bại.");
+    } catch (error: any) {
+      if (error.response?.status === 403) {
+        message.error(
+          error.response.data.message || "Bình luận này đã được trả lời."
+        );
+      } else {
+        message.error("Trả lời thất bại.");
+      }
     }
   };
 
@@ -109,6 +130,7 @@ const AdminCommentManagement: React.FC = () => {
             type="primary"
             icon={<CommentOutlined />}
             onClick={() => setSelectedComment(record)}
+            disabled={record.is_admin_reply}
           >
             Trả lời
           </Button>
@@ -145,7 +167,7 @@ const AdminCommentManagement: React.FC = () => {
         cancelText="Cancel"
       >
         <Editor
-          apiKey="ctvzrw02dm8zn8el3zxzixide2kwgyej4cj85e5l2zpybdsx" // Thay bằng API key của bạn từ TinyMCE
+          apiKey="ctvzrw02dm8zn8el3zxzixide2kwgyej4cj85e5l2zpybdsx"
           value={replyContent}
           onEditorChange={(content) => setReplyContent(content)}
           init={{

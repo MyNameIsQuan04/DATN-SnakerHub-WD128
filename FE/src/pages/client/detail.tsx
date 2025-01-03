@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import { MdOutlineLocalShipping } from "react-icons/md";
 import { FaPhoneVolume } from "react-icons/fa6";
 import { TbTruckReturn } from "react-icons/tb";
-import { GrAnnounce } from "react-icons/gr";
 import { AiOutlineBank } from "react-icons/ai";
 import { Product, Rate } from "../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { GrNext } from "react-icons/gr";
-import { useAuth } from "../../contexts/AuthContext";
 
 const Detail = () => {
-  const { user, logout } = useAuth();
   const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
 
   const openSizeGuideModal = () => setIsSizeGuideModalOpen(true);
@@ -568,7 +564,7 @@ const Detail = () => {
 
         <div className="px-[80px] py-[10px]">
           {activeTab === 0 && (
-            <div className="">
+            <div>
               <div className="flex gap-[5px]">
                 <p className="text-[15px] font-bold">Tên sản phẩm:</p>
                 <p className="text-[15px]">{product.name}</p>
@@ -625,49 +621,64 @@ const Detail = () => {
                         </div>
                       </div>
                       <div className="rating-content mb-3">
-                        <div className="flex">
-                          {/* <p>
-                            {rating.product.product_variants.map((item) => (
-                              <div className="">
-                                <div className="">
-                                  Màu sắc: {item.color.name || ""}
-                                </div>
-                                <div className="">
-                                  Kích thước: {item.size.name || ""}
+                        {/* Chỉ hiển thị sao đánh giá nếu không phải bình luận trả lời của admin */}
+                        {!rating.is_admin_reply && (
+                          <div className="rating-stars">
+                            {Array.from({ length: 5 }, (_, index) => (
+                              <span
+                                key={index}
+                                className={`${
+                                  index < rating.star
+                                    ? "star text-yellow-500 w-6 h-6 text-xl filled"
+                                    : "star text-gray-500 w-6 h-6 text-xl filled"
+                                }`}
+                              >
+                                ★
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <div
+                          dangerouslySetInnerHTML={{ __html: rating.content }}
+                        />
+                        {/* Hiển thị phân cấp nếu là trả lời của admin */}
+                        {rating.replies &&
+                          rating.replies.map((reply) => (
+                            <div
+                              key={reply.id}
+                              className="reply-item ml-4 mt-2 p-2 bg-gray-100 rounded-md shadow-sm"
+                            >
+                              <div className="user-info flex items-center gap-3">
+                                <img
+                                  src={reply.user.avatar}
+                                  alt={`${reply.user.name}'s avatar`}
+                                  className="user-avatar w-10 h-10 rounded-full object-cover"
+                                />
+                                <div>
+                                  <strong className="text-blue-600">
+                                    {reply.user.name} (Admin)
+                                  </strong>
+                                  <p className="rating-date text-gray-600">
+                                    {new Date(
+                                      reply.created_at
+                                    ).toLocaleString()}
+                                  </p>
                                 </div>
                               </div>
-                            ))}
-                          </p> */}
-                        </div>
-                        <div className="rating-stars">
-                          {Array.from({ length: 5 }, (_, index) => (
-                            <span
-                              key={index}
-                              className={` ${
-                                index < rating.star
-                                  ? "star text-yellow-500 w-6 h-6 text-xl filled"
-                                  : "star text-gray-500 w-6 h-6 text-xl filled"
-                              }`}
-                            >
-                              ★
-                            </span>
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: reply.content,
+                                }}
+                              />
+                            </div>
                           ))}
-                        </div>
-                        <div
-                          dangerouslySetInnerHTML={{ __html: rating.content }}
-                        />
-                        <p>Nội dung đánh giá: {rating.content}</p>
-                        <div
-                          dangerouslySetInnerHTML={{ __html: rating.content }}
-                        />
-                        {user?.role_id !== 3 && <p>Trả lời</p>}
                       </div>
                       <hr className="mb-3" />
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p>Chưa có đánh giá nào .</p>
+                <p>Chưa có đánh giá nào.</p>
               )}
             </div>
           )}
