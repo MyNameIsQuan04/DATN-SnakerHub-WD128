@@ -1,4 +1,4 @@
-import { product_variants } from "./Product";
+import { Product, product_variants } from "./Product";
 import { IUser } from "./User";
 export interface Order {
   size: string;
@@ -9,6 +9,7 @@ export interface Order {
   total_price: number;
   status: string;
   note: string;
+  reason: string;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
@@ -23,8 +24,9 @@ export interface Order {
   order_items: OrderItem[];
   paymentURL : string
   timestamp: string;
+  product_variant?: Product;
+  notification?: Notification;
 }
-
 export interface Customer {
   user: IUser;
   user_id: number;
@@ -38,9 +40,10 @@ export interface Customer {
 }
 
 export interface OrderItem {
+  productVariantImage: string;
   nameProduct: string;
   order_id: number;
-  product_variant_id: number; // Corrected "product__variant_id"
+  product_variant_id: number; 
   id: number;
   quantity: number;
   created_at: string;

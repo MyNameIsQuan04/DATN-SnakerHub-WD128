@@ -30,6 +30,7 @@
     "react-toastify": "^10.0.6",
     "recharts": "^2.13.3",
     "slick-carousel": "^1.8.1",
+    "socket.io-client": "^4.8.1",
     "swiper": "^9.0.0",
     "tailwind-scrollbar-hide": "^2.0.0",
     "yup": "^1.6.1",

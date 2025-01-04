@@ -29,7 +29,7 @@ const UserOrderhistorydetail = () => {
     return `${formattedDate} ${formattedTime}`;
   };
 
-  // Hàm gọi API để lấy chi tiết đơn hàng
+  
   const fetchOrderDetail = async () => {
     try {
       setLoading(true);
@@ -727,7 +727,7 @@ const UserOrderhistorydetail = () => {
                   >
                     <img
                       src={
-                        item.product_variant?.image ||
+                        item.productVariantImage ||
                         "https://via.placeholder.com/150"
                       }
                       className="w-20 h-20 rounded-md"

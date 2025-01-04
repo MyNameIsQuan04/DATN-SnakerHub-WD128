@@ -38,21 +38,21 @@ const DailyRevenueChart: React.FC = () => {
   const [data, setData] = useState<Daily | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/dashboard/daily")
-      .then((response) => {
-        if (response.data.success) {
-          setData(response.data);
-        } else {
-          throw new Error("Invalid data format received");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching daily revenue:", error);
-        setError("Failed to fetch daily revenue");
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get("http://localhost:8000/api/dashboard/daily")
+  //     .then((response) => {
+  //       if (response.data.success) {
+  //         setData(response.data);
+  //       } else {
+  //         throw new Error("Invalid data format received");
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching daily revenue:", error);
+  //       setError("Failed to fetch daily revenue");
+  //     });
+  // }, []);
 
   if (error) {
     return <div className="text-red-500 font-semibold">{error}</div>;
