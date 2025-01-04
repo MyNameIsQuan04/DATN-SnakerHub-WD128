@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Models\Size;
+use App\Models\Color;
 use App\Models\Order;
+use App\Models\History;
 use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
 use App\Models\Product_Variant;
+use App\Services\HistoryService;
 use App\Jobs\SendOrderStatusEmail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Jobs\SendKhieuNaiOrderEmail;
 use App\Mail\OrderStatusUpdatedMail;
-use App\Models\History;
-use App\Services\HistoryService;
 use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
@@ -25,6 +27,14 @@ class OrderController extends Controller
     {
         $orders = Order::orderByDesc('id')->get();
         $orders->load('customer', 'orderItems');
+        $orders->map(function ($order){
+            $order->orderItems->map(function ($orderItem){
+                $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
+                    ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
+                    ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
+                    ->value('image');
+            });
+        });
         return $orders;
     }
 
@@ -37,6 +47,12 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load('customer.user', 'orderItems');
+        $order->orderItems->map(function ($orderItem) {
+            $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
+                ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
+                ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
+                ->value('image');
+        });
         return $order;
     }
 
@@ -101,13 +117,18 @@ class OrderController extends Controller
                     $order->update($request->only('status'));
                 }
 
-                $order->load('customer.user', 'orderItems.productVariant.product');
+                $order->load('customer.user', 'orderItems');
 
                 // Đẩy job vào hàng đợi thay vì gửi email trực tiếp
                 SendOrderStatusEmail::dispatch($order, $newStatus);
 
                 HistoryService::log('orders', $order->id, 'update', $currentStatus, $newStatus);
-
+                $order->orderItems->map(function ($orderItem) {
+                    $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
+                        ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
+                        ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
+                        ->value('image');
+                });
             });
 
             return response()->json([
