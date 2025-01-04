@@ -239,9 +239,7 @@ const OrderDetailHictory = () => {
                 {item.nameProduct || "Tên sản phẩm không có"}
               </h2>
               <p className="text-gray-700 italic">
-                <strong>Mô tả:</strong>{" "}
-                {item.product_variant?.product?.description ||
-                  "Không có mô tả."}
+                <strong>Mô tả:</strong> {item.description || "Không có mô tả."}
               </p>
               <div className="flex justify-between items-center mt-4">
                 <p>
@@ -249,13 +247,11 @@ const OrderDetailHictory = () => {
                 </p>
                 <p>
                   <strong>Màu sắc:</strong>{" "}
-                  {item.color||
-                    "Không có thông tin màu sắc"}
+                  {item.color || "Không có thông tin màu sắc"}
                 </p>
                 <p>
                   <strong>Kích cỡ:</strong>{" "}
-                  {item.size||
-                    "Không có thông tin kích cỡ"}
+                  {item.size || "Không có thông tin kích cỡ"}
                 </p>
                 <p>
                   <strong>Đơn giá:</strong>{" "}

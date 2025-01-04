@@ -22,7 +22,7 @@ export interface Order {
   paymentMethod: string;
   customer: Customer;
   order_items: OrderItem[];
-  paymentURL : string
+  paymentURL: string;
   timestamp: string;
   product_variant?: Product;
   notification?: Notification;
@@ -40,8 +40,8 @@ export interface Customer {
 }
 
 export interface OrderItem {
-  productVariantImage: string;
   nameProduct: string;
+  productVariantImage: string;
   order_id: number;
   product_variant_id: number; 
   id: number;

@@ -14,12 +14,11 @@ import { RiDiscountPercentFill } from "react-icons/ri";
 import { useAuth } from "../../../contexts/AuthContext";
 import { AiFillSetting } from "react-icons/ai";
 
-
 const LayoutAdmin = () => {
   const { user, logout } = useAuth();
   const location = useLocation(); // Lấy đường dẫn hiện tại
 
-    // Danh sách menu items
+  // Danh sách menu items
   const menuItems = [
     {
       path: "/admin",
@@ -96,7 +95,7 @@ const LayoutAdmin = () => {
                     className={`flex items-center px-4 py-2 rounded-md transition-colors duration-200 
                 ${
                   location.pathname === item.path
-                    ? "bg-white text-black" 
+                    ? "bg-white text-black"
                     : "text-white hover:bg-white hover:text-black"
                 }`}
                   >
@@ -120,9 +119,12 @@ const LayoutAdmin = () => {
                     <span>Hi,</span>
                     <span className="">
                       {user?.role_id === 1 && (
-                        <p className="font-semibold text-red-500">
-                          Quản trị {user?.name}
-                        </p>
+                        <div className="flex gap-2 items-center">
+                          <p className="font-semibold">Quản trị</p>
+                          <p className="font-semibold text-green-400">
+                            {user?.name}
+                          </p>
+                        </div>
                       )}
                       {user?.role_id === 2 && (
                         <p className="font-semibold text-emerald-500">
