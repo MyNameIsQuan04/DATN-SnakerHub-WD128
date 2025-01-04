@@ -17,22 +17,11 @@ class Comment extends Model
         'product_id',
         'content',
         'star',
-        'parent_id',
     ];
     public function user(){
         return $this->belongsTo(User::class);
     }
     public function product(){
         return $this->belongsTo(Product::class);
-    }
-     // Quan hệ để lấy bình luận cha
-    public function parent()
-    {
-        return $this->belongsTo(Comment::class, 'parent_id');
-    }
-     // Quan hệ để lấy bình luận con
-    public function children()
-    {
-        return $this->hasMany(Comment::class, 'parent_id');
     }
 }

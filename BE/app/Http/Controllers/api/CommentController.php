@@ -89,4 +89,19 @@ class CommentController extends Controller
 
         return response()->json(['message' => 'Reply added successfully.', 'reply' => $reply], 201);
     }
+    
+    public function statistics($productId)
+{
+    // Lấy dữ liệu từ bảng comments theo product_id
+    $statistics = Comment::where('product_id', $productId)
+        ->selectRaw('AVG(star) as average_star, COUNT(*) as total_reviews')
+        ->first();
+
+    // Trả về dữ liệu thống kê
+    return response()->json([
+        'product_id' => $productId,
+        'average_star' => round($statistics->average_star, 1), // Làm tròn số sao
+        'total_reviews' => $statistics->total_reviews,
+    ], 200);
+}
 }
