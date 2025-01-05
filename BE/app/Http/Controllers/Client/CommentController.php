@@ -19,7 +19,8 @@ class CommentController extends Controller
             'order__item_id' => 'required|exists:order__items,id',
             'user_id' => 'required|exists:users,id',
             'nameProduct' => 'required|string',
-            'star' => 'required|integer|min:1|max:5',
+
+            'star' => 'integer|min:1|max:5',
             'content' => 'nullable|string',
         ]);
 

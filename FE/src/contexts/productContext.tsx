@@ -17,12 +17,21 @@ export const ProductCT = createContext({} as any);
 const ProductContext = ({ children }: Props) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [productsClient, setProductsClient] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
   const router = useNavigate();
   useEffect(() => {
-    (async () => {
-      const data = await getProducts();
-      setProducts(data);
-    })();
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const data = await getProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
   }, []);
   useEffect(() => {
     (async () => {
@@ -33,6 +42,7 @@ const ProductContext = ({ children }: Props) => {
   const onRemoveProduct = async (id: number | string) => {
     const confirm = window.confirm("Xoa ?");
     if (confirm) {
+      setLoading(true);
       try {
         await removeProduct(id);
         toast.success("Xóa sản phẩm thành công ");
@@ -42,11 +52,14 @@ const ProductContext = ({ children }: Props) => {
         setProducts(newProductsAfterDelete);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     }
   };
 
   const onAddProduct = async (data: Product) => {
+    setLoading(true);
     try {
       const product = await addProduct(data);
       setProducts([...products, product]);
@@ -54,12 +67,14 @@ const ProductContext = ({ children }: Props) => {
       window.location.reload();
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const onUpdateProduct = async (data: Product, id: number) => {
+    setLoading(true);
     try {
-      console.log("o ham update", data);
       const product = await updateProduct(data, id);
       const newProductsAfterUpdate = products.map((pro) =>
         pro.id == id ? product : pro
@@ -69,6 +84,8 @@ const ProductContext = ({ children }: Props) => {
       window.location.reload();
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -83,6 +100,7 @@ const ProductContext = ({ children }: Props) => {
           onRemoveProduct,
           onUpdateProduct,
           products,
+          loading,
         }}
       >
         {children}

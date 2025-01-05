@@ -125,7 +125,6 @@ const LayoutAdmin = () => {
                     <span>Hi,</span>
                     <span className="">
                       {user?.role_id === 1 && (
-
                         <p className="font-semibold text-red-500">
                           Quản trị {user?.name}
                         </p>

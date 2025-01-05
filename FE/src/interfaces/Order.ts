@@ -39,6 +39,7 @@ export interface Customer {
 }
 
 export interface OrderItem {
+  image: string;
   nameProduct: string;
   order_id: number;
   product_variant_id: number; // Corrected "product__variant_id"
