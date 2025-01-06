@@ -9,7 +9,7 @@ import { GrFormNext } from "react-icons/gr";
 import { useAuth } from "../../../contexts/AuthContext";
 
 const ListProduct = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const [expandedProduct, setExpandedProduct] = useState<number | null>(null);
 
@@ -52,25 +52,25 @@ const ListProduct = () => {
       </div>
 
       {/* Tìm kiếm */}
-      <input
+      <div className="flex items-center gap-2 mt-4 mb-6">
+        {user?.role_id === 1 && (
+          <Link
+        to="/admin/product-add"
+        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+          >
+        Thêm Sản Phẩm Mới
+          </Link>
+        )}
+        <div className="relative flex items-center w-full max-w-md">
+          <input
         type="text"
         value={searchQuery}
         onChange={handleSearchChange}
         placeholder="Tìm kiếm sản phẩm"
-        className=" p-2 border rounded"
-      />
-
-      <div className="mb-6 flex items-center gap-5 flex-wrap mt-3">
-        {user?.role_id === 1 && (
-          <div>
-            <Link
-              to="/admin/product-add"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
-            >
-              Thêm Sản Phẩm Mới
-            </Link>
-          </div>
-        )}
+        className="w-full p-2 border rounded-lg pl-10"
+          />
+          <IoMdSearch className="absolute left-3 text-2xl text-gray-500" />
+        </div>
       </div>
 
       {/* Bảng sản phẩm */}

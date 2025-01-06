@@ -3,15 +3,24 @@ import { Link } from "react-router-dom";
 import { CategoryCT } from "../../../contexts/CategoryContext";
 import { Category } from "../../../interfaces/Category";
 import { useAuth } from "../../../contexts/AuthContext";
+import { IoHomeOutline } from "react-icons/io5";
+import { GrFormNext } from "react-icons/gr";
 
 const ListCategory = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { categories, onRemoveCategory } = useContext(CategoryCT);
 
   return (
     <div>
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-semibold mb-6">Quản lý danh mục</h1>
+        <h2 className="font-bold text-[30px]">Quản lý danh mục</h2>
+        <div className="flex items-center gap-2 ml-2 mb-3">
+          <div className="flex gap-1">
+            <IoHomeOutline />
+            <GrFormNext />
+          </div>
+          <h3 className="underline">Danh mục</h3>
+        </div>
         {user?.role_id === 1 && (
           <Link
             to="/admin/category-add"

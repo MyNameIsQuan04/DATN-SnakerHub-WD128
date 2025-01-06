@@ -4,7 +4,7 @@ import { Order, OrderItem } from "../../../interfaces/Order";
 import axios, { isCancel } from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
-import { TiTick } from "react-icons/ti";
+import { TiTick, TiTickOutline } from "react-icons/ti";
 import {
   ArchiveX,
   CalendarArrowUp,
@@ -231,7 +231,11 @@ const UserOrderHistory = () => {
       handleCloseModalRating();
       toast.success("Bạn đã đánh giá thành công");
     } catch (error) {
-      toast.error(error.response.data.message);
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
       handleCloseModalRating();
     }
   };
@@ -608,6 +612,16 @@ const UserOrderHistory = () => {
                   <div className="w-1/2 flex items-center gap-2 ">
                     <div className="bg-green-400 border rounded-full">
                       <FcInTransit className=" w-6 h-6" />
+                    </div>
+                    <h1>
+                      {order.status} {formatDate(order.updated_at)}
+                    </h1>
+                  </div>
+                )}
+                {order.status === "Đã xác nhận" && (
+                  <div className="w-1/2 flex items-center gap-2 ">
+                    <div className="bg-green-400 border rounded-full">
+                      <TiTickOutline  className=" w-6 h-6" />
                     </div>
                     <h1>
                       {order.status} {formatDate(order.updated_at)}

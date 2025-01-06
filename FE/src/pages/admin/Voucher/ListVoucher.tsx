@@ -5,6 +5,8 @@ import "react-toastify/dist/ReactToastify.css"; // Import CSS cho toast
 import { Link } from "react-router-dom";
 import "./VoucherCss.css";
 import { useAuth } from "../../../contexts/AuthContext";
+import { IoHomeOutline } from "react-icons/io5";
+import { GrFormNext } from "react-icons/gr";
 
 const ListVoucher = () => {
   interface Voucher {
@@ -62,9 +64,16 @@ const ListVoucher = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <h2 className="text-3xl font-semibold text-gray-800 mb-4">
-        Danh sách mã giảm giá
-      </h2>
+      <div>
+        <h2 className="font-bold text-[30px]">Quản lý vouchers</h2>
+        <div className="flex items-center gap-2 ml-2">
+          <div className="flex gap-1">
+            <IoHomeOutline />
+            <GrFormNext />
+          </div>
+          <h3 className="underline">Quản lý vouchers</h3>
+        </div>
+      </div>
       {user?.role_id === 1 && (
         <div className="text-left mb-6">
           <Link

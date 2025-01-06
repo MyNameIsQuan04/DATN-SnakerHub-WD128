@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify"; // Import toast
 import "react-toastify/dist/ReactToastify.css"; // Import CSS cho toast
+import { IoHomeOutline } from "react-icons/io5";
+import { GrFormNext } from "react-icons/gr";
 
 const EditVoucher: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Lấy ID từ URL
@@ -102,7 +104,14 @@ const EditVoucher: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4">Chỉnh sửa Voucher</h2>
+      <h2 className="font-bold text-[30px]">Chỉnh sửa vouchers</h2>
+      <div className="flex items-center gap-2 ml-2 mb-4">
+        <div className="flex gap-1">
+          <IoHomeOutline />
+          <GrFormNext />
+        </div>
+        <h3 className="underline">Chỉnh sửa vouchers</h3>
+      </div>
       {error && <p className="text-red-500">{error}</p>}
 
       {/* Form nhập thông tin voucher */}
@@ -174,9 +183,16 @@ const EditVoucher: React.FC = () => {
             min={1}
           />
         </div>
-        <button type="submit" className="bg-green-500 text-white p-2 rounded">
-          Cập nhật Voucher
-        </button>
+        <div className="flex gap-3">
+          <button type="submit" className="bg-green-500 text-white p-2 rounded">
+            Sửa voucher
+          </button>
+          <Link to="/admin/vouchers">
+            <button type="submit" className="bg-red-500 text-white p-2 rounded">
+              Quay lại
+            </button>
+          </Link>
+        </div>
       </form>
 
       {/* Toast container */}

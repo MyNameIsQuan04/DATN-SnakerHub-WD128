@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { number } from "yup";
+import { IoHomeOutline } from "react-icons/io5";
+import { GrFormNext } from "react-icons/gr";
 
 const AddVoucher: React.FC = () => {
   const [codeDiscount, setCodeDiscount] = useState<string>("");
@@ -63,7 +65,14 @@ const AddVoucher: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4">Thêm Voucher</h2>
+      <h2 className="font-bold text-[30px]">Tạo mới vouchers</h2>
+      <div className="flex items-center gap-2 ml-2 mb-4">
+        <div className="flex gap-1">
+          <IoHomeOutline />
+          <GrFormNext />
+        </div>
+        <h3 className="underline">Tạo mới vouchers</h3>
+      </div>
 
       {/* Form nhập thông tin voucher */}
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -135,9 +144,16 @@ const AddVoucher: React.FC = () => {
             min={1}
           />
         </div>
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-          Thêm Voucher
-        </button>
+        <div className="flex gap-3">
+          <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+            Thêm Voucher
+          </button>
+          <Link to="/admin/vouchers">
+            <button type="submit" className="bg-red-500 text-white p-2 rounded">
+              Quay lại
+            </button>
+          </Link>
+        </div>
       </form>
 
       {/* Toast container */}

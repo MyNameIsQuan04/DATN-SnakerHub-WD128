@@ -3,16 +3,25 @@ import { Link } from "react-router-dom";
 import { ColorCT } from "../../../contexts/ColorContext";
 import { Color } from "../../../interfaces/Color";
 import { useAuth } from "../../../contexts/AuthContext";
+import { IoHomeOutline } from "react-icons/io5";
+import { GrFormNext } from "react-icons/gr";
 
 const ListColor = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const { colors, onRemoveColor } = useContext(ColorCT);
   console.log(colors);
   return (
     <div>
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-semibold mb-6">Quản lý màu sắc</h1>
+        <h2 className="font-bold text-[30px]">Quản lý màu sắc</h2>
+        <div className="flex items-center gap-2 ml-2 mb-3">
+          <div className="flex gap-1">
+            <IoHomeOutline />
+            <GrFormNext />
+          </div>
+          <h3 className="underline">Danh mục màu sắc</h3>
+        </div>
         {user?.role_id === 1 && (
           <Link
             to="/admin/color-add"
