@@ -8,34 +8,52 @@ import { Order } from "../../../interfaces/Order";
 import { Link } from "react-router-dom";
 
 const token = localStorage.getItem("access_token");
-const API_ORDER = "http://localhost:8000/api/orders";
 
 const ListNotification = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newestNotificationId, setNewestNotificationId] = useState<number | null>(null);
+  const [newestNotificationId, setNewestNotificationId] = useState<
+    number | null
+  >(null);
 
   const fetchNotifications = async () => {
     try {
-      const { data: orders } = await axios.get(API_ORDER, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
+      const { data: orders } = await axios.get(
+        `http://localhost:8000/api/orders`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
       const mergedData: Notification[] = orders.map((item: Order) => ({
         ...item,
         type: "Đơn hàng",
       }));
-
-      mergedData.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
+  
+      // Sắp xếp dựa trên thời gian mới nhất (created_at hoặc updated_at)
+      mergedData.sort((a, b) => {
+        const dateA = Math.max(
+          new Date(a.created_at).getTime(),
+          new Date(a.updated_at).getTime()
+        );
+        const dateB = Math.max(
+          new Date(b.created_at).getTime(),
+          new Date(b.updated_at).getTime()
+        );
+        return dateB - dateA;
+      });
+  
       setNotifications(mergedData);
-      setNewestNotificationId(mergedData.length > 0 ? Number(mergedData[0].id) : null);
+      setNewestNotificationId(
+        mergedData.length > 0 ? Number(mergedData[0].id) : null
+      );
       setLoading(false);
     } catch (error) {
       console.error("Lỗi khi tải thông báo:", error);
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchNotifications();
@@ -82,19 +100,18 @@ const ListNotification = () => {
               style={{ borderColor: getStatusColor(notification.status) }}
             >
               {newestNotificationId === Number(notification.id) && (
-                <span className="absolute top-2 left-2 px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-full">NEW</span>
+                <span className="absolute top-2 left-2 px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-full">
+                  MỚI
+                </span>
               )}
               <div className="flex items-start">
                 <img
                   src={
-                    notification.product_variant?.thumbnail
-                      ? notification.product_variant.thumbnail
-                      : (notification.product_variant?.galleries?.length ?? 0) > 0
-                      ? notification.product_variant?.galleries?.[0]?.url
+                    notification.order_items[0]?.productVariantImage
+                      ? notification.order_items[0].productVariantImage
                       : "https://via.placeholder.com/150"
                   }
-                  alt={notification.product?.name || "Ảnh sản phẩm"}
-                  className="w-20 h-20 object-cover rounded-lg border border-gray-200 mr-4"
+                  className="w-28 h-28 object-cover rounded-lg border border-gray-200 mr-4"
                 />
                 <div className="flex flex-col">
                   <h2 className="text-lg font-semibold text-gray-800">
@@ -104,19 +121,42 @@ const ListNotification = () => {
                       ? `Yêu cầu trả hàng`
                       : notification.status === "Đã hủy"
                       ? `Đơn hàng được hủy từ người dùng`
-                      : "Đơn hàng"}
+                      : "Đơn hàng được đặt từ người dùng"}
                   </h2>
                   <p className="text-sm text-gray-700 mt-2">
                     {notification.status === "Chờ xử lý"
-                      ? `Đơn hàng ${notification.order_code} được đặt từ người dùng ${notification.customer?.name || "không xác định"}`
+                      ? `Đơn hàng ${
+                          notification.order_code
+                        } được đặt từ người dùng ${
+                          notification.customer?.name || "không xác định"
+                        }`
                       : notification.status === "Yêu cầu trả hàng"
-                      ? `Yêu cầu trả hàng từ đơn hàng ${notification.order_code}`
+                      ? `Yêu cầu trả hàng đơn hàng ${
+                          notification.order_code
+                        } từ người dùng ${
+                          notification.customer?.name || "không xác định"
+                        }`
                       : notification.status === "Đã hủy"
-                      ? `Đơn hàng ${notification.order_code} được hủy từ người dùng ${notification.customer?.name || "không xác định"}`
-                      : "Đơn hàng"}
+                      ? `Đơn hàng ${
+                          notification.order_code
+                        } được hủy từ người dùng ${
+                          notification.customer?.name || "không xác định"
+                        }`
+                      : `Đơn hàng ${
+                          notification.order_code
+                        } được hủy từ người dùng ${
+                          notification.customer?.name || "không xác định"
+                        }`}
                   </p>
                   <p className="text-sm text-gray-700 mt-1">
-                    <span className="font-medium">Ghi chú:</span> {notification.note || "Không có ghi chú"}
+                    {notification.status === "Yêu cầu trả hàng" ? (
+                      <span className="font-semibold">lý do: </span>
+                    ) : (
+                      <span className="font-semibold">Ghi chú: </span>
+                    )}
+                    {notification.status === "Yêu cầu trả hàng"
+                      ? notification.reason || "Không có lý do trả hàng"
+                      : notification.note || "Không có ghi chú"}
                   </p>
                 </div>
               </div>
@@ -127,10 +167,15 @@ const ListNotification = () => {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
                   }).format(new Date(notification.created_at))}
                 </p>
                 <div className="mt-4">
-                  <Link to={`/admin/order-detail/${notification.id}`} onClick={() => handleViewDetail(notification.id)}>
+                  <Link
+                    to={`/admin/order-detail/${notification.id}`}
+                    onClick={() => handleViewDetail(notification.id)}
+                  >
                     <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200">
                       Xem chi tiết
                     </button>
@@ -148,9 +193,9 @@ const ListNotification = () => {
 function getStatusColor(status: Order["status"]) {
   switch (status) {
     case "Chờ xử lý":
-      return "#3b82f6"; 
+      return "#3b82f6";
     case "Yêu cầu trả hàng":
-      return "#f59e0b"; 
+      return "#f59e0b";
     case "Đã hủy":
       return "#ef4444";
     default:

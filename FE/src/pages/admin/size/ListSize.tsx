@@ -3,15 +3,24 @@ import { Link } from "react-router-dom";
 import { SizeCT } from "../../../contexts/SizeContext";
 import { Size } from "../../../interfaces/Size";
 import { useAuth } from "../../../contexts/AuthContext";
+import { IoHomeOutline } from "react-icons/io5";
+import { GrFormNext } from "react-icons/gr";
 
 const ListSize = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const { sizes, onRemoveSize } = useContext(SizeCT);
   return (
     <div>
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-semibold mb-6">Quản lý kích cỡ</h1>
+        <h2 className="font-bold text-[30px]">Quản lý kích thước</h2>
+        <div className="flex items-center gap-2 ml-2 mb-4">
+          <div className="flex gap-1">
+            <IoHomeOutline />
+            <GrFormNext />
+          </div>
+          <h3 className="underline">Danh mục kích thước</h3>
+        </div>
         {user?.role_id === 1 && (
           <Link
             to="/admin/size-add"

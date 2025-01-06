@@ -29,7 +29,7 @@ const UserOrderhistorydetail = () => {
     return `${formattedDate} ${formattedTime}`;
   };
 
-  // Hàm gọi API để lấy chi tiết đơn hàng
+  
   const fetchOrderDetail = async () => {
     try {
       setLoading(true);

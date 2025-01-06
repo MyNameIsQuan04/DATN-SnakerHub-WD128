@@ -79,21 +79,21 @@ const MonthlyRevenueChart: React.FC = () => {
     );
   }
 
-  useEffect(() => {
-    axios
-      .post("http://127.0.0.1:8000/api/dashboard/monthly")
-      .then((response) => {
-        if (response.data.success && response.data.monthlyRevenue) {
-          setData(response.data);
-        } else {
-          throw new Error("Invalid data format received");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching monthly revenue:", error);
-        setError("Failed to fetch monthly revenue");
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get("http://127.0.0.1:8000/api/dashboard")
+  //     .then((response) => {
+  //       if (response.data.success && response.data.monthlyRevenue) {
+  //         setData(response.data);
+  //       } else {
+  //         throw new Error("Invalid data format received");
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching monthly revenue:", error);
+  //       setError("Failed to fetch monthly revenue");
+  //     });
+  // }, []);
 
   if (error) {
     return <div className="text-red-500 font-semibold">{error}</div>;

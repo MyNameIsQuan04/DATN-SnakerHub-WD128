@@ -4,7 +4,7 @@ import { Order, OrderItem } from "../../../interfaces/Order";
 import axios, { isCancel } from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
-import { TiTick } from "react-icons/ti";
+import { TiTick, TiTickOutline } from "react-icons/ti";
 import {
   ArchiveX,
   CalendarArrowUp,
@@ -13,6 +13,7 @@ import {
   PackageCheck,
 } from "lucide-react";
 import { FcInTransit } from "react-icons/fc";
+import { FaSpinner } from "react-icons/fa6";
 
 const formatCurrency = (amount: number) => {
   if (amount === undefined || amount === null) {
@@ -79,32 +80,28 @@ const UserOrderHistory = () => {
 
     return `${day}/${month}/${year}`;
   };
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await axios.get(
-          "http://localhost:8000/api/client/orders",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setOrders(response.data);
-        console.log(response.data);
-        localStorage.setItem("orders", JSON.stringify(response.data));
-      } catch (error) {
-        setError("Lỗi khi tải trạng thái đơn hàng.");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrders();
-  }, [token]);
+  const fetchOrders = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/client/orders",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setOrders(response.data);
+      console.log(response.data);
+      localStorage.setItem("orders", JSON.stringify(response.data));
+    } catch (error) {
+      setError("Lỗi khi tải trạng thái đơn hàng.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCancelOrder = async (idOrder: number) => {
     const confirm = window.confirm("Bạn có muốn hủy đơn hàng này không");
@@ -175,7 +172,7 @@ const UserOrderHistory = () => {
       } else {
         await axios.put(
           `http://localhost:8000/api/client/return-order/${idOrder}`,
-          { note: selectedReason, status: "Yêu cầu trả hàng" },
+          { reason: selectedReason, status: "Yêu cầu trả hàng" },
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -234,10 +231,20 @@ const UserOrderHistory = () => {
       handleCloseModalRating();
       toast.success("Bạn đã đánh giá thành công");
     } catch (error) {
-      toast.error(error.response.data.message);
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
       handleCloseModalRating();
     }
   };
+
+  useEffect(() => {
+    fetchOrders();
+    // const interval = setInterval(fetchOrderDetail, 5000);
+    // return () => clearInterval(interval);
+  }, [token]);
 
   const statusMapping = {
     "Xử lý yêu cầu trả hàng": "Đang xử lý trả hàng", // Ánh xạ trạng thái
@@ -301,18 +308,11 @@ const UserOrderHistory = () => {
         </div>
 
         {loading && (
-          <div className="text-center text-xl text-blue-500">
-            <button
-              type="button"
-              className="inline-flex items-center gap-3 rounded-lg bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 px-8 py-4 text-base font-semibold text-white shadow-xl transition-transform duration-300 ease-in-out hover:scale-105 hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 focus:outline-none focus:ring-4 focus:ring-orange-300 focus:ring-opacity-50 disabled:opacity-70"
-              disabled={loading}
-            >
-              <div
-                className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-white border-r-transparent"
-                role="status"
-              />
-              <span>Loading...</span>
-            </button>
+          <div className="flex justify-center items-center h-[60vh]">
+            <FaSpinner className="animate-spin text-4xl text-blue-500" />
+            <span className="ml-2 text-lg font-medium text-gray-600">
+              Đang tải thông báo...
+            </span>
           </div>
         )}
 
@@ -613,6 +613,16 @@ const UserOrderHistory = () => {
                   <div className="w-1/2 flex items-center gap-2 ">
                     <div className="bg-green-400 border rounded-full">
                       <FcInTransit className=" w-6 h-6" />
+                    </div>
+                    <h1>
+                      {order.status} {formatDate(order.updated_at)}
+                    </h1>
+                  </div>
+                )}
+                {order.status === "Đã xác nhận" && (
+                  <div className="w-1/2 flex items-center gap-2 ">
+                    <div className="bg-green-400 border rounded-full">
+                      <TiTickOutline className=" w-6 h-6" />
                     </div>
                     <h1>
                       {order.status} {formatDate(order.updated_at)}

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { Order, OrderItem } from "../../../interfaces/Order";
@@ -177,6 +177,8 @@ const OrderDetailHictory = () => {
 
   useEffect(() => {
     fetchOrderDetail();
+    const interval = setInterval(fetchOrderDetail, 4000);
+    return () => clearInterval(interval);
   }, [id]);
 
   if (loading) {
@@ -228,8 +230,7 @@ const OrderDetailHictory = () => {
           >
             <div className="w-full md:w-1/4 flex justify-center h-60">
               <img
-                src={item.product_variant?.image || ""}
-                alt={item.product_variant?.product?.name || "Sản phẩm"}
+                src={item.productVariantImage || ""}
                 className="object-contain h-full w-full rounded-md"
               />
             </div>
@@ -339,6 +340,10 @@ const OrderDetailHictory = () => {
               <strong>Trạng thái thanh toán: </strong>{" "}
               <span className="text-red-500 ">{order.status_payment}</span>
             </p>
+            <p>
+              <strong>Ghi chú: </strong>{" "}
+              <span className=" ">{order.note}</span>
+            </p>
           </div>
           {order.status === "Yêu cầu trả hàng" && (
             <div className="py-6 px-6 border-b bg-gray-50 w- ">
@@ -347,7 +352,7 @@ const OrderDetailHictory = () => {
                   <h1 className="text-lg font-semibold text-gray-800 mb-2">
                     Yêu cầu trả hàng:
                   </h1>
-                  <h2 className="text-sm text-gray-600">- {order.note}</h2>
+                  <h2 className="text-sm text-gray-600">- {order.reason}</h2>
                 </div>
                 <div className="flex gap-2">
                   <button

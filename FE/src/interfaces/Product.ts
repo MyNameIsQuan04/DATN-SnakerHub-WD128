@@ -40,6 +40,7 @@ export interface Rate {
 
 export interface product_variants {
   id: number;
+  thumbnail: string;
   product_id: number;
   name: string;
   color: Color;

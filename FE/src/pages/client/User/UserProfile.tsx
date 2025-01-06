@@ -1,23 +1,81 @@
 import React, { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import { MdOutlineManageAccounts } from "react-icons/md";
+import { MdOutlineAnnouncement, MdOutlineManageAccounts } from "react-icons/md";
 import { CiViewList } from "react-icons/ci";
-// import { MdOutlineAnnouncement } from "react-icons/md";
-// import { BiCustomize } from "react-icons/bi";
 import { useAuth } from "../../../contexts/AuthContext";
+import axios from "axios";
+
+type Announcement = {
+  id: number;
+  title: string;
+  content: string;
+  read: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+const token = localStorage.getItem("access_token");
 
 const UserProfile = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [activeButton, setActiveButton] = useState<string | null>(null);
-  const [activeDropdownItem, setActiveDropdownItem] = useState<string | null>(
+  const [notifications, setNotifications] = useState<Announcement[]>([]);
+  const [notificationsCount, setNotificationsCount] = useState<number>(0);
+  const [latestNotification, setLatestNotification] = useState<Announcement | null>(
     null
   );
+  const [hasNewNotification, setHasNewNotification] = useState<boolean>(true);
   const { user } = useAuth();
+
+  const fetchAnnouncements = async () => {
+    try {
+      const { data } = await axios.get("http://localhost:8000/api/orders", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const unreadNotifications = data.filter(
+        (announcement: Announcement) => !announcement.read
+      );
+
+      const sortUnreadNotifications = (a: Announcement, b: Announcement): number => {
+        const dateA = Math.max(
+          new Date(a.created_at).getTime(),
+          new Date(a.updated_at).getTime()
+        );
+        const dateB = Math.max(
+          new Date(b.created_at).getTime(),
+          new Date(b.updated_at).getTime()
+        );
+        return dateB - dateA;
+      };
+
+      unreadNotifications.sort(sortUnreadNotifications);
+
+      setNotifications(unreadNotifications);
+      setNotificationsCount(unreadNotifications.length);
+      setLatestNotification(unreadNotifications[0] || null);
+
+      // Kiểm tra xem có thông báo mới chưa đọc
+      if (unreadNotifications.length > 0 && !hasNewNotification) {
+        setHasNewNotification(true);
+      }
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchAnnouncements();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   useEffect(() => {
     if (user) {
-      console.log("User data updated:", user);
-      // window.location.reload()
+      fetchAnnouncements();
     }
   }, [user]);
 
@@ -27,13 +85,11 @@ const UserProfile = () => {
 
   const handleButtonClick = (buttonName: string) => {
     setActiveButton(buttonName);
-    setActiveDropdownItem(null);
-  };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleDropdownItemClick = (itemName: string) => {
-    setActiveDropdownItem(itemName);
-    setActiveButton(null);
+    // Khi nhấn vào mục "Thông báo", ẩn số thông báo mới
+    if (buttonName === "notification") {
+      setHasNewNotification(false);
+    }
   };
 
   return (
@@ -85,45 +141,6 @@ const UserProfile = () => {
             </button>
           </Link>
 
-          {/* Dropdown menu */}
-          {/* {isProfileDropdownOpen && (
-            <div className="ml-4 mt-2 space-y-2">
-              <Link
-                to="/profile/userinfo"
-                onClick={() => handleDropdownItemClick("userinfo")}
-                className={`block py-2 px-4 rounded-xl transition-all duration-300 transform hover:bg-orange-100 hover:text-orange-500 ${
-                  activeDropdownItem === "userinfo"
-                    ? "bg-gray-500 text-white"
-                    : "bg-gray-100"
-                }`}
-              >
-                Thông Tin
-              </Link>
-              <Link
-                to="/profile/address"
-                onClick={() => handleDropdownItemClick("address")}
-                className={`block py-2 px-4 rounded-xl transition-all duration-300 transform hover:bg-orange-100 hover:text-orange-500 ${
-                  activeDropdownItem === "address"
-                    ? "bg-gray-500 text-white"
-                    : "bg-gray-100"
-                }`}
-              >
-                Địa Chỉ
-              </Link>
-              <Link
-                to="/profile/change-password"
-                onClick={() => handleDropdownItemClick("change-password")}
-                className={`block py-2 px-4 rounded-xl transition-all duration-300 transform hover:bg-orange-100 hover:text-orange-500 ${
-                  activeDropdownItem === "change-password"
-                    ? "bg-gray-500 text-white"
-                    : "bg-gray-100"
-                }`}
-              >
-                Đổi Mật Khẩu
-              </Link>
-            </div>
-          )} */}
-
           {/* Đơn hàng */}
           <Link
             to="/profile/order-history"
@@ -139,7 +156,7 @@ const UserProfile = () => {
           </Link>
 
           {/* Thông báo */}
-          {/* <Link
+          <Link
             to="/profile/announcement"
             onClick={() => handleButtonClick("notification")}
             className={`block w-full text-left py-2 px-4 rounded-xl font-semibold cursor-pointer transition-all duration-300 transform hover:bg-orange-100 hover:text-orange-500 ${
@@ -150,26 +167,16 @@ const UserProfile = () => {
           >
             <MdOutlineAnnouncement className="inline-block mr-3" />
             Thông báo
+            {hasNewNotification && notificationsCount > 0 && (
+              <span className="ml-24 bg-red-500 text-white rounded-full text-xs px-2 py-1 ml-2">
+                {/* {notificationsCount} */}Mới
+              </span>
+            )}
           </Link>
-
-      
-          <Link
-            to="#"
-            onClick={() => handleButtonClick("settings")}
-            className={`block w-full text-left py-2 px-4 rounded-xl font-semibold cursor-pointer transition-all duration-300 transform hover:bg-orange-100 hover:text-orange-500 ${
-              activeButton === "settings"
-                ? "bg-orange-500 text-white"
-                : "bg-gray-100"
-            }`}
-          >
-            <BiCustomize className="inline-block mr-3" />
-            Cài đặt
-          </Link> */}
         </nav>
       </aside>
 
-      {/* Main Profile Section with Outlet */}
-      {/* bg-white shadow-lg rounded-xl */}
+      {/* Main Profile Section */}
       <div className="flex-1 h-auto">
         <Outlet />
       </div>
