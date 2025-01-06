@@ -78,30 +78,32 @@ class CommentController extends Controller
             }
 
         // Reply logic
-        $reply = new Comment();
-        $reply->user_id = auth()->id(); // Lấy ID của admin (hoặc người dùng hiện tại)
-        $reply->product_id = $comment->product_id; // Gắn cùng sản phẩm
-        $reply->order__item_id = $comment->order_item_id; // Gắn cùng order item nếu cần
-        $reply->content = $request->reply; // Nội dung trả lời
-        $reply->star = null; // Không gắn số sao cho trả lời
-        $reply->parent_id = $comment->id; // Gắn ID của bình luận được trả lời
-        $reply->save();
+        // $reply = new Comment();
+        $replyData = [
+        'user_id' => auth()->id(), // Lấy ID của admin (hoặc người dùng hiện tại)
+        'product_id' => $comment->product_id, // Gắn cùng sản phẩm
+        'order_item_id' => $comment->order_item_id, // Gắn cùng order item nếu cần
+        'content' => $request->reply, // Nội dung trả lời
+        'star' => null, // Không gắn số sao cho trả lời
+        'parent_id' => $comment->id, // Gắn ID của bình luận được trả lời
+          ];
+        $reply = Comment::create($replyData);
 
         return response()->json(['message' => 'Reply added successfully.', 'reply' => $reply], 201);
     }
     
-    public function statistics($productId)
-{
-    // Lấy dữ liệu từ bảng comments theo product_id
-    $statistics = Comment::where('product_id', $productId)
-        ->selectRaw('AVG(star) as average_star, COUNT(*) as total_reviews')
-        ->first();
+//     public function statistics($productId)
+// {
+//     // Lấy dữ liệu từ bảng comments theo product_id
+//     $statistics = Comment::where('product_id', $productId)
+//         ->selectRaw('AVG(star) as average_star, COUNT(*) as total_reviews')
+//         ->first();
 
-    // Trả về dữ liệu thống kê
-    return response()->json([
-        'product_id' => $productId,
-        'average_star' => round($statistics->average_star, 1), // Làm tròn số sao
-        'total_reviews' => $statistics->total_reviews,
-    ], 200);
-}
+//     // Trả về dữ liệu thống kê
+//     return response()->json([
+//         'product_id' => $productId,
+//         'average_star' => round($statistics->average_star, 1), // Làm tròn số sao
+//         'total_reviews' => $statistics->total_reviews,
+//     ], 200);
+// }
 }
