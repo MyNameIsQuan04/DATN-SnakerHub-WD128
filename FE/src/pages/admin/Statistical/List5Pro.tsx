@@ -9,7 +9,7 @@ export interface Product {
   thumbnail: string;
   sales_count: number;
   short_description: string;
-  sell_count : number
+  sell_count: number;
 }
 
 const List5Pro = () => {

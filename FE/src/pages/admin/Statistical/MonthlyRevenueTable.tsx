@@ -81,7 +81,7 @@ const MonthlyRevenueChart: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/dashboard/monthly")
+      .post("http://127.0.0.1:8000/api/dashboard/monthly")
       .then((response) => {
         if (response.data.success && response.data.monthlyRevenue) {
           setData(response.data);

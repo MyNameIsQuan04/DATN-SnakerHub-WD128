@@ -5,12 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\api\SlideController;
+use App\Http\Controllers\api\HistoryController;
 use App\Http\Controllers\api\ProductController;
 use App\Http\Controllers\api\SizeApiController;
 use App\Http\Controllers\api\UserApiController;
 use App\Http\Controllers\api\VoucherController;
 use App\Http\Controllers\Client\CartController;
-use App\Http\Controllers\Client\VoucherController as ClientVoucherController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ColorApiController;
 use App\Http\Controllers\api\DashboardController;
@@ -18,6 +18,7 @@ use App\Http\Controllers\Client\CommentController as ClientCommentController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
+use App\Http\Controllers\Client\VoucherController as ClientVoucherController;
 use App\Http\Controllers\Client\CategoryControlller as ClientCategoryControlller;
 use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Client\ColorController;
@@ -64,8 +65,8 @@ foreach ($crud as $key => $controller) {
 
 Route::get('client/categories', [ClientCategoryControlller::class, 'index']);
 
-Route::get('dashboard/daily', [DashboardController::class, 'daily']);
-Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
+Route::post('dashboard/daily', [DashboardController::class, 'daily']);
+Route::post('dashboard/monthly', [DashboardController::class, 'monthly']);
 Route::get('dashboard', [DashboardController::class, 'index']);
 Route::get('client/customers', [CustomerController::class, 'index']);
 Route::get('client/customers/{customer}', [CustomerController::class, 'show']);

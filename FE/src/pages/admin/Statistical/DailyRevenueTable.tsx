@@ -40,7 +40,7 @@ const DailyRevenueChart: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/dashboard/daily")
+      .post("http://localhost:8000/api/dashboard/daily")
       .then((response) => {
         if (response.data.success) {
           setData(response.data);

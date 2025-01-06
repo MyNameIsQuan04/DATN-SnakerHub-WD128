@@ -727,7 +727,7 @@ const UserOrderhistorydetail = () => {
                   >
                     <img
                       src={
-                        item.product_variant?.image ||
+                        item.productVariantImage ||
                         "https://via.placeholder.com/150"
                       }
                       className="w-20 h-20 rounded-md"

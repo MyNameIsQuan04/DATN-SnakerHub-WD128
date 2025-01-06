@@ -270,7 +270,7 @@ const UserOrderHistory = () => {
             "Đã giao hàng",
             "Hoàn thành",
             "Yêu cầu trả hàng",
-            "Xử lý yêu cầu trả hàng", // Giữ tên gốc trong mảng
+            "Xử lý yêu cầu trả hàng",
             "Trả hàng",
             "Đã hủy",
           ].map((status) => (
@@ -475,7 +475,10 @@ const UserOrderHistory = () => {
                   {order.order_items.map((item: OrderItem) => (
                     <div key={item.id} className="flex items-center gap-4 mb-4">
                       <img
-                        src={item.image || "https://via.placeholder.com/150"}
+                        src={
+                          item.productVariantImage ||
+                          "https://via.placeholder.com/150"
+                        }
                         alt="Product"
                         className="w-24 h-24 object-cover rounded-lg shadow-md"
                       />
@@ -529,7 +532,7 @@ const UserOrderHistory = () => {
                               <div className="flex gap-[10px]">
                                 <img
                                   src={
-                                    selectedItem.image ||
+                                    selectedItem.productVariantImage ||
                                     "https://via.placeholder.com/150"
                                   }
                                   alt="Product"

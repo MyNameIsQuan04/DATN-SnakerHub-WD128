@@ -39,6 +39,16 @@ class OrderController extends Controller
             $query->where('user_id', $userId);
         })->orderByDesc('id')->get();
         $orders->load('orderItems', 'customer');
+
+        $orders->map(function ($order) {
+            $order->orderItems->map(function ($orderItem) {
+                $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
+                    ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
+                    ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
+                    ->value('image');
+            });
+        });
+
         return $orders;
     }
 
@@ -69,8 +79,6 @@ class OrderController extends Controller
                 'items.*.quantity' => 'required|integer',
                 'items.*.price' => 'required|integer',
             ]);
-
-            $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
             if (isset($validatedData['idCustomer'])) {
                 $customer = Customer::find($validatedData['idCustomer']);
@@ -152,6 +160,14 @@ class OrderController extends Controller
 
             // SendNewOrderEmail::dispatch($order);
             DB::commit();
+
+            $order->orderItems->map(function ($orderItem) {
+                $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
+                    ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
+                    ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
+                    ->value('image');
+            });
+
             return response()->json([
                 'success' => true,
                 'message' => 'thành công',
@@ -172,6 +188,12 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load('orderItems', 'customer');
+        $order->orderItems->map(function ($orderItem) {
+            $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
+                ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
+                ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
+                ->value('image');
+        });
         return $order;
     }
 
@@ -207,6 +229,12 @@ class OrderController extends Controller
                     'status' => $dataValidate['status'],
                 ]);
                 $order->load('orderItems', 'customer');
+                $order->orderItems->map(function ($orderItem) {
+                    $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
+                        ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
+                        ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
+                        ->value('image');
+                });
                 return $order;
             } else if ($order['status'] === 'Đã giao hàng') {
                 $dataValidate = $request->validate([
@@ -216,6 +244,12 @@ class OrderController extends Controller
                     'status' => $dataValidate['status'],
                 ]);
                 $order->load('orderItems', 'customer');
+                $order->orderItems->map(function ($orderItem) {
+                    $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
+                        ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
+                        ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
+                        ->value('image');
+                });
                 return $order;
             } else if ($order['status'] === 'Yêu cầu trả hàng') {
                 $dataValidate = $request->validate([
@@ -226,6 +260,12 @@ class OrderController extends Controller
                     'reason' => null,
                 ]);
                 $order->load('orderItems', 'customer');
+                $order->orderItems->map(function ($orderItem) {
+                    $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
+                        ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
+                        ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
+                        ->value('image');
+                });
                 return $order;
             } else {
                 return response()->json([
@@ -260,6 +300,12 @@ class OrderController extends Controller
 
 
             SendKhieuNaiOrderEmail::dispatch($order);
+            $order->orderItems->map(function ($orderItem) {
+                $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
+                    ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
+                    ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
+                    ->value('image');
+            });
 
             return $order;
         } else {
@@ -296,8 +342,6 @@ class OrderController extends Controller
                 'items.*.quantity' => 'required|integer',
                 'items.*.price' => 'required|integer',
             ]);
-
-            $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
             if (isset($validatedData['idCustomer'])) {
                 $customer = Customer::find($validatedData['idCustomer']);
