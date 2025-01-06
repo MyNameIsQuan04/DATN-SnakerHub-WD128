@@ -210,7 +210,8 @@ class OrderController extends Controller
                 foreach ($order->orderItems as $orderItem) {
                     $product_id = Product::where('name', $orderItem['nameProduct'])->value('id');
 
-                    $productVariant = Product_Variant::where('color', $orderItem['color'])->where('size', $orderItem['size'])
+                    $productVariant = Product_Variant::where('color_id', Color::where('name', $orderItem->color)->value('id'))
+                        ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
                         ->where('product_id', $product_id)->first();
 
                     $stock = $productVariant['stock'] + $orderItem['quantity'];
