@@ -21,9 +21,7 @@ const UserProfile = () => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<Announcement[]>([]);
   const [notificationsCount, setNotificationsCount] = useState<number>(0);
-  const [latestNotification, setLatestNotification] = useState<Announcement | null>(
-    null
-  );
+  const [latestNotification, setLatestNotification] = useState<Announcement | null>(null);
   const [hasNewNotification, setHasNewNotification] = useState<boolean>(true);
   const { user } = useAuth();
 
@@ -168,8 +166,8 @@ const UserProfile = () => {
             <MdOutlineAnnouncement className="inline-block mr-3" />
             Thông báo
             {hasNewNotification && notificationsCount > 0 && (
-              <span className="ml-24 bg-red-500 text-white rounded-full text-xs px-2 py-1 ml-2">
-                {/* {notificationsCount} */}Mới
+              <span className="ml-2 bg-red-500 text-white rounded-full text-xs px-2 py-1">
+                Mới
               </span>
             )}
           </Link>

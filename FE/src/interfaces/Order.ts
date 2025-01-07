@@ -25,7 +25,7 @@ export interface Order {
   paymentURL: string;
   timestamp: string;
   product_variant?: Product;
-  notification?: Notification;
+  isNew: boolean;
 }
 export interface Customer {
   user: IUser;

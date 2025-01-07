@@ -762,7 +762,7 @@ const UserOrderhistorydetail = () => {
                     </span>
                   ) : (
                     <span className="block mb-2">
-                      <strong>Ghi chú: </strong>Không có !
+                      <strong>Ghi chú: </strong>{orderDetail.note}
                     </span>
                   )}
 
