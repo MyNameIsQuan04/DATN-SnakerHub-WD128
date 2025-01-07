@@ -531,7 +531,7 @@ const UserOrderHistory = () => {
                               <div className="flex gap-[10px]">
                                 <img
                                   src={
-                                    selectedItem.image ||
+                                    selectedItem.productVariantImage ||
                                     "https://via.placeholder.com/150"
                                   }
                                   alt="Product"

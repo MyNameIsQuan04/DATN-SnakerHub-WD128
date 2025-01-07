@@ -651,8 +651,7 @@ const Detail = () => {
                               <li key={reply.id} className="reply-item">
                                 <div className="user-info flex items-center gap-3">
                                   <img
-                                    src={reply.user.avatar}
-                                    alt={`${reply.user.name}'s avatar`}
+                                    src={reply.user.avatar || "https://via.placeholder.com/150"}
                                     className="user-avatar w-10 h-10 rounded-full mb-2 object-cover"
                                   />
                                   <div>
