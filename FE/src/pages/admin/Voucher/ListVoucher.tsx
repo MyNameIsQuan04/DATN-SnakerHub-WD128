@@ -4,12 +4,22 @@ import { toast, ToastContainer } from "react-toastify"; // Import toast
 import "react-toastify/dist/ReactToastify.css"; // Import CSS cho toast
 import { Link } from "react-router-dom";
 import "./VoucherCss.css";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const ListVoucher = () => {
-  const [vouchers, setVouchers] = useState<any[]>([]);
+  interface Voucher {
+    id: number;
+    codeDiscount: string;
+    discount: number;
+    start_date: string;
+    expiration_date: string;
+    usage_limit: number;
+  }
+
+  const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
+  const { user, logout } = useAuth();
   useEffect(() => {
     const fetchVouchers = async () => {
       try {
@@ -55,14 +65,17 @@ const ListVoucher = () => {
       <h2 className="text-3xl font-semibold text-gray-800 mb-4">
         Danh sách mã giảm giá
       </h2>
-      <div className="text-left mb-6">
-        <Link
-          to="/admin/voucher-add"
-          className="bg-blue-500 text-white p-3 rounded-lg text-xl hover:bg-blue-600 transition"
-        >
-          Tạo mã giảm giá
-        </Link>
-      </div>
+      {user?.role_id === 1 && (
+        <div className="text-left mb-6">
+          <Link
+            to="/admin/voucher-add"
+            className="bg-blue-500 text-white p-3 rounded-lg text-xl hover:bg-blue-600 transition"
+          >
+            Tạo mã giảm giá
+          </Link>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {vouchers.map((voucher) => (
           <div
@@ -100,22 +113,25 @@ const ListVoucher = () => {
             <div className="absolute top-0 right-0 bg-gray-100 rounded-tl-lg py-1 px-3 text-sm font-bold text-gray-700">
               ID: {voucher.id}
             </div>
-            <div className="flex justify-end space-x-2 mt-4">
-              {/* Button sửa */}
-              <Link
-                to={`/admin/voucher-edit/${voucher.id}`}
-                className="bg-yellow-500 text-white font-semibold rounded py-1 px-3 text-base hover:bg-yellow-600 transition"
-              >
-                Sửa
-              </Link>
-              {/* Button xóa */}
-              <button
-                onClick={() => handleDelete(voucher.id)}
-                className="bg-red-500 text-white font-semibold rounded py-1 px-3 text-base hover:bg-red-600 transition"
-              >
-                Xóa
-              </button>
-            </div>
+
+            {/* Button sửa */}
+            {user?.role_id === 1 && (
+              <div className="flex justify-end space-x-2 mt-4">
+                <Link
+                  to={`/admin/voucher-edit/${voucher.id}`}
+                  className="bg-yellow-500 text-white font-semibold rounded py-1 px-3 text-base hover:bg-yellow-600 transition"
+                >
+                  Sửa
+                </Link>
+
+                <button
+                  onClick={() => handleDelete(voucher.id)}
+                  className="bg-red-500 text-white font-semibold rounded py-1 px-3 text-base hover:bg-red-600 transition"
+                >
+                  Xóa
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>

@@ -7,13 +7,13 @@ use App\Models\Color;
 use App\Models\Gallery;
 use App\Models\Product;
 use App\Models\Category;
-use Illuminate\Http\Request;
 use App\Models\Product_Variant;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Services\HistoryService;
 
 class ProductController extends Controller
 {
@@ -49,11 +49,15 @@ class ProductController extends Controller
 
             $product = Product::create($dataProduct);
 
+            HistoryService::log('products', $product->id, 'create', [], $dataProduct);
+
             foreach ($validatedData['galleries'] ?? [] as $image) {
                 $image_path = Storage::url($image->store('images', 'public'));
-                $product->galleries()->create([
+                $gallery = $product->galleries()->create([
                     'image_path' => $image_path,
                 ]);
+
+                HistoryService::log('product_galleries', $gallery->id, 'create', [], $gallery);
             }
 
             foreach ($validatedData['variants'] as $variant) {
@@ -67,7 +71,8 @@ class ProductController extends Controller
                 $dataVariant = [
                     'color_id' => $variant['color_id'],
                     'size_id' => $variant['size_id'],
-                    'price' => (isset($variant['price']) || $variant['price'] === 0) ? $variant['price'] : $product->price,
+                    'entry_price' => $variant['entry_price'],
+                    'price' => isset($variant['price']) ? $variant['price'] : $product->price,
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
                 ];
@@ -76,24 +81,19 @@ class ProductController extends Controller
                     $dataVariant['image'] = Storage::url($variant['image']->store('images', 'public'));
                 }
 
-                $product->productVariants()->create($dataVariant);
+                $product_variant = $product->productVariants()->create($dataVariant);
+
+                HistoryService::log('product_variants', $product_variant->id, 'create', [], $product_variant);
             }
 
             $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
 
-            DB::commit(); // Commit transaction nếu không có lỗi
+            DB::commit();
 
-            $categories = Category::query()->pluck('name', 'id')->all();
-            $sizes = Size::all()->pluck('name', 'id');
-            $colors = Color::all()->pluck('name', 'id');
-            
             return response()->json([
                 'success' => true,
                 'message' => 'Sản phẩm và các biến thể đã được tạo thành công!',
                 'product' => $product,
-                'categories' => $categories,
-                'sizes' => $sizes,
-                'colors' => $colors,
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback transaction khi có lỗi
@@ -143,22 +143,28 @@ class ProductController extends Controller
                 $thumbnailPath = $validatedData['thumbnail']->store('images', 'public');
                 $dataProduct['thumbnail'] = Storage::url($thumbnailPath);
             }
-
+            $oldDataProduct = $product;
             $product->update($dataProduct);
+            HistoryService::log('products', $product->id, 'update', $oldDataProduct, $product);
+
             foreach ($validatedData['galleries'] ?? [] as $gallery) {
                 if (isset($gallery['id'])) {
                     $existingGallery = $product->galleries()->where('id', $gallery['id'])->first();
+                    $oldDataGallery = $existingGallery;
                     if ($existingGallery) {
                         $imagePath = $gallery['image']->store('images', 'public');
                         $existingGallery->update([
                             'image_path' => Storage::url($imagePath),
                         ]);
+                        HistoryService::log('product_galleries', $existingGallery->id, 'update', $oldDataGallery, $existingGallery);
                     }
                 } else {
                     $imagePath = $gallery['image']->store('images', 'public');
-                    $product->galleries()->create([
+                    $gallery = $product->galleries()->create([
                         'image_path' => Storage::url($imagePath),
                     ]);
+
+                    HistoryService::log('product_galleries', $gallery->id, 'create', [], $gallery);
                 }
             }
 
@@ -171,14 +177,16 @@ class ProductController extends Controller
                     'size_id' => $variant['size_id'],
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
+                    'entry_price' => $variant['entry_price'],
                 ];
 
-                if (isset($variant['price']) || $variant['price'] === 0) {
+                if (isset($variant['price'])) {
                     $dataVariant['price'] = $variant['price'];
                 };
 
                 if (isset($variant['id'])) {
                     $existingVariant = $product->productVariants()->where('id', $variant['id'])->first();
+                    $oldDataVariant = $existingVariant;
                     if ($existingVariant) {
                         if (isset($variant['image'])) {
                             $variantImagePath = $variant['image']->store('images', 'public');
@@ -188,6 +196,7 @@ class ProductController extends Controller
                         }
                         $existingVariant->update($dataVariant);
                         $variantIds[] = $existingVariant->id;
+                        HistoryService::log('product_variants', $existingVariant->id, 'update', $oldDataVariant, $existingVariant);
                     }
                 } else {
                     if (isset($variant['image'])) {
@@ -203,16 +212,16 @@ class ProductController extends Controller
                         ], 404);
                     }
                     $newVariant = $product->productVariants()->create($dataVariant);
+                    HistoryService::log('product_variants', $newVariant->id, 'create', [], $newVariant);
                     $variantIds[] = $newVariant->id;
                 }
             }
 
+            HistoryService::log('product_variants', $product->id, 'delete', $product->productVariants()->whereNotIn('id', $variantIds)->get(), []);
             $product->productVariants()->whereNotIn('id', $variantIds)->delete();
 
+
             $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
-            $categories = Category::query()->pluck('name', 'id')->all();
-            $sizes = Size::all()->pluck('name', 'id');
-            $colors = Color::all()->pluck('name', 'id');
 
             DB::commit();
 
@@ -220,9 +229,6 @@ class ProductController extends Controller
                 'success' => true,
                 'message' => 'Cập nhật thành công!',
                 'product' => $product,
-                'categories' => $categories,
-                'sizes' => $sizes,
-                'colors' => $colors,
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();

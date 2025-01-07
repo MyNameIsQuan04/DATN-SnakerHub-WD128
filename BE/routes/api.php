@@ -21,6 +21,7 @@ use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\CategoryControlller as ClientCategoryControlller;
 use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Client\ColorController;
+use App\Http\Controllers\Client\CustomerController;
 use App\Http\Controllers\Client\SizeController;
 use App\Http\Controllers\api\CommentController;
 /*
@@ -41,9 +42,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::apiResource('sizes', SizeApiController::class)->middleware(['auth:api', 'role:admin']);
-Route::apiResource('colors', ColorApiController::class)->middleware(['auth:api', 'role:admin']);
-Route::apiResource('users', UserApiController::class)->middleware(['auth:api', 'role:admin']);
+
+Route::apiResource('sizes', SizeApiController::class);
+Route::apiResource('colors', ColorApiController::class);
+Route::apiResource('users', UserApiController::class);
+
+Route::get('client/customers', [CustomerController::class, 'index']);
+Route::get('client/customers/{customer}', [CustomerController::class, 'show']);
 
 
 $crud = [
@@ -53,14 +58,17 @@ $crud = [
 ];
 
 foreach ($crud as $key => $controller) {
-    Route::apiResource($key, $controller)->middleware('auth:api')->middleware('role:Admin,Saler');
+
+    Route::apiResource($key, $controller);
 }
+
 Route::get('client/categories', [ClientCategoryControlller::class, 'index']);
 
 Route::get('dashboard/daily', [DashboardController::class, 'daily']);
 Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
 Route::get('dashboard', [DashboardController::class, 'index']);
-
+Route::get('client/customers', [CustomerController::class, 'index']);
+Route::get('client/customers/{customer}', [CustomerController::class, 'show']);
 // Route::get('dashboard/daily', [DashboardController::class, 'daily'])->middleware('auth:api')->middleware('type:admin');
 // Route::get('dashboard/monthly', [DashboardController::class, 'monthly'])->middleware('auth:api')->middleware('type:admin');
 // Route::get('dashboard', [DashboardController::class, 'index'])->middleware('auth:api')->middleware('type:admin');
@@ -108,7 +116,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/client/user/{user}', [ClientController::class, 'show']);
 
     // Hiển thị danh sách người dùng (Admin chỉ có thể truy cập)
-    Route::get('/users', [UserApiController::class, 'index'])->middleware('role:admin');
+    Route::get('/users', [UserApiController::class, 'index'])->middleware('role:Admin');
 
     // Hiển thị thông tin người dùng (cho cả Admin và User)
     Route::get('/users/{id}', [UserApiController::class, 'show']);
@@ -117,13 +125,13 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/users/{id}', [UserApiController::class, 'update']);
 
     // Xóa người dùng (Admin)
-    Route::delete('/users/{id}', [UserApiController::class, 'destroy'])->middleware('role:admin');
+    Route::delete('/users/{id}', [UserApiController::class, 'destroy'])->middleware('role:Admin');
 
     // Khóa tài khoản người dùng (Admin)
-    Route::post('/users/{id}/lock', [UserApiController::class, 'lockAccount'])->middleware('role:admin');
+    Route::post('/users/{id}/lock', [UserApiController::class, 'lockAccount'])->middleware('role:Admin');
 
     // Mở khóa tài khoản người dùng (Admin)
-    Route::post('/users/{id}/unlock', [UserApiController::class, 'unlockAccount'])->middleware('role:admin');
+    Route::post('/users/{id}/unlock', [UserApiController::class, 'unlockAccount'])->middleware('role:Admin');
 
     // Hiển thị thông tin của chính người dùng đã đăng nhập
     // Route::get('/profile', [UserApiController::class, 'profile']);

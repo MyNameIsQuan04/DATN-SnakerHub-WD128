@@ -29,6 +29,7 @@ class KhieuNaiOrderMail extends Mailable
                 Đơn hàng <strong>{$this->order->order_code}</strong> đã bị khách hàng khiếu nại. Dưới đây là các thông tin chi tiết:
             </p>
             <ul style=\"font-family: Arial, sans-serif; font-size: 14px; color: #7f8c8d; line-height: 1.4;\">
+                <li><strong>Lý do khiếu nại:</strong> {$this->order->note}</li>
                 <li><strong>Mã đơn hàng:</strong> {$this->order->order_code}</li>
                 <li><strong>Khách hàng:</strong> {$this->order->customer->name}</li>
                 <li><strong>Email khách hàng:</strong> {$this->order->customer->user->email}</li>

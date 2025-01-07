@@ -12,17 +12,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customers', function (Blueprint $table) {
-
-            $table->foreignIdFor(User::class)->constrained();
-
+        Schema::create('histories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('phone_number');
-            $table->text('address');
-            $table->string('province');
-            $table->string('district');
-            $table->string('town');
+            $table->foreignIdFor(User::class)->nullable()->constrained();
+            $table->string('table_name');
+            $table->integer('record_id');
+            $table->string('action');
+            $table->json('old_data')->nullable();
+            $table->json('new_data')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('histories');
     }
 };

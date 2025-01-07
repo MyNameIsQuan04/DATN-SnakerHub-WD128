@@ -10,8 +10,10 @@ import { Product, Rate } from "../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { GrNext } from "react-icons/gr";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Detail = () => {
+  const { user, logout } = useAuth();
   const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
 
   const openSizeGuideModal = () => setIsSizeGuideModalOpen(true);
@@ -37,7 +39,8 @@ const Detail = () => {
   const [loading, setLoading] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [averageRate, setAverageRate] = useState(0);
-
+  const [countRates, setCountRates] = useState(0);
+  const [countSell, setCountSell] = useState(0);
   const handleIncrease = () => {
     setQuantity((prev) => prev + 1); // Tăng số lượng
   };
@@ -50,7 +53,7 @@ const Detail = () => {
   const handleTabClick = (index: number) => {
     setActiveTab(index);
   };
-  const handleQuantityChange = (e) => {
+  const handleQuantityChange = (e: any) => {
     const value = e.target.value;
 
     if (/^\d*$/.test(value)) {
@@ -62,13 +65,15 @@ const Detail = () => {
       return;
     }
   };
-  // Hàm lấy thông tin sản phẩm
-  const fetchProduct = async (productId: string) => {
+
+  const fetchProduct = async (productId: number) => {
     try {
-      const response = await axios.get<Product>(
+      const response = await axios.get<any>(
         `http://localhost:8000/api/client/products/${productId}`
       );
       setProduct(response.data.product);
+      setCountRates(response.data.countRates);
+      setCountSell(response.data.countSell);
       const product = response.data.product;
       fetchRelatedProducts(product.category.id as number, productId);
     } catch (error) {
@@ -101,7 +106,6 @@ const Detail = () => {
     }
   }, [id]);
 
-  // Chọn màu sắc
   const handleSelectColor = (colorId: number) => {
     setSelectedColor(colorId);
     filterSizesByColor(colorId);
@@ -109,7 +113,6 @@ const Detail = () => {
     setSelectedVariantPrice(null);
   };
 
-  // Chọn kích thước
   const handleSelectSize = (sizeId: number) => {
     setSelectedSize(sizeId);
     if (selectedColor !== null && product) {
@@ -135,7 +138,6 @@ const Detail = () => {
     }
   };
 
-  // Thêm vào giỏ hàng
   const addToCart = async (
     product: Product,
     selectedColor: unknown,
@@ -143,6 +145,10 @@ const Detail = () => {
   ) => {
     if (!token) {
       toast.error("Hãy đăng nhập để sử dụng chức năng!");
+    }
+    if (stock <= 0) {
+      toast.error("Sản phẩm đã hết hàng");
+      return;
     }
     if (!selectedColor || !selectedSize) {
       alert("Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!");
@@ -181,7 +187,6 @@ const Detail = () => {
     }
   };
 
-  // đánh giá
   useEffect(() => {
     const fetchRatings = async (productID: string) => {
       try {
@@ -257,12 +262,11 @@ const Detail = () => {
     (variant) =>
       variant.color_id === selectedColor && variant.size_id === selectedSize
   );
-
+  const isSelectedVariantOutOfStock = selectedVariant
+    ? selectedVariant.stock === 0
+    : false;
   const stock = selectedVariant ? selectedVariant.stock : 0;
-  const isOutOfStock = product.product_variants.every(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (variant: any) => variant.stock === 0
-  );
+
   return (
     <div className="mt-[100px]">
       {/* Thông tin sản phẩm */}
@@ -340,8 +344,8 @@ const Detail = () => {
                 <span>⭐</span>
               </div>
               <div className="flex gap-3 text-sm text-gray-500">
-                <span>1401 đánh giá</span>
-                <span>890 lượt thích</span>
+                <span>{countRates} đánh giá</span>
+                <span>{countSell} lượt mua</span>
               </div>
             </div>
             <div className="flex items-center gap-3 mt-4">
@@ -409,10 +413,10 @@ const Detail = () => {
             </p>
             <p className="mt-[20px] gap-[15px] cursor-pointer flex text-black text-sm font-semibold uppercase">
               Số lượng còn lại:
-              {stock > 0 ? stock : " ..."}
+              {stock > 0 ? stock : "..."}
             </p>
 
-            {isOutOfStock && (
+            {isSelectedVariantOutOfStock && (
               <p className="mt-4 text-red-500 text-sm font-semibold">
                 Sản phẩm hiện đã hết hàng.
               </p>
@@ -497,10 +501,10 @@ const Detail = () => {
 
             <div className="flex gap-4 mt-5">
               <button
-                disabled={isOutOfStock}
+                disabled={isSelectedVariantOutOfStock}
                 onClick={() => addToCart(product, selectedColor, selectedSize)}
                 className={`border border-orange-500 text-orange-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out transform ${
-                  isOutOfStock
+                  isSelectedVariantOutOfStock
                     ? "cursor-not-allowed text-black border-orange-500"
                     : ""
                 }`}
@@ -510,14 +514,6 @@ const Detail = () => {
             </div>
             {/* Các dịch vụ liên quan */}
             <div className="grid grid-cols-3 mt-6 gap-4">
-              <div className="flex flex-col items-center text-sm text-gray-600">
-                <MdOutlineLocalShipping className="w-[30px] h-auto" />
-                <p>Bảo hành keo vĩnh viễn</p>
-              </div>
-              <div className="flex flex-col items-center text-sm text-gray-600">
-                <MdOutlineLocalShipping className="w-[30px] h-auto" />
-                <p>Miễn phí vận chuyển toàn quốc cho đơn hàng từ 150k</p>
-              </div>
               <div className="flex flex-col items-center text-sm text-gray-600">
                 <TbTruckReturn className="w-[30px] h-auto" />
                 <p>Đổi trả dễ dàng (trong vòng 7 ngày nếu lỗi nhà sản xuất)</p>
@@ -530,12 +526,7 @@ const Detail = () => {
                 <AiOutlineBank className="w-[30px] h-auto" />
                 <p>Giao hàng tận nơi, nhận hàng xong thanh toán</p>
               </div>
-              <div className="flex flex-col items-center text-sm text-gray-600">
-                <GrAnnounce className="w-[30px] h-auto" />
-                <p>
-                  Ưu đãi tích điểm và hưởng quyền lợi thành viên từ SnakerHub
-                </p>
-              </div>
+
               {/* Thêm phần mô tả sản phẩm */}
               {/* <div className="mt-8 border-t-4 border-gray-300 pt-4">
                 <p className="text-lg font-semibold text-gray-800">
@@ -581,7 +572,7 @@ const Detail = () => {
                 <p className="text-[15px]">{product.name}</p>
               </div>
               <div className="flex gap-[10px]">
-                <p className="text-[15px] font-bold">Màu sắc:</p>
+                <p className="text-[15px] font-bold">Kích cỡ:</p>
                 {sizes.map((size) => (
                   <p
                     className="text-[15px]"
@@ -595,7 +586,7 @@ const Detail = () => {
                     {size?.name}
                   </p>
                 ))}
-                <p className="text-[15px] font-bold">Kích thước: </p>
+                <p className="text-[15px] font-bold">Màu sắc: </p>
                 {colors.map((color) => (
                   <p
                     className="text-[15px]"
@@ -616,58 +607,76 @@ const Detail = () => {
             <div className="ratings-container">
               {ratings.length > 0 ? (
                 <ul className="rating-list">
-                  {ratings.map((rating) => (
-                    <li key={rating.id} className="rating-item">
-                      <div className="user-info flex items-center gap-3">
-                        <img
-                          src={rating.user.avatar}
-                          alt={`${rating.user.name}'s avatar`}
-                          className="user-avatar w-14 h-14 rounded-full mb-4 object-cover"
-                        />
-                        <div>
-                          <strong>{rating.user.name}</strong>
-                          <p className="rating-date">
-                            {new Date(rating.created_at).toLocaleString()}
-                          </p>
+                  {ratings
+                    .filter((rating) => rating.parent_id === null) // Chỉ lấy các bình luận chính
+                    .map((rating) => (
+                      <li key={rating.id} className="rating-item">
+                        <div className="user-info flex items-center gap-3">
+                          <img
+                            src={rating.user.avatar}
+                            alt={`${rating.user.name}'s avatar`}
+                            className="user-avatar w-14 h-14 rounded-full mb-4 object-cover"
+                          />
+                          <div>
+                            <strong>{rating.user.name}</strong>
+                            <p className="rating-date">
+                              {new Date(rating.created_at).toLocaleString()}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="rating-content mb-3">
-                        <div className="flex">
-                          <p>
-                            {rating.product.product_variants.map((item) => (
-                              <div className="">
-                                <div className="">
-                                  Màu sắc: {item.color.name || ""}
-                                </div>
-                                <div className="">
-                                  Kích thước: {item.size.name || ""}
-                                </div>
-                              </div>
+                        <div className="rating-content mb-3">
+                          <div className="rating-stars">
+                            {Array.from({ length: 5 }, (_, index) => (
+                              <span
+                                key={index}
+                                className={`${
+                                  index < rating.star
+                                    ? "star text-yellow-500 w-6 h-6 text-xl filled"
+                                    : "star text-gray-500 w-6 h-6 text-xl filled"
+                                }`}
+                              >
+                                ★
+                              </span>
                             ))}
-                          </p>
+                          </div>
+                          <p>Nội dung đánh giá: {rating.content}</p>
+                          {user?.role_id !== 3 && <p>Trả lời</p>}
                         </div>
-                        <div className="rating-stars">
-                          {Array.from({ length: 5 }, (_, index) => (
-                            <span
-                              key={index}
-                              className={` ${
-                                index < rating.star
-                                  ? "star text-yellow-500 w-6 h-6 text-xl filled"
-                                  : "star text-gray-500 w-6 h-6 text-xl filled"
-                              }`}
-                            >
-                              ★
-                            </span>
-                          ))}
-                        </div>
-                        <p>Nội dung đánh giá: {rating.content}</p>
-                      </div>
-                      <hr className="mb-3" />
-                    </li>
-                  ))}
+
+                        {/* Hiển thị các trả lời */}
+                        <ul className="reply-list ml-6">
+                          {ratings
+                            .filter((reply) => reply.parent_id === rating.id) // Lọc các bình luận trả lời
+                            .map((reply) => (
+                              <li key={reply.id} className="reply-item">
+                                <div className="user-info flex items-center gap-3">
+                                  <img
+                                    src={reply.user.avatar}
+                                    alt={`${reply.user.name}'s avatar`}
+                                    className="user-avatar w-10 h-10 rounded-full mb-2 object-cover"
+                                  />
+                                  <div>
+                                    <strong>{reply.user.name}</strong>
+                                    <p className="reply-date">
+                                      {new Date(
+                                        reply.created_at
+                                      ).toLocaleString()}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="reply-content">
+                                  <p>Nội dung trả lời: {reply.content}</p>
+                                </div>
+                              </li>
+                            ))}
+                        </ul>
+
+                        <hr className="mb-3" />
+                      </li>
+                    ))}
                 </ul>
               ) : (
-                <p>Chưa có đánh giá nào .</p>
+                <p>Chưa có đánh giá nào.</p>
               )}
             </div>
           )}

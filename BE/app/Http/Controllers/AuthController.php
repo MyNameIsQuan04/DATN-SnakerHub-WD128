@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -25,13 +26,13 @@ class AuthController extends Controller
             'address' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-    
-        $defaultRoleId = $defaultRole->id ?? 3;
-    
+
+        $defaultRoleId = Role::where('role', 'user')->first()->id;
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -40,20 +41,20 @@ class AuthController extends Controller
             'phone_number' => $request->phone_number,
             'role_id' => $defaultRoleId,
         ]);
-    
+
         Cart::create([
             'user_id' => $user->id,
         ]);
-    
+
         $token = auth()->login($user);
-    
+
         return response()->json([
             'token' => $token,
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'role' => $user->role_id, 
+                'role' => $user->role_id,
                 'address' => $user->address,
                 'phone_number' => $user->phone_number,
             ],
@@ -97,10 +98,10 @@ class AuthController extends Controller
     {
         // Lấy user_id từ auth (nếu bạn sử dụng JWT, token sẽ chứa user_id)
         $userId = auth()->id();
-    
+
         // Truy vấn thông tin người dùng dựa trên user_id
         $user = User::find($userId);
-    
+
         if ($user) {
             // Trả về thông tin người dùng dưới dạng JSON
             return response()->json($user);
@@ -117,7 +118,8 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()->only(['role_id','id', 'name', 'email', 'address', 'phone_number', 'gender', 'avatar', 'birthday'])
+
+            'user' => auth()->user()->only(['id', 'name', 'email', 'address', 'phone_number', 'role_id', 'gender', 'avatar', 'birthday'])
         ]);
     }
 

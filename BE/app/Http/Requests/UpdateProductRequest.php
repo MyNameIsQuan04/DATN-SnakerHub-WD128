@@ -39,6 +39,7 @@ class UpdateProductRequest extends FormRequest
             'variants.*.id' => 'nullable|integer', // tương tự
             'variants.*.size_id' => 'required|exists:sizes,id',
             'variants.*.color_id' => 'required|exists:colors,id',
+            'variants.*.entry_price' => 'required|integer',
             'variants.*.price' => 'nullable|integer',
             'variants.*.stock' => 'required|integer|min:1',
             // 'variants.*.sku' => 'required|string|max:255',

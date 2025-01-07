@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
-import { Order } from "../../../interfaces/Order";
+import { Order, OrderItem } from "../../../interfaces/Order";
 import { GrPrevious } from "react-icons/gr";
 
 const UserOrderhistorydetail = () => {
@@ -706,8 +706,8 @@ const UserOrderhistorydetail = () => {
                         </svg>
                       </div>
                       <div className="timeline-end timeline-box flex flex-col min-w-96 bg-gray-200 p-2 border-2 border-gray-300 ">
-                      <span>{orderDetail.status}</span>
-                      <span>{formatDate(orderDetail.updated_at)}</span>
+                        <span>{orderDetail.status}</span>
+                        <span>{formatDate(orderDetail.updated_at)}</span>
                       </div>
                       <hr />
                     </li>
@@ -719,7 +719,7 @@ const UserOrderhistorydetail = () => {
           {/* Thông tin đơn hàng  */}
           <div className="mt-3">
             <div className="space-y-6">
-              {orderDetail.order_items.map((item) => (
+              {orderDetail.order_items.map((item: OrderItem) => (
                 <div>
                   <div
                     key={item.id}
@@ -733,24 +733,18 @@ const UserOrderhistorydetail = () => {
                       className="w-20 h-20 rounded-md"
                     />
                     <div className="ml-4 flex-grow">
-                      <p className="font-semibold">
-                        {item.product_variant.name}
-                      </p>
+                      <p className="font-semibold">{item.nameProduct}</p>
                       <p className="text-gray-600">
-                        Màu: {item.product_variant.color.name}, Kích cỡ:{" "}
-                        {item.product_variant.size.name}
+                        Màu: {item.color}, Kích cỡ: {item.nameProduct}
                       </p>
                       <p className="w-16 ">X {item.quantity}</p>
                     </div>
                     <p className="w-24 text-center">
-                      {formatCurrency(item.product_variant.price)}
+                      {formatCurrency(item.price)}
                     </p>
                     <p className="w-24 text-center text-red-500">
                       {formatCurrency(
-                        totalPriceItem(
-                          item.product_variant.price,
-                          item.quantity
-                        )
+                        totalPriceItem(item.price, item.quantity)
                       )}
                     </p>
                   </div>
@@ -811,7 +805,9 @@ const UserOrderhistorydetail = () => {
                   <div className="flex gap-2 mb-2 items-center mb-4">
                     <h1 className="font-medium">Phương thức thanh toán:</h1>
                     <h1 className="text-orange-400 font-semibold">
-                      {orderDetail.paymentMethod}
+                      {orderDetail.paymentMethod === "COD" && (
+                        <div className="">Thanh toán khi nhận hàng</div>
+                      )}
                     </h1>
                     {/* Hiển thị logo VNPAY nếu phương thức thanh toán là VNPAY */}
                     {orderDetail.paymentMethod === "VNPAY" && (

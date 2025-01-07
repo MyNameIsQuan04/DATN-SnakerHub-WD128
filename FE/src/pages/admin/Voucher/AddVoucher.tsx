@@ -3,10 +3,11 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import { number } from "yup";
 
 const AddVoucher: React.FC = () => {
   const [codeDiscount, setCodeDiscount] = useState<string>("");
-  const [discount, setDiscount] = useState<number>(0);
+  const [discount, setDiscount] = useState<number>();
   const [type, setType] = useState<"percent" | "amount">("percent");
   const [startDate, setStartDate] = useState<string>(""); // Thêm state cho start_date
   const [expirationDate, setExpirationDate] = useState<string>("");
@@ -21,7 +22,7 @@ const AddVoucher: React.FC = () => {
     e.preventDefault();
 
     // Kiểm tra giá trị giảm giá không vượt quá 50%
-    if (type === "percent" && discount > 50) {
+    if (type === "percent" && (discount ?? 0) > 50) {
       toast.error("Giảm giá không được vượt quá 50%");
       return;
     }
@@ -50,9 +51,13 @@ const AddVoucher: React.FC = () => {
       });
 
       toast.success("Tạo voucher mới thành công");
-      // navigate("/admin/vouchers");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Có lỗi xảy ra");
+      navigate("/admin/vouchers");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Có lỗi xảy ra");
+      } else {
+        toast.error("Có lỗi xảy ra");
+      }
     }
   };
 

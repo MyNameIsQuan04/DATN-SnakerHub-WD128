@@ -38,7 +38,7 @@ class OrderController extends Controller
         $orders = Order::whereHas('customer', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })->orderByDesc('id')->get();
-        $orders->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+        $orders->load('orderItems', 'customer');
         return $orders;
     }
 
@@ -48,19 +48,22 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         try {
+            DB::beginTransaction();
             $userId = Auth::id();
             $validatedData = $request->validate([
+                'idCustomer' => 'nullable|integer',
                 'name' => 'required|string',
                 'phone' => 'required|string',
-                'address' => 'nullable|string',
+                'address' => 'required|string',
                 'province' => 'required|string',
                 'district' => 'required|string',
                 'town' => 'required|string',
                 'total_price' => 'required|integer',
                 'discount' => 'nullable|integer',
-                'codeDiscount' => 'nullable|string|exists:vouchers,codeDiscount',
+                'codeDiscount' => 'nullable|string',
                 'shippingFee' => 'required|integer',
                 'paymentMethod' => 'required|integer',
+                'note' => 'nullable|string',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -69,13 +72,19 @@ class OrderController extends Controller
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
-            $dataCustomer = [
-                'user_id' => $userId,
-                'name' => $validatedData['name'],
-                'phone_number' => $validatedData['phone'],
-                'address' => $address,
-            ];
-            $customer = Customer::create($dataCustomer);
+            if (isset($validatedData['idCustomer'])) {
+                $customer = Customer::find($validatedData['idCustomer']);
+            } else {
+                $customer = Customer::create([
+                    'user_id' => $userId,
+                    'name' => $validatedData['name'],
+                    'phone_number' => $validatedData['phone'],
+                    'address' => $validatedData['address'],
+                    'province' => $validatedData['province'],
+                    'district' => $validatedData['district'],
+                    'town' => $validatedData['town'],
+                ]);
+            }
 
             $orderCode = $this->generateOrderCode();
 
@@ -87,7 +96,8 @@ class OrderController extends Controller
                 'codeDiscount' => $validatedData['codeDiscount'],
                 'shippingFee' => $validatedData['shippingFee'],
                 'paymentMethod' => $validatedData['paymentMethod'] == 1 ? "COD" : "VNPAY",
-                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0) + $validatedData['shippingFee'],
+                'note' => $validatedData['note'],
+                'totalAfterDiscount' => max($validatedData['total_price'] - ($validatedData['discount'] ?? 0), 0) + $validatedData['shippingFee'],
             ]);
 
             foreach ($validatedData['items'] as $item) {
@@ -103,8 +113,8 @@ class OrderController extends Controller
                 $dataItem = [
                     'order_id' => $order->id,
                     'nameProduct' => Product::where('id', $productVariant['product_id'])->value('name'),
-                    'color' => Color::where('id',$productVariant['color_id'])->value('name'),
-                    'size' => Size::where('id',$productVariant['size_id'])->value('name'),
+                    'color' => Color::where('id', $productVariant['color_id'])->value('name'),
+                    'size' => Size::where('id', $productVariant['size_id'])->value('name'),
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                 ];
@@ -138,10 +148,10 @@ class OrderController extends Controller
                     'sell_count' => $newSellCount
                 ]);
             }
-            $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+            $order->load('orderItems', 'customer');
 
-            SendNewOrderEmail::dispatch($order);
-
+            // SendNewOrderEmail::dispatch($order);
+            DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'thành công',
@@ -161,7 +171,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+        $order->load('orderItems', 'customer');
         return $order;
     }
 
@@ -176,10 +186,10 @@ class OrderController extends Controller
                     'status' => 'required|in:Đã hủy',
                 ]);
                 foreach ($order->orderItems as $orderItem) {
-                    $product_id = Product::where('name',$orderItem['nameProduct'])->value('id');
-                    
-                    $productVariant = Product_Variant::where('color',$orderItem['color'])->where('size',$orderItem['size'])
-                    ->where('product_id',$product_id)->first();
+                    $product_id = Product::where('name', $orderItem['nameProduct'])->value('id');
+
+                    $productVariant = Product_Variant::where('color', $orderItem['color'])->where('size', $orderItem['size'])
+                        ->where('product_id', $product_id)->first();
 
                     $stock = $productVariant['stock'] + $orderItem['quantity'];
                     $productVariant->update([
@@ -196,7 +206,7 @@ class OrderController extends Controller
                 $order->update([
                     'status' => $dataValidate['status'],
                 ]);
-                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                $order->load('orderItems', 'customer');
                 return $order;
             } else if ($order['status'] === 'Đã giao hàng') {
                 $dataValidate = $request->validate([
@@ -205,7 +215,7 @@ class OrderController extends Controller
                 $order->update([
                     'status' => $dataValidate['status'],
                 ]);
-                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                $order->load('orderItems', 'customer');
                 return $order;
             } else if ($order['status'] === 'Yêu cầu trả hàng') {
                 $dataValidate = $request->validate([
@@ -213,9 +223,9 @@ class OrderController extends Controller
                 ]);
                 $order->update([
                     'status' => $dataValidate['status'],
-                    'note' => 'Không',
+                    'reason' => null,
                 ]);
-                $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+                $order->load('orderItems', 'customer');
                 return $order;
             } else {
                 return response()->json([
@@ -237,19 +247,26 @@ class OrderController extends Controller
         if ($order['status'] === 'Đã giao hàng') {
             $dataReturn = $request->validate([
                 'status' => 'required|in:Yêu cầu trả hàng',
-                'note' => 'required|in:Giao hàng không đúng yêu cầu,Sản phẩm có lỗi từ nhà cung cấp,Lý do khác',
+                'reason' => 'required|string',
             ]);
 
             $order->update([
                 'status' => $dataReturn['status'],
-                'note' => $dataReturn['note'],
+                'reason' => $dataReturn['reason'],
             ]);
 
+
             $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
-            
+
+
             SendKhieuNaiOrderEmail::dispatch($order);
 
             return $order;
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: không thể thay đổi',
+            ], 403);
         }
     }
 
@@ -261,9 +278,10 @@ class OrderController extends Controller
         try {
             $userId = Auth::id();
             $validatedData = $request->validate([
+                'idCustomer' => 'nullable|integer|exists:customers,id',
                 'name' => 'required|string',
                 'phone' => 'required|string',
-                'address' => 'nullable|string',
+                'address' => 'required|string',
                 'province' => 'required|string',
                 'district' => 'required|string',
                 'town' => 'required|string',
@@ -272,6 +290,7 @@ class OrderController extends Controller
                 'codeDiscount' => 'nullable|string|exists:vouchers,codeDiscount',
                 'shippingFee' => 'required|integer',
                 'paymentMethod' => 'required|integer',
+                'note' => 'nullable|string',
                 'items' => 'required|array',
                 'items.*.product__variant_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer',
@@ -280,13 +299,19 @@ class OrderController extends Controller
 
             $address = $validatedData['address'] . ', ' . $validatedData['town'] . ', ' . $validatedData['district'] . ', ' . $validatedData['province'];
 
-            $dataCustomer = [
-                'user_id' => $userId,
-                'name' => $validatedData['name'],
-                'phone_number' => $validatedData['phone'],
-                'address' => $address,
-            ];
-            $customer = Customer::create($dataCustomer);
+            if (isset($validatedData['idCustomer'])) {
+                $customer = Customer::find($validatedData['idCustomer']);
+            } else {
+                $customer = Customer::create([
+                    'user_id' => $userId,
+                    'name' => $validatedData['name'],
+                    'phone_number' => $validatedData['phone'],
+                    'address' => $validatedData['address'],
+                    'province' => $validatedData['province'],
+                    'district' => $validatedData['district'],
+                    'town' => $validatedData['town'],
+                ]);
+            }
 
             $orderCode = $this->generateOrderCode();
 
@@ -298,7 +323,9 @@ class OrderController extends Controller
                 'codeDiscount' => $validatedData['codeDiscount'],
                 'shippingFee' => $validatedData['shippingFee'],
                 'paymentMethod' => $validatedData['paymentMethod'] == 1 ? "COD" : "VNPAY",
-                'totalAfterDiscount' => max($validatedData['total_price'] - $validatedData['discount'], 0) + $validatedData['shippingFee'],
+                'note' => $validatedData['note'],
+                'totalAfterDiscount' => max($validatedData['total_price'] - ($validatedData['discount'] ?? 0), 0) + $validatedData['shippingFee'],
+
             ]);
 
             foreach ($validatedData['items'] as $item) {
@@ -314,8 +341,8 @@ class OrderController extends Controller
                 $dataItem = [
                     'order_id' => $order->id,
                     'nameProduct' => Product::where('id', $productVariant['product_id'])->value('name'),
-                    'color' => Color::where('id',$productVariant['color_id'])->value('name'),
-                    'size' => Size::where('id',$productVariant['size_id'])->value('name'),
+                    'color' => Color::where('id', $productVariant['color_id'])->value('name'),
+                    'size' => Size::where('id', $productVariant['size_id'])->value('name'),
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                 ];
@@ -400,7 +427,7 @@ class OrderController extends Controller
 
             $user = Auth::user();
             SendLinkPayment::dispatch($vnp_Url, $user->email, $user->name);
-            SendNewOrderEmail::dispatch($order);
+            // SendNewOrderEmail::dispatch($order);
 
             return $vnp_Url;
         } catch (\Exception $e) {

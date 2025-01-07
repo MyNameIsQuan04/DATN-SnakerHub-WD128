@@ -12,13 +12,14 @@ use App\Models\User;
 
 class DashboardController extends Controller
 {
-    public function index(){
+    public function index()
+    {
 
         $totalSells = Product::sum('sell_count');
 
         $totalStocks = Product_Variant::sum('stock');
 
-        $countCustomer = User::where('type','user')->count();
+        $countCustomer = User::where('role_id', 'user')->count();
 
         $countOrder = Order::whereNotIn('status', ['Hoàn thành', 'Đã hủy'])->count();
 
@@ -82,7 +83,8 @@ class DashboardController extends Controller
         ], 201);
     }
 
-    public function monthly(Request $request){
+    public function monthly(Request $request)
+    {
         $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date'))->startOfDay() : Carbon::now()->startOfMonth();
         $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date'))->endOfDay() : Carbon::now()->endOfMonth();
 
@@ -90,17 +92,17 @@ class DashboardController extends Controller
         $totalRevenue = Order::whereBetween('created_at', [$startDate, $endDate])->sum('total_price');
 
         $monthlyRevenue = Order::whereBetween('created_at', [$startDate, $endDate])
-                ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(total_price) as monthly_total')
-                ->groupBy('year', 'month')
-                ->get();
+            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(total_price) as monthly_total')
+            ->groupBy('year', 'month')
+            ->get();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Thành công!',
-                'monthlyRevenue' => $monthlyRevenue,
-                'totalRevenue' => $totalRevenue,
-                'startDate' => $startDate,
-                'endDate' => $endDate,
-            ], 201);
+        return response()->json([
+            'success' => true,
+            'message' => 'Thành công!',
+            'monthlyRevenue' => $monthlyRevenue,
+            'totalRevenue' => $totalRevenue,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ], 201);
     }
 }

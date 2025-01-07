@@ -14,6 +14,7 @@ const ListUser = () => {
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
   const [isLoading, setIsLoading] = useState(true); // Loading state for fetching users
   const [isUpdating, setIsUpdating] = useState(false); // Loading state for modal actions
+  const [error, setError] = useState<string | null>(null);
 
   const token = localStorage.getItem("access_token");
 
@@ -24,13 +25,13 @@ const ListUser = () => {
       try {
         const response = await axios.get(`http://localhost:8000/api/users`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         setListUser(response.data);
       } catch (error) {
-        console.error("Error fetching user data:", error);
-        toast.error("Unable to fetch the user list. Please try again later.");
+        console.error("Error fetching user data:", error)
+        setError("An error occurred while fetching user data.");
       } finally {
         setIsLoading(false);
       }
@@ -39,7 +40,7 @@ const ListUser = () => {
   }, []);
 
   const openModal = (user: IUser) => {
-    if (user.type === "user") {
+    if (user.role_id === 2) {
       setSelectedUser(user);
       setIsModalOpen(true);
     } else {
@@ -86,7 +87,7 @@ const ListUser = () => {
   };
 
   const upgradeToAdmin = () =>
-    handleUserUpdate({ type: "admin" }, "User has been upgraded to Admin!");
+    handleUserUpdate({ role_id: 1 }, "User has been upgraded to Admin!");
   const blockUser = async () => {
     if (!selectedUser) return;
     setIsUpdating(true);
@@ -174,7 +175,13 @@ const ListUser = () => {
         <div className="flex justify-center items-center h-[60vh]">
           <FaSpinner className="animate-spin text-4xl text-blue-500" />
           <span className="ml-2 text-lg font-medium text-gray-600">
-            Loading users...
+            Đang tải người dùng...
+          </span>
+        </div>
+      ) : error ? (
+        <div className="flex justify-center items-center h-[60vh] text-red-500 text-lg font-semibold">
+          <span className="ml-2 text-lg font-medium text-gray-600">
+            Tải thông tin người dùng thất bại...
           </span>
         </div>
       ) : (
@@ -222,12 +229,12 @@ const ListUser = () => {
                       <button
                         onClick={() => openModal(user)}
                         className={`px-2 py-1 rounded-md font-semibold ${
-                          user.type === "admin"
+                          user.role_id === 1
                             ? "text-green-600 border border-green-600"
                             : "text-orange-600 border border-orange-600"
                         }`}
                       >
-                        {user.type === "admin" ? "Admin" : "User"}
+                        {user.role_id === 1 ? "Admin" : "User"}
                       </button>
                     </td>
                   </tr>
@@ -237,6 +244,7 @@ const ListUser = () => {
           </div>
         </>
       )}
+
 
       {/* Modal */}
       {isModalOpen && selectedUser && (

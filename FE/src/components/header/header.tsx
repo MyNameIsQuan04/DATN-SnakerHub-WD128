@@ -6,7 +6,6 @@ import { IoLogOutOutline } from "react-icons/io5";
 import api from "../../configs/axios";
 import { Category } from "../../interfaces/Category";
 import { GetCategoriesClient } from "../../services/client/category";
-import axios from "axios";
 import { CartItem } from "../../interfaces/Cart";
 import { IoCartOutline } from "react-icons/io5";
 const Header = () => {
@@ -58,18 +57,6 @@ const Header = () => {
     0
   );
 
-  // Get Categories
-  const [categories, setCategories] = useState<Category[]>([]);
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const res = await axios.get(
-        "http://localhost:8000/api/client/categories"
-      );
-      setCategories(res.data);
-    };
-    fetchCategories();
-  }, []);
-
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
   };
@@ -118,14 +105,6 @@ const Header = () => {
             </ul>
           ))}
 
-          <ul>
-            <li className="relative group">
-              <a href="#" className="hover:text-gray-900">
-                Khuyến mãi
-              </a>
-              <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-            </li>
-          </ul>
           {/* Sản phẩm mới */}
           <ul>
             <li className="relative group">
@@ -138,16 +117,7 @@ const Header = () => {
             </li>
           </ul>
           {/* Sản phẩm bán chạy */}
-          <ul>
-            <li className="relative group">
-              <a href="#" className="hover:text-gray-900">
-                Về chúng tôi
-              </a>
-              <span className="absolute left-0 -bottom-1 h-[3px] w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
-            </li>
-          </ul>
         </nav>
-
         {/* Search and Icons Section (Right) */}
         <div className="flex items-center space-x-4">
           {/* Search Bar */}
@@ -235,7 +205,7 @@ const Header = () => {
                             Hồ sơ của tôi
                           </Link>
                         </li>
-                        {user?.type === "admin" && (
+                        {(user?.role_id === 1 || user?.role_id === 2) && (
                           <li>
                             <Link
                               to="/admin"
@@ -245,6 +215,7 @@ const Header = () => {
                             </Link>
                           </li>
                         )}
+
                         <li>
                           <button
                             onClick={logout}

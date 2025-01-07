@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Product } from "../../interfaces/Product";
 import { Link } from "react-router-dom";
-import SimpleSlider from "../../components/Slider";
 import Slider from "react-slick";
 import { getProductsClients } from "../../services/client/product";
 import { GetCategoriesClient } from "../../services/client/category";
 import { Category } from "../../interfaces/Category";
+import SimpleSlider from "../../components/SimpleSlider";
 
 const Home = () => {
   const [productsClient, setProductsClient] = useState<Product[]>([]);
@@ -27,7 +27,6 @@ const Home = () => {
       setCategoriesClient(categoriesData);
     })();
   }, []);
-  useEffect(() => {}, []);
   const PrevArrow = (props: any) => {
     const { className, onClick } = props;
     return (

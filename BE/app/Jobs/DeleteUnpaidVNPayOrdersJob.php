@@ -29,7 +29,7 @@ class DeleteUnpaidVNPayOrdersJob implements ShouldQueue
     {
         $orders10p = Order::where('status_payment', 'Chưa thanh toán')
             ->where('paymentMethod', 'VNPAY')
-            ->where('updated_at', '<=', Carbon::now()->subMinutes(10))
+            ->where('updated_at', '<=', Carbon::now()->subMinutes(1))
             ->get();
         
         foreach ($orders10p as $order) {
@@ -39,7 +39,7 @@ class DeleteUnpaidVNPayOrdersJob implements ShouldQueue
 
         $orders = Order::where('status_payment', 'Chưa thanh toán')
             ->where('paymentMethod', 'VNPAY')
-            ->where('updated_at', '<=', Carbon::now()->subMinutes(15))
+            ->where('updated_at', '<=', Carbon::now()->subMinutes(2))
             ->get();
 
         foreach ($orders as $order) {

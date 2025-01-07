@@ -6,13 +6,14 @@ import { IUser } from "./User";
 
 // Product Interface
 export interface Product {
-  product(product: any): unknown;
+  product(product: Product): unknown;
   id?: number;
   category: Category;
   category_id: number;
   name: string;
   description: string;
   short_description: string;
+  entry_price: number;
   price: number;
   thumbnail: string;
   sales_count: number;
@@ -46,6 +47,7 @@ export interface product_variants {
   color_id: number;
   size_id: number;
   sku: string;
+  entry_price: number;
   price: number;
   stock: number;
   image: string;
@@ -54,4 +56,3 @@ export interface product_variants {
   deleted_at: string | null;
   product: Product;
 }
-
