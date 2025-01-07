@@ -166,7 +166,7 @@ Route::prefix('client')->group(function () {
 });
 
 Route::prefix('comments')->group(function () {
-    Route::get('/', [CommentController::class, 'index']); 
+    Route::get('/', [CommentController::class, 'index']);
     Route::post('/{id}/reply', [CommentController::class, 'reply']); 
     Route::delete('/{id}', [CommentController::class, 'destroy']); 
     Route::get('/statistics/{productId}', [CommentController::class, 'statistics']);
