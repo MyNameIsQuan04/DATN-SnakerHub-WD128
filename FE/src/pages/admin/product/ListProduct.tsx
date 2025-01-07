@@ -7,6 +7,7 @@ import { ProductCT } from "../../../contexts/productContext";
 import { IoHomeOutline } from "react-icons/io5";
 import { GrFormNext } from "react-icons/gr";
 import { useAuth } from "../../../contexts/AuthContext";
+import { Gallery } from "../../../interfaces/Gallery";
 
 const ListProduct = () => {
   const { user } = useAuth();
@@ -17,7 +18,7 @@ const ListProduct = () => {
   const toggleVariations = (productId: number) => {
     setExpandedProduct(expandedProduct === productId ? null : productId);
   };
-
+  console.log(products);
   // State cho tìm kiếm
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState(products); // Set filteredProducts ban đầu là tất cả sản phẩm
@@ -55,19 +56,19 @@ const ListProduct = () => {
       <div className="flex items-center gap-2 mt-4 mb-6">
         {user?.role_id === 1 && (
           <Link
-        to="/admin/product-add"
-        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+            to="/admin/product-add"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
           >
-        Thêm Sản Phẩm Mới
+            Thêm Sản Phẩm Mới
           </Link>
         )}
         <div className="relative flex items-center w-full max-w-md">
           <input
-        type="text"
-        value={searchQuery}
-        onChange={handleSearchChange}
-        placeholder="Tìm kiếm sản phẩm"
-        className="w-full p-2 border rounded-lg pl-10"
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Tìm kiếm sản phẩm"
+            className="w-full p-2 border rounded-lg pl-10"
           />
           <IoMdSearch className="absolute left-3 text-2xl text-gray-500" />
         </div>
@@ -230,6 +231,30 @@ const ListProduct = () => {
                             ))}
                           </tbody>
                         </table>
+
+                        {/* Hiển thị galleries */}
+                        <div className="mt-4">
+                          <h4 className="font-semibold mb-2">
+                            Bộ sưu tập hình ảnh:
+                          </h4>
+                          <div className="flex gap-4">
+                            {product.galleries &&
+                            product.galleries.length > 0 ? (
+                              product.galleries.map(
+                                (gallery: Gallery, gIndex) => (
+                                  <img
+                                    key={gIndex}
+                                    src={gallery.image_path}
+                                    alt={`Gallery ${gIndex + 1}`}
+                                    className="w-20 h-20 object-cover rounded border"
+                                  />
+                                )
+                              )
+                            ) : (
+                              <p>Không có hình ảnh trong bộ sưu tập.</p>
+                            )}
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   )}
