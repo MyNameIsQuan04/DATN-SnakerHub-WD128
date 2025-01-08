@@ -84,6 +84,8 @@ const AddProducts = () => {
       formData.append(`galleries[${index}]`, image);
     });
 
+    let shouldProceed = true; // Cờ kiểm tra xem có tiếp tục hay không
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     values.variants.forEach((variant: any, index: number) => {
       if (variant.entry_price >= variant.price) {
@@ -92,26 +94,10 @@ const AddProducts = () => {
             index + 1
           } có giá nhỏ hơn giá nhập. Bạn có chắc chắn không?`
         );
-        if (confirm) {
-          formData.append(
-            `variants[${index}][entry_price]`,
-            variant.entry_price.toString()
-          );
-          formData.append(
-            `variants[${index}][price]`,
-            variant.price.toString()
-          );
-          formData.append(`variants[${index}][size_id]`, variant.size_id);
-          formData.append(`variants[${index}][color_id]`, variant.color_id);
-          formData.append(
-            `variants[${index}][stock]`,
-            variant.stock.toString()
-          );
-
-          if (variant.image) {
-            formData.append(`variants[${index}][image]`, variant.image);
-          }
+        if (!confirm) {
+          shouldProceed = false; // Nếu không xác nhận, cờ được set là false
         } else {
+          // Nếu xác nhận, tiếp tục thêm thông tin vào formData
           formData.append(
             `variants[${index}][entry_price]`,
             variant.entry_price.toString()
@@ -126,14 +112,32 @@ const AddProducts = () => {
             `variants[${index}][stock]`,
             variant.stock.toString()
           );
-          formData.append(`variants[${index}][sku]`, variant.sku);
 
           if (variant.image) {
             formData.append(`variants[${index}][image]`, variant.image);
           }
         }
+      } else {
+        // Nếu giá lớn hơn giá nhập, không cần xác nhận
+        formData.append(
+          `variants[${index}][entry_price]`,
+          variant.entry_price.toString()
+        );
+        formData.append(`variants[${index}][price]`, variant.price.toString());
+        formData.append(`variants[${index}][size_id]`, variant.size_id);
+        formData.append(`variants[${index}][color_id]`, variant.color_id);
+        formData.append(`variants[${index}][stock]`, variant.stock.toString());
+        formData.append(`variants[${index}][sku]`, variant.sku);
+
+        if (variant.image) {
+          formData.append(`variants[${index}][image]`, variant.image);
+        }
       }
     });
+
+    if (!shouldProceed) {
+      return; // Nếu không xác nhận, dừng lại và không gửi formData
+    }
 
     onAddProduct(formData);
   };

@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import { MdOutlineLocalShipping } from "react-icons/md";
 import { FaPhoneVolume } from "react-icons/fa6";
 import { TbTruckReturn } from "react-icons/tb";
-import { GrAnnounce } from "react-icons/gr";
 import { AiOutlineBank } from "react-icons/ai";
 import { Product, Rate } from "../../interfaces/Product";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { GrNext } from "react-icons/gr";
-import { useAuth } from "../../contexts/AuthContext";
 
 const Detail = () => {
-  const { user, logout } = useAuth();
   const [isSizeGuideModalOpen, setIsSizeGuideModalOpen] = useState(false);
 
   const openSizeGuideModal = () => setIsSizeGuideModalOpen(true);
@@ -53,7 +49,7 @@ const Detail = () => {
   const handleTabClick = (index: number) => {
     setActiveTab(index);
   };
-  const handleQuantityChange = (e: any) => {
+  const handleQuantityChange = (e) => {
     const value = e.target.value;
 
     if (/^\d*$/.test(value)) {
@@ -65,10 +61,10 @@ const Detail = () => {
       return;
     }
   };
-
-  const fetchProduct = async (productId: number) => {
+  // Hàm lấy thông tin sản phẩm
+  const fetchProduct = async (productId: string) => {
     try {
-      const response = await axios.get<any>(
+      const response = await axios.get<Product>(
         `http://localhost:8000/api/client/products/${productId}`
       );
       setProduct(response.data.product);
@@ -106,6 +102,7 @@ const Detail = () => {
     }
   }, [id]);
 
+  // Chọn màu sắc
   const handleSelectColor = (colorId: number) => {
     setSelectedColor(colorId);
     filterSizesByColor(colorId);
@@ -113,6 +110,7 @@ const Detail = () => {
     setSelectedVariantPrice(null);
   };
 
+  // Chọn kích thước
   const handleSelectSize = (sizeId: number) => {
     setSelectedSize(sizeId);
     if (selectedColor !== null && product) {
@@ -138,6 +136,7 @@ const Detail = () => {
     }
   };
 
+  // Thêm vào giỏ hàng
   const addToCart = async (
     product: Product,
     selectedColor: unknown,
@@ -145,10 +144,6 @@ const Detail = () => {
   ) => {
     if (!token) {
       toast.error("Hãy đăng nhập để sử dụng chức năng!");
-    }
-    if (stock <= 0) {
-      toast.error("Sản phẩm đã hết hàng");
-      return;
     }
     if (!selectedColor || !selectedSize) {
       alert("Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!");
@@ -187,6 +182,7 @@ const Detail = () => {
     }
   };
 
+  // đánh giá
   useEffect(() => {
     const fetchRatings = async (productID: string) => {
       try {
@@ -262,10 +258,12 @@ const Detail = () => {
     (variant) =>
       variant.color_id === selectedColor && variant.size_id === selectedSize
   );
-  const isSelectedVariantOutOfStock = selectedVariant
-    ? selectedVariant.stock === 0
-    : false;
+
   const stock = selectedVariant ? selectedVariant.stock : 0;
+  const isOutOfStock = product.product_variants.every(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (variant: any) => variant.stock === 0
+  );
 
   return (
     <div className="mt-[100px]">
@@ -413,10 +411,10 @@ const Detail = () => {
             </p>
             <p className="mt-[20px] gap-[15px] cursor-pointer flex text-black text-sm font-semibold uppercase">
               Số lượng còn lại:
-              {stock > 0 ? stock : "..."}
+              {stock > 0 ? stock : " ..."}
             </p>
 
-            {isSelectedVariantOutOfStock && (
+            {isOutOfStock && (
               <p className="mt-4 text-red-500 text-sm font-semibold">
                 Sản phẩm hiện đã hết hàng.
               </p>
@@ -501,10 +499,10 @@ const Detail = () => {
 
             <div className="flex gap-4 mt-5">
               <button
-                disabled={isSelectedVariantOutOfStock}
+                disabled={isOutOfStock}
                 onClick={() => addToCart(product, selectedColor, selectedSize)}
                 className={`border border-orange-500 text-orange-500 px-6 py-2 text-sm rounded-md shadow-md hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out transform ${
-                  isSelectedVariantOutOfStock
+                  isOutOfStock
                     ? "cursor-not-allowed text-black border-orange-500"
                     : ""
                 }`}
@@ -566,7 +564,7 @@ const Detail = () => {
 
         <div className="px-[80px] py-[10px]">
           {activeTab === 0 && (
-            <div className="">
+            <div>
               <div className="flex gap-[5px]">
                 <p className="text-[15px] font-bold">Tên sản phẩm:</p>
                 <p className="text-[15px]">{product.name}</p>
@@ -607,24 +605,24 @@ const Detail = () => {
             <div className="ratings-container">
               {ratings.length > 0 ? (
                 <ul className="rating-list">
-                  {ratings
-                    .filter((rating) => rating.parent_id === null) // Chỉ lấy các bình luận chính
-                    .map((rating) => (
-                      <li key={rating.id} className="rating-item">
-                        <div className="user-info flex items-center gap-3">
-                          <img
-                            src={rating.user.avatar}
-                            alt={`${rating.user.name}'s avatar`}
-                            className="user-avatar w-14 h-14 rounded-full mb-4 object-cover"
-                          />
-                          <div>
-                            <strong>{rating.user.name}</strong>
-                            <p className="rating-date">
-                              {new Date(rating.created_at).toLocaleString()}
-                            </p>
-                          </div>
+                  {ratings.map((rating) => (
+                    <li key={rating.id} className="rating-item">
+                      <div className="user-info flex items-center gap-3">
+                        <img
+                          src={rating.user.avatar}
+                          alt={`${rating.user.name}'s avatar`}
+                          className="user-avatar w-14 h-14 rounded-full mb-4 object-cover"
+                        />
+                        <div>
+                          <strong>{rating.user.name}</strong>
+                          <p className="rating-date">
+                            {new Date(rating.created_at).toLocaleString()}
+                          </p>
                         </div>
-                        <div className="rating-content mb-3">
+                      </div>
+                      <div className="rating-content mb-3">
+                        {/* Chỉ hiển thị sao đánh giá nếu không phải bình luận trả lời của admin */}
+                        {!rating.is_admin_reply && (
                           <div className="rating-stars">
                             {Array.from({ length: 5 }, (_, index) => (
                               <span
@@ -639,41 +637,45 @@ const Detail = () => {
                               </span>
                             ))}
                           </div>
-                          <p>Nội dung đánh giá: {rating.content}</p>
-                          {user?.role_id !== 3 && <p>Trả lời</p>}
-                        </div>
-
-                        {/* Hiển thị các trả lời */}
-                        <ul className="reply-list ml-6">
-                          {ratings
-                            .filter((reply) => reply.parent_id === rating.id) // Lọc các bình luận trả lời
-                            .map((reply) => (
-                              <li key={reply.id} className="reply-item">
-                                <div className="user-info flex items-center gap-3">
-                                  <img
-                                    src={reply.user.avatar}
-                                    alt={`${reply.user.name}'s avatar`}
-                                    className="user-avatar w-10 h-10 rounded-full mb-2 object-cover"
-                                  />
-                                  <div>
-                                    <strong>{reply.user.name}</strong>
-                                    <p className="reply-date">
-                                      {new Date(
-                                        reply.created_at
-                                      ).toLocaleString()}
-                                    </p>
-                                  </div>
+                        )}
+                        <div
+                          dangerouslySetInnerHTML={{ __html: rating.content }}
+                        />
+                        {/* Hiển thị phân cấp nếu là trả lời của admin */}
+                        {rating.replies &&
+                          rating.replies.map((reply) => (
+                            <div
+                              key={reply.id}
+                              className="reply-item ml-4 mt-2 p-2 bg-gray-100 rounded-md shadow-sm"
+                            >
+                              <div className="user-info flex items-center gap-3">
+                                <img
+                                  src={reply.user.avatar}
+                                  alt={`${reply.user.name}'s avatar`}
+                                  className="user-avatar w-10 h-10 rounded-full object-cover"
+                                />
+                                <div>
+                                  <strong className="text-blue-600">
+                                    {reply.user.name} (Admin)
+                                  </strong>
+                                  <p className="rating-date text-gray-600">
+                                    {new Date(
+                                      reply.created_at
+                                    ).toLocaleString()}
+                                  </p>
                                 </div>
-                                <div className="reply-content">
-                                  <p>Nội dung trả lời: {reply.content}</p>
-                                </div>
-                              </li>
-                            ))}
-                        </ul>
-
-                        <hr className="mb-3" />
-                      </li>
-                    ))}
+                              </div>
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: reply.content,
+                                }}
+                              />
+                            </div>
+                          ))}
+                      </div>
+                      <hr className="mb-3" />
+                    </li>
+                  ))}
                 </ul>
               ) : (
                 <p>Chưa có đánh giá nào.</p>

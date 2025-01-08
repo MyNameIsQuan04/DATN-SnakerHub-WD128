@@ -99,6 +99,7 @@ const EditProduct = () => {
       }
     }
   };
+
   const validationSchema = Yup.object({
     name: Yup.string().required("Tên sản phẩm không được để trống"),
     price: Yup.number()
@@ -125,7 +126,7 @@ const EditProduct = () => {
       )
       .min(1, "Cần ít nhất một biến thể"),
   });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const onSubmit = (values: any) => {
     const formData = new FormData();
     formData.append("name", values.name);
@@ -138,7 +139,6 @@ const EditProduct = () => {
       formData.append("thumbnail", values.thumbnail);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     values.galleries.forEach((gallery: any, index: number) => {
       if (gallery.image_path instanceof File) {
         formData.append(`galleries[${index}][id]`, gallery.id.toString());
@@ -146,18 +146,24 @@ const EditProduct = () => {
       }
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let shouldProceed = true; // Cờ để kiểm tra có tiếp tục hay không
+
     values.variants.forEach((variant: any, index: number) => {
       if (variant.id) {
         formData.append(`variants[${index}][id]`, variant.id);
       }
+
+      // Kiểm tra giá của biến thể
       if (variant.price <= variant.entry_price) {
         const confirm = window.confirm(
           `Biến thể ở vị trí ${index + 1} (Mã SKU: ${
             variant.sku
           }) có giá nhỏ hơn giá nhập. Bạn có chắc chắn không?`
         );
-        if (confirm) {
+        if (!confirm) {
+          shouldProceed = false; // Nếu không đồng ý, cờ shouldProceed sẽ là false
+        } else {
+          // Nếu đồng ý, tiếp tục thêm thông tin vào formData
           formData.append(
             `variants[${index}][entry_price]`,
             variant.entry_price.toString()
@@ -178,6 +184,11 @@ const EditProduct = () => {
           }
         }
       } else {
+        // Nếu giá lớn hơn giá nhập, không cần xác nhận
+        formData.append(
+          `variants[${index}][entry_price]`,
+          variant.entry_price.toString()
+        );
         formData.append(`variants[${index}][price]`, variant.price.toString());
         formData.append(`variants[${index}][size_id]`, variant.size_id);
         formData.append(`variants[${index}][color_id]`, variant.color_id);
@@ -189,12 +200,16 @@ const EditProduct = () => {
       }
     });
 
-    // Kiểm tra FormData trước khi gửi
+    if (!shouldProceed) {
+      return; // Nếu cờ shouldProceed là false, dừng lại và không tiếp tục
+    }
+
     checkFormData(formData);
 
-    // Gửi dữ liệu lên server
+    // Gọi hàm cập nhật nếu tất cả đã được xử lý
     onUpdateProduct(formData, id);
   };
+
   return (
     <div className="container mx-auto p-8">
       <h1 className="text-3xl font-semibold mb-6">Sửa Sản Phẩm</h1>

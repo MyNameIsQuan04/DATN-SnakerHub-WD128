@@ -26,6 +26,7 @@ export const useProvinces = () => {
           "https://provinces.open-api.vn/api/p/"
         );
         setProvinces(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching provinces:", error);
       }

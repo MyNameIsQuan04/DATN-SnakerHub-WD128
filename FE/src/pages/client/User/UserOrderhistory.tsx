@@ -277,7 +277,7 @@ const UserOrderHistory = () => {
             "Đã giao hàng",
             "Hoàn thành",
             "Yêu cầu trả hàng",
-            "Xử lý yêu cầu trả hàng", // Giữ tên gốc trong mảng
+            "Xử lý yêu cầu trả hàng",
             "Trả hàng",
             "Đã hủy",
           ].map((status) => (
@@ -479,6 +479,7 @@ const UserOrderHistory = () => {
                           item.productVariantImage ||
                           "https://via.placeholder.com/150"
                         }
+                        alt="Product"
                         className="w-24 h-24 object-cover rounded-lg shadow-md"
                       />
                       <div className="flex flex-col w-[200px]">
@@ -531,7 +532,7 @@ const UserOrderHistory = () => {
                               <div className="flex gap-[10px]">
                                 <img
                                   src={
-                                    selectedItem.image ||
+                                    selectedItem.productVariantImage ||
                                     "https://via.placeholder.com/150"
                                   }
                                   alt="Product"
@@ -621,7 +622,7 @@ const UserOrderHistory = () => {
                 {order.status === "Đã xác nhận" && (
                   <div className="w-1/2 flex items-center gap-2 ">
                     <div className="bg-green-400 border rounded-full">
-                      <TiTickOutline  className=" w-6 h-6" />
+                      <TiTickOutline className=" w-6 h-6" />
                     </div>
                     <h1>
                       {order.status} {formatDate(order.updated_at)}

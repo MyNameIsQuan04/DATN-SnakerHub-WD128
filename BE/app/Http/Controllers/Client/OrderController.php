@@ -210,7 +210,8 @@ class OrderController extends Controller
                 foreach ($order->orderItems as $orderItem) {
                     $product_id = Product::where('name', $orderItem['nameProduct'])->value('id');
 
-                    $productVariant = Product_Variant::where('color', $orderItem['color'])->where('size', $orderItem['size'])
+                    $productVariant = Product_Variant::where('color_id', Color::where('name', $orderItem->color)->value('id'))
+                        ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
                         ->where('product_id', $product_id)->first();
 
                     $stock = $productVariant['stock'] + $orderItem['quantity'];
@@ -296,10 +297,9 @@ class OrderController extends Controller
             ]);
 
 
-            $order->load('orderItems.productVariant.product', 'orderItems.productVariant.size', 'orderItems.productVariant.color', 'customer');
+            $order->load('orderItems', 'customer');
 
-
-            SendKhieuNaiOrderEmail::dispatch($order);
+            // SendKhieuNaiOrderEmail::dispatch($order);
             $order->orderItems->map(function ($orderItem) {
                 $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
                     ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
