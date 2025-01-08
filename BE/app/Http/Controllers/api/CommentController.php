@@ -89,7 +89,7 @@ class CommentController extends Controller
         'star' => null, // Không gắn số sao cho trả lời
         'parent_id' => $comment->id, // Gắn ID của bình luận được trả lời
           ];
-        $reply = Comment::create($replyData);
+        $reply = Comment::create($replyData);;
 
 
         return response()->json(['message' => 'Reply added successfully.', 'reply' => $reply], 201);
