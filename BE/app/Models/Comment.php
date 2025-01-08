@@ -17,6 +17,7 @@ class Comment extends Model
         'product_id',
         'content',
         'star',
+        
     ];
     public function user()
     {

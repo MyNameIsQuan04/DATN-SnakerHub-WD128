@@ -15,9 +15,10 @@ class UserApiController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+    //  return Auth::id;
+        // if (auth()->user()->role()->role !== 'Admin') {
+        //     return response()->json(['message' => 'Unauthorized'], 403);
+        // }
 
         $users = User::withTrashed()->get();
         return response()->json($users);
