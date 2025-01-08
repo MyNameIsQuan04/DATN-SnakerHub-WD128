@@ -43,8 +43,8 @@ class CartController extends Controller
         $user = JWTAuth::toUser($request->token);
         $request->validate([
             'id' => 'required|integer|exists:products,id',
-            'color' => 'required|integer|exists:colors,name',
-            'size' => 'required|integer|exists:sizes,name',
+            'color' => 'required|string|exists:colors,name',
+            'size' => 'required|string|exists:sizes,name',
             'quantity' => 'required|integer|min:1'
         ]);
 
