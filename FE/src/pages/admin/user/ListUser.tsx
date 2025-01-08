@@ -30,7 +30,7 @@ const ListUser = () => {
         });
         setListUser(response.data);
       } catch (error) {
-        console.error("Error fetching user data:", error)
+        console.error("Error fetching user data:", error);
         setError("An error occurred while fetching user data.");
       } finally {
         setIsLoading(false);
@@ -140,9 +140,7 @@ const ListUser = () => {
       if (response.status === 200) {
         setListUser((prevUsers) =>
           prevUsers.map((user) =>
-            user.id === selectedUser.id
-              ? { ...user, delete_at: null }
-              : user
+            user.id === selectedUser.id ? { ...user, delete_at: null } : user
           )
         );
         toast.success("User has been unlocked!");
@@ -244,7 +242,6 @@ const ListUser = () => {
           </div>
         </>
       )}
-
 
       {/* Modal */}
       {isModalOpen && selectedUser && (

@@ -15,9 +15,6 @@ class UserApiController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
 
         $users = User::withTrashed()->get();
         return response()->json($users);
@@ -62,9 +59,7 @@ class UserApiController extends Controller
         $user = User::findOrFail($id);
 
         // Admin có thể xem bất kỳ thông tin người dùng nào
-        if (auth()->user()->role === 'admin') {
-            return response()->json($user);
-        }
+
 
         // User chỉ có thể xem thông tin của chính mình
         if (auth()->user()->id === $user->id) {
@@ -124,9 +119,7 @@ class UserApiController extends Controller
     public function lockAccount($id)
     {
         // Kiểm tra quyền admin
-        if (auth()->user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+
 
         // Tìm người dùng và kiểm tra xem đã bị xóa hay chưa
         $user = User::withTrashed()->findOrFail($id);
@@ -147,9 +140,7 @@ class UserApiController extends Controller
     public function unlockAccount($id)
     {
         // Kiểm tra quyền admin
-        if (auth()->user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+
 
         // Tìm người dùng kể cả khi đã bị xóa
         $user = User::withTrashed()->findOrFail($id);

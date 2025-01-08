@@ -10,10 +10,11 @@ use App\Http\Controllers\api\SizeApiController;
 use App\Http\Controllers\api\UserApiController;
 use App\Http\Controllers\api\VoucherController;
 use App\Http\Controllers\Client\CartController;
-use App\Http\Controllers\Client\VoucherController as ClientVoucherController;
+
 
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ColorApiController;
+use App\Http\Controllers\api\CommentController;
 use App\Http\Controllers\api\DashboardController;
 use App\Http\Controllers\Client\CommentController as ClientCommentController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
@@ -24,7 +25,7 @@ use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Client\ColorController;
 use App\Http\Controllers\Client\CustomerController;
 use App\Http\Controllers\Client\SizeController;
-use App\Http\Controllers\api\CommentController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -117,7 +118,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/client/user/{user}', [ClientController::class, 'show']);
 
     // Hiển thị danh sách người dùng (Admin chỉ có thể truy cập)
-    Route::get('/users', [UserApiController::class, 'index'])->middleware(['auth:api','role:Admin, Saler']);
+    Route::get('/users', [UserApiController::class, 'index'])->middleware('role:Admin');
 
     // Hiển thị thông tin người dùng (cho cả Admin và User)
     Route::get('/users/{id}', [UserApiController::class, 'show']);
@@ -140,6 +141,7 @@ Route::middleware('auth:api')->group(function () {
     // Cập nhật thông tin của chính người dùng đã đăng nhập
     // Route::put('/users/{id}', [UserApiController::class, 'updateProfile']);
 });
+
 Route::get('/vouchers', [VoucherController::class, 'index'])->name('voucher.index');
 Route::post('/voucher', [VoucherController::class, 'store'])->name('voucher.store');
 Route::put('/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
@@ -170,8 +172,8 @@ Route::prefix('client')->group(function () {
     Route::get('colors/{id}', [ColorController::class, 'show']);
     Route::get('sizes', [SizeController::class, 'index']);
     Route::get('sizes/{id}', [SizeController::class, 'show']);
-    Route::get('vouchers', [ClientVoucherController::class, 'index']);
-    Route::get('vouchers/{id}', [ClientVoucherController::class, 'show']);
+    // Route::get('vouchers', [ClientVoucherController::class, 'index']);
+    // Route::get('vouchers/{id}', [ClientVoucherController::class, 'show']);
 });
 
 Route::prefix('comments')->middleware('auth:api')->group(function () {
