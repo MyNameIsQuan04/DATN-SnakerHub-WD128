@@ -10,11 +10,9 @@ import { Link } from "react-router-dom";
 const token = localStorage.getItem("access_token");
 
 const ListNotification = () => {
-  const [notifications, setNotifications] = useState<Order[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newestNotificationId, setNewestNotificationId] = useState<
-    number | null
-  >(null);
+  const [newestNotificationId, setNewestNotificationId] = useState<number | null>(null);
 
   const fetchNotifications = async () => {
     try {
@@ -24,13 +22,12 @@ const ListNotification = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-  
+
       const mergedData: Notification[] = orders.map((item: Order) => ({
         ...item,
         type: "Đơn hàng",
       }));
-  
-      // Sắp xếp dựa trên thời gian mới nhất (created_at hoặc updated_at)
+
       mergedData.sort((a, b) => {
         const dateA = Math.max(
           new Date(a.created_at).getTime(),
@@ -42,7 +39,7 @@ const ListNotification = () => {
         );
         return dateB - dateA;
       });
-  
+
       setNotifications(mergedData);
       setNewestNotificationId(
         mergedData.length > 0 ? Number(mergedData[0].id) : null
@@ -53,7 +50,6 @@ const ListNotification = () => {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     fetchNotifications();
@@ -115,38 +111,10 @@ const ListNotification = () => {
                 />
                 <div className="flex flex-col">
                   <h2 className="text-lg font-semibold text-gray-800">
-                    {notification.status === "Chờ xử lý"
-                      ? `Đơn hàng mới được đặt từ người dùng`
-                      : notification.status === "Yêu cầu trả hàng"
-                      ? `Yêu cầu trả hàng`
-                      : notification.status === "Đã hủy"
-                      ? `Đơn hàng được hủy từ người dùng`
-                      : "Đơn hàng được đặt từ người dùng"}
+                    {getStatusText(notification.status)}
                   </h2>
                   <p className="text-sm text-gray-700 mt-2">
-                    {notification.status === "Chờ xử lý"
-                      ? `Đơn hàng ${
-                          notification.order_code
-                        } được đặt từ người dùng ${
-                          notification.customer?.name || "không xác định"
-                        }`
-                      : notification.status === "Yêu cầu trả hàng"
-                      ? `Yêu cầu trả hàng đơn hàng ${
-                          notification.order_code
-                        } từ người dùng ${
-                          notification.customer?.name || "không xác định"
-                        }`
-                      : notification.status === "Đã hủy"
-                      ? `Đơn hàng ${
-                          notification.order_code
-                        } được hủy từ người dùng ${
-                          notification.customer?.name || "không xác định"
-                        }`
-                      : `Đơn hàng ${
-                          notification.order_code
-                        } được hủy từ người dùng ${
-                          notification.customer?.name || "không xác định"
-                        }`}
+                    {getStatusDescription(notification.status, notification)}
                   </p>
                   <p className="text-sm text-gray-700 mt-1">
                     {notification.status === "Yêu cầu trả hàng" ? (
@@ -190,6 +158,48 @@ const ListNotification = () => {
   );
 };
 
+function getStatusText(status: Order["status"]) {
+  switch (status) {
+    case "Chờ xử lý":
+      return `Đơn hàng mới được đặt từ người dùng`;
+    case "Yêu cầu trả hàng":
+      return `Yêu cầu trả hàng`;
+    case "Đã hủy":
+      return `Đơn hàng được hủy từ người dùng`;
+    case "Đã giao hàng":
+      return `Đơn hàng đã được giao cho người dùng`;
+    case "Đang vận chuyển":
+      return `Đơn hàng đang trong quá trình vận chuyển`;
+    case "Hoàn thành":
+      return `Đơn hàng đã hoàn thành`;
+    case "Đã xác nhận":
+      return `Đơn hàng chờ được xác nhận từ Admin`;
+    default:
+      return `Đơn hàng được đặt từ người dùng`;
+  }
+}
+
+function getStatusDescription(status: Order["status"], notification: Notification) {
+  switch (status) {
+    case "Chờ xử lý":
+      return `Đơn hàng ${notification.order_code} được đặt từ người dùng ${notification.customer?.name || "không xác định"}`;
+    case "Yêu cầu trả hàng":
+      return `Yêu cầu trả hàng đơn hàng ${notification.order_code} từ người dùng ${notification.customer?.name || "không xác định"}`;
+    case "Đã hủy":
+      return `Đơn hàng ${notification.order_code} được hủy từ người dùng ${notification.customer?.name || "không xác định"}`;
+    case "Đã giao hàng":
+      return `Đơn hàng ${notification.order_code} đã được giao cho người dùng ${notification.customer?.name || "không xác định"}`;
+    case "Đang vận chuyển":
+      return `Đơn hàng ${notification.order_code} đang được vận chuyển đến người dùng ${notification.customer?.name || "không xác định"}`;
+    case "Hoàn thành":
+      return `Đơn hàng ${notification.order_code} đã hoàn thành cho người dùng ${notification.customer?.name || "không xác định"}`;
+    case "Đã xác nhận":
+      return `Đơn hàng ${notification.order_code} đã được xác nhận bởi người dùng ${notification.customer?.name || "không xác định"}`;
+    default:
+      return `Đơn hàng ${notification.order_code} được đặt từ người dùng ${notification.customer?.name || "không xác định"}`;
+  }
+}
+
 function getStatusColor(status: Order["status"]) {
   switch (status) {
     case "Chờ xử lý":
@@ -198,6 +208,14 @@ function getStatusColor(status: Order["status"]) {
       return "#f59e0b";
     case "Đã hủy":
       return "#ef4444";
+    case "Đã giao hàng":
+      return "#10b981";
+    case "Đang vận chuyển":
+      return "#fbbf24";
+    case "Hoàn thành":
+      return "#6b7280";
+    case "Đã xác nhận":
+      return "#3b82f6"; // Màu xanh dương cho "Đã xác nhận"
     default:
       return "#6b7280";
   }

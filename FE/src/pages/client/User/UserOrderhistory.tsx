@@ -81,7 +81,7 @@ const UserOrderHistory = () => {
     return `${day}/${month}/${year}`;
   };
   const fetchOrders = async () => {
-    setLoading(true);
+    // setLoading(true);
     setError(null);
     try {
       const response = await axios.get(
@@ -242,8 +242,8 @@ const UserOrderHistory = () => {
 
   useEffect(() => {
     fetchOrders();
-    // const interval = setInterval(fetchOrderDetail, 5000);
-    // return () => clearInterval(interval);
+    const interval = setInterval(fetchOrders, 4000);
+    return () => clearInterval(interval);
   }, [token]);
 
   const statusMapping = {

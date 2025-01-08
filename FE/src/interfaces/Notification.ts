@@ -1,16 +1,3 @@
-export interface Review {
-  id: string;
-  user: string;
-  content: string;
-  timestamp: string;
-}
-
-export interface Complaint {
-  id: string;
-  user: string;
-  content: string;
-  timestamp: string;
-}
 
 
 export interface Notification {
@@ -32,5 +19,9 @@ export interface Notification {
   customer?: {
     name: string;
   };
+  order_items: {
 
+    productVariantImage: string;
+
+  }[];
 }

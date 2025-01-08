@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\api\SlideController;
-use App\Http\Controllers\api\HistoryController;
 use App\Http\Controllers\api\ProductController;
 use App\Http\Controllers\api\SizeApiController;
 use App\Http\Controllers\api\UserApiController;
@@ -13,18 +12,18 @@ use App\Http\Controllers\api\VoucherController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ColorApiController;
+use App\Http\Controllers\api\CommentController;
 use App\Http\Controllers\api\DashboardController;
 use App\Http\Controllers\Client\CommentController as ClientCommentController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
-use App\Http\Controllers\Client\VoucherController as ClientVoucherController;
 use App\Http\Controllers\Client\CategoryControlller as ClientCategoryControlller;
 use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Client\ColorController;
 use App\Http\Controllers\Client\CustomerController;
 use App\Http\Controllers\Client\SizeController;
-use App\Http\Controllers\api\CommentController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -65,8 +64,8 @@ foreach ($crud as $key => $controller) {
 
 Route::get('client/categories', [ClientCategoryControlller::class, 'index']);
 
-Route::post('dashboard/daily', [DashboardController::class, 'daily']);
-Route::post('dashboard/monthly', [DashboardController::class, 'monthly']);
+Route::get('dashboard/daily', [DashboardController::class, 'daily']);
+Route::get('dashboard/monthly', [DashboardController::class, 'monthly']);
 Route::get('dashboard', [DashboardController::class, 'index']);
 Route::get('client/customers', [CustomerController::class, 'index']);
 Route::get('client/customers/{customer}', [CustomerController::class, 'show']);
@@ -126,13 +125,13 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/users/{id}', [UserApiController::class, 'update']);
 
     // Xóa người dùng (Admin)
-    Route::delete('/users/{id}', [UserApiController::class, 'destroy'])->middleware('role:admin');
+    Route::delete('/users/{id}', [UserApiController::class, 'destroy'])->middleware('role:Admin');
 
     // Khóa tài khoản người dùng (Admin)
-    Route::post('/users/{id}/lock', [UserApiController::class, 'lockAccount'])->middleware('role:admin');
+    Route::post('/users/{id}/lock', [UserApiController::class, 'lockAccount'])->middleware('role:Admin');
 
     // Mở khóa tài khoản người dùng (Admin)
-    Route::post('/users/{id}/unlock', [UserApiController::class, 'unlockAccount'])->middleware('role:admin');
+    Route::post('/users/{id}/unlock', [UserApiController::class, 'unlockAccount'])->middleware('role:Admin');
 
     // Hiển thị thông tin của chính người dùng đã đăng nhập
     // Route::get('/profile', [UserApiController::class, 'profile']);
@@ -140,6 +139,7 @@ Route::middleware('auth:api')->group(function () {
     // Cập nhật thông tin của chính người dùng đã đăng nhập
     // Route::put('/users/{id}', [UserApiController::class, 'updateProfile']);
 });
+
 Route::get('/vouchers', [VoucherController::class, 'index'])->name('voucher.index');
 Route::post('/voucher', [VoucherController::class, 'store'])->name('voucher.store');
 Route::put('/voucher/{id}', [VoucherController::class, 'update'])->name('voucher.update');
@@ -170,8 +170,8 @@ Route::prefix('client')->group(function () {
     Route::get('colors/{id}', [ColorController::class, 'show']);
     Route::get('sizes', [SizeController::class, 'index']);
     Route::get('sizes/{id}', [SizeController::class, 'show']);
-    Route::get('vouchers', [ClientVoucherController::class, 'index']);
-    Route::get('vouchers/{id}', [ClientVoucherController::class, 'show']);
+    // Route::get('vouchers', [ClientVoucherController::class, 'index']);
+    // Route::get('vouchers/{id}', [ClientVoucherController::class, 'show']);
 });
 
 Route::prefix('comments')->middleware('auth:api')->group(function () {

@@ -185,7 +185,7 @@ const UserAnnouncement = () => {
                 </p>
                 <div className="mt-4">
                   <Link
-                    to={`/client/order-detail/${order.id}`}
+                    to={`/profile/order-detail/${order.id}`}
                     onClick={() => handleViewDetail(order.id)}
                   >
                     <button className="px-4 py-2 text-gray-600 rounded-md hover:text-gray-700 hover:font-medium border-2 border-gray-500 transition-colors duration-200">

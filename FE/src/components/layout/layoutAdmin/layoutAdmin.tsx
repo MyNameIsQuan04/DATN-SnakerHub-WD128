@@ -1,3 +1,4 @@
+import { useEffect, useState, useRef } from "react";
 import {
   FaHome,
   FaList,
@@ -13,12 +14,52 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { useAuth } from "../../../contexts/AuthContext";
 import { AiFillSetting } from "react-icons/ai";
+import axios from "axios";
+import { Order } from "../../../interfaces/Order";
 
 const LayoutAdmin = () => {
   const { user, logout } = useAuth();
-  const location = useLocation(); // Lấy đường dẫn hiện tại
+  const location = useLocation();
+  const [hasNewOrder, setHasNewOrder] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [orders, setOrders] = useState<Order[]>([]);
+  const prevOrdersRef = useRef<Order[]>([]);
 
-  // Danh sách menu items
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/orders");
+      const fetchedOrders: Order[] = response.data;
+
+      // Kiểm tra sự thay đổi chi tiết của từng đơn hàng
+      let hasChange = false;
+      for (const fetchedOrder of fetchedOrders) {
+        const prevOrder = prevOrdersRef.current.find(
+          (order) => order.id === fetchedOrder.id
+        );
+        if (!prevOrder || JSON.stringify(prevOrder) !== JSON.stringify(fetchedOrder)) {
+          hasChange = true;
+          break;
+        }
+      }
+
+      if (hasChange) {
+        setHasNewOrder(true); 
+        setOrders(fetchedOrders); 
+      }
+
+      // Lưu lại dữ liệu hiện tại để so sánh lần sau
+      prevOrdersRef.current = fetchedOrders; 
+    } catch (error) {
+      console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(fetchOrders, 5000); 
+    fetchOrders();
+    return () => clearInterval(interval); 
+  }, []);
+
   const menuItems = [
     {
       path: "/admin",
@@ -27,8 +68,18 @@ const LayoutAdmin = () => {
     },
     {
       path: "/admin/notification",
-      icon: <MdOutlineNotificationsActive className="mr-2" />,
+      icon: (
+        <div className="relative cursor-pointer">
+          <MdOutlineNotificationsActive className="mr-2" />
+          {hasNewOrder && (
+            <span className="absolute top-[-5px] right-[-160px] p-2 bg-red-500 text-white text-xs font-bold rounded-md h-5 w-8 flex items-center justify-center animate-bounce shadow-lg">
+              Mới
+            </span>
+          )}
+        </div>
+      ),
       label: "Thông báo",
+      onClick: () => setHasNewOrder(false), // Ẩn thông báo khi nhấn vào
     },
     {
       path: "/admin/user",
@@ -84,8 +135,6 @@ const LayoutAdmin = () => {
               className="h-28 w-36 mx-auto p-2 rounded-md shadow-lg"
             />
           </div>
-
-          {/* Menu có thể cuộn */}
           <div className="mt-32 p-8 overflow-y-auto scrollbar-hide">
             <ul className="space-y-4 w-full">
               {menuItems.map((item) => (
@@ -98,6 +147,7 @@ const LayoutAdmin = () => {
                     ? "bg-white text-black"
                     : "text-white hover:bg-white hover:text-black"
                 }`}
+                    onClick={item.onClick}
                   >
                     {item.icon}
                     {item.label}
@@ -107,8 +157,6 @@ const LayoutAdmin = () => {
             </ul>
           </div>
         </div>
-
-        {/* Nội dung cuộn bên phải */}
         <div className="ml-[16.666%] w-5/6 p-6 overflow-auto h-screen scrollbar-hide">
           <div className="bg-white border border-gray-300 mb-4 rounded-lg shadow-md px-6 py-4 flex items-center justify-between">
             <div className="flex items-center"></div>
@@ -143,7 +191,6 @@ const LayoutAdmin = () => {
                   </button>
                 </h2>
               </div>
-
               <img
                 src={user?.avatar || "https://via.placeholder.com/150"}
                 alt="User Avatar"
