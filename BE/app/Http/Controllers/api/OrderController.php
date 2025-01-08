@@ -27,14 +27,6 @@ class OrderController extends Controller
     {
         $orders = Order::orderByDesc('id')->get();
         $orders->load('customer', 'orderItems');
-        $orders->map(function ($order){
-            $order->orderItems->map(function ($orderItem){
-                $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
-                    ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                    ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
-                    ->value('image');
-            });
-        });
         return $orders;
     }
 
@@ -47,12 +39,6 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load('customer.user', 'orderItems');
-        $order->orderItems->map(function ($orderItem) {
-            $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
-                ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
-                ->value('image');
-        });
         return $order;
     }
 
@@ -90,10 +76,10 @@ class OrderController extends Controller
                         ]);
                     }
                     foreach ($order->orderItems as $orderItem) {
-                        $product_id = Product::where('name',$orderItem['nameProduct'])->value('id');
-                        
-                        $productVariant = Product_Variant::where('color',$orderItem['color'])->where('size',$orderItem['size'])
-                        ->where('product_id',$product_id)->first();
+                        $product_id = Product::where('name', $orderItem['nameProduct'])->value('id');
+
+                        $productVariant = Product_Variant::where('color', $orderItem['color'])->where('size', $orderItem['size'])
+                            ->where('product_id', $product_id)->first();
 
                         $stock = $productVariant['stock'] + $orderItem['quantity'];
                         $productVariant->update([
@@ -128,12 +114,6 @@ class OrderController extends Controller
                 SendOrderStatusEmail::dispatch($order, $newStatus);
 
                 HistoryService::log('orders', $order->id, 'update', $currentStatus, $newStatus);
-                $order->orderItems->map(function ($orderItem) {
-                    $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
-                        ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                        ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
-                        ->value('image');
-                });
             });
 
             return response()->json([

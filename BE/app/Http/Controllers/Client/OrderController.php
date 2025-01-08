@@ -40,15 +40,6 @@ class OrderController extends Controller
         })->orderByDesc('id')->get();
         $orders->load('orderItems', 'customer');
 
-        $orders->map(function ($order) {
-            $order->orderItems->map(function ($orderItem) {
-                $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
-                    ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                    ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
-                    ->value('image');
-            });
-        });
-
         return $orders;
     }
 
@@ -125,6 +116,7 @@ class OrderController extends Controller
                     'size' => Size::where('id', $productVariant['size_id'])->value('name'),
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
+                    'image' => $productVariant['image'],
                 ];
 
                 $cart = Cart::where('user_id', $userId)->first();
@@ -161,13 +153,6 @@ class OrderController extends Controller
             // SendNewOrderEmail::dispatch($order);
             DB::commit();
 
-            $order->orderItems->map(function ($orderItem) {
-                $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
-                    ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                    ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
-                    ->value('image');
-            });
-
             return response()->json([
                 'success' => true,
                 'message' => 'thành công',
@@ -188,12 +173,6 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load('orderItems', 'customer');
-        $order->orderItems->map(function ($orderItem) {
-            $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
-                ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
-                ->value('image');
-        });
         return $order;
     }
 
@@ -235,12 +214,6 @@ class OrderController extends Controller
                     'status' => $dataValidate['status'],
                 ]);
                 $order->load('orderItems', 'customer');
-                $order->orderItems->map(function ($orderItem) {
-                    $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
-                        ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                        ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
-                        ->value('image');
-                });
                 return $order;
             } else if ($order['status'] === 'Đã giao hàng') {
                 $dataValidate = $request->validate([
@@ -250,12 +223,6 @@ class OrderController extends Controller
                     'status' => $dataValidate['status'],
                 ]);
                 $order->load('orderItems', 'customer');
-                $order->orderItems->map(function ($orderItem) {
-                    $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
-                        ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                        ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
-                        ->value('image');
-                });
                 return $order;
             } else if ($order['status'] === 'Yêu cầu trả hàng') {
                 $dataValidate = $request->validate([
@@ -266,12 +233,6 @@ class OrderController extends Controller
                     'reason' => null,
                 ]);
                 $order->load('orderItems', 'customer');
-                $order->orderItems->map(function ($orderItem) {
-                    $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
-                        ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                        ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
-                        ->value('image');
-                });
                 return $order;
             } else {
                 return response()->json([
@@ -305,12 +266,6 @@ class OrderController extends Controller
             $order->load('orderItems', 'customer');
 
             // SendKhieuNaiOrderEmail::dispatch($order);
-            $order->orderItems->map(function ($orderItem) {
-                $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
-                    ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                    ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
-                    ->value('image');
-            });
 
             return $order;
         } else {
@@ -394,6 +349,7 @@ class OrderController extends Controller
                     'size' => Size::where('id', $productVariant['size_id'])->value('name'),
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
+                    
                 ];
 
                 $cart = Cart::where('user_id', $userId)->first();
