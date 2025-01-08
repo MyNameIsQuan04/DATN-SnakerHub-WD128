@@ -82,7 +82,7 @@ class CommentController extends Controller
         // Reply logic
         // $reply = new Comment();
         $replyData = [
-        'user_id' => auth()->id(), // Lấy ID của admin (hoặc người dùng hiện tại)
+        'user_id' => Auth::id, // Lấy ID của admin (hoặc người dùng hiện tại)
         'product_id' => $comment->product_id, // Gắn cùng sản phẩm
         'order_item_id' => $comment->order_item_id, // Gắn cùng order item nếu cần
         'content' => $request->reply, // Nội dung trả lời
