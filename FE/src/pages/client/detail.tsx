@@ -126,15 +126,15 @@ const Detail = () => {
   };
 
   // Lọc các kích thước có sẵn dựa trên màu sắc
-  const filterSizesByColor = (colorId: number) => {
-    if (product) {
-      const sizesForColor = product.product_variants
-        .filter((variant) => variant.color.id === colorId)
-        .map((variant) => variant.size.id);
+  // const filterSizesByColor = (colorId: number) => {
+  //   if (product) {
+  //     const sizesForColor = product.product_variants
+  //       .filter((variant) => variant.color.id === colorId)
+  //       .map((variant) => variant.size.id);
 
-      setAvailableSizes(sizesForColor);
-    }
-  };
+  //     setAvailableSizes(sizesForColor);
+  //   }
+  // };
 
   // Thêm vào giỏ hàng
   const addToCart = async (
@@ -239,27 +239,27 @@ const Detail = () => {
     return <div>Đang tải...</div>;
   }
 
-  const colors = Array.from(
-    new Set(product.product_variants.map((variant) => variant.color.id))
-  ).map(
-    (colorId) =>
-      product.product_variants.find((variant) => variant.color.id === colorId)
-        ?.color
-  );
+  // // const colors = Array.from(
+  // //   new Set(product.product_variants.map((variant) => variant.color.id))
+  // // ).map(
+  // //   (colorId) =>
+  // //     product.product_variants.find((variant) => variant.color.id === colorId)
+  // //       ?.color
+  // // );
 
-  const sizes = Array.from(
-    new Set(product.product_variants.map((variant) => variant.size.id))
-  ).map(
-    (sizeId) =>
-      product.product_variants.find((variant) => variant.size.id === sizeId)
-        ?.size
-  );
-  const selectedVariant = product.product_variants.find(
-    (variant) =>
-      variant.color_id === selectedColor && variant.size_id === selectedSize
-  );
+  // // const sizes = Array.from(
+  // //   new Set(product.product_variants.map((variant) => variant.size.id))
+  // // ).map(
+  // //   (sizeId) =>
+  // //     product.product_variants.find((variant) => variant.size.id === sizeId)
+  // //       ?.size
+  // // );
+  // // const selectedVariant = product.product_variants.find(
+  // //   (variant) =>
+  // //     variant.color_id === selectedColor && variant.size_id === selectedSize
+  // // );
 
-  const stock = selectedVariant ? selectedVariant.stock : 0;
+  // const stock = selectedVariant ? selectedVariant.stock : 0;
   const isOutOfStock = product.product_variants.every(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (variant: any) => variant.stock === 0
@@ -364,43 +364,13 @@ const Detail = () => {
 
             <div className="flex mt-6 items-center">
               <p className="text-sm font-semibold mr-8">MÀU SẮC:</p>
-              <div className="flex gap-4">
-                {colors.map((color) => (
-                  <p
-                    key={color?.id}
-                    onClick={() => handleSelectColor(color!.id as number)}
-                    className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md hover:bg-orange-500 hover:text-white ${
-                      selectedColor === color!.id ? "border-orange-500" : ""
-                    }`}
-                  >
-                    {color?.name}
-                  </p>
-                ))}
-              </div>
+              <div className="flex gap-4"></div>
             </div>
 
             {/* Màu sắc */}
             <div className="flex mt-6 items-center">
               <p className="text-sm font-semibold mr-8">KÍCH THƯỚC:</p>
-              <div className="flex gap-4">
-                {sizes.map((size) => (
-                  <p
-                    key={size?.id}
-                    onClick={() => {
-                      if (availableSizes.includes(size!.id)) {
-                        handleSelectSize(size!.id);
-                      }
-                    }}
-                    className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md ${
-                      availableSizes.includes(size!.id)
-                        ? "hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out"
-                        : "bg-gray-200 cursor-not-allowed text-gray-500"
-                    } ${selectedSize === size!.id ? "border-orange-500" : ""}`}
-                  >
-                    {size?.name}
-                  </p>
-                ))}
-              </div>
+              <div className="flex gap-4"></div>
             </div>
 
             <p
@@ -411,7 +381,6 @@ const Detail = () => {
             </p>
             <p className="mt-[20px] gap-[15px] cursor-pointer flex text-black text-sm font-semibold uppercase">
               Số lượng còn lại:
-              {stock > 0 ? stock : " ..."}
             </p>
 
             {isOutOfStock && (
@@ -450,7 +419,7 @@ const Detail = () => {
                 <button
                   className="group rounded-full border border-gray-200 shadow-sm p-2 bg-white hover:bg-gray-50"
                   onClick={handleIncrease}
-                  disabled={quantity >= stock}
+                  // disabled={quantity >= stock}
                 >
                   <svg
                     className="stroke-gray-900"
@@ -571,29 +540,8 @@ const Detail = () => {
               </div>
               <div className="flex gap-[10px]">
                 <p className="text-[15px] font-bold">Kích cỡ:</p>
-                {sizes.map((size) => (
-                  <p
-                    className="text-[15px]"
-                    key={size?.id}
-                    onClick={() => {
-                      if (availableSizes.includes(size!.id)) {
-                        handleSelectSize(size!.id);
-                      }
-                    }}
-                  >
-                    {size?.name}
-                  </p>
-                ))}
+
                 <p className="text-[15px] font-bold">Màu sắc: </p>
-                {colors.map((color) => (
-                  <p
-                    className="text-[15px]"
-                    key={color?.id}
-                    onClick={() => handleSelectColor(color!.id as number)}
-                  >
-                    {color?.name}
-                  </p>
-                ))}
               </div>
               <div className="flex gap-[10px] items-center">
                 <p className="text-[15px] font-bold">Mô tả: </p>
