@@ -112,8 +112,8 @@ class OrderController extends Controller
                 $dataItem = [
                     'order_id' => $order->id,
                     'nameProduct' => Product::where('id', $productVariant['product_id'])->value('name'),
-                    'color' => Color::where('id', $productVariant['color_id'])->value('name'),
-                    'size' => Size::where('id', $productVariant['size_id'])->value('name'),
+                    'color' => $productVariant['color'],
+                    'size' => $productVariant['size'],
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                     'image' => $productVariant['image'],
@@ -189,8 +189,8 @@ class OrderController extends Controller
                 foreach ($order->orderItems as $orderItem) {
                     $product_id = Product::where('name', $orderItem['nameProduct'])->value('id');
 
-                    $productVariant = Product_Variant::where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                        ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
+                    $productVariant = Product_Variant::where('color', Color::where('name', $orderItem->color)->value('name'))
+                        ->where('size', Size::where('name', $orderItem->size)->value('name'))
                         ->where('product_id', $product_id)->first();
 
                     $stock = $productVariant['stock'] + $orderItem['quantity'];
@@ -345,11 +345,11 @@ class OrderController extends Controller
                 $dataItem = [
                     'order_id' => $order->id,
                     'nameProduct' => Product::where('id', $productVariant['product_id'])->value('name'),
-                    'color' => Color::where('id', $productVariant['color_id'])->value('name'),
-                    'size' => Size::where('id', $productVariant['size_id'])->value('name'),
+                    'color' => $productVariant['color'],
+                    'size' => $productVariant['size'],
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
-                    
+                    'image' => $productVariant['image'],
                 ];
 
                 $cart = Cart::where('user_id', $userId)->first();

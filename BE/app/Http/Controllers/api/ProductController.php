@@ -86,7 +86,7 @@ class ProductController extends Controller
                 HistoryService::log('product_variants', $product_variant->id, 'create', [], $product_variant);
             }
 
-            $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
+            $product->load('category', 'productVariants', 'galleries');
 
             DB::commit();
 
@@ -106,17 +106,11 @@ class ProductController extends Controller
     }
 
 
-    // public function show(Product $product)
-    // {
-    //     $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
-    //     return $product;
-    // }
-
     public function show($id)
     {
         $product = Product::withTrashed()->findOrFail($id);
 
-        $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
+        $product->load('category', 'productVariants', 'galleries');
 
         // Thêm trạng thái đã xóa
         $product->is_deleted = $product->trashed();
@@ -221,7 +215,7 @@ class ProductController extends Controller
             $product->productVariants()->whereNotIn('id', $variantIds)->delete();
 
 
-            $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
+            $product->load('category', 'productVariants', 'galleries');
 
             DB::commit();
 
