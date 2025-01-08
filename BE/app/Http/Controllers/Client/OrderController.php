@@ -226,6 +226,11 @@ class OrderController extends Controller
                         'sell_count' => $newSellCount
                     ]);
                 }
+                if ($order['status_payment'] === 'Đã thanh toán') {
+                    $order->update([
+                        'status_payment' => 'Chờ hoàn tiền',
+                    ]);
+                }
                 $order->update([
                     'status' => $dataValidate['status'],
                 ]);

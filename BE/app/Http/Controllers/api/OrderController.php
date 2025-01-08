@@ -84,6 +84,11 @@ class OrderController extends Controller
                 $newStatus = $request->status;
 
                 if ($newStatus === 'Đã hủy') {
+                    if ($order->status_payment === 'Đã thanh toán') {
+                        $order->update([
+                            'status_payment' => 'Chờ hoàn tiền',
+                        ]);
+                    }
                     foreach ($order->orderItems as $orderItem) {
                         $product_id = Product::where('name',$orderItem['nameProduct'])->value('id');
                         
@@ -144,6 +149,27 @@ class OrderController extends Controller
         }
     }
 
+    public function updatePaymentStatus(Request $request, Order $order)
+    {
+        try {
+            $request->validate([
+                'status_payment' => 'required|in:Đã hoàn tiền',
+            ]);
+
+            $order->update($request->only('status_payment'));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật thành công!',
+                'order' => $order,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 
     //  Phương thức Kiểm Tra Mã Giảm Giá
     public function validateVoucher(Request $request)

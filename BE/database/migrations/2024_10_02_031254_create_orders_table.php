@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('order_code')->unique();
             $table->enum('status', ['Chờ xử lý', 'Đã xác nhận', 'Đang vận chuyển', 'Đã giao hàng', 'Yêu cầu trả hàng', 'Xử lý yêu cầu trả hàng', 'Trả hàng', 'Từ chối trả hàng', 'Hoàn thành', 'Đã hủy'])->default('Chờ xử lý');
             $table->integer('shippingFee');
-            $table->enum('status_payment', ['Chưa thanh toán','Đã thanh toán'])->default('Chưa thanh toán');
+            $table->enum('status_payment', ['Chưa thanh toán','Đã thanh toán','Chờ hoàn tiền','Đã hoàn tiền'])->default('Chưa thanh toán');
             $table->integer('total_price');
             $table->string('codeDiscount')->nullable();
             $table->string('discount')->nullable();
