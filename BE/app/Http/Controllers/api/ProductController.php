@@ -22,7 +22,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['category', 'productVariants', 'productVariants.size', 'productVariants.color', 'galleries',])->orderByDesc('id')->get();
+        $products = Product::with(['category', 'productVariants', 'galleries',])->orderByDesc('id')->get();
         return $products;
     }
 
