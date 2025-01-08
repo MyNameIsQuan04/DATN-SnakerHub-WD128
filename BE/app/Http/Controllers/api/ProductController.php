@@ -69,8 +69,8 @@ class ProductController extends Controller
                 }
 
                 $dataVariant = [
-                    'color_id' => $variant['color_id'],
-                    'size_id' => $variant['size_id'],
+                    'color' => Color::where('id', $variant['color_id'])->value('name'),
+                    'size' => Size::where('id', $variant['size_id'])->value('name'),
                     'entry_price' => $variant['entry_price'],
                     'price' => isset($variant['price']) ? $variant['price'] : $product->price,
                     'stock' => $variant['stock'],
@@ -167,8 +167,8 @@ class ProductController extends Controller
                 $maSKU = "SKU-" . $product->id . '-' . $variant['color_id'] . '-' . $variant['size_id'];
 
                 $dataVariant = [
-                    'color_id' => $variant['color_id'],
-                    'size_id' => $variant['size_id'],
+                    'color' => Color::where('id', $variant['color_id'])->value('name'),
+                    'size' => Size::where('id', $variant['size_id'])->value('name'),
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
                     'entry_price' => $variant['entry_price'],
