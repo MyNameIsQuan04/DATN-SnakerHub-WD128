@@ -27,7 +27,7 @@ class CartController extends Controller
             return response()->json(['success' => false, 'message' => 'Giỏ hàng không tồn tại!'], 404);
         }
 
-        $cart->load('cart_Items.product_variant', 'cart_Items.product_variant.color', 'cart_Items.product_variant.size', 'cart_Items.product_variant.product');
+        $cart->load('cart_Items.product_variant.product');
 
         return response()->json(['success' => true, 'cart' => $cart]);
     }
