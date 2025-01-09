@@ -48,6 +48,17 @@ const EditProduct = () => {
       },
     ],
   });
+  const formatVariants = (variants: any[], colors: any[], sizes: any[]) => {
+    return variants.map((variant) => {
+      const color = colors.find((c) => c.name === variant.color);
+      const size = sizes.find((s) => s.name === variant.size);
+      return {
+        ...variant,
+        color_id: color?.id || "",
+        size_id: size?.id || "",
+      };
+    });
+  };
 
   useEffect(() => {
     if (id) {
@@ -55,6 +66,12 @@ const EditProduct = () => {
         const product = await getProductById(id);
         console.log(product);
         if (product) {
+          const formattedVariants = formatVariants(
+            product.product_variants || [],
+            colors,
+            sizes
+          );
+          console.log(formattedVariants);
           setInitialValues({
             name: product.name,
             price: product.price,
@@ -69,22 +86,13 @@ const EditProduct = () => {
                 image_path: null,
               },
             ],
-            variants: product.product_variants || [
-              {
-                id: 0,
-                price: 0,
-                entry_price: null,
-                size_id: "",
-                color_id: "",
-                stock: 0,
-                image: null,
-              },
-            ],
+            variants: formattedVariants,
           });
         }
       })();
     }
-  }, []);
+  }, [id, colors, sizes]);
+
   const checkFormData = (formData: FormData) => {
     for (let pair of formData.entries()) {
       const key = pair[0];
