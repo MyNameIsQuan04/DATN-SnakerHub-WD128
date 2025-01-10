@@ -475,10 +475,7 @@ const UserOrderHistory = () => {
                   {order.order_items.map((item: OrderItem) => (
                     <div key={item.id} className="flex items-center gap-4 mb-4">
                       <img
-                        src={
-                          item.productVariantImage ||
-                          "https://via.placeholder.com/150"
-                        }
+                        src={item.image || "https://via.placeholder.com/150"}
                         alt="Product"
                         className="w-24 h-24 object-cover rounded-lg shadow-md"
                       />

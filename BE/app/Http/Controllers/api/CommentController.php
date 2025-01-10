@@ -66,7 +66,7 @@ class CommentController extends Controller
         'product_id' => $comment->product_id, // Gắn cùng sản phẩm
         'order__item_id' => $comment->order__item_id , // Gắn cùng order item nếu cần
         'content' => $request->reply, // Nội dung trả lời
-        'star' => null, // Không gắn số sao cho trả lời
+        'star' => 0, // Không gắn số sao cho trả lời
         'parent_id' => $comment->id, // Gắn ID của bình luận được trả lời
           ];
         $reply = Comment::create($replyData);;
