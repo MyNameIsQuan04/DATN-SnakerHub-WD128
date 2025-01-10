@@ -20,8 +20,8 @@ const Detail = () => {
 
   const [product, setProduct] = useState<Product | null>(null);
   const { id } = useParams<{ id: string }>();
-  const [selectedColor, setSelectedColor] = useState<number | null>(null);
-  const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
   const [availableSizes, setAvailableSizes] = useState<number[]>([]);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [selectedVariantPrice, setSelectedVariantPrice] = useState<
@@ -68,6 +68,7 @@ const Detail = () => {
         `http://localhost:8000/api/client/products/${productId}`
       );
       setProduct(response.data.product);
+
       setCountRates(response.data.countRates);
       setCountSell(response.data.countSell);
       const product = response.data.product;
@@ -85,7 +86,6 @@ const Detail = () => {
         `http://localhost:8000/api/products/category/${categoryId}`
       );
       const products = response.data.products;
-      console.log(products);
       const relatedProducts = products.filter(
         (product: Product) => product.id !== Number(currentProductId)
       );
@@ -103,44 +103,43 @@ const Detail = () => {
   }, [id]);
 
   // Chọn màu sắc
-  const handleSelectColor = (colorId: number) => {
-    setSelectedColor(colorId);
-    filterSizesByColor(colorId);
-    setSelectedSize(null);
-    setSelectedVariantPrice(null);
+  const handleSelectColor = (color: string) => {
+    setSelectedColor(color); // Lưu giá trị color (e.g., "Blue")
+    filterSizesByColor(color); // Lọc các size tương ứng với màu đã chọn
+    setSelectedSize(null); // Reset selected size
+    setSelectedVariantPrice(null); // Reset giá
   };
 
   // Chọn kích thước
-  const handleSelectSize = (sizeId: number) => {
-    setSelectedSize(sizeId);
+  const handleSelectSize = (size: string) => {
+    setSelectedSize(size); // Lưu giá trị size (e.g., "37")
     if (selectedColor !== null && product) {
       const selectedVariant = product.product_variants.find(
-        (variant) =>
-          variant.color.id === selectedColor && variant.size.id === sizeId
+        (variant) => variant.color === selectedColor && variant.size === size
       );
 
       if (selectedVariant) {
-        setSelectedVariantPrice(selectedVariant.price);
+        setSelectedVariantPrice(selectedVariant.price); // Cập nhật giá của variant được chọn
       }
     }
   };
 
   // Lọc các kích thước có sẵn dựa trên màu sắc
-  const filterSizesByColor = (colorId: number) => {
+  const filterSizesByColor = (color: string) => {
     if (product) {
       const sizesForColor = product.product_variants
-        .filter((variant) => variant.color.id === colorId)
-        .map((variant) => variant.size.id);
+        .filter((variant) => variant.color === color) // Lọc các variants có color khớp
+        .map((variant) => variant.size); // Lấy danh sách size
 
-      setAvailableSizes(sizesForColor);
+      setAvailableSizes(sizesForColor); // Cập nhật danh sách size khả dụng
     }
   };
 
   // Thêm vào giỏ hàng
   const addToCart = async (
     product: Product,
-    selectedColor: unknown,
-    selectedSize: unknown
+    selectedColor: any,
+    selectedSize: any
   ) => {
     if (!token) {
       toast.error("Hãy đăng nhập để sử dụng chức năng!");
@@ -154,7 +153,7 @@ const Detail = () => {
 
     const selectedVariant = product.product_variants.find(
       (variant) =>
-        variant.color.id === selectedColor && variant.size.id === selectedSize
+        variant.color === selectedColor && variant.size === selectedSize
     );
 
     if (!selectedVariant) {
@@ -169,8 +168,8 @@ const Detail = () => {
         token: token,
         name: product.name,
         id: product.id,
-        color_id: selectedColor,
-        size_id: selectedSize,
+        color: selectedColor,
+        size: selectedSize,
         quantity: quantity,
       });
 
@@ -240,23 +239,16 @@ const Detail = () => {
   }
 
   const colors = Array.from(
-    new Set(product.product_variants.map((variant) => variant.color.id))
-  ).map(
-    (colorId) =>
-      product.product_variants.find((variant) => variant.color.id === colorId)
-        ?.color
+    new Set(product.product_variants.map((variant) => variant.color))
   );
 
   const sizes = Array.from(
-    new Set(product.product_variants.map((variant) => variant.size.id))
-  ).map(
-    (sizeId) =>
-      product.product_variants.find((variant) => variant.size.id === sizeId)
-        ?.size
+    new Set(product.product_variants.map((variant) => variant.size))
   );
+
   const selectedVariant = product.product_variants.find(
     (variant) =>
-      variant.color_id === selectedColor && variant.size_id === selectedSize
+      variant.color === selectedColor && variant.size === selectedSize
   );
 
   const stock = selectedVariant ? selectedVariant.stock : 0;
@@ -367,13 +359,12 @@ const Detail = () => {
               <div className="flex gap-4">
                 {colors.map((color) => (
                   <p
-                    key={color?.id}
-                    onClick={() => handleSelectColor(color!.id as number)}
+                    onClick={() => handleSelectColor(color)}
                     className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md hover:bg-orange-500 hover:text-white ${
-                      selectedColor === color!.id ? "border-orange-500" : ""
+                      selectedColor === color ? "border-orange-500" : ""
                     }`}
                   >
-                    {color?.name}
+                    {color}
                   </p>
                 ))}
               </div>
@@ -385,19 +376,18 @@ const Detail = () => {
               <div className="flex gap-4">
                 {sizes.map((size) => (
                   <p
-                    key={size?.id}
                     onClick={() => {
-                      if (availableSizes.includes(size!.id)) {
-                        handleSelectSize(size!.id);
+                      if (availableSizes.includes(size)) {
+                        handleSelectSize(size);
                       }
                     }}
                     className={`cursor-pointer px-4 py-2 border border-gray-300 rounded-md ${
-                      availableSizes.includes(size!.id)
+                      availableSizes.includes(size)
                         ? "hover:bg-orange-500 hover:text-white transition-all duration-300 ease-in-out"
                         : "bg-gray-200 cursor-not-allowed text-gray-500"
-                    } ${selectedSize === size!.id ? "border-orange-500" : ""}`}
+                    } ${selectedSize === size ? "border-orange-500" : ""}`}
                   >
-                    {size?.name}
+                    {size}
                   </p>
                 ))}
               </div>

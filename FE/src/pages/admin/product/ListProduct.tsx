@@ -18,7 +18,7 @@ const ListProduct = () => {
   const toggleVariations = (productId: number) => {
     setExpandedProduct(expandedProduct === productId ? null : productId);
   };
-  console.log(products);
+
   // State cho tìm kiếm
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState(products); // Set filteredProducts ban đầu là tất cả sản phẩm
@@ -205,15 +205,15 @@ const ListProduct = () => {
                                 <td className="py-1 px-3 border-b">
                                   <img
                                     src={variant.image}
-                                    alt={`Biến thể ${variant.color.name} - ${variant.size.name}`}
+                                    alt={`Biến thể ${variant.color} - ${variant.size}`}
                                     className="w-12 h-12 object-cover rounded"
                                   />
                                 </td>
                                 <td className="py-1 px-3 border-b">
-                                  {variant.color.name}
+                                  {variant.color}
                                 </td>
                                 <td className="py-1 px-3 border-b">
-                                  {variant.size.name}
+                                  {variant.size}
                                 </td>
                                 <td className="py-1 px-3 border-b">
                                   {variant.entry_price.toLocaleString()} VND

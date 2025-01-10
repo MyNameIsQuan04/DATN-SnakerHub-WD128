@@ -43,8 +43,8 @@ class CartController extends Controller
         $user = JWTAuth::toUser($request->token);
         $request->validate([
             'id' => 'required|integer|exists:products,id',
-            'color' => 'required|string|exists:colors,name',
-            'size' => 'required|string|exists:sizes,name',
+            'color' => 'required|exists:colors,name',
+            'size' => 'required|exists:sizes,name',
             'quantity' => 'required|integer|min:1'
         ]);
 
@@ -63,7 +63,7 @@ class CartController extends Controller
             ->first();
         //Cập nhật hoặc Tạo mục giỏ hàng : Nếu mục tồn tại, nó sẽ tăng số lượng. Nếu không, nó sẽ tạo một Cart_Itembản ghi mới.
         if ($cartItem) {
-            $cartItem->quantity+= $request->quantity;
+            $cartItem->quantity += $request->quantity;
             $cartItem->save();
         } else {
             // Create a new cart item

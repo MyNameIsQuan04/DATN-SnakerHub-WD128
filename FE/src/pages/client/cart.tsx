@@ -291,7 +291,7 @@ const Cart = () => {
                   onChange={() => handleSelectItem(item.id)}
                 />
                 <img
-                  src={product.thumbnail}
+                  src={productVariant.image}
                   alt={product.name}
                   className="max-lg:w-24 lg:w-28 rounded-lg object-cover"
                 />
@@ -329,8 +329,8 @@ const Cart = () => {
                   </button>
                 </div>
                 <div className="flex gap-2">
-                  <span>Size: {productVariant.size.name}</span>
-                  <span>Color: {productVariant.color.name}</span>
+                  <span>Size: {productVariant.size}</span>
+                  <span>Color: {productVariant.color}</span>
                 </div>
                 <p className="font-normal text-xs leading-5 text-gray-500 mb-2">
                   {product.description || "Mô tả sản phẩm."}
