@@ -40,11 +40,11 @@ const ListUser = () => {
   }, []);
 
   const openModal = (user: IUser) => {
-    if (user.role_id === 2) {
+    if (user.role_id === 1) {
+      toast.info("This user is already an Admin.");
+    } else {
       setSelectedUser(user);
       setIsModalOpen(true);
-    } else {
-      toast.info("This user is already an Admin.");
     }
   };
 
@@ -58,6 +58,13 @@ const ListUser = () => {
     successMessage: string
   ) => {
     if (!selectedUser) return;
+  
+    // Kiểm tra giá trị role_id hợp lệ trước khi gửi
+    if (updatedData.role_id && ![1, 2].includes(updatedData.role_id)) {
+      toast.error("Role ID không hợp lệ. Vui lòng chọn quyền hợp lệ.");
+      return;
+    }
+  
     setIsUpdating(true);
     try {
       const response = await axios.patch(
@@ -69,6 +76,7 @@ const ListUser = () => {
           },
         }
       );
+  
       if (response.status === 200) {
         setListUser((prevUsers) =>
           prevUsers.map((user) =>
@@ -79,15 +87,26 @@ const ListUser = () => {
         closeModal();
       }
     } catch (error) {
-      toast.error("An error occurred while updating the user.");
       console.error(error);
+      if (axios.isAxiosError(error) && error.response && error.response.data && error.response.data.errors) {
+        const errorMessage =
+          error.response.data.errors.role_id?.[0] || "An error occurred.";
+        toast.error(errorMessage);
+      } else {
+        toast.error("An error occurred while updating the user.");
+      }
     } finally {
       setIsUpdating(false);
     }
   };
+  
 
   const upgradeToAdmin = () =>
     handleUserUpdate({ role_id: 1 }, "User has been upgraded to Admin!");
+
+  const upgradeToSaler = () =>
+    handleUserUpdate({ role_id: 2 }, "User has been upgraded to Saler!");
+
   const blockUser = async () => {
     if (!selectedUser) return;
     setIsUpdating(true);
@@ -229,10 +248,12 @@ const ListUser = () => {
                         className={`px-2 py-1 rounded-md font-semibold ${
                           user.role_id === 1
                             ? "text-green-600 border border-green-600"
+                            : user.role_id === 2
+                            ? "text-blue-600 border border-blue-600"
                             : "text-orange-600 border border-orange-600"
                         }`}
                       >
-                        {user.role_id === 1 ? "Admin" : "User"}
+                        {user.role_id === 1 ? "Admin" : user.role_id === 2 ? "Saler" : "User"}
                       </button>
                     </td>
                   </tr>
@@ -260,6 +281,13 @@ const ListUser = () => {
                     disabled={isUpdating}
                   >
                     {isUpdating ? "Processing..." : "Cấp quyền Admin"}
+                  </button>
+                  <button
+                    className="w-full py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-md"
+                    onClick={upgradeToSaler}
+                    disabled={isUpdating}
+                  >
+                    {isUpdating ? "Processing..." : "Cấp quyền Saler"}
                   </button>
                   <button
                     className="w-full py-2 text-white bg-red-500 hover:bg-red-600 rounded-md"
