@@ -14,6 +14,7 @@ use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ColorApiController;
 use App\Http\Controllers\api\CommentController;
 use App\Http\Controllers\api\DashboardController;
+use App\Http\Controllers\api\HistoryController;
 use App\Http\Controllers\Client\CommentController as ClientCommentController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\Client\OrderController as ApiMemberOrderController;
@@ -179,3 +180,8 @@ Route::prefix('comments')->middleware('auth:api')->group(function () {
     Route::post('/{id}/reply', [CommentController::class, 'reply']);
     Route::delete('/{id}', [CommentController::class, 'destroy']);
 });
+
+Route::put('/updateStatusPayment/{order}', [OrderController::class, 'updatePaymentStatus']);
+
+Route::get('history', [HistoryController::class, 'index']);
+Route::post('history-filter', [HistoryController::class, 'historyFilter']);

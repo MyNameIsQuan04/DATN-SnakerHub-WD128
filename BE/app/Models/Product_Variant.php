@@ -13,8 +13,8 @@ class Product_Variant extends Model
 
     protected $fillable = [
         'product_id',
-        'color_id',
-        'size_id',
+        'color',
+        'size',
         'entry_price',
         'price',
         'stock',
@@ -24,12 +24,12 @@ class Product_Variant extends Model
     public function product(){
         return $this->belongsTo(Product::class)->withTrashed();
     }
-    public function size(){
-        return $this->belongsTo(Size::class)->withTrashed();
-    }
-    public function color(){
-        return $this->belongsTo(Color::class)->withTrashed();
-    }
+    // public function size(){
+    //     return $this->belongsTo(Size::class)->withTrashed();
+    // }
+    // public function color(){
+    //     return $this->belongsTo(Color::class)->withTrashed();
+    // }
     public function cartItems(){
         return $this->hasMany(Cart_Item::class);
     }

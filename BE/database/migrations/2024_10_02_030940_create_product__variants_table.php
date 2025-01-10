@@ -16,8 +16,8 @@ return new class extends Migration
     {
         Schema::create('product__variants', function (Blueprint $table) {
             $table->foreignIdFor(Product::class)->constrained();
-            $table->foreignIdFor(Color::class)->constrained();
-            $table->foreignIdFor(Size::class)->constrained();
+            $table->string('color');
+            $table->string('size');
             
             $table->id();
             $table->integer('entry_price');//giá nhập vào

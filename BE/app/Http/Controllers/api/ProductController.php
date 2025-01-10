@@ -22,7 +22,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['category', 'productVariants', 'productVariants.size', 'productVariants.color', 'galleries',])->orderByDesc('id')->get();
+        $products = Product::with(['category', 'productVariants', 'galleries',])->orderByDesc('id')->get();
         return $products;
     }
 
@@ -69,8 +69,8 @@ class ProductController extends Controller
                 }
 
                 $dataVariant = [
-                    'color_id' => $variant['color_id'],
-                    'size_id' => $variant['size_id'],
+                    'color' => Color::where('id', $variant['color_id'])->value('name'),
+                    'size' => Size::where('id', $variant['size_id'])->value('name'),
                     'entry_price' => $variant['entry_price'],
                     'price' => isset($variant['price']) ? $variant['price'] : $product->price,
                     'stock' => $variant['stock'],
@@ -86,7 +86,7 @@ class ProductController extends Controller
                 HistoryService::log('product_variants', $product_variant->id, 'create', [], $product_variant);
             }
 
-            $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
+            $product->load('category', 'productVariants', 'galleries');
 
             DB::commit();
 
@@ -106,17 +106,11 @@ class ProductController extends Controller
     }
 
 
-    // public function show(Product $product)
-    // {
-    //     $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
-    //     return $product;
-    // }
-
     public function show($id)
     {
         $product = Product::withTrashed()->findOrFail($id);
 
-        $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
+        $product->load('category', 'productVariants', 'galleries');
 
         // Thêm trạng thái đã xóa
         $product->is_deleted = $product->trashed();
@@ -173,8 +167,8 @@ class ProductController extends Controller
                 $maSKU = "SKU-" . $product->id . '-' . $variant['color_id'] . '-' . $variant['size_id'];
 
                 $dataVariant = [
-                    'color_id' => $variant['color_id'],
-                    'size_id' => $variant['size_id'],
+                    'color' => Color::where('id', $variant['color_id'])->value('name'),
+                    'size' => Size::where('id', $variant['size_id'])->value('name'),
                     'stock' => $variant['stock'],
                     'sku' => $maSKU,
                     'entry_price' => $variant['entry_price'],
@@ -221,7 +215,7 @@ class ProductController extends Controller
             $product->productVariants()->whereNotIn('id', $variantIds)->delete();
 
 
-            $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
+            $product->load('category', 'productVariants', 'galleries');
 
             DB::commit();
 

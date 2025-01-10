@@ -18,6 +18,7 @@ class Order_Item extends Model
         'size',
         'quantity',
         'price',
+        'image',
     ];
     public function order(){
         return $this->belongsTo(Order::class);

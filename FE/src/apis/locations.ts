@@ -1,16 +1,16 @@
 interface Province {
-  code: any;
-  name: any;
+  code: number;
+  name: string;
 }
 
 interface District {
-  code: any;
-  name: any;
+  code: number;
+  name: string;
 }
 
 interface Ward {
-  code: any;
-  name: any;
+  code: number;
+  name: string;
 }
 
 import { useState, useEffect } from "react";

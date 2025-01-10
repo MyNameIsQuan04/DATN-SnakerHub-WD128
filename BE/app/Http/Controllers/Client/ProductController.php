@@ -14,10 +14,10 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::orderByDesc('id')->get()
-            ->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
+            ->load('category', 'productVariants', 'galleries');
 
         $top10 = Product::orderByDesc('sell_count')->get()
-            ->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
+            ->load('category', 'productVariants', 'galleries');
 
         return response()->json([
             'success' => true,
@@ -29,10 +29,10 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        $product->load('category', 'productVariants.size', 'productVariants.color', 'galleries');
+        $product->load('category', 'productVariants', 'galleries');
 
         $rates = Comment::where('product_id', $product['id'])->get()
-            ->load('user', 'product.productVariants.size', 'product.productVariants.color');
+            ->load('user', 'product.productVariants');
 
 
 

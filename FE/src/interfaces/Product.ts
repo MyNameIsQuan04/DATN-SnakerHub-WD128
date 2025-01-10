@@ -43,8 +43,8 @@ export interface product_variants {
   thumbnail: string;
   product_id: number;
   name: string;
-  color: Color;
-  size: Size;
+  color: string;
+  size: number;
   color_id: number;
   size_id: number;
   sku: string;

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { Order, OrderItem } from "../../../interfaces/Order";
@@ -230,7 +230,7 @@ const OrderDetailHictory = () => {
           >
             <div className="w-full md:w-1/4 flex justify-center h-60">
               <img
-                src={item.productVariantImage || ""}
+                src={item.image || ""}
                 className="object-contain h-full w-full rounded-md"
               />
             </div>
@@ -341,8 +341,7 @@ const OrderDetailHictory = () => {
               <span className="text-red-500 ">{order.status_payment}</span>
             </p>
             <p>
-              <strong>Ghi chú: </strong>{" "}
-              <span className=" ">{order.note}</span>
+              <strong>Ghi chú: </strong> <span className=" ">{order.note}</span>
             </p>
           </div>
           {order.status === "Yêu cầu trả hàng" && (

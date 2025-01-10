@@ -27,7 +27,7 @@ class CartController extends Controller
             return response()->json(['success' => false, 'message' => 'Giỏ hàng không tồn tại!'], 404);
         }
 
-        $cart->load('cart_Items.product_variant', 'cart_Items.product_variant.color', 'cart_Items.product_variant.size', 'cart_Items.product_variant.product');
+        $cart->load('cart_Items.product_variant.product');
 
         return response()->json(['success' => true, 'cart' => $cart]);
     }
@@ -43,8 +43,8 @@ class CartController extends Controller
         $user = JWTAuth::toUser($request->token);
         $request->validate([
             'id' => 'required|integer|exists:products,id',
-            'color_id' => 'required|integer|exists:colors,id',
-            'size_id' => 'required|integer|exists:sizes,id',
+            'color' => 'required|exists:colors,name',
+            'size' => 'required|exists:sizes,name',
             'quantity' => 'required|integer|min:1'
         ]);
 
@@ -53,8 +53,8 @@ class CartController extends Controller
 
         $product = Product::find($request->id);
         $variant_id = $product->productVariants()
-            ->where('size_id', $request['size_id'])
-            ->where('color_id', $request['color_id'])
+            ->where('size', $request['size'])
+            ->where('color', $request['color'])
             ->pluck('id')
             ->first();
         //Kiểm tra mục giỏ hàng hiện có : Thay vì kiểm tra phiên, nó sẽ kiểm tra cart_itemsbảng để tìm mục hiện có có cùng cart_id, product_variant_id, color_id, và size_id.
@@ -63,7 +63,7 @@ class CartController extends Controller
             ->first();
         //Cập nhật hoặc Tạo mục giỏ hàng : Nếu mục tồn tại, nó sẽ tăng số lượng. Nếu không, nó sẽ tạo một Cart_Itembản ghi mới.
         if ($cartItem) {
-            $cartItem->quantity+= $request->quantity;
+            $cartItem->quantity += $request->quantity;
             $cartItem->save();
         } else {
             // Create a new cart item

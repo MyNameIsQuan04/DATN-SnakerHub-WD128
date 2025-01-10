@@ -27,14 +27,6 @@ class OrderController extends Controller
     {
         $orders = Order::orderByDesc('id')->get();
         $orders->load('customer', 'orderItems');
-        $orders->map(function ($order){
-            $order->orderItems->map(function ($orderItem){
-                $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
-                    ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                    ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
-                    ->value('image');
-            });
-        });
         return $orders;
     }
 
@@ -47,12 +39,6 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load('customer.user', 'orderItems');
-        $order->orderItems->map(function ($orderItem) {
-            $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
-                ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
-                ->value('image');
-        });
         return $order;
     }
 
@@ -84,11 +70,16 @@ class OrderController extends Controller
                 $newStatus = $request->status;
 
                 if ($newStatus === 'Đã hủy') {
+                    if ($order->status_payment === 'Đã thanh toán') {
+                        $order->update([
+                            'status_payment' => 'Chờ hoàn tiền',
+                        ]);
+                    }
                     foreach ($order->orderItems as $orderItem) {
-                        $product_id = Product::where('name',$orderItem['nameProduct'])->value('id');
-                        
-                        $productVariant = Product_Variant::where('color',$orderItem['color'])->where('size',$orderItem['size'])
-                        ->where('product_id',$product_id)->first();
+                        $product_id = Product::where('name', $orderItem['nameProduct'])->value('id');
+
+                        $productVariant = Product_Variant::where('color', $orderItem['color'])->where('size', $orderItem['size'])
+                            ->where('product_id', $product_id)->first();
 
                         $stock = $productVariant['stock'] + $orderItem['quantity'];
                         $productVariant->update([
@@ -123,12 +114,6 @@ class OrderController extends Controller
                 SendOrderStatusEmail::dispatch($order, $newStatus);
 
                 HistoryService::log('orders', $order->id, 'update', $currentStatus, $newStatus);
-                $order->orderItems->map(function ($orderItem) {
-                    $orderItem->productVariantImage = Product_Variant::where('product_id', Product::where('name', $orderItem->nameProduct)->value('id'))
-                        ->where('color_id', Color::where('name', $orderItem->color)->value('id'))
-                        ->where('size_id', Size::where('name', $orderItem->size)->value('id'))
-                        ->value('image');
-                });
             });
 
             return response()->json([
@@ -144,6 +129,27 @@ class OrderController extends Controller
         }
     }
 
+    public function updatePaymentStatus(Request $request, Order $order)
+    {
+        try {
+            $request->validate([
+                'status_payment' => 'required|in:Đã hoàn tiền',
+            ]);
+
+            $order->update($request->only('status_payment'));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật thành công!',
+                'order' => $order,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 
     //  Phương thức Kiểm Tra Mã Giảm Giá
     public function validateVoucher(Request $request)
@@ -166,46 +172,51 @@ class OrderController extends Controller
         ]);
     }
     //  Phương thức áp Dụng Mã Giảm Giá
-    public function applyVoucher(Request $request)
-    {
-        $voucherCode = $request->input('codeDiscount');
-        $total_price = $request->input('total_price'); // Tổng tiền giỏ hàng từ FE
+public function applyVoucher(Request $request)
+{
+    $voucherCode = $request->input('codeDiscount');
+    $total_price = $request->input('total_price'); // Tổng tiền giỏ hàng từ FE
 
-        // Kiểm tra tổng tiền hợp lệ
-        if (!is_numeric($total_price) || $total_price <= 0) {
-            return response()->json(['message' => 'Tổng tiền không hợp lệ'], 400);
-        }
-
-        // Tìm mã giảm giá
-        $voucher = Voucher::where('codeDiscount', $voucherCode)->first();
-        if (!$voucher || !$voucher->isValid()) {
-            return response()->json(['message' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn'], 400);
-        }
-
-        // Tính toán mức giảm giá
-        $discount = 0;
-        if ($voucher->type === 'percent') {
-            $discount = ($total_price * $voucher->discount) / 100;
-        } elseif ($voucher->type === 'fixed') {
-            $discount = $voucher->discount;
-        }
-
-        // Đảm bảo giảm giá không vượt quá tổng tiền
-        $discount = min($discount, $total_price);
-        $total_price_after_discount = $total_price - $discount;
-
-        // Cập nhật số lần sử dụng mã giảm giá (nếu có giới hạn)
-        if ($voucher->usage_limit !== null) {
-            $voucher->decrement('usage_limit');
-        }
-
-        // Trả về kết quả
-        return response()->json([
-            'message' => 'Áp dụng mã giảm giá thành công',
-            'discount' => min($discount, $total_price), // Giảm giá tối đa chỉ bằng tổng tiền
-            'original_total_price' => $total_price,
-            // 'discount' => $discount,
-            'total_price_after_discount' => $total_price_after_discount,
-        ]);
+    // Kiểm tra tổng tiền hợp lệ
+    if (!is_numeric($total_price) || $total_price <= 0) {
+        return response()->json(['message' => 'Tổng tiền không hợp lệ'], 400);
     }
+
+
+    // Tìm mã giảm giá
+    $voucher = Voucher::where('codeDiscount', $voucherCode)->first();
+    if (!$voucher || !$voucher->isValid()) {
+        return response()->json(['message' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn'], 400);
+    }
+
+    // Tính toán mức giảm giá
+    $discount = 0;
+    if ($voucher->type === 'percent') {
+        $discount = ($total_price * $voucher->discount) / 100;
+
+        // Giới hạn mức giảm tối đa nếu có
+        if ($voucher->max_discount !== null) {
+            $discount = min($discount, $voucher->max_discount);
+        }
+    } elseif ($voucher->type === 'fixed') {
+        $discount = $voucher->discount;
+    }
+
+    // Đảm bảo giảm giá không vượt quá tổng tiền
+    $discount = min($discount, $total_price);
+    $total_price_after_discount = $total_price - $discount;
+
+    // Cập nhật số lần sử dụng mã giảm giá (nếu có giới hạn)
+    if ($voucher->usage_limit !== null) {
+        $voucher->decrement('usage_limit');
+    }
+
+    // Trả về kết quả
+    return response()->json([
+        'message' => 'Áp dụng mã giảm giá thành công',
+        'discount' => $discount, // Giảm giá sau khi áp dụng giới hạn
+        'original_total_price' => $total_price,
+        'total_price_after_discount' => $total_price_after_discount,
+    ]);
+}
 }
