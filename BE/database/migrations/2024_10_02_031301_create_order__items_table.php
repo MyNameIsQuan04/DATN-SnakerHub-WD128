@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('size');
             $table->integer('quantity');
             $table->integer('price');
-            
+            $table->string('image');
             $table->timestamps();
         });
     }
