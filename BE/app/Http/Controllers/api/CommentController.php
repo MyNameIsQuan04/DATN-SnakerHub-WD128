@@ -65,7 +65,7 @@ class CommentController extends Controller
         $replyData = [
         'user_id' => Auth::id(), // Lấy ID của admin (hoặc người dùng hiện tại)
         'product_id' => $comment->product_id, // Gắn cùng sản phẩm
-        'order_item_id' => $comment->order_item_id, // Gắn cùng order item nếu cần
+        'order__item_id' => $comment->order__item_id , // Gắn cùng order item nếu cần
         'content' => $request->reply, // Nội dung trả lời
         'star' => null, // Không gắn số sao cho trả lời
         'parent_id' => $comment->id, // Gắn ID của bình luận được trả lời
