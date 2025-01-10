@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import {
+  FaCommentAlt,
   FaHome,
   FaList,
   FaProductHunt,
@@ -16,6 +17,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { AiFillSetting } from "react-icons/ai";
 import axios from "axios";
 import { Order } from "../../../interfaces/Order";
+import path from "path";
 
 const LayoutAdmin = () => {
   const { user, logout } = useAuth();
@@ -36,28 +38,31 @@ const LayoutAdmin = () => {
         const prevOrder = prevOrdersRef.current.find(
           (order) => order.id === fetchedOrder.id
         );
-        if (!prevOrder || JSON.stringify(prevOrder) !== JSON.stringify(fetchedOrder)) {
+        if (
+          !prevOrder ||
+          JSON.stringify(prevOrder) !== JSON.stringify(fetchedOrder)
+        ) {
           hasChange = true;
           break;
         }
       }
 
       if (hasChange) {
-        setHasNewOrder(true); 
-        setOrders(fetchedOrders); 
+        setHasNewOrder(true);
+        setOrders(fetchedOrders);
       }
 
       // Lưu lại dữ liệu hiện tại để so sánh lần sau
-      prevOrdersRef.current = fetchedOrders; 
+      prevOrdersRef.current = fetchedOrders;
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
     }
   };
 
   useEffect(() => {
-    const interval = setInterval(fetchOrders, 5000); 
+    const interval = setInterval(fetchOrders, 5000);
     fetchOrders();
-    return () => clearInterval(interval); 
+    return () => clearInterval(interval);
   }, []);
 
   const menuItems = [
@@ -115,6 +120,11 @@ const LayoutAdmin = () => {
       path: "/admin/order",
       icon: <FaShoppingCart className="mr-2" />,
       label: "Đơn hàng",
+    },
+    {
+      path: "/admin/comments",
+      icon: <FaCommentAlt className="mr-2" />,
+      label: "Đánh giá & Bình luận",
     },
     {
       path: "/admin/slides",
