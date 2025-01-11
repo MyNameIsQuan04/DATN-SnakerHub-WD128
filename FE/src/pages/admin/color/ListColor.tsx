@@ -37,7 +37,9 @@ const ListColor = () => {
             <tr>
               <th className="py-2 px-4 border-b">ID</th>
               <th className="py-2 px-4 border-b">Tên danh mục</th>
-              <th className="py-2 px-4 border-b">Hành động</th>
+              {user?.role_id === 1 && (
+                <th className="py-2 px-4 border-b">Hành động</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -46,9 +48,6 @@ const ListColor = () => {
                 <th className="py-2 px-4 border-b">{index + 1}</th>
                 <th className="py-2 px-4 border-b">{color.name}</th>
                 <th className="py-2 px-4 border-b flex justify-center gap-[10px]">
-                  {user?.role_id !== 1 && (
-                    <div className="text-red-500">Bạn không đủ quyền hạn</div>
-                  )}
                   {user?.role_id === 1 && (
                     <Link to={`/admin/color-edit/${color.id}`}>
                       <button className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500">

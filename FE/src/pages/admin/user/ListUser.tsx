@@ -7,8 +7,10 @@ import { IoHomeOutline } from "react-icons/io5";
 import { GrFormNext } from "react-icons/gr";
 import { FaSpinner } from "react-icons/fa";
 import { format } from "date-fns"; // Import date-fns
+import { useAuth } from "../../../contexts/AuthContext";
 
 const ListUser = () => {
+  const { user } = useAuth();
   const [listUser, setListUser] = useState<IUser[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
@@ -194,47 +196,56 @@ const ListUser = () => {
                   <th className="p-4 text-left">Địa chỉ</th>
                   <th className="p-4 text-left">Email</th>
                   <th className="p-4 text-left">Ngày tạo</th>
-                  <th className="p-4 text-left">Quyền truy cập</th>
+                  {user?.role_id === 1 && (
+                    <th className="p-4 text-left">Quyền truy cập</th>
+                  )}
                 </tr>
               </thead>
               <tbody>
-                {listUser.map((user) => (
+                {listUser.map((usermap) => (
                   <tr
-                    key={user.id}
+                    key={usermap.id}
                     className="hover:bg-gray-100 transition-all duration-200"
                   >
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <img
-                          src={user.avatar || "https://via.placeholder.com/150"}
+                          src={
+                            usermap.avatar || "https://via.placeholder.com/150"
+                          }
                           alt="Avatar"
                           className="w-16 h-16 object-cover rounded-md border"
                         />
                         <div className="font-semibold text-gray-800">
-                          {user.name}
+                          {usermap.name}
                         </div>
                       </div>
                     </td>
-                    <td className="p-4">{user.phone_number}</td>
-                    <td className="p-4">{user.address || "N/A"}</td>
-                    <td className="p-4 text-red-500">{user.email}</td>
+                    <td className="p-4">{usermap.phone_number}</td>
+                    <td className="p-4">{usermap.address || "N/A"}</td>
+                    <td className="p-4 text-red-500">{usermap.email}</td>
                     <td className="p-4">
-                      {user.created_at
-                        ? format(new Date(user.created_at), "dd/MM/yyyy HH:mm")
+                      {usermap.created_at
+                        ? format(
+                            new Date(usermap.created_at),
+                            "dd/MM/yyyy HH:mm"
+                          )
                         : "N/A"}
                     </td>
-                    <td className="p-4">
-                      <button
-                        onClick={() => openModal(user)}
-                        className={`px-2 py-1 rounded-md font-semibold ${
-                          user.role_id === 1
-                            ? "text-green-600 border border-green-600"
-                            : "text-orange-600 border border-orange-600"
-                        }`}
-                      >
-                        {user.role_id === 1 ? "Admin" : "User"}
-                      </button>
-                    </td>
+                    {user?.role_id === 1 && (
+                      <td className="p-4">
+                        <button
+                          onClick={() => openModal(usermap)}
+                          className={`px-2 py-1 rounded-md font-semibold ${
+                            usermap.role_id === 1
+                              ? "text-green-600 border border-green-600"
+                              : "text-orange-600 border border-orange-600"
+                          }`}
+                        >
+                          {usermap.role_id === 1 ? "Admin" : "User"}
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

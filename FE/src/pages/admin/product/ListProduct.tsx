@@ -87,7 +87,9 @@ const ListProduct = () => {
               <th className="py-3 px-4 border-b text-center">Giá</th>
               <th className="py-3 px-4 border-b text-center">Biến Thể</th>
               <th className="py-3 px-4 border-b text-center">Danh Mục</th>
-              <th className="py-3 px-4 border-b text-center">Quản Lý</th>
+              {user?.role_id === 1 && (
+                <th className="py-3 px-4 border-b text-center">Quản Lý</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -159,11 +161,6 @@ const ListProduct = () => {
 
                     {/* Nút quản lý */}
                     <td className="py-3 px-4 border-b">
-                      {user?.role_id !== 1 && (
-                        <div className="text-red-500">
-                          Bạn không đủ quyền hạn
-                        </div>
-                      )}
                       {user?.role_id === 1 && (
                         <Link
                           to={`/admin/product-edit/${product.id}`}

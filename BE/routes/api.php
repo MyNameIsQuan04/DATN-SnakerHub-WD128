@@ -117,7 +117,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/client/user/{user}', [ClientController::class, 'show']);
 
     // Hiển thị danh sách người dùng (Admin chỉ có thể truy cập)
-    Route::get('/users', [UserApiController::class, 'index'])->middleware('role:Admin');
+    Route::get('/users', [UserApiController::class, 'index'])->middleware('role:Admin,Saler');
 
     // Hiển thị thông tin người dùng (cho cả Admin và User)
     Route::get('/users/{id}', [UserApiController::class, 'show']);

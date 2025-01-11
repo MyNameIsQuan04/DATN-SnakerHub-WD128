@@ -36,7 +36,9 @@ const ListCategory = () => {
             <tr>
               <th className="py-2 px-4 border-b">ID</th>
               <th className="py-2 px-4 border-b">Tên danh mục</th>
-              <th className="py-2 px-4 border-b">Hành động</th>
+              {user?.role_id === 1 && (
+                <th className="py-2 px-4 border-b">Hành động</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -45,9 +47,6 @@ const ListCategory = () => {
                 <th className="py-2 px-4 border-b">{index + 1}</th>
                 <th className="py-2 px-4 border-b">{category.name}</th>
                 <th className="py-2 px-4 border-b flex justify-center gap-[10px]">
-                  {user?.role_id !== 1 && (
-                    <div className="text-red-500">Bạn không đủ quyền hạn</div>
-                  )}
                   {user?.role_id === 1 && (
                     <Link to={`/admin/category-edit/${category.id}`}>
                       <button className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500">
