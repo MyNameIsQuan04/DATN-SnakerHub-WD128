@@ -41,12 +41,12 @@ export interface Customer {
 }
 
 export interface OrderItem {
-  productVariantImage: string;
+  image: string;
   nameProduct: string;
-  productVariantImage: string;
   order_id: number;
   product_variant_id: number;
   id: number;
+  description: string;
   quantity: number;
   created_at: string;
   updated_at: string;

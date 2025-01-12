@@ -172,46 +172,51 @@ class OrderController extends Controller
         ]);
     }
     //  Phương thức áp Dụng Mã Giảm Giá
-    public function applyVoucher(Request $request)
-    {
-        $voucherCode = $request->input('codeDiscount');
-        $total_price = $request->input('total_price'); // Tổng tiền giỏ hàng từ FE
+public function applyVoucher(Request $request)
+{
+    $voucherCode = $request->input('codeDiscount');
+    $total_price = $request->input('total_price'); // Tổng tiền giỏ hàng từ FE
 
-        // Kiểm tra tổng tiền hợp lệ
-        if (!is_numeric($total_price) || $total_price <= 0) {
-            return response()->json(['message' => 'Tổng tiền không hợp lệ'], 400);
-        }
-
-        // Tìm mã giảm giá
-        $voucher = Voucher::where('codeDiscount', $voucherCode)->first();
-        if (!$voucher || !$voucher->isValid()) {
-            return response()->json(['message' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn'], 400);
-        }
-
-        // Tính toán mức giảm giá
-        $discount = 0;
-        if ($voucher->type === 'percent') {
-            $discount = ($total_price * $voucher->discount) / 100;
-        } elseif ($voucher->type === 'fixed') {
-            $discount = $voucher->discount;
-        }
-
-        // Đảm bảo giảm giá không vượt quá tổng tiền
-        $discount = min($discount, $total_price);
-        $total_price_after_discount = $total_price - $discount;
-
-        // Cập nhật số lần sử dụng mã giảm giá (nếu có giới hạn)
-        if ($voucher->usage_limit !== null) {
-            $voucher->decrement('usage_limit');
-        }
-
-        // Trả về kết quả
-        return response()->json([
-            'message' => 'Áp dụng mã giảm giá thành công',
-            'discount' => min($discount, $total_price), // Giảm giá tối đa chỉ bằng tổng tiền
-            'original_total_price' => $total_price,
-            // 'discount' => $discount,
-            'total_price_after_discount' => $total_price_after_discount,
-        ]);
+    // Kiểm tra tổng tiền hợp lệ
+    if (!is_numeric($total_price) || $total_price <= 0) {
+        return response()->json(['message' => 'Tổng tiền không hợp lệ'], 400);
     }
+
+
+    // Tìm mã giảm giá
+    $voucher = Voucher::where('codeDiscount', $voucherCode)->first();
+    if (!$voucher || !$voucher->isValid()) {
+        return response()->json(['message' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn'], 400);
+    }
+
+    // Tính toán mức giảm giá
+    $discount = 0;
+    if ($voucher->type === 'percent') {
+        $discount = ($total_price * $voucher->discount) / 100;
+
+        // Giới hạn mức giảm tối đa nếu có
+        if ($voucher->max_discount !== null) {
+            $discount = min($discount, $voucher->max_discount);
+        }
+    } elseif ($voucher->type === 'fixed') {
+        $discount = $voucher->discount;
+    }
+
+    // Đảm bảo giảm giá không vượt quá tổng tiền
+    $discount = min($discount, $total_price);
+    $total_price_after_discount = $total_price - $discount;
+
+    // Cập nhật số lần sử dụng mã giảm giá (nếu có giới hạn)
+    if ($voucher->usage_limit !== null) {
+        $voucher->decrement('usage_limit');
+    }
+
+    // Trả về kết quả
+    return response()->json([
+        'message' => 'Áp dụng mã giảm giá thành công',
+        'discount' => $discount, // Giảm giá sau khi áp dụng giới hạn
+        'original_total_price' => $total_price,
+        'total_price_after_discount' => $total_price_after_discount,
+    ]);
+}
 }

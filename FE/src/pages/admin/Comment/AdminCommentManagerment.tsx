@@ -6,20 +6,6 @@ import axios from "axios";
 import moment from "moment";
 import { Editor } from "@tinymce/tinymce-react";
 
-// Cấu hình interceptor cho Axios
-axios.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
 interface Comment {
   id: number;
   user: {
@@ -29,12 +15,13 @@ interface Comment {
     name: string;
   };
   content: string;
-  star: number;
+  star: number | null;
   created_at: string;
-  is_admin_reply?: boolean;
+  parent_id: number | null;
 }
 
 const AdminCommentManagement: React.FC = () => {
+  const token = localStorage.getItem("access_token");
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
   const [replyContent, setReplyContent] = useState("");
@@ -47,7 +34,11 @@ const AdminCommentManagement: React.FC = () => {
   const fetchComments = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8000/api/comments`);
+      const response = await axios.get(`http://localhost:8000/api/comments`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setComments(response.data.data);
     } catch (error) {
       message.error("Tải bình luận thất bại.");
@@ -58,7 +49,11 @@ const AdminCommentManagement: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:8000/api/comments/${id}`);
+      await axios.delete(`http://localhost:8000/api/comments/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       message.success("Xóa bình luận thành công.");
       fetchComments();
     } catch (error) {
@@ -73,6 +68,11 @@ const AdminCommentManagement: React.FC = () => {
         `http://localhost:8000/api/comments/${selectedComment.id}/reply`,
         {
           reply: replyContent,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       message.success(response.data.message || "Trả lời thành công.");
@@ -113,6 +113,7 @@ const AdminCommentManagement: React.FC = () => {
       title: "Sao đánh giá",
       dataIndex: "star",
       key: "star",
+      render: (star: number | null) => (star ? star : "N/A"),
     },
     {
       title: "Ngày tạo",
@@ -130,7 +131,9 @@ const AdminCommentManagement: React.FC = () => {
             type="primary"
             icon={<CommentOutlined />}
             onClick={() => setSelectedComment(record)}
-            disabled={record.is_admin_reply}
+            disabled={comments.some(
+              (c) => c.parent_id === record.id // Kiểm tra đã trả lời chưa
+            )}
           >
             Trả lời
           </Button>
@@ -179,9 +182,7 @@ const AdminCommentManagement: React.FC = () => {
               "insertdatetime media table paste code help wordcount",
             ],
             toolbar:
-              "undo redo | formatselect | bold italic backcolor | \
-        alignleft aligncenter alignright alignjustify | \
-        bullist numlist outdent indent | removeformat | help",
+              "undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help",
           }}
         />
       </Modal>
