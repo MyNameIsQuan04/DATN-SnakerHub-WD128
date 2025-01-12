@@ -57,11 +57,23 @@ class ReplyNotificationMail extends Mailable
 
     public function build()
     {
+        $htmlContent = "
+            <html>
+                <head>
+                    <title>Reply Notification</title>
+                </head>
+                <body>
+                    <h1>Xin chào {$this->customerName}</h1>
+                    <p>Cảm ơn bạn đã gửi đánh giá. Chúng tôi đã trả lời như sau:</p>
+                    <blockquote>
+                        {$this->replyContent}
+                    </blockquote>
+                    <p>Trân trọng,<br>Đội ngũ hỗ trợ khách hàng</p>
+                </body>
+            </html>
+        ";
+
         return $this->subject('Thông báo: Đánh giá của bạn đã được trả lời')
-        ->view('emails.reply_notification') // View email
-        ->with([
-            'replyContent' => $this->replyContent, // Truyền biến tới view
-            'customerName' => $this->customerName, // Truyền biến tới view
-        ]);
+                    ->html($htmlContent); // Gửi email với nội dung HTML
     }
 }

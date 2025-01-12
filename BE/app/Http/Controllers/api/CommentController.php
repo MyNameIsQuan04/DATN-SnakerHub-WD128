@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\ReplyNotificationMail;
+use Illuminate\Support\Facades\Mail;
 
 class CommentController extends Controller
 {
