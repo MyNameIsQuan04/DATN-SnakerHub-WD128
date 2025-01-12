@@ -21,14 +21,12 @@ const ListSize = () => {
           </div>
           <h3 className="underline">Danh mục kích thước</h3>
         </div>
-        {user?.role_id === 1 && (
-          <Link
-            to="/admin/size-add"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mb-6 inline-block"
-          >
-            Thêm Danh Mục Mới
-          </Link>
-        )}
+        <Link
+          to="/admin/size-add"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mb-6 inline-block"
+        >
+          Thêm kích cỡ mới
+        </Link>
 
         {/* Table */}
         <table className="min-w-full bg-white border border-gray-200">
@@ -45,16 +43,11 @@ const ListSize = () => {
                 <th className="py-2 px-4 border-b">{index + 1}</th>
                 <th className="py-2 px-4 border-b">{size.name}</th>
                 <th className="py-2 px-4 border-b flex justify-center gap-[10px]">
-                  {user?.role_id !== 1 && (
-                    <div className="text-red-500">Bạn không đủ quyền hạn</div>
-                  )}
-                  {user?.role_id === 1 && (
-                    <Link to={`/admin/size-edit/${size.id}`}>
-                      <button className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500">
-                        Chỉnh sửa
-                      </button>
-                    </Link>
-                  )}
+                  <Link to={`/admin/size-edit/${size.id}`}>
+                    <button className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500">
+                      Chỉnh sửa
+                    </button>
+                  </Link>
                   {user?.role_id === 1 && (
                     <div className="">
                       {size.name !== "Mặc định" && (

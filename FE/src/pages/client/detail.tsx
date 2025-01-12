@@ -253,7 +253,6 @@ const Detail = () => {
 
   const stock = selectedVariant ? selectedVariant.stock : 0;
   const isOutOfStock = product.product_variants.every(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (variant: any) => variant.stock === 0
   );
 

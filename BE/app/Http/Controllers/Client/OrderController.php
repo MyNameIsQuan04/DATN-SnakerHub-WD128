@@ -187,10 +187,10 @@ class OrderController extends Controller
                     'status' => 'required|in:Đã hủy',
                 ]);
                 foreach ($order->orderItems as $orderItem) {
-                    $product_id = Product::where('name', $orderItem['nameProduct'])->value('id');
+                    $product_id = Product::withTrashed()->where('name', $orderItem['nameProduct'])->value('id');
 
-                    $productVariant = Product_Variant::where('color', Color::where('name', $orderItem->color)->value('name'))
-                        ->where('size', Size::where('name', $orderItem->size)->value('name'))
+                    $productVariant = Product_Variant::withTrashed()->where('color',  $orderItem->color)
+                        ->where('size',  $orderItem->size)
                         ->where('product_id', $product_id)->first();
 
                     $stock = $productVariant['stock'] + $orderItem['quantity'];
@@ -198,7 +198,7 @@ class OrderController extends Controller
                         'stock' => $stock,
                     ]);
 
-                    $product = Product::find($product_id);
+                    $product = Product::withTrashed()->find($product_id);
 
                     $newSellCount = $product['sell_count'] - $orderItem['quantity'];
                     $product->update([
@@ -265,7 +265,7 @@ class OrderController extends Controller
 
             $order->load('orderItems', 'customer');
 
-            // SendKhieuNaiOrderEmail::dispatch($order);
+            SendKhieuNaiOrderEmail::dispatch($order);
 
             return $order;
         } else {
@@ -432,7 +432,7 @@ class OrderController extends Controller
 
             $user = Auth::user();
             SendLinkPayment::dispatch($vnp_Url, $user->email, $user->name);
-            // SendNewOrderEmail::dispatch($order);
+            SendNewOrderEmail::dispatch($order);
 
             return $vnp_Url;
         } catch (\Exception $e) {

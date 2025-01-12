@@ -54,14 +54,12 @@ const ListProduct = () => {
 
       {/* Tìm kiếm */}
       <div className="flex items-center gap-2 mt-4 mb-6">
-        {user?.role_id === 1 && (
-          <Link
-            to="/admin/product-add"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
-          >
-            Thêm Sản Phẩm Mới
-          </Link>
-        )}
+        <Link
+          to="/admin/product-add"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+        >
+          Thêm Sản Phẩm Mới
+        </Link>
         <div className="relative flex items-center w-full max-w-md">
           <input
             type="text"
@@ -159,19 +157,12 @@ const ListProduct = () => {
 
                     {/* Nút quản lý */}
                     <td className="py-3 px-4 border-b">
-                      {user?.role_id !== 1 && (
-                        <div className="text-red-500">
-                          Bạn không đủ quyền hạn
-                        </div>
-                      )}
-                      {user?.role_id === 1 && (
-                        <Link
-                          to={`/admin/product-edit/${product.id}`}
-                          className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500"
-                        >
-                          Chỉnh sửa
-                        </Link>
-                      )}
+                      <Link
+                        to={`/admin/product-edit/${product.id}`}
+                        className="btn btn-danger p-[10px] rounded-lg text-white bg-slate-500"
+                      >
+                        Chỉnh sửa
+                      </Link>
                       {user?.role_id === 1 && (
                         <button
                           onClick={() => onRemoveProduct(product.id)}

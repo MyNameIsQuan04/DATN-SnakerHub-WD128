@@ -328,8 +328,8 @@ const Checkout = () => {
                   <div className="ml-4 flex-grow">
                     <p className="font-semibold">{product.name}</p>
                     <p className="text-gray-600">
-                      Màu: {productVariant.color.name}, Kích cỡ:{" "}
-                      {productVariant.size.name}
+                      Màu: {productVariant.color}, Kích cỡ:{" "}
+                      {productVariant.size}
                     </p>
                   </div>
                   <p className="w-24 text-center">
@@ -371,11 +371,15 @@ const Checkout = () => {
                           className="border-b py-2 flex justify-between items-center"
                         >
                           <div>
-                            <p className="font-semibold">{item.name}</p>
-                            <p className="text-gray-600">{item.phone_number}</p>
+                            <p className="font-semibold">
+                              Tên người nhận: {item.name}
+                            </p>
                             <p className="text-gray-600">
-                              {item.address},{item.town},{item.district},
-                              {item.province}
+                              Số điện thoại: {item.phone_number}
+                            </p>
+                            <p className="text-gray-600">
+                              Địa chỉ nhận hàng: {item.address},{item.town},
+                              {item.district},{item.province}
                             </p>
                           </div>
                           <button
