@@ -70,7 +70,11 @@ class CommentController extends Controller
         'parent_id' => $comment->id, // Gắn ID của bình luận được trả lời
           ];
         $reply = Comment::create($replyData);;
-
+        
+         // Gửi email cho khách hàng
+    $customerEmail = $comment->user->email; // Email khách hàng
+    $customerName = $comment->user->name; // Tên khách hàng
+    Mail::to($customerEmail)->send(new ReplyNotificationMail($request->reply, $customerName));
 
         return response()->json(['message' => 'Reply added successfully.', 'reply' => $reply], 201);
     }
