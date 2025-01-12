@@ -74,16 +74,15 @@ const ListVoucher = () => {
           <h3 className="underline">Quản lý vouchers</h3>
         </div>
       </div>
-      {user?.role_id === 1 && (
-        <div className="text-left mb-6">
-          <Link
-            to="/admin/voucher-add"
-            className="bg-blue-500 text-white p-3 rounded-lg text-xl hover:bg-blue-600 transition"
-          >
-            Tạo mã giảm giá
-          </Link>
-        </div>
-      )}
+
+      <div className="text-left mb-6">
+        <Link
+          to="/admin/voucher-add"
+          className="bg-blue-500 text-white p-3 rounded-lg text-xl hover:bg-blue-600 transition"
+        >
+          Tạo mã giảm giá
+        </Link>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {vouchers.map((voucher) => (
@@ -124,23 +123,23 @@ const ListVoucher = () => {
             </div>
 
             {/* Button sửa */}
-            {user?.role_id === 1 && (
-              <div className="flex justify-end space-x-2 mt-4">
-                <Link
-                  to={`/admin/voucher-edit/${voucher.id}`}
-                  className="bg-yellow-500 text-white font-semibold rounded py-1 px-3 text-base hover:bg-yellow-600 transition"
-                >
-                  Sửa
-                </Link>
 
+            <div className="flex justify-end space-x-2 mt-4">
+              <Link
+                to={`/admin/voucher-edit/${voucher.id}`}
+                className="bg-yellow-500 text-white font-semibold rounded py-1 px-3 text-base hover:bg-yellow-600 transition"
+              >
+                Sửa
+              </Link>
+              {user?.role_id === 1 && (
                 <button
                   onClick={() => handleDelete(voucher.id)}
                   className="bg-red-500 text-white font-semibold rounded py-1 px-3 text-base hover:bg-red-600 transition"
                 >
                   Xóa
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         ))}
       </div>
