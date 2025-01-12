@@ -19,7 +19,7 @@ class ReplyNotificationMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($replyContent, $customerName)
     {
         $this->replyContent = $replyContent;
         $this->customerName = $customerName;
@@ -41,7 +41,11 @@ class ReplyNotificationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.reply_notification', // Tên view
+            with: [
+                'replyContent' => $this->replyContent, // Biến truyền vào view
+                'customerName' => $this->customerName, // Biến truyền vào view
+            ],
         );
     }
 
@@ -57,11 +61,23 @@ class ReplyNotificationMail extends Mailable
 
     public function build()
     {
+        $htmlContent = "
+        <html>
+            <head>
+                <title>Reply Notification</title>
+            </head>
+            <body>
+                <h1>Xin chào {$this->customerName}</h1>
+                <p>Cảm ơn bạn đã gửi đánh giá. Chúng tôi đã trả lời như sau:</p>
+                <blockquote>
+                    {$this->replyContent}
+                </blockquote>
+                <p>Trân trọng,<br>Đội ngũ hỗ trợ khách hàng</p>
+            </body>
+        </html>
+    ";
+
         return $this->subject('Thông báo: Đánh giá của bạn đã được trả lời')
-        ->view('emails.reply_notification') // View email
-        ->with([
-            'replyContent' => $this->replyContent, // Truyền biến tới view
-            'customerName' => $this->customerName, // Truyền biến tới view
-        ]);
+            ->html($htmlContent); // Gửi email với nội dung HTML
     }
 }

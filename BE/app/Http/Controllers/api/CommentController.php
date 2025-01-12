@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ReplyNotificationMail;
 use Illuminate\Http\Request;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class CommentController extends Controller
 {
@@ -62,19 +64,19 @@ class CommentController extends Controller
         // Reply logic
         // $reply = new Comment();
         $replyData = [
-        'user_id' => Auth::id(), // Lấy ID của admin (hoặc người dùng hiện tại)
-        'product_id' => $comment->product_id, // Gắn cùng sản phẩm
-        'order__item_id' => $comment->order__item_id , // Gắn cùng order item nếu cần
-        'content' => $request->reply, // Nội dung trả lời
-        'star' => 0, // Không gắn số sao cho trả lời
-        'parent_id' => $comment->id, // Gắn ID của bình luận được trả lời
-          ];
+            'user_id' => Auth::id(), // Lấy ID của admin (hoặc người dùng hiện tại)
+            'product_id' => $comment->product_id, // Gắn cùng sản phẩm
+            'order__item_id' => $comment->order__item_id, // Gắn cùng order item nếu cần
+            'content' => $request->reply, // Nội dung trả lời
+            'star' => 0, // Không gắn số sao cho trả lời
+            'parent_id' => $comment->id, // Gắn ID của bình luận được trả lời
+        ];
         $reply = Comment::create($replyData);;
-        
-         // Gửi email cho khách hàng
-    $customerEmail = $comment->user->email; // Email khách hàng
-    $customerName = $comment->user->name; // Tên khách hàng
-    Mail::to($customerEmail)->send(new ReplyNotificationMail($request->reply, $customerName));
+
+        // Gửi email cho khách hàng
+        $customerEmail = $comment->user->email; // Email khách hàng
+        $customerName = $comment->user->name; // Tên khách hàng
+        Mail::to($customerEmail)->send(new ReplyNotificationMail($request->reply, $customerName));
 
         return response()->json(['message' => 'Reply added successfully.', 'reply' => $reply], 201);
     }
