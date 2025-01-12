@@ -100,8 +100,8 @@ const UserAnnouncement = () => {
                 {/* Hiển thị ảnh sản phẩm */}
                 <img
                   src={
-                    order.order_items[0]?.productVariantImage
-                      ? order.order_items[0].productVariantImage
+                    order.order_items[0]?.image
+                      ? order.order_items[0].image
                       : "https://via.placeholder.com/150"
                   }
                   alt={"Ảnh sản phẩm"}

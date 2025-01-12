@@ -21,7 +21,7 @@ export interface Notification {
   };
   order_items: {
 
-    productVariantImage: string;
+    image: string;
 
   }[];
 }
