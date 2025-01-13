@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import DailyRevenueChart from "./DailyRevenueTable";
-import List5Pro from "./List5Pro";
 import { IoHomeOutline } from "react-icons/io5";
 import { GrFormNext } from "react-icons/gr";
 
@@ -107,14 +106,9 @@ const OrderDashboard = () => {
           </div>
         </div>
       </div>
-      <div className="flex w-full">
-        <div className="w-[55%] p-4 ">
+      <div className=" p-4 ">
           <DailyRevenueChart />
         </div>
-        <div className="w-[45%] p-4">
-          <List5Pro/>
-        </div>
-      </div>
     </div>
   );
 };

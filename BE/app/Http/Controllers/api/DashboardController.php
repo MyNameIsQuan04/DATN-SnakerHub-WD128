@@ -20,7 +20,7 @@ class DashboardController extends Controller
 
         $totalStocks = Product_Variant::sum('stock'); //tổng số sản phẩm tồn kho
 
-        $countCustomer = User::where('role_id', Role::where('name','User')->value('id'))->count(); //số khách hàng
+        $countCustomer = User::where('role_id', Role::where('role','User')->value('id'))->count(); //số khách hàng
 
         $countOrder = Order::whereNotIn('status', ['Hoàn thành', 'Đã hủy'])->count(); //số đơn hàng chưa hoàn thành
 

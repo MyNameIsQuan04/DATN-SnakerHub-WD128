@@ -1,22 +1,21 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
 } from "chart.js";
+import "react-datepicker/dist/react-datepicker.css";
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
@@ -34,46 +33,84 @@ export interface Daily {
   endDate: string;
 }
 
+const getLast7Days = (startDate: Date) => {
+  const dates = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(startDate);
+    date.setDate(date.getDate() - i);
+    dates.push(date.toISOString().split("T")[0]);
+  }
+  return dates;
+};
+
 const DailyRevenueChart: React.FC = () => {
   const [data, setData] = useState<Daily | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedWeek, setSelectedWeek] = useState<number>(0); // 0 means current week
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:8000/api/dashboard/daily")
-  //     .then((response) => {
-  //       if (response.data.success) {
-  //         setData(response.data);
-  //       } else {
-  //         throw new Error("Invalid data format received");
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching daily revenue:", error);
-  //       setError("Failed to fetch daily revenue");
-  //     });
-  // }, []);
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/api/dashboard/daily")
+      .then((response) => {
+        if (response.data.success) {
+          setData(response.data);
+        } else {
+          throw new Error("Invalid data format received");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching daily revenue:", error);
+        setError("Failed to fetch daily revenue");
+      });
+  }, []);
 
   if (error) {
     return <div className="text-red-500 font-semibold">{error}</div>;
   }
 
+  const handleWeekChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedWeek(parseInt(event.target.value, 10));
+    setSelectedDate(null); // Reset selected date when week is changed
+  };
+
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+    setSelectedWeek(0); // Reset selected week when date is changed
+  };
+
+  const handleReset = () => {
+    setSelectedWeek(0);
+    setSelectedDate(null);
+  };
+
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - selectedWeek * 7);
+  const last7Days = getLast7Days(startDate);
+
+  const filteredData = selectedDate
+    ? data?.dailyRevenue.filter(
+        (item) => item.date === selectedDate.toISOString().split("T")[0]
+      )
+    : data?.dailyRevenue.filter((item) => last7Days.includes(item.date));
+
   const chartData = {
-    labels: data?.dailyRevenue.map((item) => item.date) || [],
+    labels: selectedDate
+      ? [selectedDate.toISOString().split("T")[0]]
+      : last7Days,
     datasets: [
       {
         label: "Doanh thu hàng ngày",
-        data:
-          data?.dailyRevenue.map((item) => parseFloat(item.daily_total)) || [],
+        data: selectedDate
+          ? filteredData?.map((item) => parseFloat(item.daily_total)) || [0]
+          : last7Days.map((date) => {
+              const revenue = filteredData?.find((item) => item.date === date);
+              return revenue ? parseFloat(revenue.daily_total) : 0;
+            }),
+        backgroundColor: "rgba(75,192,192,0.6)",
         borderColor: "rgba(75,192,192,1)",
-        backgroundColor: "rgba(75,192,192,0.2)", // Nền nhạt cho biểu đồ
-        fill: true, // Tô màu nền dưới đường biểu đồ
-        tension: 0.4, // Điều chỉnh độ cong của đường biểu đồ
-        pointBackgroundColor: "rgba(75,192,192,1)", // Màu điểm trên biểu đồ
-        pointBorderColor: "rgba(0,0,0,0.8)",
-        pointBorderWidth: 2,
-        pointRadius: 6, // Tăng kích thước điểm
-        pointHoverRadius: 8, // Kích thước điểm khi hover
+        borderWidth: 1,
+        barThickness: 20, // Adjust this value to make the columns narrower
       },
     ],
   };
@@ -99,17 +136,13 @@ const DailyRevenueChart: React.FC = () => {
     },
     scales: {
       y: {
-        type: "linear",
         beginAtZero: true,
         grid: {
           borderColor: "rgba(75,192,192,0.2)",
         },
         ticks: {
           callback: function (value: number) {
-            if (value % 1000 === 0) {
-              return value.toLocaleString();
-            }
-            return "";
+            return value.toLocaleString();
           },
         },
       },
@@ -117,35 +150,94 @@ const DailyRevenueChart: React.FC = () => {
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-lg">
-      <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center px-4 py-2 border-b-2 border-gray-300">
-        Thống kê doanh thu theo từng ngày
-      </h2>
-
-      <div className="p-2 rounded-lg shadow-lg">
-        <Line data={chartData} options={options} />
+    <div className="p-6 bg-white rounded-lg shadow-lg">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-semibold text-gray-800">
+          Thống kê theo ngày
+        </h2>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center">
+            <select
+              id="week-select"
+              value={selectedWeek}
+              onChange={handleWeekChange}
+              className="w-34 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value={0}>Tuần này</option>
+              <option value={1}>Tuần trước</option>
+              <option value={2}>2 tuần trước</option>
+              <option value={3}>3 tuần trước</option>
+              <option value={4}>4 tuần trước</option>
+            </select>
+          </div>
+          <div className="flex items-center">
+            <input
+              type="date"
+              value={
+                selectedDate ? selectedDate.toISOString().split("T")[0] : ""
+              }
+              onChange={(e) =>
+                handleDateChange(
+                  e.target.value ? new Date(e.target.value) : null
+                )
+              }
+              className="w-34 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+          </div>
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+          >
+            Làm mới
+          </button>
+        </div>
       </div>
 
-      {data && (
-        <div className="mt-6 px-4 py-6 bg-white rounded-lg shadow-md">
+      <div className="flex">
+        <div className="w-3/5 p-4 rounded-lg shadow-lg bg-gray-50">
+          <Bar data={chartData} options={options} />
+        </div>
+
+        <div className="w-2/5 mt-6 px-4 py-6 bg-white rounded-lg shadow-md ml-4">
           <ul className="space-y-2 text-gray-700">
-            <strong className="block text-xl font-semibold text-gray-800 mb-2">
-              Chi tiết doanh thu từng ngày:
+            <strong className="block text-xl font-semibold text-gray-800 mb-4">
+              Chi tiết doanh thu 
             </strong>
-            {data.dailyRevenue.map((item, index) => (
-              <li
-                key={index}
-                className="flex justify-between items-center text-lg font-medium text-gray-600"
-              >
-                <span>Ngày {item.date}:</span>
-                <span className="text-green-600 font-semibold">
-                  {parseFloat(item.daily_total).toLocaleString()} VNĐ
-                </span>
-              </li>
-            ))}
+            {selectedDate
+              ? filteredData?.map((item, index) => (
+                  <li
+                    key={index}
+                    className="flex justify-between items-center text-lg font-medium text-gray-600 bg-gray-100 p-2 rounded-md hover:bg-gray-200"
+                  >
+                    <span>Ngày {item.date}:</span>
+                    <span className="text-green-600 font-semibold">
+                      {parseFloat(item.daily_total).toLocaleString()} VNĐ
+                    </span>
+                  </li>
+                ))
+              : last7Days.map((date, index) => {
+                  const revenue = filteredData?.find(
+                    (item) => item.date === date
+                  );
+                  return (
+                    <li
+                      key={index}
+                      className="flex justify-between items-center text-lg font-medium text-gray-600 bg-gray-100 p-2 rounded-md hover:bg-gray-200"
+                    >
+                      <span>Ngày {date}:</span>
+                      <span className="text-green-600 font-semibold">
+                        {revenue
+                          ? parseFloat(revenue.daily_total).toLocaleString()
+                          : 0}{" "}
+                        VNĐ
+                      </span>
+                    </li>
+                  );
+                })}
           </ul>
         </div>
-      )}
+      </div>
     </div>
   );
 };
