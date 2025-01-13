@@ -75,7 +75,7 @@ const NewOrder = () => {
             onChange={handleStatusChange}
             className="border border-gray-300 rounded-lg px-4 py-2"
           >
-            <option value="">Tất cả trạng thái</option>
+            <option value="">Tất cả</option>
             <option value="Chờ xử lý">Chờ xử lý</option>
             <option value="Đã xác nhận">Đã xác nhận</option>
             <option value="Đang vận chuyển">Đang vận chuyển</option>
@@ -86,9 +86,9 @@ const NewOrder = () => {
           </select>
           <button
             onClick={handleReset}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-gray-400 transition"
           >
-            Reset
+            Làm mới
           </button>
         </div>
       </div>

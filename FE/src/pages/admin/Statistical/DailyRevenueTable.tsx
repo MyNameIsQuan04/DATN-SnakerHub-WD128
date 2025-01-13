@@ -210,7 +210,7 @@ const DailyRevenueChart: React.FC = () => {
                     key={index}
                     className="flex justify-between items-center text-lg font-medium text-gray-600 bg-gray-100 p-2 rounded-md hover:bg-gray-200"
                   >
-                    <span>Ngày {item.date}:</span>
+                    <span>{item.date}:</span>
                     <span className="text-green-600 font-semibold">
                       {parseFloat(item.daily_total).toLocaleString()} VNĐ
                     </span>
