@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Mail\NewOrderMail;
 use App\Mail\OrderStatusUpdatedMail;
 use App\Models\Order;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,7 +27,7 @@ class SendNewOrderEmail implements ShouldQueue
 
     public function handle()
     {
-        $usersMail = User::where('type','admin')->pluck('email'); 
+        $usersMail = User::where('role',Role::where('role','Admin')->value('id'))->pluck('email'); 
         // $customerEmail = 'snakerhub2024@gmail.com';
         foreach ($usersMail as $customerEmail) {
             Mail::to($customerEmail)->send(new NewOrderMail($this->order));

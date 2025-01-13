@@ -2,17 +2,18 @@
 
 namespace App\Jobs;
 
-use App\Mail\KhieuNaiOrderMail;
-use App\Mail\NewOrderMail;
-use App\Mail\OrderStatusUpdatedMail;
-use App\Models\Order;
+use App\Models\Role;
 use App\Models\User;
+use App\Models\Order;
+use App\Mail\NewOrderMail;
 use Illuminate\Bus\Queueable;
+use App\Mail\KhieuNaiOrderMail;
+use App\Mail\OrderStatusUpdatedMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 
 class SendKhieuNaiOrderEmail implements ShouldQueue
 {
@@ -27,7 +28,7 @@ class SendKhieuNaiOrderEmail implements ShouldQueue
 
     public function handle()
     {
-        $usersMail = User::where('type','admin')->pluck('email'); 
+        $usersMail = User::where('role',Role::where('role','Admin')->value('id'))->pluck('email'); 
         // $customerEmail = 'snakerhub2024@gmail.com';
         foreach ($usersMail as $customerEmail) {
             Mail::to($customerEmail)->send(new KhieuNaiOrderMail($this->order));
