@@ -28,7 +28,7 @@ class SendKhieuNaiOrderEmail implements ShouldQueue
 
     public function handle()
     {
-        $usersMail = User::where('role',Role::where('role','Admin')->value('id'))->pluck('email'); 
+        $usersMail = User::where('role_id',Role::where('role','Admin')->value('id'))->pluck('email'); 
         // $customerEmail = 'snakerhub2024@gmail.com';
         foreach ($usersMail as $customerEmail) {
             Mail::to($customerEmail)->send(new KhieuNaiOrderMail($this->order));
