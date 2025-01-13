@@ -63,10 +63,9 @@ const OrderDetailHictory = () => {
     if (order?.status === "Đã giao hàng" && newStatus === "Hoàn thành") {
       const timeElapsed =
         new Date().getTime() - new Date(order.updated_at).getTime();
-      // 1 ngày tính bằng giây
-      const fiveDaysInMilliseconds = 1 * 24 * 60 * 60 * 1000;
+      const oneDayInMilliseconds = 1 * 24 * 60 * 60 * 1000;
 
-      if (timeElapsed < fiveDaysInMilliseconds) {
+      if (timeElapsed < oneDayInMilliseconds) {
         toast.warn(
           "Chỉ có thể cập nhật thành 'Hoàn thành' sau 1 ngày kể từ khi đã giao đơn hàng."
         );
@@ -75,12 +74,13 @@ const OrderDetailHictory = () => {
     }
 
     try {
-      const updateData = {
-        status: newStatus,
-        ...(newStatus === "Đã giao hàng" && {
-          status_payment: "Đã thanh toán",
-        }),
-      };
+      const updateData: any = { status: newStatus };
+      if (newStatus === "Đã hủy" && order?.status_payment === "Đã thanh toán") {
+        updateData.status_payment = "Chờ hoàn tiền";
+      }
+      if (newStatus === "Đã giao hàng") {
+        updateData.status_payment = "Đã thanh toán";
+      }
 
       const { status } = await axios.put(
         `http://localhost:8000/api/orders/${id}`,
@@ -92,7 +92,8 @@ const OrderDetailHictory = () => {
         setOrder((prev) => (prev ? { ...prev, ...updateData } : null));
         toast.success("Cập nhật trạng thái thành công!");
       }
-    } catch {
+    } catch (error) {
+      console.error("Lỗi cập nhật trạng thái:", error);
       toast.error("Cập nhật trạng thái thất bại!");
     }
   };
@@ -117,49 +118,81 @@ const OrderDetailHictory = () => {
       toast.error("Xác nhận hủy yêu cầu thất bại. Vui lòng thử lại.");
     }
   };
-  const handleConfirmRequest = async (orderId: number) => {
+  const handleConfirmRequest = async (orderId : number) => {
     try {
-      await axios.patch(
-        `http://localhost:8000/api/orders/${orderId}`,
-        {
-          status: "Xử lý yêu cầu trả hàng",
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setOrder((prevOrder) =>
-        prevOrder ? { ...prevOrder, status: "Xử lý yêu cầu trả hàng" } : null
-      );
-      toast.success("Xác nhận trả hàng thành công");
+      
+      if (order?.status === "Đã hủy") {
+        await axios.put(
+          `http://localhost:8000/api/updateStatusPayment/${orderId}`,
+          {
+            status_payment: "Đã hoàn tiền", 
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+  
+        setOrder((prevOrder) =>
+          prevOrder ? { ...prevOrder, status_payment: "Đã hoàn tiền" } : null
+        );
+        toast.success("Xác nhận hoàn tiền thành công");
+      } else {
+        await axios.patch(
+          `http://localhost:8000/api/orders/${orderId}`,
+          {
+            status: "Xử lý yêu cầu trả hàng",
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+  
+        setOrder((prevOrder) =>
+          prevOrder ? { ...prevOrder, status: "Xử lý yêu cầu trả hàng" } : null
+        );
+        toast.success("Xác nhận trả hàng thành công");
+      }
       fetchOrderDetail();
     } catch (error) {
-      console.error("Lỗi khi xác nhận trả hàng:", error);
-      toast.error("Xác nhận trả hàng thất bại. Vui lòng thử lại.");
+      console.error("Lỗi khi xử lý yêu cầu:", error);
+      toast.error("Xác nhận yêu cầu thất bại. Vui lòng thử lại.");
     }
   };
+  
 
   const UpdateRequest = async (orderId: number, newStatus: string) => {
     try {
+      let newStatusPayment = "";
+      switch (newStatus) {
+        case "Trả hàng":
+          newStatusPayment = "Chờ hoàn tiền";
+          break;
+        default:
+          newStatusPayment = order?.status_payment || "";
+          break;
+      }
+
       await axios.patch(
         `http://localhost:8000/api/orders/${orderId}`,
         {
-          status: newStatus, // Truyền trạng thái mới từ tham số vào
+          status: newStatus,
+          status_payment: newStatusPayment, 
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      // Cập nhật trạng thái mới cho order
       setOrder((prevOrder) =>
         prevOrder && prevOrder.id === orderId
-          ? { ...prevOrder, status: newStatus }
+          ? {
+              ...prevOrder,
+              status: newStatus,
+              status_payment: newStatusPayment,
+            }
           : prevOrder
       );
+
       toast.success("Cập nhật trạng thái đơn hàng thành công");
     } catch (error) {
       console.error("Lỗi khi cập nhật trạng thái:", error);
       toast.error("Cập nhật trạng thái thất bại. Vui lòng thử lại.");
     }
   };
+
   const statusOrder = [
     "Chờ xử lý",
     "Đã xác nhận",
@@ -429,6 +462,15 @@ const OrderDetailHictory = () => {
                     </option>
                   ))}
                 </select>
+                {order.status === "Đã hủy" &&
+                  order.status_payment === "Chờ hoàn tiền" && (
+                    <button
+                      onClick={() => handleConfirmRequest(order.id)}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                    >
+                      Xác nhận hoàn tiền
+                    </button>
+                  )}
               </div>
             )}
         </div>

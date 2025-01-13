@@ -103,8 +103,8 @@ const ListNotification = () => {
               <div className="flex items-start">
                 <img
                   src={
-                    notification.order_items[0]?.productVariantImage
-                      ? notification.order_items[0].productVariantImage
+                    notification.order_items[0]?.image
+                      ? notification.order_items[0].image
                       : "https://via.placeholder.com/150"
                   }
                   className="w-28 h-28 object-cover rounded-lg border border-gray-200 mr-4"

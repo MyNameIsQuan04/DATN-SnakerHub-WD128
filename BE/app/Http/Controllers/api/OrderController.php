@@ -94,6 +94,57 @@ class OrderController extends Controller
                         ]);
                     }
                 }
+                if ($newStatus === 'Xử lý yêu cầu trả hàng') {
+                    if ($order->status_payment === 'Đã thanh toán') {
+                        $order->update([
+                            'status_payment' => 'Đã thanh toán',
+                        ]);
+                    }
+                    foreach ($order->orderItems as $orderItem) {
+                        $product_id = Product::where('name', $orderItem['nameProduct'])->value('id');
+
+                        $productVariant = Product_Variant::where('color', $orderItem['color'])->where('size', $orderItem['size'])
+                            ->where('product_id', $product_id)->first();
+
+                        $stock = $productVariant['stock'] + $orderItem['quantity'];
+                        $productVariant->update([
+                            'stock' => $stock,
+                        ]);
+
+                        $product = Product::find($product_id);
+
+                        $newSellCount = $product['sell_count'] - $orderItem['quantity'];
+                        $product->update([
+                            'sell_count' => $newSellCount
+                        ]);
+                    }
+                }
+                if ($newStatus === 'Trả hàng') {
+                    if ($order->status_payment === 'Đã thanh toán') {
+                        $order->update([
+                            'status_payment' => 'Chờ hoàn tiền',
+                        ]);
+                    }
+                    foreach ($order->orderItems as $orderItem) {
+                        $product_id = Product::where('name', $orderItem['nameProduct'])->value('id');
+
+                        $productVariant = Product_Variant::where('color', $orderItem['color'])->where('size', $orderItem['size'])
+                            ->where('product_id', $product_id)->first();
+
+                        $stock = $productVariant['stock'] + $orderItem['quantity'];
+                        $productVariant->update([
+                            'stock' => $stock,
+                        ]);
+
+                        $product = Product::find($product_id);
+
+                        $newSellCount = $product['sell_count'] - $orderItem['quantity'];
+                        $product->update([
+                            'sell_count' => $newSellCount
+                        ]);
+                    }
+                }
+                
 
                 if (!in_array($newStatus, $statusOrder[$currentStatus])) {
                     throw new \Exception('Không thể thay đổi trạng thái lùi hoặc không hợp lệ!');
