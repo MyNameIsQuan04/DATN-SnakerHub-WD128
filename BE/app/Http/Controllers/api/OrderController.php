@@ -160,6 +160,13 @@ public function applyVoucher(Request $request)
     if (!$voucher || !$voucher->isValid()) {
         return response()->json(['message' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn'], 400);
     }
+    
+    // Kiểm tra điều kiện tổng tiền tối thiểu để áp dụng mã giảm giá
+    if ($voucher->minimum_order_value > $totalPrice) {
+        return response()->json([
+            'message' => 'Mã giảm giá chỉ áp dụng cho đơn hàng từ ' . number_format($voucher->minimum_order_value) . ' VNĐ trở lên.'
+        ], 400);
+    }
 
     // Tính toán mức giảm giá
     $discount = 0;
