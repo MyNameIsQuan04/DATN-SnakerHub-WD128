@@ -93,8 +93,8 @@ const OrderDetailHictory = () => {
         toast.success("Cập nhật trạng thái thành công!");
       }
     } catch (error) {
-      console.error("Lỗi cập nhật trạng thái:", error);
-      toast.error("Cập nhật trạng thái thất bại!");
+      toast.error(error.response.data.message);
+      // toast.error("Cập nhật trạng thái thất bại!");
     }
   };
 
@@ -118,18 +118,17 @@ const OrderDetailHictory = () => {
       toast.error("Xác nhận hủy yêu cầu thất bại. Vui lòng thử lại.");
     }
   };
-  const handleConfirmRequest = async (orderId : number) => {
+  const handleConfirmRequest = async (orderId: number) => {
     try {
-      
       if (order?.status === "Đã hủy") {
         await axios.put(
           `http://localhost:8000/api/updateStatusPayment/${orderId}`,
           {
-            status_payment: "Đã hoàn tiền", 
+            status_payment: "Đã hoàn tiền",
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-  
+
         setOrder((prevOrder) =>
           prevOrder ? { ...prevOrder, status_payment: "Đã hoàn tiền" } : null
         );
@@ -142,7 +141,7 @@ const OrderDetailHictory = () => {
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-  
+
         setOrder((prevOrder) =>
           prevOrder ? { ...prevOrder, status: "Xử lý yêu cầu trả hàng" } : null
         );
@@ -154,7 +153,6 @@ const OrderDetailHictory = () => {
       toast.error("Xác nhận yêu cầu thất bại. Vui lòng thử lại.");
     }
   };
-  
 
   const UpdateRequest = async (orderId: number, newStatus: string) => {
     try {
@@ -172,7 +170,7 @@ const OrderDetailHictory = () => {
         `http://localhost:8000/api/orders/${orderId}`,
         {
           status: newStatus,
-          status_payment: newStatusPayment, 
+          status_payment: newStatusPayment,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
