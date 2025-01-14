@@ -42,18 +42,21 @@ const SimpleSlider = () => {
 
   return (
     <div className="w-full h-[600px] overflow-hidden mx-auto">
-      <Slider {...settings}>
-        {slides.map((slide) => (
-          <div key={slide.id}>
-            <img
-              src={`http://localhost:8000/storage/${slide.image}`}
-              alt={slide.title}
-              className="w-full h-[600px] object-cover"
-            />
-          </div>
-        ))}
-      </Slider>
-    </div>
+  <Slider {...settings}>
+    {slides.map((slide) => (
+      <div key={slide.id} className="relative w-full h-full">
+        <img
+          srcSet={`http://localhost:8000/storage/${slide.image}?w=1200&h=600&fit=crop 1200w, http://localhost:8000/storage/${slide.image}?w=800&h=400&fit=crop 800w`}
+          sizes="(max-width: 600px) 100vw, 1200px"
+          src={`http://localhost:8000/storage/${slide.image}`}
+          alt={slide.title}
+          className="w-full h-[600px] object-cover transition-all duration-300 ease-in-out"
+        />
+      </div>
+    ))}
+  </Slider>
+</div>
+
   );
 };
 

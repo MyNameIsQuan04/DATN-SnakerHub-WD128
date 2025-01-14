@@ -20,7 +20,7 @@ class DashboardController extends Controller
 
         $totalStocks = Product_Variant::sum('stock'); //tổng số sản phẩm tồn kho
 
-        $countCustomer = User::where('role_id', Role::where('name','User')->value('id'))->count(); //số khách hàng
+        $countCustomer = User::where('role_id', Role::where('role','User')->value('id'))->count(); //số khách hàng
 
         $countOrder = Order::whereNotIn('status', ['Hoàn thành', 'Đã hủy'])->count(); //số đơn hàng chưa hoàn thành
 
@@ -29,8 +29,12 @@ class DashboardController extends Controller
         $countOrderDestroy = Order::where('status', 'Đã hủy')->count(); //số đơn hàng đã hủy
 
         $list5Pro = Product::orderByDesc('sell_count')->limit(5)->get(); //5 sản phẩm bán chạy nhất
+        
 
-        $lowStockProducts = Product_Variant::where('stock', '<', 5)->get(); //sản phẩm sắp hết hàng
+        $lowStockProducts = Product_Variant::where('stock', '<', 10)->get()->load('product.comments'); //sản phẩm sắp hết hàng
+        $lowStockProducts->each(function ($variant) {
+            $variant->averageStars = $variant->product->comments->isEmpty() ? 0 : $variant->product->comments->avg('star');
+        });
 
         $orders = Order::orderByDesc('id')->get(); //danh sách đơn hàng 
 

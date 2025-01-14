@@ -37,6 +37,7 @@ export interface Monthly {
 const MonthlyRevenueChart: React.FC = () => {
   const [data, setData] = useState<Monthly | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   const [dashboardData, setDashboardData] = useState({
     totalStocks: 0,
     totalSells: 0,
@@ -73,41 +74,51 @@ const MonthlyRevenueChart: React.FC = () => {
       });
   }, []);
 
+  useEffect(() => {
+    axios
+      .get("http://127.0.0.1:8000/api/dashboard/monthly")
+      .then((response) => {
+        if (response.data.success && response.data.monthlyRevenue) {
+          setData(response.data);
+        } else {
+          throw new Error("Invalid data format received");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching monthly revenue:", error);
+        setError("Failed to fetch monthly revenue");
+      });
+  }, []);
+
   if (error) {
     return (
       <div className="text-red-500 text-center font-medium p-4">{error}</div>
     );
   }
 
-  // useEffect(() => {
-  //   axios
-  //     .get("http://127.0.0.1:8000/api/dashboard")
-  //     .then((response) => {
-  //       if (response.data.success && response.data.monthlyRevenue) {
-  //         setData(response.data);
-  //       } else {
-  //         throw new Error("Invalid data format received");
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching monthly revenue:", error);
-  //       setError("Failed to fetch monthly revenue");
-  //     });
-  // }, []);
+  const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedYear(parseInt(event.target.value, 10));
+  };
 
-  if (error) {
-    return <div className="text-red-500 font-semibold">{error}</div>;
-  }
+  const handleReset = () => {
+    setSelectedYear(new Date().getFullYear());
+  };
+
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+
+  const filteredData = data?.monthlyRevenue.filter(
+    (item) => item.year === selectedYear
+  );
 
   const chartData = {
-    labels:
-      data?.monthlyRevenue.map((item) => `${item.month}-${item.year}`) || [],
+    labels: months.map((month) => `${month}-${selectedYear}`),
     datasets: [
       {
         label: "Doanh thu hàng tháng",
-        data:
-          data?.monthlyRevenue.map((item) => parseFloat(item.monthly_total)) ||
-          [],
+        data: months.map((month) => {
+          const revenue = filteredData?.find((item) => item.month === month);
+          return revenue ? parseFloat(revenue.monthly_total) : 0;
+        }),
         backgroundColor: "rgba(75,192,192,0.7)", // Màu nền cho cột
         borderColor: "rgba(75,192,192,1)", // Màu viền cho cột
         borderWidth: 1, // Độ rộng viền của cột
@@ -131,7 +142,7 @@ const MonthlyRevenueChart: React.FC = () => {
             }: ${tooltipItem.raw.toLocaleString()} VNĐ`;
           },
         },
-        mode: "nearest",
+        mode: "index",
         intersect: false,
       },
     },
@@ -167,7 +178,7 @@ const MonthlyRevenueChart: React.FC = () => {
                 {new Intl.NumberFormat("vi-VN", {
                   style: "currency",
                   currency: "VND",
-                }).format(data.totalRevenue)}
+                }).format(parseFloat(data.totalRevenue))}
               </span>
             </div>
             <div className="flex justify-between items-center">
@@ -186,7 +197,7 @@ const MonthlyRevenueChart: React.FC = () => {
                 {dashboardData.totalSells}
               </span>
             </div>
-            <div className="flex justify-between items-center">
+            {/* <div className="flex justify-between items-center">
               <span className="font-semibold text-lg text-gray-700">
                 Tháng bắt đầu:
               </span>
@@ -201,13 +212,42 @@ const MonthlyRevenueChart: React.FC = () => {
               <span className="text-gray-600 text-lg">
                 {new Date(data.endDate).toLocaleDateString()}
               </span>
-            </div>
+            </div> */}
           </div>
         )}
       </div>
 
       <div className="lg:w-[65%] w-full p-4">
-        <h1 className="pb-4 font-normal text-[20px]">Thống kê theo tháng</h1>
+        <div className="flex justify-between items-center mb-4">
+        <h2 className="text-3xl font-semibold text-gray-800">
+          Thống kê theo ngày
+        </h2>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center">
+              <select
+                id="year-select"
+                value={selectedYear}
+                onChange={handleYearChange}
+                className="w-34 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                {[...Array(10)].map((_, i) => {
+                  const year = new Date().getFullYear() - i;
+                  return (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <button
+              onClick={handleReset}
+              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+            >
+              Làm mới
+            </button>
+          </div>
+        </div>
         <div className="h-[400px] lg:h-[500px] p-4 rounded-lg shadow-lg bg-white">
           <Bar data={chartData} options={options} />
         </div>

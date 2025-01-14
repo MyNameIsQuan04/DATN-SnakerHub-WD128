@@ -5,10 +5,10 @@ import { Order, OrderItem } from "../../../interfaces/Order";
 import { GrPrevious } from "react-icons/gr";
 
 const UserOrderhistorydetail = () => {
-  const { id } = useParams(); // Lấy id từ URL
-  const [orderDetail, setOrderDetail] = useState<Order | null>(null); // Trạng thái chi tiết đơn hàng
-  const [loading, setLoading] = useState<boolean>(true); // Trạng thái tải dữ liệu
-  const [error, setError] = useState<string | null>(null); // Trạng thái lỗi
+  const { id } = useParams(); 
+  const [orderDetail, setOrderDetail] = useState<Order | null>(null); 
+  const [loading, setLoading] = useState<boolean>(true); 
+  const [error, setError] = useState<string | null>(null); 
 
   const formatDate = (dateString: string) => {
     const optionsDate: Intl.DateTimeFormatOptions = {
@@ -23,8 +23,8 @@ const UserOrderhistorydetail = () => {
     };
 
     const date = new Date(dateString);
-    const formattedDate = date.toLocaleDateString("vi-VN", optionsDate); // Chỉ ngày
-    const formattedTime = date.toLocaleTimeString("vi-VN", optionsTime); // Chỉ giờ
+    const formattedDate = date.toLocaleDateString("vi-VN", optionsDate); 
+    const formattedTime = date.toLocaleTimeString("vi-VN", optionsTime); 
 
     return `${formattedDate} ${formattedTime}`;
   };
@@ -46,7 +46,6 @@ const UserOrderhistorydetail = () => {
     }
   };
 
-  // Gọi hàm fetchOrderDetail khi component được mount
   useEffect(() => {
     if (id) {
       fetchOrderDetail();
@@ -73,7 +72,6 @@ const UserOrderhistorydetail = () => {
   const formatCurrency = (value: any) => {
     return value.toLocaleString("vi-VN") + "₫";
   };
-  // Xử lý trường hợp đang tải hoặc lỗi
   if (loading) return <div>Đang tải dữ liệu...</div>;
   if (error) return <div>Lỗi: {error}</div>;
 
@@ -716,7 +714,6 @@ const UserOrderhistorydetail = () => {
               )}
             </div>
           </div>
-          {/* Thông tin đơn hàng  */}
           <div className="mt-3">
             <div className="space-y-6">
               {orderDetail.order_items.map((item: OrderItem) => (
@@ -727,7 +724,7 @@ const UserOrderhistorydetail = () => {
                   >
                     <img
                       src={
-                        item.productVariantImage ||
+                        item.image ||
                         "https://via.placeholder.com/150"
                       }
                       className="w-20 h-20 rounded-md"
@@ -751,7 +748,6 @@ const UserOrderhistorydetail = () => {
                 </div>
               ))}
               <div className="flex justify-between items-start border-t-2 pt-4">
-                {/* Phần thứ nhất: Khiếu nại, trạng thái đơn hàng, trạng thái thanh toán và phương thức thanh toán */}
                 <div className="w-1/2 pr-6">
                   {orderDetail.status === "Trả hàng" ||
                   orderDetail.status === "Yêu cầu trả hàng" ||
@@ -773,8 +769,6 @@ const UserOrderhistorydetail = () => {
                     </h1>
                   </div>
                 </div>
-
-                {/* Phần thứ hai: Các thông tin tổng tiền */}
                 <div className="w-1/2 pl-6">
                   <div className="flex gap-2 mt-4 mb-2">
                     <h1 className="font-medium">Thời gian tạo đơn:</h1>
@@ -809,7 +803,6 @@ const UserOrderhistorydetail = () => {
                         <div className="">Thanh toán khi nhận hàng</div>
                       )}
                     </h1>
-                    {/* Hiển thị logo VNPAY nếu phương thức thanh toán là VNPAY */}
                     {orderDetail.paymentMethod === "VNPAY" && (
                       <img
                         src="https://i.imgur.com/RAtc2Se.png"
