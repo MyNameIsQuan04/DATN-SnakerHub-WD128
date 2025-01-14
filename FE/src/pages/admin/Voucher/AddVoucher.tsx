@@ -3,7 +3,6 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link, useNavigate } from "react-router-dom";
-import { number } from "yup";
 import { IoHomeOutline } from "react-icons/io5";
 import { GrFormNext } from "react-icons/gr";
 
