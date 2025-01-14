@@ -130,30 +130,33 @@ const Dashboard = () => {
             <div className="mt-3 max-h-96 overflow-y-auto scroll-hidden">
               <div className="space-y-4 px-2">
                 {lowStockProducts.length > 0 ? (
-                  lowStockProducts.map((product, index) => (
+                  lowStockProducts.map((products, index) => (
                     <div
-                      key={product.product_id}
+                      key={products.product_id}
                       className="bg-white p-4 rounded-lg shadow-md flex items-start space-x-4 hover:shadow-lg transition-all duration-300"
                     >
                       <h1 className="flex items-center font-semibold">{index + 1}</h1>
                       <img
-                        src={product.image}
-                        alt={product.name}
+                        src={products.image}
+                        alt={products.name}
                         className="w-20 h-20 object-cover rounded-lg"
                       />
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold text-gray-800 mb-1">
-                          {product.name}
+                          {products.product?.name}
                         </h3>
                         <p className="text-gray-600 text-sm mb-2 line-clamp-3">
-                          {product.color} - {product.size}
+                          {products.color} - {products.size}
+                        </p>
+                        <p className="text-gray-600 text-sm mb-2 line-clamp-3">
+                          {products.product?.short_description}
                         </p>
                         <div className="flex justify-between items-center">
                           <span className="text-md font-bold text-green-600">
-                            {product.price.toLocaleString()} VND
+                            {products.price.toLocaleString()} VND
                           </span>
                           <span className="text-sm text-gray-500">
-                            Còn lại {product.stock} sản phẩm
+                            Còn lại {products.stock} sản phẩm
                           </span>
                         </div>
                       </div>
