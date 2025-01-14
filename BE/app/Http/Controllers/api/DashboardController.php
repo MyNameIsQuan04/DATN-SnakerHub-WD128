@@ -30,7 +30,7 @@ class DashboardController extends Controller
 
         $list5Pro = Product::orderByDesc('sell_count')->limit(5)->get(); //5 sản phẩm bán chạy nhất
 
-        $lowStockProducts = Product_Variant::where('stock', '<', 5)->get(); //sản phẩm sắp hết hàng
+        $lowStockProducts = Product_Variant::where('stock', '<', 10)->get()->load('product'); //sản phẩm sắp hết hàng
 
         $orders = Order::orderByDesc('id')->get(); //danh sách đơn hàng 
 

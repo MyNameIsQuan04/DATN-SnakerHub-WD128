@@ -69,6 +69,10 @@ class OrderController extends Controller
                 $currentStatus = $order->status;
                 $newStatus = $request->status;
 
+                if($currentStatus === 'Chờ xử lý' && $order->status_payment === 'Chưa thanh toán' && $newStatus === 'Đã xác nhận') {
+                    throw new \Exception('Không thể thay đổi trạng thái cho đơn thanh toán online chưa thanh toán!');
+                }
+
                 if ($newStatus === 'Đã hủy') {
                     if ($order->status_payment === 'Đã thanh toán') {
                         $order->update([
