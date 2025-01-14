@@ -8,6 +8,7 @@ import {
   FaTachometerAlt,
   FaUser,
 } from "react-icons/fa";
+import { LuHistory } from "react-icons/lu";
 import { IoColorPaletteOutline } from "react-icons/io5";
 import { CgSize } from "react-icons/cg";
 import { MdOutlineNotificationsActive } from "react-icons/md";
@@ -125,6 +126,11 @@ const LayoutAdmin = () => {
       path: "/admin/comments",
       icon: <FaCommentAlt className="mr-2" />,
       label: "Đánh giá & Bình luận",
+    },
+    {
+      path: "/admin/history",
+      icon: <LuHistory className="mr-2" />,
+      label: "Lịch sử",
     },
     {
       path: "/admin/slides",
