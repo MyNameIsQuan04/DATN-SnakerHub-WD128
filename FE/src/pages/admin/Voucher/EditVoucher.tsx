@@ -10,6 +10,7 @@ const EditVoucher: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Lấy ID từ URL
   const [codeDiscount, setCodeDiscount] = useState<string>("");
   const [discount, setDiscount] = useState<number>();
+  const [minimum_order_value, setMinimum_order_value] = useState<number>();
   const [type, setType] = useState<"percent" | "amount">("percent");
   const [startDate, setStartDate] = useState<string>(""); // Thêm state cho start_date
   const [expirationDate, setExpirationDate] = useState<string>("");
@@ -32,6 +33,7 @@ const EditVoucher: React.FC = () => {
         setCodeDiscount(voucher.codeDiscount);
         setDiscount(voucher.discount);
         setType(voucher.type);
+        setMinimum_order_value(voucher.minimum_order_value);
         setStartDate(voucher.start_date); // Lấy start_date từ API
         setExpirationDate(voucher.expiration_date);
         setUsageLimit(voucher.usage_limit);
@@ -69,6 +71,7 @@ const EditVoucher: React.FC = () => {
     }
 
     const voucherData = {
+      minimum_order_value,
       codeDiscount,
       discount,
       type,
@@ -133,6 +136,18 @@ const EditVoucher: React.FC = () => {
             type="number"
             value={discount}
             onChange={(e) => setDiscount(Number(e.target.value))}
+            className="w-full border p-2"
+            required
+            min={1}
+            max={100}
+          />
+        </div>
+        <div>
+          <label className="block">Điều kiện giảm giá</label>
+          <input
+            type="number"
+            value={minimum_order_value}
+            onChange={(e) => setMinimum_order_value(Number(e.target.value))}
             className="w-full border p-2"
             required
             min={1}

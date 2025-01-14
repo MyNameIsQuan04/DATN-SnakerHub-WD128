@@ -27,6 +27,7 @@ class VoucherController extends Controller
             'expiration_date' => 'required|date',
             'usage_limit' => 'required|integer|min:1',
             'max_discount' => 'nullable|numeric|min:0',
+            'minimum_order_value' => 'required|numeric|min:0',
         ]);
 
         $voucher = Voucher::create([
@@ -37,6 +38,7 @@ class VoucherController extends Controller
             'expiration_date' => Carbon::parse($request->expiration_date),
             'usage_limit' => $request->usage_limit,
             'max_discount' => $request->max_discount, // Store max_discount
+            'minimum_order_value' => $request->minimum_order_value,
         ]);
 
         return response()->json(['message' => 'Voucher created successfully', 'voucher' => $voucher], 201);
@@ -55,6 +57,7 @@ class VoucherController extends Controller
             'usage_limit' => 'required|integer|min:1',
             'start_date' => 'required|date|after_or_equal:today',
             'max_discount' => 'nullable|numeric|min:0',
+            'minimum_order_value' => 'required|numeric|min:0',
         ]);
 
         $voucher->update([
@@ -65,6 +68,7 @@ class VoucherController extends Controller
             'expiration_date' => Carbon::parse($request->expiration_date),
             'usage_limit' => $request->usage_limit,
             'max_discount' => $request->max_discount, // Update max_discount
+            'minimum_order_value' => $request->minimum_order_value,
         ]);
 
         return response()->json(['message' => 'Voucher updated successfully', 'voucher' => $voucher]);

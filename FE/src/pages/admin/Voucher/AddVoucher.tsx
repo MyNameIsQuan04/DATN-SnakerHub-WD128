@@ -14,6 +14,8 @@ const AddVoucher: React.FC = () => {
   const [startDate, setStartDate] = useState<string>(""); // Thêm state cho start_date
   const [expirationDate, setExpirationDate] = useState<string>("");
   const [usageLimit, setUsageLimit] = useState<number>(1);
+  const [minimum_order_value, setMinimum_order_value] = useState<number>();
+
   const navigate = useNavigate();
 
   // Lấy ngày hôm nay theo định dạng yyyy-MM-dd
@@ -36,6 +38,7 @@ const AddVoucher: React.FC = () => {
     }
 
     const voucherData = {
+      minimum_order_value,
       codeDiscount,
       discount,
       type,
@@ -96,8 +99,16 @@ const AddVoucher: React.FC = () => {
             onChange={(e) => setDiscount(Number(e.target.value))}
             className="w-full border p-2"
             required
-            min={1}
-            max={100}
+          />
+        </div>
+        <div>
+          <label className="block">Điều kiện giảm giá</label>
+          <input
+            type="number"
+            value={minimum_order_value}
+            onChange={(e) => setMinimum_order_value(Number(e.target.value))}
+            className="w-full border p-2"
+            required
           />
         </div>
         <div>
