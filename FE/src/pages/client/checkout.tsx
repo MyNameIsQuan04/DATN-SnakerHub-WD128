@@ -141,7 +141,11 @@ const Checkout = () => {
   const [codeDiscount, setCodeDiscount] = useState<string>("");
   const [discount, setDiscount] = useState<number>(0);
   const [vouchers, setVouchers] = useState<
-    Array<{ codeDiscount: string; discount: number }>
+    Array<{
+      codeDiscount: string;
+      discount: number;
+      minimum_order_value: number;
+    }>
   >([]);
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -219,7 +223,7 @@ const Checkout = () => {
         );
       }
     } catch (error) {
-      toast.error("Không thể áp dụng mã giảm giá!");
+      toast.error(error.response.data.message);
     }
   };
 
@@ -580,7 +584,8 @@ const Checkout = () => {
                     {vouchers.map((voucher, index) => (
                       <option key={index} value={voucher.codeDiscount}>
                         {voucher.codeDiscount} - Giảm{" "}
-                        {Math.round(voucher.discount)}%
+                        {Math.round(voucher.discount)}% {"\n"} Áp dụng cho đơn
+                        hàng từ {voucher.minimum_order_value} trở lên
                       </option>
                     ))}
                   </select>
