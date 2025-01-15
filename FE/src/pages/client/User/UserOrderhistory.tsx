@@ -242,8 +242,8 @@ const UserOrderHistory = () => {
 
   useEffect(() => {
     fetchOrders();
-    const interval = setInterval(fetchOrders, 4000);
-    return () => clearInterval(interval);
+    // const interval = setInterval(fetchOrders, 4000);
+    // return () => clearInterval(interval);
   }, [token]);
 
   const statusMapping = {

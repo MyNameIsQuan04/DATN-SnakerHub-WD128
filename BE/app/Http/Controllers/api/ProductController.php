@@ -240,6 +240,8 @@ class ProductController extends Controller
 
                 $product->load('productVariants.cartItems', 'comments', 'galleries');
 
+                HistoryService::log('products', $product->id, 'delete', $product, []);
+
                 foreach ($product->productVariants as $productVariant) {
                     $productVariant->cartItems()->delete();
                 }

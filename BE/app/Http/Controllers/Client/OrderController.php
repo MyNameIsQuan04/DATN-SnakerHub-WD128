@@ -182,7 +182,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         try {
-            if ($order['status'] === 'Chờ xử lý' || $order['status'] === 'Đã xác nhận') {
+            if ($order['status'] === 'Chờ xử lý') {
                 $dataValidate = $request->validate([
                     'status' => 'required|in:Đã hủy',
                 ]);

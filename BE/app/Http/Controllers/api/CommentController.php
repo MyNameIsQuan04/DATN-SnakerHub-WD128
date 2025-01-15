@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Mail\ReplyNotificationMail;
 use Illuminate\Http\Request;
 use App\Models\Comment;
+use App\Models\History;
+use App\Services\HistoryService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -32,6 +34,8 @@ class CommentController extends Controller
     public function destroy(string $id)
     {
         $comment = Comment::findOrFail($id);
+
+        HistoryService::log('comments', $comment->id, 'delete', $comment, []);
         $comment->delete();
 
         return response()->json(['message' => 'Comment deleted successfully.'], 200);
@@ -71,7 +75,9 @@ class CommentController extends Controller
             'star' => 0, // Không gắn số sao cho trả lời
             'parent_id' => $comment->id, // Gắn ID của bình luận được trả lời
         ];
-        $reply = Comment::create($replyData);;
+        $reply = Comment::create($replyData);
+
+        HistoryService::log('comments', $reply->id, 'reply', [], $reply);
 
         // Gửi email cho khách hàng
         $customerEmail = $comment->user->email; // Email khách hàng

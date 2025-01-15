@@ -52,6 +52,7 @@ import { useEffect } from "react";
 import SliderManager from "./components/SliderManager";
 import ListNotification from "./pages/admin/notification/ListNotification";
 import AdminCommentManagement from "./pages/admin/Comment/AdminCommentManagerment";
+import HistoryPage from "./pages/admin/History/HistoryPage";
 
 declare global {
   interface Window {
@@ -197,6 +198,7 @@ function App() {
           <Route path="/admin/voucher-edit/:id" element={<EditVoucher />} />
           <Route path="/admin/slides" element={<SliderManager />} />
           <Route path="/admin/comments" element={<AdminCommentManagement />} />
+          <Route path="/admin/history" element={<HistoryPage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

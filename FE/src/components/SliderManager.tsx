@@ -81,11 +81,11 @@ const SliderManager = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-bold text-center">Quản lý Slide</h1>
+      <h1 className="text-3xl font-bold text-center">Quản lý Banner</h1>
 
       {/* Thêm slide */}
       <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-        <h2 className="text-2xl font-semibold">Thêm mới Slide</h2>
+        <h2 className="text-2xl font-semibold">Thêm mới Banner</h2>
         <div className="space-y-4">
           <input
             type="text"
@@ -106,13 +106,13 @@ const SliderManager = () => {
             }
             className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <input
+          {/* <input
             type="text"
             placeholder="Link"
             value={newSlide.link}
             onChange={(e) => setNewSlide({ ...newSlide, link: e.target.value })}
             className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          /> */}
           <button
             onClick={handleAddSlide}
             className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition"
@@ -124,7 +124,7 @@ const SliderManager = () => {
 
       {/* Danh sách slide */}
       <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-        <h2 className="text-2xl font-semibold">Danh sách Slide</h2>
+        <h2 className="text-2xl font-semibold">Danh sách Banner</h2>
         <div className="space-y-4">
           {slides.map((slide) => (
             <div
