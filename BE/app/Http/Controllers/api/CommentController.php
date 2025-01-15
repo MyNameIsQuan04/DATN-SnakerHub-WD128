@@ -75,8 +75,9 @@ class CommentController extends Controller
             'star' => 0, // Không gắn số sao cho trả lời
             'parent_id' => $comment->id, // Gắn ID của bình luận được trả lời
         ];
-        $reply = Comment::create($replyData);
 
+        $reply = Comment::create($replyData);
+        // $isReply = Comment::where('id', $id)->update
         HistoryService::log('comments', $reply->id, 'reply', [], $reply);
 
         // Gửi email cho khách hàng
