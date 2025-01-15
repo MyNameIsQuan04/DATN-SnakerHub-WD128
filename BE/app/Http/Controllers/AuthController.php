@@ -31,7 +31,7 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $defaultRoleId = Role::where('role', 'user')->first()->id;
+        $defaultRoleId = Role::where('role', 'User')->first()->id;
 
         $user = User::create([
             'name' => $request->name,
