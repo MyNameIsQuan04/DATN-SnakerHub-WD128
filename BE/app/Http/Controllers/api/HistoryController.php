@@ -11,7 +11,7 @@ class HistoryController extends Controller
 {
     public function index()
     {
-        $histories = History::all()->load('user');
+        $histories = History::orderByDesc('id')->all()->load('user');
         return response()->json($histories);
     }
     public function historyFilter(Request $request)
