@@ -131,12 +131,14 @@ const AdminCommentManagement: React.FC = () => {
             type="primary"
             icon={<CommentOutlined />}
             onClick={() => setSelectedComment(record)}
-            disabled={comments.some(
-              (c) => c.parent_id === record.id // Kiểm tra đã trả lời chưa
-            )}
+            disabled={
+              comments.some((c) => c.parent_id === record.id) ||
+              record.star === 0
+            }
           >
             Trả lời
           </Button>
+
           <Button
             type="primary"
             danger

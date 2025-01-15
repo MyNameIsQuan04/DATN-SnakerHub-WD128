@@ -16,6 +16,7 @@ const ListVoucher = () => {
     start_date: string;
     expiration_date: string;
     usage_limit: number;
+    minimum_order_value: number;
   }
 
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
@@ -113,6 +114,10 @@ const ListVoucher = () => {
             <p className="text-gray-600">
               Ngày hết hạn:{" "}
               <span className="font-medium">{voucher.expiration_date}</span>
+            </p>
+            <p className="text-gray-600">
+              Điều kiện sử dụng:{" "}
+              <span className="font-medium">{voucher.minimum_order_value}</span>
             </p>
             <p className="text-gray-600">
               Số lần sử dụng:{" "}
