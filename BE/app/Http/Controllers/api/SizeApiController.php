@@ -85,12 +85,7 @@ class SizeApiController extends Controller
         return response()->json(['message' => 'Size not found'], 404);
     }
 
-    // Lấy size mặc định, nếu không có thì tạo mới
-    $defaultSize = Size::firstOrCreate(['name' => 'Mặc định']);
-
-    // Chuyển tất cả product_variants sang size mặc định
-    $size->productVariants()->update(['size_id' => $defaultSize->id]);
-
+    HistoryService::log('sizes', $size->id, 'delete', $size, []);
     // Xóa size (hỗ trợ xóa mềm nếu có)
     $size->delete();
 
