@@ -394,7 +394,7 @@ const EditProduct = () => {
                             <option value="">Chọn màu sắc</option>
                             {colors.map((color: Color) => (
                               <option key={color.id} value={color.id}>
-                                {color.name} {color.deleted ? "(Đã xóa)" : ""}
+                                {color.name}
                               </option>
                             ))}
                           </Field>
