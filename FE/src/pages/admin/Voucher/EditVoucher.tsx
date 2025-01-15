@@ -150,8 +150,6 @@ const EditVoucher: React.FC = () => {
             onChange={(e) => setMinimum_order_value(Number(e.target.value))}
             className="w-full border p-2"
             required
-            min={1}
-            max={100}
           />
         </div>
         <div>
