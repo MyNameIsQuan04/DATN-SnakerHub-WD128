@@ -47,7 +47,8 @@ const DailyRevenueChart: React.FC = () => {
   const [data, setData] = useState<Daily | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedWeek, setSelectedWeek] = useState<number>(0); // 0 means current week
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
+  const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
 
   useEffect(() => {
     axios
@@ -71,37 +72,46 @@ const DailyRevenueChart: React.FC = () => {
 
   const handleWeekChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedWeek(parseInt(event.target.value, 10));
-    setSelectedDate(null); // Reset selected date when week is changed
+    setSelectedStartDate(null); // Reset selected start date when week is changed
+    setSelectedEndDate(null); // Reset selected end date when week is changed
   };
 
-  const handleDateChange = (date: Date | null) => {
-    setSelectedDate(date);
+  const handleStartDateChange = (date: Date | null) => {
+    setSelectedStartDate(date);
+    setSelectedWeek(0); // Reset selected week when date is changed
+  };
+
+  const handleEndDateChange = (date: Date | null) => {
+    setSelectedEndDate(date);
     setSelectedWeek(0); // Reset selected week when date is changed
   };
 
   const handleReset = () => {
     setSelectedWeek(0);
-    setSelectedDate(null);
+    setSelectedStartDate(null);
+    setSelectedEndDate(null);
   };
 
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - selectedWeek * 7);
   const last7Days = getLast7Days(startDate);
 
-  const filteredData = selectedDate
+  const filteredData = selectedStartDate && selectedEndDate
     ? data?.dailyRevenue.filter(
-        (item) => item.date === selectedDate.toISOString().split("T")[0]
+        (item) =>
+          new Date(item.date) >= selectedStartDate &&
+          new Date(item.date) <= selectedEndDate
       )
     : data?.dailyRevenue.filter((item) => last7Days.includes(item.date));
 
   const chartData = {
-    labels: selectedDate
-      ? [selectedDate.toISOString().split("T")[0]]
+    labels: selectedStartDate && selectedEndDate
+      ? filteredData?.map((item) => item.date) || []
       : last7Days,
     datasets: [
       {
         label: "Doanh thu hàng ngày",
-        data: selectedDate
+        data: selectedStartDate && selectedEndDate
           ? filteredData?.map((item) => parseFloat(item.daily_total)) || [0]
           : last7Days.map((date) => {
               const revenue = filteredData?.find((item) => item.date === date);
@@ -173,11 +183,28 @@ const DailyRevenueChart: React.FC = () => {
           <div className="flex items-center">
             <input
               type="date"
+              placeholder="Ngày bắt đầu"
               value={
-                selectedDate ? selectedDate.toISOString().split("T")[0] : ""
+                selectedStartDate ? selectedStartDate.toISOString().split("T")[0] : ""
               }
               onChange={(e) =>
-                handleDateChange(
+                handleStartDateChange(
+                  e.target.value ? new Date(e.target.value) : null
+                )
+              }
+              className="w-34 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+          </div>
+          <div className="flex items-center">
+            <input
+              type="date"
+              placeholder="Ngày kết thúc"
+              value={
+                selectedEndDate ? selectedEndDate.toISOString().split("T")[0] : ""
+              }
+              onChange={(e) =>
+                handleEndDateChange(
                   e.target.value ? new Date(e.target.value) : null
                 )
               }
@@ -204,37 +231,17 @@ const DailyRevenueChart: React.FC = () => {
             <strong className="block text-xl font-semibold text-gray-800 mb-4">
               Chi tiết doanh thu 
             </strong>
-            {selectedDate
-              ? filteredData?.map((item, index) => (
-                  <li
-                    key={index}
-                    className="flex justify-between items-center text-lg font-medium text-gray-600 bg-gray-100 p-2 rounded-md hover:bg-gray-200"
-                  >
-                    <span>{item.date}:</span>
-                    <span className="text-green-600 font-semibold">
-                      {parseFloat(item.daily_total).toLocaleString()} VNĐ
-                    </span>
-                  </li>
-                ))
-              : last7Days.map((date, index) => {
-                  const revenue = filteredData?.find(
-                    (item) => item.date === date
-                  );
-                  return (
-                    <li
-                      key={index}
-                      className="flex justify-between items-center text-lg font-medium text-gray-600 bg-gray-100 p-2 rounded-md hover:bg-gray-200"
-                    >
-                      <span>Ngày {date}:</span>
-                      <span className="text-green-600 font-semibold">
-                        {revenue
-                          ? parseFloat(revenue.daily_total).toLocaleString()
-                          : 0}{" "}
-                        VNĐ
-                      </span>
-                    </li>
-                  );
-                })}
+            {filteredData?.map((item, index) => (
+              <li
+                key={index}
+                className="flex justify-between items-center text-lg font-medium text-gray-600 bg-gray-100 p-2 rounded-md hover:bg-gray-200"
+              >
+                <span>{item.date}:</span>
+                <span className="text-green-600 font-semibold">
+                  {parseFloat(item.daily_total).toLocaleString()} VNĐ
+                </span>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

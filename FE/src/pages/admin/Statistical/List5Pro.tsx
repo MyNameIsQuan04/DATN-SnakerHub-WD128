@@ -116,7 +116,7 @@ const Dashboard = () => {
         {/* Sản phẩm sắp hết hàng */}
         <div className="w-1/2">
           <span className="mt-3 text-gray-800 mb-4 px-6 py-3 bg-gradient-to-r from-red-400 to-red-500 text-white font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300">
-            Các sản phẩm còn dưới 5
+            Các sản phẩm sắp hết hàng
           </span>
 
           {loading ? (
@@ -164,7 +164,7 @@ const Dashboard = () => {
                   ))
                 ) : (
                   <div className="flex items-center justify-center py-10">
-                    Không có sản phẩm dưới 5 sản phẩm
+                    Không có sản phẩm sắp hết
                   </div>
                 )}
               </div>

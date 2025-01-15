@@ -49,8 +49,8 @@ const UserAnnouncement = () => {
 
   useEffect(() => {
     fetchOrders();
-    const interval = setInterval(fetchOrders, 5000);
-    return () => clearInterval(interval);
+    // const interval = setInterval(fetchOrders, 5000);
+    // return () => clearInterval(interval);
   }, []);
 
   const handleViewDetail = (id: number) => {

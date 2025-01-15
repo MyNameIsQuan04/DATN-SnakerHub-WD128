@@ -1,3 +1,4 @@
+import DailyRevenueChart from "./Statistical/DailyRevenueTable";
 import List5Pro from "./Statistical/List5Pro";
 import MonthlyRevenueTable from "./Statistical/MonthlyRevenueTable";
 import NewOrder from "./Statistical/NewOrder";
@@ -8,6 +9,7 @@ const Dashboard = () => {
     <div>
       <OrderDashboard />
       <NewOrder />
+      <DailyRevenueChart />
       <MonthlyRevenueTable />
       <List5Pro />
     </div>

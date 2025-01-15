@@ -372,7 +372,7 @@ const UserOrderHistory = () => {
                 </div>
                 <div className="w-1/2">
                   <div className="flex justify-end gap-1 mt-4">
-                    {["Chờ xử lý", "Đã xác nhận"].includes(order.status) && (
+                    {["Chờ xử lý"].includes(order.status) && (
                       <button
                         onClick={() => handleCancelOrder(order.id)}
                         className="focus:outline-none text-white bg-orange-700 hover:bg-orange-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-900"
