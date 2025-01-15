@@ -135,7 +135,7 @@ const LayoutAdmin = () => {
     {
       path: "/admin/slides",
       icon: <AiFillSetting className="mr-2" />,
-      label: "Cài đặt Slide",
+      label: "Cài đặt Banner",
     },
     { path: "/", icon: <FaHome className="mr-2" />, label: "Client" },
   ];

@@ -11,14 +11,14 @@ class HistoryController extends Controller
 {
     public function index()
     {
-        $histories = History::all();
+        $histories = History::all()->load('user');
         return response()->json($histories);
     }
     public function historyFilter(Request $request)
     {
         $startDate = $request['start_date'] ? Carbon::parse($request['start_date'])->startOfDay() : Carbon::now()->startOfMonth();
         $endDate = $request['end_date'] ? Carbon::parse($request['end_date'])->endOfDay() : Carbon::now()->endOfMonth();
-        $histories = History::whereBetween('created_at', [$startDate, $endDate])->get();
+        $histories = History::whereBetween('created_at', [$startDate, $endDate])->get()->load('user');
         return response()->json($histories);
     }
 }

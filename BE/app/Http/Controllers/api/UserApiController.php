@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Services\HistoryService;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserApiController extends Controller
@@ -108,6 +109,7 @@ class UserApiController extends Controller
     public function destroy(string $id)
     {
         $user = User::findOrFail($id);
+        HistoryService::log('users', $user->id, 'delete', $user, []);
         $user->delete();
 
         return response()->json(['message' => 'User deleted successfully']);
@@ -128,6 +130,8 @@ class UserApiController extends Controller
             return response()->json(['message' => 'User account is already locked'], 400);
         }
 
+        HistoryService::log('users', $user->id, 'lock', $user, []);
+
         // Xóa mềm tài khoản (soft delete)
         $user->delete();
 
@@ -144,6 +148,8 @@ class UserApiController extends Controller
 
         // Tìm người dùng kể cả khi đã bị xóa
         $user = User::withTrashed()->findOrFail($id);
+
+        HistoryService::log('users', $user->id, 'unlock', $user, []);
 
         if (!$user->trashed()) {
             return response()->json(['message' => 'User account is already unlocked'], 400);

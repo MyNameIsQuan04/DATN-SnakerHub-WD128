@@ -85,12 +85,6 @@ class ColorApiController extends Controller
             return response()->json(['message' => 'Color not found'], 404);
         }
 
-        // Lấy color mặc định, nếu không có thì tạo mới
-        $defaultColor = Color::firstOrCreate(['name' => 'Mặc định']);
-
-        // Chuyển tất cả product_variants sang color mặc định
-        $color->productVariants()->update(['color_id' => $defaultColor->id]);
-
         HistoryService::log('colors', $color->id, 'delete', $color, []);
 
         // Xóa color (hỗ trợ xóa mềm nếu có)

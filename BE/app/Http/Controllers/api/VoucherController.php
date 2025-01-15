@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use Carbon\Carbon;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
+use App\Services\HistoryService;
 use App\Http\Controllers\Controller;
 
 class VoucherController extends Controller
@@ -41,6 +42,8 @@ class VoucherController extends Controller
             'minimum_order_value' => $request->minimum_order_value,
         ]);
 
+        HistoryService::log('vouchers', $voucher->id, 'create', [], $voucher);
+
         return response()->json(['message' => 'Voucher created successfully', 'voucher' => $voucher], 201);
     }
 
@@ -60,6 +63,8 @@ class VoucherController extends Controller
             'minimum_order_value' => 'required|numeric|min:0',
         ]);
 
+        HistoryService::log('vouchers', $voucher->id, 'update', $voucher->toArray(), $request->all());
+
         $voucher->update([
             'codeDiscount' => $request->codeDiscount,
             'discount' => $request->discount,
@@ -78,6 +83,7 @@ class VoucherController extends Controller
     public function destroy($id)
     {
         $voucher = Voucher::findOrFail($id);
+        HistoryService::log('vouchers', $voucher->id, 'delete', $voucher, []);
         $voucher->delete();
 
         return response()->json(['message' => 'Voucher deleted successfully']);

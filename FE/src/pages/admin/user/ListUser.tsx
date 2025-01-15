@@ -39,7 +39,7 @@ const ListUser = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [token]);
 
   const openModal = (user: IUser) => {
     if (user.role_id === 1) {
@@ -165,7 +165,7 @@ const ListUser = () => {
       if (response.status === 200) {
         setListUser((prevUsers) =>
           prevUsers.map((user) =>
-            user.id === selectedUser.id ? { ...user, delete_at: null } : user
+            user.id === selectedUser.id ? { ...user, deleted_at: null } : user
           )
         );
         toast.success("Người dùng đã được bỏ chặn!");

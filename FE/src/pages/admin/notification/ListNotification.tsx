@@ -53,8 +53,8 @@ const ListNotification = () => {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 5000);
-    return () => clearInterval(interval);
+    // const interval = setInterval(fetchNotifications, 5000);
+    // return () => clearInterval(interval);
   }, []);
 
   const handleViewDetail = (id: number) => {
