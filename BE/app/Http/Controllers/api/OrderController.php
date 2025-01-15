@@ -191,8 +191,8 @@ class OrderController extends Controller
                 'status_payment' => 'required|in:Đã hoàn tiền',
             ]);
 
+            HistoryService::log('orders', $order->id, 'update', $order->status_payment, $request->status_payment);
             $order->update($request->only('status_payment'));
-
             return response()->json([
                 'success' => true,
                 'message' => 'Cập nhật thành công!',
