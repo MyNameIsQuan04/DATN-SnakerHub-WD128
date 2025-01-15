@@ -14,6 +14,7 @@ const AddVoucher: React.FC = () => {
   const [expirationDate, setExpirationDate] = useState<string>("");
   const [usageLimit, setUsageLimit] = useState<number>(1);
   const [minimum_order_value, setMinimum_order_value] = useState<number>();
+  const token = localStorage.getItem("access_token");
 
   const navigate = useNavigate();
 
@@ -50,7 +51,7 @@ const AddVoucher: React.FC = () => {
       // Gửi request POST đến API Laravel
       await axios.post("http://localhost:8000/api/voucher", voucherData, {
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
 
