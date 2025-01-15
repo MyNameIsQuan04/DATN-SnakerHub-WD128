@@ -70,7 +70,7 @@ const OrderDashboard = () => {
   ];
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50">
       <div className="ml-4 py-4">
         <h2 className="font-extrabold text-3xl text-gray-800">Bảng điều khiển</h2>
         <div className="flex items-center gap-2 ml-2 text-gray-600">
@@ -109,9 +109,6 @@ const OrderDashboard = () => {
             </div>
           ))}
         </div>
-      </div>
-      <div className="max-w-7xl mx-auto mt-8 mb-5">
-        <DailyRevenueChart />
       </div>
     </div>
   );
