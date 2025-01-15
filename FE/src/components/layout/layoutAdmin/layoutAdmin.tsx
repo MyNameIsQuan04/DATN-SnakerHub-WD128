@@ -203,7 +203,7 @@ const LayoutAdmin = () => {
                     }`}
                     onClick={logout}
                   >
-                    Logout
+                    Đăng xuất
                   </button>
                 </h2>
               </div>
