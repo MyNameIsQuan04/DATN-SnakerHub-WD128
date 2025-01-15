@@ -124,7 +124,7 @@ const HistoryPage: React.FC = () => {
                   {history.id}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900">
-                  {history.user_id}
+                  {history.user.name}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900">
                   {history.table_name}
