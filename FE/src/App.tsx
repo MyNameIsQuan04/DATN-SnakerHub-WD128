@@ -45,7 +45,6 @@ import UserChangepass from "./pages/client/User/UserChangepass";
 import UserOrderhistory from "./pages/client/User/UserOrderhistory";
 import UserAnnouncement from "./pages/client/User/UserAnnouncement";
 import UserOrderhistorydetail from "./pages/client/User/UserOrderhistorydetail";
-import OrderReturn from "./pages/admin/order/OrderReturn";
 import PaymentResult from "./pages/client/paymentResult";
 import OrderDetailHictory from "./pages/admin/order/OrderDetailHictory";
 import { useEffect } from "react";
@@ -191,7 +190,6 @@ function App() {
             path="/admin/order-detail/:id"
             element={<OrderDetailHictory />}
           />
-          <Route path="/admin/order-return" element={<OrderReturn />} />
           <Route path="/admin/user" element={<ListUser />} />
           <Route path="/admin/vouchers" element={<ListVoucher />} />
           <Route path="/admin/voucher-add" element={<AddVoucher />} />

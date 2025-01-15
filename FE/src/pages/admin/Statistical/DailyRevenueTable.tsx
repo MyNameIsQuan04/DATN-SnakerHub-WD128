@@ -174,91 +174,99 @@ const DailyRevenueChart: React.FC = () => {
 
   return (
     <div className="p-6">
-  <div className="flex justify-between items-center mb-6">
-    <h2 className="text-3xl font-semibold text-gray-800">
-      Thống kê các ngày trong tuần
-    </h2>
-    <div className="flex items-center space-x-6">
-      <div className="flex items-center space-x-2">
-        <label htmlFor="start-date" className="font-medium text-gray-600">Ngày bắt đầu</label>
-        <input
-          id="start-date"
-          type="date"
-          value={selectedStartDate ? selectedStartDate.toISOString().split("T")[0] : ""}
-          onChange={(e) => handleStartDateChange(e.target.value ? new Date(e.target.value) : null)}
-          className="w-32 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-        />
-      </div>
-      <div className="flex items-center space-x-2">
-        <label htmlFor="end-date" className="font-medium text-gray-600">Ngày kết thúc</label>
-        <input
-          id="end-date"
-          type="date"
-          value={selectedEndDate ? selectedEndDate.toISOString().split("T")[0] : ""}
-          onChange={(e) => handleEndDateChange(e.target.value ? new Date(e.target.value) : null)}
-          className="w-32 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-          min={selectedStartDate ? selectedStartDate.toISOString().split("T")[0] : ""}
-        />
-      </div>
-      <div className="flex items-center space-x-2">
-        <select
-          id="week-select"
-          value={selectedWeek}
-          onChange={handleWeekChange}
-          className="w-32 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        >
-          <option value={0}>Tuần này</option>
-          <option value={1}>Tuần trước</option>
-          <option value={2}>2 tuần trước</option>
-          <option value={3}>3 tuần trước</option>
-          <option value={4}>4 tuần trước</option>
-        </select>
-      </div>
-      <button
-        onClick={handleReset}
-        className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
-      >
-        Làm mới
-      </button>
-    </div>
-  </div>
-
-  {dateError && <div className="text-red-500 mt-2">{dateError}</div>}
-
-  <div className="flex space-x-6">
-    <div className="w-2/3 p-6 rounded-lg shadow-lg bg-white">
-      <Bar data={chartData} options={options} />
-    </div>
-
-    <div className="w-1/3 p-6 bg-gray-50 rounded-lg shadow-md">
-      <ul className="space-y-4 text-gray-700">
-        <strong className="block text-xl font-semibold text-gray-800 mb-4">
-          Chi tiết doanh thu
-        </strong>
-        {filteredData?.map((item, index) => (
-          <li
-            key={index}
-            className="flex justify-between items-center text-lg font-medium text-gray-600 bg-gray-100 p-3 rounded-md hover:bg-gray-200"
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-semibold text-gray-800">
+          Thống kê các ngày trong tuần
+        </h2>
+        <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2">
+            <label htmlFor="start-date" className="font-medium text-gray-600">Ngày bắt đầu</label>
+            <input
+              id="start-date"
+              type="date"
+              value={selectedStartDate ? selectedStartDate.toISOString().split("T")[0] : ""}
+              onChange={(e) => handleStartDateChange(e.target.value ? new Date(e.target.value) : null)}
+              className="w-32 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <label htmlFor="end-date" className="font-medium text-gray-600">Ngày kết thúc</label>
+            <input
+              id="end-date"
+              type="date"
+              value={selectedEndDate ? selectedEndDate.toISOString().split("T")[0] : ""}
+              onChange={(e) => handleEndDateChange(e.target.value ? new Date(e.target.value) : null)}
+              className="w-32 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+              min={selectedStartDate ? selectedStartDate.toISOString().split("T")[0] : ""}
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <select
+              id="week-select"
+              value={selectedWeek}
+              onChange={handleWeekChange}
+              className="w-32 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value={0}>Tuần này</option>
+              <option value={1}>Tuần trước</option>
+              <option value={2}>2 tuần trước</option>
+              <option value={3}>3 tuần trước</option>
+              <option value={4}>4 tuần trước</option>
+            </select>
+          </div>
+          <button
+            onClick={handleReset}
+            className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
           >
-            <span>{item.date}:</span>
-            <span className="text-green-600 font-semibold">
-              {parseFloat(item.daily_total).toLocaleString()} VNĐ
-            </span>
-          </li>
-        ))}
-        <li className="flex justify-between items-center text-lg font-medium text-gray-600 bg-gray-100 p-3 rounded-md hover:bg-gray-200">
-          <span>Tổng doanh thu:</span>
-          <span className="text-green-600 font-semibold">
-            {totalRevenue.toLocaleString()} VNĐ
-          </span>
-        </li>
-      </ul>
-    </div>
-  </div>
-</div>
+            Làm mới
+          </button>
+        </div>
+      </div>
 
+      {dateError && <div className="text-red-500 mt-2">{dateError}</div>}
+
+      <div className="flex space-x-6">
+        <div className="w-2/3 p-6 rounded-lg shadow-lg bg-white">
+          <Bar data={chartData} options={options} />
+        </div>
+
+        <div className="w-1/3 p-6 bg-gray-50 rounded-lg shadow-md">
+          <ul className="space-y-4 text-gray-700">
+            <strong className="block text-xl font-semibold text-gray-800 mb-4">
+              Chi tiết doanh thu
+            </strong>
+            {selectedStartDate && selectedEndDate ? (
+              <li className="text-lg font-medium text-gray-600">
+                Thời gian: {selectedStartDate.toISOString().split("T")[0]} đến {selectedEndDate.toISOString().split("T")[0]}
+              </li>
+            ) : (
+              <li className="text-lg font-medium text-gray-600">
+                Thời gian: Tuần này
+              </li>
+            )}
+            {/* {filteredData?.map((item, index) => (
+              <li
+                key={index}
+                className="flex justify-between items-center text-lg font-medium text-gray-600 bg-gray-100 p-3 rounded-md hover:bg-gray-200"
+              >
+                <span>{item.date}:</span>
+                <span className="text-green-600 font-semibold">
+                  {parseFloat(item.daily_total).toLocaleString()} VNĐ
+                </span>
+              </li>
+            ))} */}
+            <li className="flex justify-between items-center text-lg font-medium text-gray-600 bg-gray-100 p-3 rounded-md hover:bg-gray-200">
+              <span>Tổng doanh thu:</span>
+              <span className="text-green-600 font-semibold">
+                {totalRevenue.toLocaleString()} VNĐ
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 };
 
