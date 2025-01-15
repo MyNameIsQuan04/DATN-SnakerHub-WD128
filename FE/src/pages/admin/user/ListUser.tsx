@@ -39,7 +39,7 @@ const ListUser = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [token]);
 
   const openModal = (user: IUser) => {
     if (user.role_id === 1) {
@@ -60,13 +60,13 @@ const ListUser = () => {
     successMessage: string
   ) => {
     if (!selectedUser) return;
-  
+
     // Kiểm tra giá trị role_id hợp lệ trước khi gửi
     if (updatedData.role_id && ![1, 2].includes(updatedData.role_id)) {
       toast.error("Role ID không hợp lệ. Vui lòng chọn quyền hợp lệ.");
       return;
     }
-  
+
     setIsUpdating(true);
     try {
       const response = await axios.patch(
@@ -78,7 +78,7 @@ const ListUser = () => {
           },
         }
       );
-  
+
       if (response.status === 200) {
         setListUser((prevUsers) =>
           prevUsers.map((user) =>
@@ -90,7 +90,12 @@ const ListUser = () => {
       }
     } catch (error) {
       console.error(error);
-      if (axios.isAxiosError(error) && error.response && error.response.data && error.response.data.errors) {
+      if (
+        axios.isAxiosError(error) &&
+        error.response &&
+        error.response.data &&
+        error.response.data.errors
+      ) {
         const errorMessage =
           error.response.data.errors.role_id?.[0] || "An error occurred.";
         toast.error(errorMessage);
@@ -101,7 +106,6 @@ const ListUser = () => {
       setIsUpdating(false);
     }
   };
-  
 
   const upgradeToAdmin = () =>
     handleUserUpdate({ role_id: 1 }, "User has been upgraded to Admin!");
@@ -161,7 +165,7 @@ const ListUser = () => {
       if (response.status === 200) {
         setListUser((prevUsers) =>
           prevUsers.map((user) =>
-            user.id === selectedUser.id ? { ...user, delete_at: null } : user
+            user.id === selectedUser.id ? { ...user, deleted_at: null } : user
           )
         );
         toast.success("User has been unlocked!");

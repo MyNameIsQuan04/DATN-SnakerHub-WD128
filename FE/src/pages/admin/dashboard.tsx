@@ -10,8 +10,8 @@ const Dashboard = () => {
       <OrderDashboard />
       <NewOrder />
       <DailyRevenueChart />
-      <MonthlyRevenueTable />
       <List5Pro />
+      <MonthlyRevenueTable />
     </div>
   );
 };
