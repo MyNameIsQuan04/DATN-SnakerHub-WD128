@@ -1,6 +1,6 @@
 export interface History {
   id: number;
-  user: string;
+  // user: string;
   table_name: string;
   record_id: number;
   action: string;
