@@ -83,7 +83,7 @@ class UserApiController extends Controller
             'password' => 'sometimes|nullable|string|min:6',
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string',
-            'role_id' => 'sometimes|required|in:user,admin',
+            'role_id' => 'sometimes|required',
             'gender' => 'nullable|in:male,female,other',
             'birthday' => 'nullable|date',
             'avatar' => 'nullable|image',
