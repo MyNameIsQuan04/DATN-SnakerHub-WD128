@@ -4,17 +4,17 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Order } from "../../../interfaces/Order";
 import { Link } from "react-router-dom";
-import { FaSpinner } from "react-icons/fa";
+import { FaExclamationCircle, FaSpinner } from "react-icons/fa";
 
 const AdminOrder = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("");
+  const [filterPaymentStatus, setFilterPaymentStatus] = useState<string>("");
   const token = localStorage.getItem("access_token");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
-  const [complaintCount, setComplaintCount] = useState<number>(0);
 
   useEffect(() => {
     fetchOrders();
@@ -22,7 +22,7 @@ const AdminOrder = () => {
 
   useEffect(() => {
     filterOrders();
-  }, [searchTerm, filterStatus, orders]);
+  }, [searchTerm, filterStatus, filterPaymentStatus, orders]);
 
   const fetchOrders = async () => {
     try {
@@ -34,15 +34,6 @@ const AdminOrder = () => {
       });
       setOrders(data);
       setFilteredOrders(data);
-
-      // Đếm số lượng đơn hàng khiếu nại
-      const complaintOrders = data.filter(
-        (order: Order) =>
-          order.status === "Yêu cầu trả hàng" ||
-          order.status === "Xử lý yêu cầu trả hàng"
-      );
-      setComplaintCount(complaintOrders.length);
-
       setError(""); // Reset error
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -55,18 +46,16 @@ const AdminOrder = () => {
   const filterOrders = () => {
     let filtered = orders;
 
-    // Nếu không có trạng thái cụ thể (tất cả), loại bỏ trạng thái "Yêu cầu trả hàng"
-    if (!filterStatus) {
-      filtered = filtered.filter(
-        (order) =>
-          order.status !== "Yêu cầu trả hàng" &&
-          order.status !== "Xử lý yêu cầu trả hàng"
-      );
-    } else {
+    if (filterStatus) {
       filtered = filtered.filter((order) => order.status === filterStatus);
     }
 
-    // Lọc theo từ khóa tìm kiếm
+    if (filterPaymentStatus) {
+      filtered = filtered.filter(
+        (order) => order.status_payment === filterPaymentStatus
+      );
+    }
+
     if (searchTerm) {
       filtered = filtered.filter(
         (order) =>
@@ -81,6 +70,13 @@ const AdminOrder = () => {
     setFilteredOrders(filtered);
   };
 
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setFilterStatus("");
+    setFilterPaymentStatus("");
+    setFilteredOrders(orders);
+  };
+
   const getStatusButtons = () => [
     { label: "Tất cả", value: "" },
     { label: "Chờ xử lý", value: "Chờ xử lý" },
@@ -88,8 +84,18 @@ const AdminOrder = () => {
     { label: "Đang vận chuyển", value: "Đang vận chuyển" },
     { label: "Đã giao hàng", value: "Đã giao hàng" },
     { label: "Hoàn thành", value: "Hoàn thành" },
-    { label: "Đã hủy", value: "Đã hủy" },
     { label: "Trả hàng", value: "Trả hàng" },
+    { label: "Yêu cầu trả hàng", value: "Yêu cầu trả hàng" },
+    { label: "Xử lý yêu cầu trả hàng", value: "Xử lý yêu cầu trả hàng" },
+    { label: "Đã hủy", value: "Đã hủy" },
+  ];
+
+  const getPaymentStatusOptions = () => [
+    { label: "Tất cả", value: "" },
+    { label: "Đã thanh toán", value: "Đã thanh toán" },
+    { label: "Chưa thanh toán", value: "Chưa thanh toán" },
+    { label: "Chờ hoàn tiền", value: "Chờ hoàn tiền" },
+    { label: "Đã hoàn tiền", value: "Đã hoàn tiền" },
   ];
 
   return (
@@ -106,18 +112,25 @@ const AdminOrder = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="border border-gray-300 rounded-lg py-2 px-4 w-full md:w-1/2 lg:w-1/3 transition duration-300 focus:ring-2 focus:ring-yellow-500"
           />
-          <Link to={`/admin/order-return`}>
-            <button className="mt-4 md:mt-0 px-4 py-2 rounded-md border text-sm bg-gray-500 text-white border-gray-500 hover:bg-gray-600 transition duration-200 relative">
-              Yêu cầu / Khiếu nại
-              {complaintCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {complaintCount}
-                </span>
-              )}
-            </button>
-          </Link>
+          <select
+            value={filterPaymentStatus}
+            onChange={(e) => setFilterPaymentStatus(e.target.value)}
+            className="border border-gray-300 rounded-lg py-2 px-4 transition duration-300 focus:ring-2 focus:ring-blue-500"
+          >
+            {getPaymentStatusOptions().map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={handleResetFilters}
+            className="px-4 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300 focus:outline-none"
+          >
+            Reset
+          </button>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mb-4">
           {getStatusButtons().map((status) => (
             <button
               key={status.value}
@@ -185,14 +198,23 @@ const AdminOrder = () => {
             <tbody>
               {filteredOrders.map((item: Order) => (
                 <React.Fragment key={item.id}>
-                  <tr className="hover:bg-gray-200 cursor-pointer transition duration-200 ease-in-out">
+                  <tr className="relative hover:bg-gray-200 cursor-pointer transition duration-200 ease-in-out">
+                    {/* Icon "Yêu cầu" ở góc trái nếu trạng thái phù hợp */}
                     <td className="py-3 px-4 border-b text-center text-blue-500">
+                      {[
+                        "Yêu cầu trả hàng",
+                        "Xử lý yêu cầu trả hàng",
+                        "Trả hàng",
+                      ].includes(item.status) && (
+                        <div className="absolute top-1 left-1 bg-red-500 text-white text-xs p-1 rounded-full shadow-lg flex items-center justify-center w-5 h-5">
+                          <FaExclamationCircle className="text-white text-[10px]" />
+                        </div>
+                      )}
                       #{item.order_code}
                     </td>
                     <td className="py-3 px-4 border-b text-center flex flex-col">
                       <p className="text-red-500">{item.customer.name}</p>
                       <p>{item.customer.phone_number}</p>
-                      {/* , {item.customer.address} */}
                     </td>
                     <td className="py-3 px-4 border-b text-center text-red-500 font-medium">
                       {item.totalAfterDiscount.toLocaleString()} VNĐ
