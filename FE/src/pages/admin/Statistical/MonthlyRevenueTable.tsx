@@ -37,7 +37,9 @@ export interface Monthly {
 const MonthlyRevenueChart: React.FC = () => {
   const [data, setData] = useState<Monthly | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState<number>(
+    new Date().getFullYear()
+  );
   const [dashboardData, setDashboardData] = useState({
     totalStocks: 0,
     totalSells: 0,
@@ -110,6 +112,11 @@ const MonthlyRevenueChart: React.FC = () => {
     (item) => item.year === selectedYear
   );
 
+  const totalAnnualRevenue =
+    filteredData?.reduce((total, item) => {
+      return total + parseFloat(item.monthly_total);
+    }, 0) || 0;
+
   const chartData = {
     labels: months.map((month) => `${month}-${selectedYear}`),
     datasets: [
@@ -164,64 +171,11 @@ const MonthlyRevenueChart: React.FC = () => {
 
   return (
     <div className="flex flex-col lg:flex-row w-full p-6 bg-gray-50 rounded-lg shadow-lg min-h-[600px]">
-      <div className="lg:w-[35%] w-full p-8 bg-gradient-to-r from-white to-gray-50 rounded-xl shadow-lg border border-gray-300 mb-6 lg:mb-0">
-        <h3 className="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-blue-500 pb-4">
-          Tổng quan
-        </h3>
-        {data && (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <span className="font-semibold text-lg text-gray-700">
-                Tổng doanh thu:
-              </span>
-              <span className="text-green-600 font-bold text-2xl">
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(parseFloat(data.totalRevenue))}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="font-semibold text-lg text-gray-700">
-                Tổng số sản phẩm:
-              </span>
-              <span className="text-blue-600 font-medium text-xl">
-                {dashboardData.totalStocks}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="font-semibold text-lg text-gray-700">
-                Sản phẩm đã bán:
-              </span>
-              <span className="text-blue-500 font-medium text-xl">
-                {dashboardData.totalSells}
-              </span>
-            </div>
-            {/* <div className="flex justify-between items-center">
-              <span className="font-semibold text-lg text-gray-700">
-                Tháng bắt đầu:
-              </span>
-              <span className="text-gray-600 text-lg">
-                {new Date(data.startDate).toLocaleDateString()}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="font-semibold text-lg text-gray-700">
-                Tháng kết thúc:
-              </span>
-              <span className="text-gray-600 text-lg">
-                {new Date(data.endDate).toLocaleDateString()}
-              </span>
-            </div> */}
-          </div>
-        )}
-      </div>
-
-      <div className="lg:w-[65%] w-full p-4">
+      <div className="w-full p-4">
         <div className="flex justify-between items-center mb-4">
-        <h2 className="text-3xl font-semibold text-gray-800">
-          Thống kê theo ngày
-        </h2>
+          <h2 className="text-3xl font-semibold text-gray-800">
+            Thống kê các tháng trong năm
+          </h2>
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
               <select
@@ -250,6 +204,17 @@ const MonthlyRevenueChart: React.FC = () => {
         </div>
         <div className="h-[400px] lg:h-[500px] p-4 rounded-lg shadow-lg bg-white">
           <Bar data={chartData} options={options} />
+        </div>
+        <div className="mt-4 flex flex-col items-center justify-center">
+          <h3 className="text-xl font-semibold text-gray-700">
+            Tổng doanh thu năm {selectedYear}:
+          </h3>
+          <p className="text-2xl font-bold text-gray-900 mt-1">
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(totalAnnualRevenue)}
+          </p>
         </div>
       </div>
     </div>

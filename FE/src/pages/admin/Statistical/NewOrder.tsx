@@ -86,8 +86,8 @@ const NewOrder = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
-      <div className="flex justify-between items-center mb-4">
+    <div className="bg-white p-6 rounded-lg shadow-lg mb-4">
+      <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Các đơn hàng mới</h2>
         <div className="flex items-center space-x-2">
           <select

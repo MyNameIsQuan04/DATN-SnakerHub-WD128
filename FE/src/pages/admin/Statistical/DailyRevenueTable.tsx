@@ -150,10 +150,10 @@ const DailyRevenueChart: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-lg">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-6">
+      <div className="flex justify-between items-center">
         <h2 className="text-3xl font-semibold text-gray-800">
-          Thống kê theo ngày
+          Thống kê các ngày trong tuần
         </h2>
         <div className="flex items-center space-x-4">
           <div className="flex items-center">
