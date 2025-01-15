@@ -39,11 +39,11 @@ const ListUser = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [token]);
 
   const openModal = (user: IUser) => {
     if (user.role_id === 1) {
-      toast.info("This user is already an Admin.");
+      toast.info("Người dùng này đã là Quản trị.");
     } else {
       setSelectedUser(user);
       setIsModalOpen(true);
@@ -108,10 +108,10 @@ const ListUser = () => {
   };
 
   const upgradeToAdmin = () =>
-    handleUserUpdate({ role_id: 1 }, "User has been upgraded to Admin!");
+    handleUserUpdate({ role_id: 1 }, "Người dùng này đã là Quản trị!");
 
   const upgradeToSaler = () =>
-    handleUserUpdate({ role_id: 2 }, "User has been upgraded to Saler!");
+    handleUserUpdate({ role_id: 2 }, "Người dùng này đã là Nhân viên!");
 
   const blockUser = async () => {
     if (!selectedUser) return;
@@ -134,7 +134,7 @@ const ListUser = () => {
               : user
           )
         );
-        toast.success("User has been blocked!");
+        toast.success("User đã bị chặn!");
         closeModal();
       }
     } catch (error) {
@@ -148,7 +148,7 @@ const ListUser = () => {
   const unBlockUser = async () => {
     if (!selectedUser) return;
     if (selectedUser.deleted_at === null) {
-      toast.info("User is already unlocked.");
+      toast.info("Người dùng đã bị chặn.");
       return;
     }
     setIsUpdating(true);
@@ -165,10 +165,10 @@ const ListUser = () => {
       if (response.status === 200) {
         setListUser((prevUsers) =>
           prevUsers.map((user) =>
-            user.id === selectedUser.id ? { ...user, delete_at: null } : user
+            user.id === selectedUser.id ? { ...user, deleted_at: null } : user
           )
         );
-        toast.success("User has been unlocked!");
+        toast.success("Người dùng đã được bỏ chặn!");
         closeModal();
       }
     } catch (error) {
@@ -261,15 +261,15 @@ const ListUser = () => {
                           onClick={() => openModal(usermap)}
                           className={`px-2 py-1 rounded-md font-semibold ${
                             usermap.role_id === 1
-                              ? "text-green-600 border border-green-600"
+                              ? "text-red-600 border border-red-600"
                               : usermap.role_id === 2
                               ? "text-blue-600 border border-blue-600"
                               : "text-orange-600 border border-orange-600"
                           }`}
                         >
-                          {(usermap.role_id === 1 && "Admin") ||
-                            (usermap.role_id === 2 && "Saler") ||
-                            "User"}
+                          {(usermap.role_id === 1 && "Quản trị") ||
+                            (usermap.role_id === 2 && "Nhân viên") ||
+                            "Người dùng"}
                         </button>
                       </td>
                     )}
@@ -297,21 +297,23 @@ const ListUser = () => {
                     onClick={upgradeToAdmin}
                     disabled={isUpdating}
                   >
-                    {isUpdating ? "Processing..." : "Cấp quyền Admin"}
+                    {isUpdating ? "Đang tải..." : "Cấp quyền Quản trị"}
                   </button>
+
                   <button
                     className="w-full py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-md"
                     onClick={upgradeToSaler}
                     disabled={isUpdating}
                   >
-                    {isUpdating ? "Processing..." : "Cấp quyền Saler"}
+                    {isUpdating ? "Đang tải..." : "Cấp quyền Nhân viên"}
                   </button>
+
                   <button
                     className="w-full py-2 text-white bg-red-500 hover:bg-red-600 rounded-md"
                     onClick={blockUser}
                     disabled={isUpdating}
                   >
-                    {isUpdating ? "Processing..." : "Chặn người dùng"}
+                    {isUpdating ? "Đang tải..." : "Chặn người dùng"}
                   </button>
                 </>
               ) : (
@@ -321,7 +323,7 @@ const ListUser = () => {
                   onClick={unBlockUser}
                   disabled={isUpdating}
                 >
-                  {isUpdating ? "Processing..." : "Mở chặn người dùng"}
+                  {isUpdating ? "Đang tải..." : "Mở chặn người dùng"}
                 </button>
               )}
               <button

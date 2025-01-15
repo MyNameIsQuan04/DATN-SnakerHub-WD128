@@ -87,7 +87,7 @@ const NewOrder = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg mb-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold text-gray-800">Các đơn hàng mới</h2>
         <div className="flex items-center space-x-2">
           <select
@@ -135,16 +135,13 @@ const NewOrder = () => {
                     Mã đơn hàng
                   </th>
                   <th className="border border-gray-200 px-4 py-2 text-left font-semibold text-gray-700">
-                    Trạng thái
-                  </th>
-                  <th className="border border-gray-200 px-4 py-2 text-left font-semibold text-gray-700">
                     Thanh toán
                   </th>
                   <th className="border border-gray-200 px-4 py-2 text-left font-semibold text-gray-700">
                     Tổng tiền
                   </th>
                   <th className="border border-gray-200 px-4 py-2 text-left font-semibold text-gray-700">
-                    Phí vận chuyển
+                    Chi tiết
                   </th>
                   <th className="border border-gray-200 px-4 py-2 text-left font-semibold text-gray-700">
                     Ghi chú
@@ -169,9 +166,9 @@ const NewOrder = () => {
                           {order.order_code}
                         </Link>
                       </td>
-                      <td className="border border-gray-200 px-4 py-2">
+                      {/* <td className="border border-gray-200 px-4 py-2">
                         {order.status}
-                      </td>
+                      </td> */}
                       {order.paymentMethod === "VNPAY" ? (
                         <td className="border border-gray-200 px-4 py-2">
                           <img
