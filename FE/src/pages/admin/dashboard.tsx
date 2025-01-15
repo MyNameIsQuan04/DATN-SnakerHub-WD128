@@ -7,9 +7,9 @@ const Dashboard = () => {
   return (
     <div>
       <OrderDashboard />
+      <NewOrder />
       <MonthlyRevenueTable />
       <List5Pro />
-      <NewOrder />
     </div>
   );
 };

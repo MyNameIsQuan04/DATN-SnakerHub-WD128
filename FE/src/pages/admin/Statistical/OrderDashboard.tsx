@@ -9,9 +9,8 @@ const OrderDashboard = () => {
     countCustomer: 0,
     countOrder: 0,
     countOrderDone: 0,
-    countOrderDestroy1: 0,
-    countOrderDestroy2: 0,
-    countOrderDestroy3: 0,
+    totalStocks: 0,
+    totalSells: 0,
   });
   const [error, setError] = useState< string | null>(null);
 
@@ -24,9 +23,8 @@ const OrderDashboard = () => {
             countCustomer: result.countCustomer,
             countOrder: result.countOrder,
             countOrderDone: result.countOrderDone,
-            countOrderDestroy1: result.countOrderDestroy1,
-            countOrderDestroy2: result.countOrderDestroy2,
-            countOrderDestroy3: result.countOrderDestroy3,
+            totalStocks: result.totalStocks,
+            totalSells: result.totalSells,
           });
         } else {
           throw new Error("Invalid data format received");
@@ -82,26 +80,18 @@ const OrderDashboard = () => {
           </div>
           <div className="bg-white shadow-md p-6 rounded-md text-center flex-1 min-w-[150px] hover:shadow-xl hover:bg-gray-100 active:shadow-inner active:bg-gray-200 transform hover:scale-105 active:scale-95 transition duration-300 ease-out">
             <h2 className="text-lg font-medium text-gray-700">
-              Hủy: Không đúng yêu cầu
+              Tổng sản phẩm tồn kho
             </h2>
             <p className="text-2xl font-bold text-gray-900 mt-2">
-              {dashboardData.countOrderDestroy1}
+              {dashboardData.totalStocks}
             </p>
           </div>
           <div className="bg-white shadow-md p-6 rounded-md text-center flex-1 min-w-[150px] hover:shadow-xl hover:bg-gray-100 active:shadow-inner active:bg-gray-200 transform hover:scale-105 active:scale-95 transition duration-300 ease-out">
             <h2 className="text-lg font-medium text-gray-700">
-              Hủy: Lỗi từ nhà cung cấp
+              Tổng sản phẩm đã bán
             </h2>
             <p className="text-2xl font-bold text-gray-900 mt-2">
-              {dashboardData.countOrderDestroy2}
-            </p>
-          </div>
-          <div className="bg-white shadow-md p-6 rounded-md text-center flex-1 min-w-[150px] hover:shadow-xl hover:bg-gray-100 active:shadow-inner active:bg-gray-200 transform hover:scale-105 active:scale-95 transition duration-300 ease-out">
-            <h2 className="text-lg font-medium text-gray-700">
-              Hủy: Lý do khác
-            </h2>
-            <p className="text-2xl font-bold text-gray-900 mt-2">
-              {dashboardData.countOrderDestroy3}
+             {dashboardData.totalSells}
             </p>
           </div>
         </div>
