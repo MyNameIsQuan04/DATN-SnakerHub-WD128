@@ -7,6 +7,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 import { GrNext } from "react-icons/gr";
 import api from "../../configs/axios.ts";
+import { LucideMapPinned } from "lucide-react";
 
 const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -180,7 +181,7 @@ const Checkout = () => {
           },
         });
         if (response.data) {
-          setVouchers(response.data.vouchers); // Giả sử API trả về một mảng vouchers
+          setVouchers(response.data.vouchers); 
         }
       } catch (error) {
         toast.error("Không thể tải danh sách mã giảm giá!");
@@ -351,13 +352,17 @@ const Checkout = () => {
           </div>
 
           <div className="space-y-4 mt-4 bg-gray-100 p-5  border border-gray-300 rounded-md">
-            <h3 className="font-semibold text-lg">Thông tin nhận hàng</h3>
-            <button
-              onClick={openModal}
-              className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-            >
-              Chọn địa chỉ đã nhập
-            </button>
+          <div className="flex justify-between items-center mb-4">
+  <h3 className="font-semibold text-lg text-gray-800">Thông tin nhận hàng</h3>
+  <button
+    onClick={openModal}
+    className="flex items-center gap-2 px-5 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-all duration-300"
+  >
+    <LucideMapPinned className="w-5 h-5" />
+    Chọn địa chỉ
+  </button>
+</div>
+
             {isModalOpen && (
               <div
                 className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"

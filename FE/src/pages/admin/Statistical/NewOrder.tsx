@@ -10,6 +10,7 @@ const NewOrder = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<string>("");
   const ordersPerPage = 5;
 
   useEffect(() => {
@@ -36,19 +37,38 @@ const NewOrder = () => {
     const status = event.target.value;
     setSelectedStatus(status);
     setCurrentPage(1);
-    if (status === "") {
-      setFilteredOrders(orders);
-    } else {
-      const filtered = orders.filter((order) => order.status === status);
-      setFilteredOrders(filtered);
-    }
+    filterOrders(status, selectedDate);
+  };
+
+  // Lọc danh sách đơn hàng theo ngày
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const date = event.target.value;
+    setSelectedDate(date);
+    setCurrentPage(1);
+    filterOrders(selectedStatus, date);
   };
 
   // Reset về trạng thái tất cả đơn hàng
   const handleReset = () => {
     setSelectedStatus("");
+    setSelectedDate("");
     setFilteredOrders(orders);
     setCurrentPage(1);
+  };
+
+  // Lọc đơn hàng theo trạng thái và ngày
+  const filterOrders = (status: string, date: string) => {
+    let filtered = orders;
+    if (status) {
+      filtered = filtered.filter((order) => order.status === status);
+    }
+    if (date) {
+      filtered = filtered.filter(
+        (order) =>
+          new Date(order.created_at).toISOString().split("T")[0] === date
+      );
+    }
+    setFilteredOrders(filtered);
   };
 
   // Tính toán chỉ số bắt đầu và kết thúc dựa trên trang hiện tại
@@ -66,8 +86,8 @@ const NewOrder = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
-      <div className="flex justify-between items-center mb-4">
+    <div className="bg-white p-6 rounded-lg shadow-lg mb-4">
+      <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Các đơn hàng mới</h2>
         <div className="flex items-center space-x-2">
           <select
@@ -84,6 +104,12 @@ const NewOrder = () => {
             <option value="Trả hàng">Trả hàng</option>
             <option value="Đã hủy">Đã hủy</option>
           </select>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={handleDateChange}
+            className="border border-gray-300 rounded-lg px-4 py-2"
+          />
           <button
             onClick={handleReset}
             className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-gray-400 transition"
@@ -146,9 +172,21 @@ const NewOrder = () => {
                       <td className="border border-gray-200 px-4 py-2">
                         {order.status}
                       </td>
-                      <td className="border border-gray-200 px-4 py-2">
-                        {order.paymentMethod}
-                      </td>
+                      {order.paymentMethod === "VNPAY" ? (
+                        <td className="border border-gray-200 px-4 py-2">
+                          <img
+                            src="https://i.imgur.com/RAtc2Se.png"
+                            alt="VNPay"
+                            className="inline-block w-10 h-10 object-cover"
+                          />
+                          {order.paymentMethod}
+                        </td>
+                      ) : (
+                        <td className="border border-gray-200 px-4 py-2 text-red-500 font-semibold">
+                          {order.paymentMethod}
+                        </td>
+                      )}
+
                       <td className="border border-gray-200 px-4 py-2 text-green-600 font-bold">
                         {order.totalAfterDiscount.toLocaleString()} VND
                       </td>
@@ -174,7 +212,7 @@ const NewOrder = () => {
                       colSpan={7}
                       className="text-center py-6 text-gray-500 font-semibold"
                     >
-                      Không có đơn hàng nào ở trạng thái này.
+                      Không có đơn hàng...
                     </td>
                   </tr>
                 )}
