@@ -64,18 +64,22 @@ const EditProduct = () => {
     if (id) {
       (async () => {
         const product = await getProductById(id);
-        console.log(product);
+
         if (product) {
           const formattedVariants = formatVariants(
             product.product_variants || [],
             colors,
             sizes
           );
+
+          // if (!colors.some((color) => color.name === productColor)) {
+          //   // Nếu không, thêm màu tạm vào danh sách
+          //   colors.push({ id: null, name: productColor, deleted: true });
+          // }
           console.log(formattedVariants);
           setInitialValues({
             name: product.name,
             price: product.price,
-
             category_id: product.category_id,
             description: product.description,
             short_description: product.short_description,
@@ -123,8 +127,8 @@ const EditProduct = () => {
             .typeError("Giá sản phẩm phải là số")
             .positive("Giá sản phẩm phải lớn hơn 0")
             .required("Giá sản phẩm không được để trống"),
-          size_id: Yup.string().required("Kích cỡ không được để trống"),
-          color_id: Yup.string().required("Màu sắc không được để trống"),
+          size_id: Yup.string(),
+          color_id: Yup.string(),
           stock: Yup.number()
             .typeError("Số lượng phải là số")
             .integer("Số lượng phải là số nguyên")
